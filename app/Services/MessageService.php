@@ -115,7 +115,7 @@ class MessageService
      */
     private function sendHostNotification(Message $message): void
     {
-        $recipient = config('mail.from.address');
+        $recipient = config('mail.to.address');
 
         if (empty($recipient)) {
             return;
