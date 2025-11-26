@@ -1,0 +1,3 @@
+type TechnologyFormData = {
+    name: string;
+};
