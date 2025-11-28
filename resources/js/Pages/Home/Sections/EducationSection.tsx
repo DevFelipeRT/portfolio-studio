@@ -1,3 +1,5 @@
+// resources/js/Pages/Home/Sections/EducationSection.tsx
+
 import { Badge } from '@/Components/Ui/badge';
 import {
     Card,
@@ -6,6 +8,7 @@ import {
     CardHeader,
     CardTitle,
 } from '@/Components/Ui/card';
+import { useTranslation } from '@/i18n';
 import { GraduationCap } from 'lucide-react';
 import { Course } from '../../types';
 import { SectionHeader } from '../Partials/SectionHeader';
@@ -17,9 +20,10 @@ type EducationSectionProps = {
 const formatCoursePeriod = (
     startDate: string,
     endDate: string | null,
+    presentLabel: string,
 ): string => {
     if (!endDate) {
-        return `${startDate} – Present`;
+        return `${startDate} – ${presentLabel}`;
     }
 
     return `${startDate} – ${endDate}`;
@@ -29,24 +33,52 @@ const formatCoursePeriod = (
  * EducationSection highlights formal and complementary education.
  */
 export function EducationSection({ courses }: EducationSectionProps) {
+    const { translate } = useTranslation('home');
+
     const hasCourses = courses.length > 0;
+
+    const sectionLabel = translate(
+        'education.sectionLabel',
+        'Academic degree and technical courses',
+    );
+
+    const eyebrow = translate('education.header.eyebrow', 'Education');
+    const title = translate(
+        'education.header.title',
+        'Academic Degree & Technical Courses',
+    );
+    const description = translate(
+        'education.header.description',
+        'Academic background and complementary technical courses that strengthen my profile as a software developer.',
+    );
+
+    const emptyMessage = translate(
+        'education.emptyMessage',
+        'No education records available to display yet.',
+    );
+
+    const presentLabel = translate('education.presentLabel', 'Present');
+
+    const notHighlightedLabel = translate(
+        'education.badge.notHighlighted',
+        'Not currently highlighted',
+    );
 
     return (
         <section
             id="education"
             className="flex flex-col gap-10 border-t pt-16 md:pt-24"
+            aria-label={sectionLabel}
         >
             <SectionHeader
-                eyebrow="Education"
-                title="Academic Degree & Technical Courses"
-                description="Academic background and complementary technical courses that strengthen my profile as a software developer."
+                eyebrow={eyebrow}
+                title={title}
+                description={description}
                 align="left"
             />
 
             {!hasCourses && (
-                <p className="text-muted-foreground text-sm">
-                    No education records available to display yet.
-                </p>
+                <p className="text-muted-foreground text-sm">{emptyMessage}</p>
             )}
 
             {hasCourses && (
@@ -73,6 +105,7 @@ export function EducationSection({ courses }: EducationSectionProps) {
                                             {formatCoursePeriod(
                                                 course.start_date,
                                                 course.end_date,
+                                                presentLabel,
                                             )}
                                         </span>
 
@@ -102,7 +135,7 @@ export function EducationSection({ courses }: EducationSectionProps) {
                                                 variant="outline"
                                                 className="text-[0.7rem] font-normal"
                                             >
-                                                Not currently highlighted
+                                                {notHighlightedLabel}
                                             </Badge>
                                         </div>
                                     )}

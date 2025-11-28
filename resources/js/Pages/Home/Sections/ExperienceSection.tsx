@@ -1,3 +1,6 @@
+// resources/js/Pages/Home/Sections/ExperienceSection.tsx
+
+import { useTranslation } from '@/i18n';
 import { Briefcase } from 'lucide-react';
 import { Experience } from '../../types';
 import { SectionHeader } from '../Partials/SectionHeader';
@@ -7,9 +10,13 @@ type ExperienceSectionProps = {
     experiences: Experience[];
 };
 
-const formatPeriod = (startDate: string, endDate: string | null): string => {
+const formatPeriod = (
+    startDate: string,
+    endDate: string | null,
+    presentLabel: string,
+): string => {
     if (!endDate) {
-        return `${startDate} – Present`;
+        return `${startDate} – ${presentLabel}`;
     }
 
     return `${startDate} – ${endDate}`;
@@ -19,24 +26,47 @@ const formatPeriod = (startDate: string, endDate: string | null): string => {
  * ExperienceSection outlines relevant professional experience entries.
  */
 export function ExperienceSection({ experiences }: ExperienceSectionProps) {
+    const { translate } = useTranslation('home');
+
     const hasExperiences = experiences.length > 0;
+
+    const sectionLabel = translate(
+        'experience.sectionLabel',
+        'Professional experience timeline',
+    );
+
+    const eyebrow = translate('experience.header.eyebrow', 'Career');
+    const title = translate(
+        'experience.header.title',
+        'Professional Experience',
+    );
+    const description = translate(
+        'experience.header.description',
+        'A timeline of roles and responsibilities that shaped my professional journey.',
+    );
+
+    const emptyMessage = translate(
+        'experience.emptyMessage',
+        'No professional experience available to display yet.',
+    );
+
+    const presentLabel = translate('experience.presentLabel', 'Present');
 
     return (
         <section
             id="experience"
             className="flex flex-col gap-10 border-t pt-16 md:pt-24"
+            aria-label={sectionLabel}
         >
             <SectionHeader
-                eyebrow="Career"
-                title="Professional Experience"
-                description="A timeline of roles and responsibilities that shaped my professional journey."
+                eyebrow={eyebrow}
+                title={title}
+                description={description}
                 align="left"
             />
 
             {!hasExperiences && (
-                <p className="text-muted-foreground text-sm">
-                    No professional experience available to display yet.
-                </p>
+                <p className="text-muted-foreground text-sm">{emptyMessage}</p>
             )}
 
             {hasExperiences && (
@@ -47,6 +77,7 @@ export function ExperienceSection({ experiences }: ExperienceSectionProps) {
                             period={formatPeriod(
                                 experience.start_date,
                                 experience.end_date,
+                                presentLabel,
                             )}
                             title={experience.position}
                             subtitle={experience.company}
