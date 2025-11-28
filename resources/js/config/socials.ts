@@ -6,31 +6,31 @@ export const defaultSocialLinks: SocialLinkItem[] = [
     {
         label: 'Email',
         translationKey: 'contact.socials.email.label',
-        href: '',
+        href: 'mailto:feliperterrazas@gmail.com',
         icon: Mail,
     },
     {
         label: 'GitHub',
         translationKey: 'contact.socials.github.label',
-        href: '',
+        href: 'https://github.com/DevFelipeRT',
         icon: Github,
     },
     {
         label: 'LinkedIn',
         translationKey: 'contact.socials.linkedin.label',
-        href: '',
+        href: 'https://linkedin.com/in/felipe-ruiz-terrazas',
         icon: Linkedin,
     },
     {
         label: 'WhatsApp',
         translationKey: 'contact.socials.whatsapp.label',
-        href: '',
+        href: 'https://wa.me/551973613744',
         icon: MessageCircle,
     },
     {
         label: 'Phone',
         translationKey: 'contact.socials.phone.label',
-        href: '',
+        href: 'tel:+5511973613744',
         icon: PhoneCall,
     },
 ];
