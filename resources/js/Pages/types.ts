@@ -6,7 +6,14 @@ export interface HasTimestamps {
 export interface Technology extends HasTimestamps {
     id: number;
     name: string;
+    category: string;
 }
+
+export interface TechnologyGroup {
+    id: string;
+    title: string;
+    technologies: Technology[];
+};
 
 export interface ProjectImage extends HasTimestamps {
     id: number;
@@ -47,4 +54,22 @@ export interface Course extends HasTimestamps {
     start_date: string;
     end_date: string | null;
     display: boolean;
+}
+
+export interface InitiativeImage extends HasTimestamps {
+    id: number;
+    initiative_id: number;
+    src: string;
+    alt: string | null;
+}
+
+export interface Initiative extends HasTimestamps {
+    id: number;
+    name: string;
+    short_description: string;
+    long_description: string;
+    display: boolean;
+    start_date: string | null;
+    end_date: string | null;
+    images?: InitiativeImage[];
 }
