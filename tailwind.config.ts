@@ -33,6 +33,16 @@ const config: Config = {
                 primary: {
                     DEFAULT: 'var(--primary)',
                     foreground: 'var(--primary-foreground)',
+                    muted: {
+                        DEFAULT: 'var(--primary-muted)',
+                        foreground: 'var(--primary-muted-foreground)',
+                    },
+                    shadow: {
+                        subtle: 'var(--primary-shadow-subtle)',
+                        soft: 'var(--primary-shadow-soft)',
+                        strong: 'var(--primary-shadow-strong)',
+                        glow: 'var(--primary-shadow-glow)',
+                    },
                 },
                 secondary: {
                     DEFAULT: 'var(--secondary)',
