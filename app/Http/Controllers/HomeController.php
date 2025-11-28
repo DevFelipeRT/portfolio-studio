@@ -4,17 +4,24 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Enums\TechnologyCategories;
 use App\Models\Course;
 use App\Models\Experience;
+use App\Models\Initiative;
+use App\Models\InitiativeImage;
 use App\Models\Project;
 use App\Models\ProjectImage;
 use App\Models\Technology;
 use App\Services\CourseService;
 use App\Services\ExperienceService;
+use App\Services\InitiativeService;
 use App\Services\ProjectService;
+use App\Services\TechnologyService;
 use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * HTTP controller for the public homepage.
@@ -25,6 +32,8 @@ class HomeController extends Controller
         private readonly ProjectService $projectService,
         private readonly ExperienceService $experienceService,
         private readonly CourseService $courseService,
+        private readonly TechnologyService $techService,
+        private readonly InitiativeService $initiativeService,
     ) {}
 
     /**
@@ -32,23 +41,18 @@ class HomeController extends Controller
      */
     public function index(): Response
     {
-        $projects = $this->fetchProjects();
-        $experiences = $this->fetchExperiences();
-        $courses = $this->fetchCourses();
+        $projects     = $this->fetchProjects();
+        $experiences  = $this->fetchExperiences();
+        $courses      = $this->fetchCourses();
+        $technologies = $this->fetchTechnologies();
+        $initiatives  = $this->fetchInitiatives();
 
         return Inertia::render('Home/Home', [
-            /**
-             * @var Collection<int,array<string,mixed>> $projects
-             */
             'projects'    => $projects,
-            /**
-             * @var Collection<int,array<string,mixed>> $experiences
-             */
             'experiences' => $experiences,
-            /**
-             * @var Collection<int,array<string,mixed>> $courses
-             */
-            'courses' => $courses,
+            'courses'     => $courses,
+            'technologies' => $technologies,
+            'initiatives' => $initiatives,
         ]);
     }
 
@@ -74,23 +78,24 @@ class HomeController extends Controller
                              */
                             function (ProjectImage $image): array {
                                 return [
-                                    'src'   => $image->src,
+                                    'src' => $image->src,
                                     'alt' => $image->alt,
                                 ];
                             }
                         ),
-                        'technologies'     => $project->technologies->map(
+                        'technologies'      => $project->technologies->map(
                             /**
                              * @return array<string,mixed>
                              */
                             function (Technology $technology): array {
                                 return [
-                                    'id'   => $technology->id,
-                                    'name' => $technology->name,
+                                    'id'       => $technology->id,
+                                    'name'     => $technology->name,
+                                    'category' => $technology->category,
                                 ];
                             }
                         ),
-                        'display' => $project->display,
+                        'display'           => $project->display,
                     ];
                 }
             );
@@ -146,5 +151,82 @@ class HomeController extends Controller
             );
 
         return $courses;
+    }
+
+    /**
+     * Fetch technologies grouped by category for UI consumption.
+     *
+     * @return Collection<int, array{
+     *     id: string,
+     *     title: string,
+     *     technologies: array<int, array{id:int,name:string}>
+     * }>
+     */
+    private function fetchTechnologies(): Collection
+    {
+        return $this->techService
+            ->groupedByCategory()
+            ->map(
+                /**
+                 * @param EloquentCollection<int,Technology> $group
+                 */
+                function (EloquentCollection $group, string $category): array {
+                    $enum = TechnologyCategories::from($category);
+
+                    return [
+                        'id'           => $enum->value,
+                        'title'        => $enum->label(),
+                        'technologies' => $group
+                            ->sortBy('name')
+                            ->values()
+                            ->map(
+                                fn(Technology $tech): array => [
+                                    'id'   => $tech->id,
+                                    'name' => $tech->name,
+                                ],
+                            )
+                            ->all(),
+                    ];
+                },
+            )
+            ->values();
+    }
+
+    // App\Http\Controllers\HomeController.php
+
+    /**
+     * Fetch visible initiatives for the landing page.
+     */
+    private function fetchInitiatives(): Collection
+    {
+        return $this->initiativeService
+            ->visible()
+            ->map(
+                /**
+                 * @return array<string,mixed>
+                 */
+                function (Initiative $initiative): array {
+                    return [
+                        'id'                => $initiative->id,
+                        'name'              => $initiative->name,
+                        'short_description' => $initiative->short_description,
+                        'long_description'  => $initiative->long_description,
+                        'start_date'        => $initiative->start_date,
+                        'end_date'          => $initiative->end_date,
+                        'display'           => $initiative->display,
+                        'images'            => $initiative->images?->map(
+                            /**
+                             * @return array<string,mixed>
+                             */
+                            function (InitiativeImage $image): array {
+                                return [
+                                    'src' => $image->src,
+                                    'alt' => $image->alt,
+                                ];
+                            }
+                        ),
+                    ];
+                }
+            );
     }
 }
