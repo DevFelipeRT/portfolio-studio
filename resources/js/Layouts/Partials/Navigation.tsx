@@ -370,7 +370,7 @@ export default function Navigation({ items, user }: NavigationProps) {
     function submenuLinkClass(isActive: boolean | undefined): string {
         const base =
             'block rounded-md px-3 py-2 text-sm leading-tight transition-colors';
-        const active = 'bg-primary text-accent';
+        const active = 'bg-primary text-primary-foreground';
         const inactive =
             'text-muted-foreground hover:bg-muted hover:text-foreground';
         return [base, isActive ? active : inactive].join(' ');
