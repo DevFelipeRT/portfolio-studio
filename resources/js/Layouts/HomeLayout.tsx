@@ -1,4 +1,8 @@
+// resources/js/Layouts/HomeLayout.tsx
+
 import { ThemeProvider } from '@/Components/Theme/ThemeProvider';
+import { homeNavigationConfig } from '@/config/navigation';
+import { useTranslation } from '@/i18n';
 import { usePage } from '@inertiajs/react';
 import { PropsWithChildren } from 'react';
 import Footer from './Partials/Footer';
@@ -13,51 +17,19 @@ type SharedProps = {
 
 export default function HomeLayout({ children }: PropsWithChildren) {
     const { auth } = usePage().props as SharedProps;
+    const { translate } = useTranslation('layout');
 
-    const navItems: NavigationItem[] = [
-        {
-            id: 'home',
-            label: 'Home',
-            kind: 'section',
-            scrollToTop: true,
-        },
-        {
-            id: 'highlights',
-            label: 'Highlights',
-            kind: 'section',
-            targetId: 'highlights',
-        },
-        {
-            id: 'tech-stack',
-            label: 'Stack',
-            kind: 'section',
-            targetId: 'tech-stack',
-        },
-        {
-            id: 'projects',
-            label: 'Projects',
-            kind: 'section',
-            targetId: 'projects',
-        },
-        {
-            id: 'experience',
-            label: 'Carrer',
-            kind: 'section',
-            targetId: 'experience',
-        },
-        {
-            id: 'education',
-            label: 'Education',
-            kind: 'section',
-            targetId: 'education',
-        },
-        {
-            id: 'contact',
-            label: 'Contact',
-            kind: 'section',
-            targetId: 'contact',
-        },
-    ];
+    const navItems: NavigationItem[] = homeNavigationConfig.map(
+        (item): NavigationItem => ({
+            id: item.id,
+            label: translate(item.translationKey, item.fallbackLabel),
+            kind: item.kind,
+            targetId: item.targetId,
+            scrollToTop: item.scrollToTop,
+            // children propositalmente omitido aqui,
+            // pois NavigationSectionItem não o suporta ainda.
+        }),
+    );
 
     return (
         <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">

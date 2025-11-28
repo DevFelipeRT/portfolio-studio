@@ -22,6 +22,9 @@ import { Link, usePage } from '@inertiajs/react';
 import { Menu } from 'lucide-react';
 import { MouseEvent, useEffect, useState } from 'react';
 
+import { NAMESPACES } from '@/i18n/config/namespaces';
+import { useTranslation } from '@/i18n/react/useTranslation';
+
 export type AuthUser = {
     name: string;
     email: string;
@@ -113,6 +116,28 @@ export default function Navigation({ items, user }: NavigationProps) {
 
     const [isSheetOpen, setIsSheetOpen] = useState(false);
 
+    const { translate: translateFromLayout } = useTranslation(
+        NAMESPACES.layout,
+    );
+    const { translate: translateFromCommon } = useTranslation(
+        NAMESPACES.common,
+    );
+
+    const primaryNavigationLabel = translateFromLayout(
+        'header.navigation.primaryLabel',
+        'Primary navigation',
+    );
+
+    const openNavigationLabel = translateFromCommon(
+        'navigation.openMenu',
+        'Open navigation menu',
+    );
+
+    const mobileNavigationTitle = translateFromLayout(
+        'header.navigation.mobileTitle',
+        'Navigation',
+    );
+
     useEffect(() => {
         if (!hasSections) {
             setRenderableSectionTargets(null);
@@ -175,7 +200,7 @@ export default function Navigation({ items, user }: NavigationProps) {
                 }
             });
 
-            positions.sort((a, b) => a.top - b.top);
+            positions.sort((first, second) => first.top - second.top);
             setSectionPositions(positions);
         }
 
@@ -352,7 +377,10 @@ export default function Navigation({ items, user }: NavigationProps) {
     }
 
     return (
-        <nav className="flex grow items-center justify-center gap-3">
+        <nav
+            className="flex grow items-center justify-center gap-3"
+            aria-label={primaryNavigationLabel}
+        >
             {/* Desktop navigation (>= md) */}
             <div className="hidden items-center md:flex">
                 <NavigationMenu>
@@ -476,7 +504,7 @@ export default function Navigation({ items, user }: NavigationProps) {
                             variant="ghost"
                             size="icon"
                             className="data-[state=open]:bg-accent rounded-md data-[state=closed]:ring-0"
-                            aria-label="Open navigation"
+                            aria-label={openNavigationLabel}
                         >
                             <Menu className="h-5 w-5" />
                         </Button>
@@ -488,7 +516,7 @@ export default function Navigation({ items, user }: NavigationProps) {
                     >
                         <SheetHeader className="pl-2 sm:text-center">
                             <SheetTitle className="ml-0.5 px-3 py-2">
-                                Navigation
+                                {mobileNavigationTitle}
                             </SheetTitle>
                         </SheetHeader>
 

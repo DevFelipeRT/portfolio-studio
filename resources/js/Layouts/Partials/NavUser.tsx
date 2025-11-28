@@ -15,6 +15,8 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/Components/Ui/dropdown-menu';
+import { NAMESPACES } from '@/i18n/config/namespaces';
+import { useTranslation } from '@/i18n/react/useTranslation';
 
 type NavUserProps = {
     user: {
@@ -60,9 +62,16 @@ function resetBodyPointerEvents(): void {
  */
 export function NavUser({ user, variant = 'full' }: NavUserProps) {
     const { url } = usePage();
-    const [open, setOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
 
-    const initials = user.name
+    const { translate } = useTranslation(NAMESPACES.layout);
+
+    const openUserMenuLabel = translate('userMenu.openLabel', 'Open user menu');
+    const dashboardLabel = translate('userMenu.dashboard', 'Dashboard');
+    const profileLabel = translate('userMenu.profile', 'Profile');
+    const logoutLabel = translate('userMenu.logout', 'Log out');
+
+    const userInitials = user.name
         .split(' ')
         .filter(Boolean)
         .map((part) => part[0]?.toUpperCase())
@@ -70,7 +79,7 @@ export function NavUser({ user, variant = 'full' }: NavUserProps) {
         .slice(0, 2);
 
     useEffect(() => {
-        setOpen(false);
+        setIsOpen(false);
         resetBodyPointerEvents();
     }, [url]);
 
@@ -86,27 +95,29 @@ export function NavUser({ user, variant = 'full' }: NavUserProps) {
             <AvatarFallback
                 className={variant === 'icon' ? 'rounded-full' : 'rounded-lg'}
             >
-                {initials}
+                {userInitials}
             </AvatarFallback>
         </Avatar>
     );
 
     function handleItemSelect(): void {
-        setOpen(false);
+        setIsOpen(false);
         resetBodyPointerEvents();
+    }
+
+    function handleOpenChange(nextOpen: boolean): void {
+        setIsOpen(nextOpen);
+
+        if (!nextOpen) {
+            resetBodyPointerEvents();
+        }
     }
 
     return (
         <DropdownMenu
             modal={false}
-            open={open}
-            onOpenChange={(nextOpen) => {
-                setOpen(nextOpen);
-
-                if (!nextOpen) {
-                    resetBodyPointerEvents();
-                }
-            }}
+            open={isOpen}
+            onOpenChange={handleOpenChange}
         >
             <DropdownMenuTrigger asChild>
                 {variant === 'icon' ? (
@@ -115,7 +126,9 @@ export function NavUser({ user, variant = 'full' }: NavUserProps) {
                         variant="ghost"
                         size="icon"
                         className="hover:border-ring border-border rounded-full border-5"
-                        aria-label="Open user menu"
+                        aria-label={openUserMenuLabel}
+                        aria-haspopup="menu"
+                        aria-expanded={isOpen}
                     >
                         {avatar}
                     </Button>
@@ -124,6 +137,8 @@ export function NavUser({ user, variant = 'full' }: NavUserProps) {
                         type="button"
                         variant="ghost"
                         className="hover:bg-muted flex w-full max-w-xs items-center gap-3 rounded-lg px-3 py-6 text-left text-sm"
+                        aria-haspopup="menu"
+                        aria-expanded={isOpen}
                     >
                         {avatar}
 
@@ -154,7 +169,7 @@ export function NavUser({ user, variant = 'full' }: NavUserProps) {
                                 alt={user.name}
                             />
                             <AvatarFallback className="rounded-lg">
-                                {initials}
+                                {userInitials}
                             </AvatarFallback>
                         </Avatar>
                         <div className="grid flex-1 text-left text-sm leading-tight">
@@ -178,7 +193,7 @@ export function NavUser({ user, variant = 'full' }: NavUserProps) {
                                 className="flex w-full items-center"
                             >
                                 <LayoutGrid className="mr-2 h-4 w-4" />
-                                <span>Dashboard</span>
+                                <span>{dashboardLabel}</span>
                             </Link>
                         </DropdownMenuItem>
                     )}
@@ -189,7 +204,7 @@ export function NavUser({ user, variant = 'full' }: NavUserProps) {
                             className="flex w-full items-center"
                         >
                             <CircleUser className="mr-2 h-4 w-4" />
-                            <span>Profile</span>
+                            <span>{profileLabel}</span>
                         </Link>
                     </DropdownMenuItem>
                 </DropdownMenuGroup>
@@ -204,7 +219,7 @@ export function NavUser({ user, variant = 'full' }: NavUserProps) {
                         className="flex w-full items-center"
                     >
                         <LogOut className="mr-2 h-4 w-4" />
-                        <span>Log out</span>
+                        <span>{logoutLabel}</span>
                     </Link>
                 </DropdownMenuItem>
             </DropdownMenuContent>

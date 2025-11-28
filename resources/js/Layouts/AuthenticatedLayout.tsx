@@ -1,4 +1,11 @@
+// resources/js/Layouts/AuthenticatedLayout.tsx
+
 import { ThemeProvider } from '@/Components/Theme/ThemeProvider';
+import {
+    navigationConfig,
+    type NavigationConfigItem,
+} from '@/config/navigation';
+import { useTranslation } from '@/i18n';
 import { usePage } from '@inertiajs/react';
 import { PropsWithChildren, ReactNode } from 'react';
 import Footer from './Partials/Footer';
@@ -11,78 +18,50 @@ type SharedProps = {
     };
 };
 
+function mapConfigToNavigationItems(
+    items: NavigationConfigItem[],
+    translate: (key: string, fallback: string) => string,
+): NavigationItem[] {
+    return items.map<NavigationItem>((item) => {
+        const href = route(item.routeName);
+        const isActive =
+            !!route().current(item.routeName) ||
+            !!item.children?.some((child) => route().current(child.routeName));
+
+        const children = item.children
+            ? item.children.map((child) => ({
+                  id: child.id,
+                  label: translate(child.translationKey, child.fallbackLabel),
+                  href: route(child.routeName),
+                  isActive: !!route().current(child.routeName),
+              }))
+            : undefined;
+
+        return {
+            id: item.id,
+            label: translate(item.translationKey, item.fallbackLabel),
+            kind: item.kind,
+            href,
+            isActive,
+            children,
+        };
+    });
+}
+
 export default function Authenticated({
     header,
     children,
 }: PropsWithChildren<{ header?: ReactNode }>) {
     const { auth } = usePage().props as SharedProps;
+    const { translate } = useTranslation('layout');
 
-    const navItems: NavigationItem[] = [
-        {
-            id: 'home',
-            label: 'Home',
-            kind: 'link',
-            href: route('home'),
-            isActive: !!route().current('home'),
-        },
-        {
-            id: 'dashboard',
-            label: 'Dashboard',
-            kind: 'link',
-            href: route('dashboard'),
-            isActive: !!route().current('dashboard'),
-        },
-        {
-            id: 'messages',
-            label: 'Messages',
-            kind: 'link',
-            href: route('messages.index'),
-            isActive: !!route().current('messages.index'),
-        },
-        {
-            id: 'portfolio',
-            label: 'Portfolio',
-            kind: 'link',
-            href: route('projects.index'),
-            isActive:
-                !!route().current('projects.index') ||
-                !!route().current('experiences.index') ||
-                !!route().current('courses.index') ||
-                !!route().current('technologies.index'),
-            children: [
-                {
-                    id: 'projects',
-                    label: 'Projects',
-                    href: route('projects.index'),
-                    isActive: !!route().current('projects.index'),
-                },
-                {
-                    id: 'experiences',
-                    label: 'Experiences',
-                    href: route('experiences.index'),
-                    isActive: !!route().current('experiences.index'),
-                },
-                {
-                    id: 'courses',
-                    label: 'Courses',
-                    href: route('courses.index'),
-                    isActive: !!route().current('courses.index'),
-                },
-                {
-                    id: 'technologies',
-                    label: 'Technologies',
-                    href: route('technologies.index'),
-                    isActive: !!route().current('technologies.index'),
-                },
-            ],
-        },
-    ];
+    const navItems: NavigationItem[] = mapConfigToNavigationItems(
+        navigationConfig,
+        (key, fallback) => translate(key, fallback),
+    );
 
     return (
-        <ThemeProvider
-            defaultTheme="system"
-            storageKey="vite-ui-theme"
-        >
+        <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
             <div className="text-foreground flex min-h-dvh w-full flex-col">
                 <Header>
                     <Navigation items={navItems} user={auth.user} />
