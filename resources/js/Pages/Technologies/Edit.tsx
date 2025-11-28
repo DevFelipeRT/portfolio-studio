@@ -1,38 +1,40 @@
-import { Button } from '@/Components/Ui/button';
-import { Input } from '@/Components/Ui/input';
-import { Label } from '@/Components/Ui/label';
+// resources/js/Pages/Technologies/Edit.tsx
+
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { PageProps } from '@/types';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import React from 'react';
 import { Technology } from '../types';
+import { TechForm } from './Partials/TechForm';
 
 interface EditTechnologyProps {
     technology: Technology;
 }
 
+type PagePropsWithTechnologyCategories = PageProps<{
+    technologyCategories: Record<string, string>;
+}>;
+
 export default function Edit({ technology }: EditTechnologyProps) {
+    const { technologyCategories } =
+        usePage<PagePropsWithTechnologyCategories>().props;
+
     const { data, setData, put, processing, errors } =
         useForm<TechnologyFormData>({
             name: technology.name,
+            category: technology.category ?? '',
         });
 
-    const submit = (event: React.FormEvent<HTMLFormElement>): void => {
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
         put(route('technologies.update', technology.id));
     };
 
-    const normalizeError = (
-        message: string | string[] | undefined,
-    ): string | null => {
-        if (!message) {
-            return null;
-        }
-
-        if (Array.isArray(message)) {
-            return message.join(' ');
-        }
-
-        return message;
+    const handleChange = (
+        field: keyof TechnologyFormData,
+        value: string,
+    ): void => {
+        setData(field, value);
     };
 
     return (
@@ -56,54 +58,22 @@ export default function Edit({ technology }: EditTechnologyProps) {
                         </Link>
                     </div>
 
-                    <form
-                        onSubmit={submit}
-                        className="bg-card space-y-6 rounded-lg border p-6 shadow-sm"
-                    >
-                        <div className="space-y-1.5">
-                            <Label htmlFor="name">Name</Label>
-                            <Input
-                                id="name"
-                                value={data.name}
-                                onChange={(event) =>
-                                    setData('name', event.target.value)
-                                }
-                                autoFocus
-                            />
-                            {errors.name && (
-                                <p className="text-destructive text-sm">
-                                    {normalizeError(errors.name)}
-                                </p>
-                            )}
-                        </div>
-
-                        <div className="flex items-center justify-between gap-3">
-                            <Link
-                                href={route('technologies.index')}
-                                className="text-muted-foreground hover:text-foreground text-sm"
-                            >
-                                Cancel
-                            </Link>
-
-                            <div className="flex items-center gap-3">
-                                <Link
-                                    href={route(
-                                        'technologies.destroy',
-                                        technology.id,
-                                    )}
-                                    method="delete"
-                                    as="button"
-                                    className="text-destructive text-sm hover:underline"
-                                >
-                                    Delete
-                                </Link>
-
-                                <Button type="submit" disabled={processing}>
-                                    Save changes
-                                </Button>
-                            </div>
-                        </div>
-                    </form>
+                    <TechForm
+                        data={data}
+                        errors={errors}
+                        categories={technologyCategories}
+                        processing={processing}
+                        onChange={handleChange}
+                        onSubmit={handleSubmit}
+                        cancelHref={route('technologies.index')}
+                        submitLabel="Save changes"
+                        deleteHref={route(
+                            'technologies.destroy',
+                            technology.id,
+                        )}
+                        deleteLabel="Delete"
+                        alignActions="split"
+                    />
                 </div>
             </div>
         </AuthenticatedLayout>

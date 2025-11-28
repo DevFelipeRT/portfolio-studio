@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Enums\TechnologyCategories;
+use App\Http\Requests\StoreTechnologyRequest;
+use App\Http\Requests\UpdateTechnologyRequest;
 use App\Models\Technology;
 use App\Services\TechnologyService;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -37,19 +39,24 @@ class TechnologyController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('Technologies/Create');
+        return Inertia::render('Technologies/Create', [
+            'categories' => TechnologyCategories::options(),
+        ]);
     }
 
     /**
      * Store a newly created technology in storage.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(StoreTechnologyRequest $request): RedirectResponse
     {
-        $data = $request->validate([
-            'name' => ['required', 'string', 'max:255', 'unique:technologies,name'],
-        ]);
+        $data = $request->validated();
 
-        $this->technologyService->create($data['name']);
+        $category = TechnologyCategories::from($data['category']);
+
+        $this->technologyService->create(
+            $data['name'],
+            $category,
+        );
 
         return redirect()
             ->route('technologies.index')
@@ -63,27 +70,29 @@ class TechnologyController extends Controller
     {
         return Inertia::render('Technologies/Edit', [
             'technology' => $technology,
+            'categories' => TechnologyCategories::options(),
         ]);
     }
 
     /**
      * Update the specified technology in storage.
      */
-    public function update(Request $request, Technology $technology): RedirectResponse
-    {
-        $data = $request->validate([
-            'name' => [
-                'required',
-                'string',
-                'max:255',
-                'unique:technologies,name,' . $technology->id,
-            ],
-        ]);
+    public function update(
+        UpdateTechnologyRequest $request,
+        Technology $technology,
+    ): RedirectResponse {
+        $data = $request->validated();
 
-        $this->technologyService->rename($technology, $data['name']);
+        $category = TechnologyCategories::from($data['category']);
+
+        $this->technologyService->rename(
+            $technology,
+            $data['name'],
+            $category,
+        );
 
         return redirect()
-            ->route('technologies.edit', $technology)
+            ->route('technologies.index', $technology)
             ->with('status', 'Technology successfully updated.');
     }
 
