@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Enums\TechnologyCategories;
 use App\Models\Technology;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -13,15 +14,36 @@ use Illuminate\Database\Eloquent\Collection;
 class TechnologyService
 {
     /**
-     * List all technologies ordered by most recent first.
+     * List all technologies ordered by name.
      *
      * @return Collection<int,Technology>
      */
     public function all(): Collection
     {
         return Technology::query()
+            ->orderBy('category')
             ->orderBy('name')
             ->get();
+    }
+
+    /**
+     * List all technologies grouped by category.
+     *
+     * The outer collection is keyed by the category backing value
+     * (for example: "backend", "frontend", "tooling"), and each value is
+     * a collection of Technology models belonging to that category.
+     *
+     * @return Collection<string, EloquentCollection<int,Technology>>
+     */
+    public function groupedByCategory(): Collection
+    {
+        $technologies = Technology::query()
+            ->orderBy('name')
+            ->get();
+
+        return $technologies->groupBy(
+            fn(Technology $technology): string => $technology->category->value,
+        );
     }
 
     /**
@@ -37,20 +59,25 @@ class TechnologyService
     /**
      * Create a new technology.
      */
-    public function create(string $name): Technology
+    public function create(string $name, TechnologyCategories $category): Technology
     {
         return Technology::query()->create([
-            'name' => $name,
+            'name'     => $name,
+            'category' => $category,
         ]);
     }
 
     /**
-     * Rename an existing technology.
+     * Update the name and category of an existing technology.
      */
-    public function rename(Technology $technology, string $name): Technology
-    {
+    public function rename(
+        Technology $technology,
+        string $name,
+        TechnologyCategories $category,
+    ): Technology {
         $technology->update([
-            'name' => $name,
+            'name'     => $name,
+            'category' => $category,
         ]);
 
         return $technology;

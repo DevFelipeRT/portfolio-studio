@@ -4,12 +4,17 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\TechnologyCategories;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * Represents a reusable technology in the portfolio.
+ *
+ * @property int                     $id
+ * @property string                  $name
+ * @property TechnologyCategories    $category
  */
 class Technology extends Model
 {
@@ -22,15 +27,17 @@ class Technology extends Model
      */
     protected $fillable = [
         'name',
+        'category',
     ];
 
     /**
      * Attribute type casting.
      *
-     * @var array<string,string>
+     * @var array<string,mixed>
      */
     protected $casts = [
-        'id' => 'integer',
+        'id'       => 'integer',
+        'category' => TechnologyCategories::class,
     ];
 
     /**
