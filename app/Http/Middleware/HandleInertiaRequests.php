@@ -32,12 +32,25 @@ class HandleInertiaRequests extends Middleware
     {
         return [
             ...parent::share($request),
+
             'auth' => [
                 'user' => $request->user(),
             ],
-            'ziggy' => fn () => [
-                ...(new Ziggy)->toArray(),
+
+            'ziggy' => fn() => [
+                ...(new Ziggy())->toArray(),
                 'location' => $request->url(),
+            ],
+
+            // Current locale resolved by ResolveLocale middleware.
+            'locale' => fn() => app()->getLocale(),
+
+            // Localization metadata for the front-end.
+            'localization' => fn() => [
+                'currentLocale' => app()->getLocale(),
+                'supportedLocales' => config('localization.supported_locales', []),
+                'defaultLocale' => config('app.locale'),
+                'fallbackLocale' => config('app.fallback_locale'),
             ],
         ];
     }
