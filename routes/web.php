@@ -3,6 +3,7 @@
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\ExperienceController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\InitiativeController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
@@ -43,6 +44,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('experiences', ExperienceController::class)->names('experiences');
 
     Route::resource('courses', CourseController::class)->names('courses');
+
+    Route::resource('initiatives', InitiativeController::class)->names('initiatives');
+
+    Route::put('initiatives/{initiative}', [InitiativeController::class, 'toggleDisplay'])->name('initiatives.toggleDisplay');
 
     /**
      * Admin messages management (Inertia React).
