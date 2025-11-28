@@ -67,55 +67,67 @@ export function ProjectImageCarousel({
                         type="button"
                         size="icon"
                         variant="ghost"
-                        className="hover:bg-background/70 bg-background/50 h-8 w-8 rounded-full backdrop-blur"
+                        className="group hover:bg-background/70 bg-background/50 h-8 w-8 rounded-full backdrop-blur"
                         onClick={() => setIsPreviewOpen(true)}
                     >
-                        <ZoomIn className="h-4 w-4" />
+                        <ZoomIn className="text-foreground/70 group-hover:text-primary h-4 w-4" />
                     </Button>
                 </div>
 
                 {images.length > 1 && (
                     <>
-                        <div className="pointer-events-none absolute inset-x-0 top-0 flex h-full items-center justify-between p-2">
+                        <div className="inset-shadow pointer-events-none absolute inset-x-0 top-0 flex h-full items-center justify-between p-2">
                             <div className="pointer-events-auto">
                                 <Button
                                     type="button"
                                     size="icon"
-                                    variant="outline"
-                                    className="group hover:bg-background/50 h-8 w-8 rounded-full bg-transparent backdrop-blur"
+                                    variant="ghost"
+                                    className="group h-16 w-16 bg-transparent hover:bg-transparent focus:ring-0"
                                     onClick={goPrevious}
                                 >
-                                    <ChevronLeft className="text-foreground/50 group-hover:text-primary h-4 w-4" />
+                                    <div className="group-hover:bg-background/70 bg-background/50 mr-auto h-8 w-8 content-center rounded-full backdrop-blur">
+                                        <ChevronLeft
+                                            strokeWidth={4}
+                                            className="text-foreground/70 group-hover:text-primary mx-auto h-4 w-4"
+                                        />
+                                    </div>
                                 </Button>
                             </div>
-                            <div className="pointer-events-auto">
+                            <div className="pointer-events-auto flex h-full items-center">
                                 <Button
                                     type="button"
                                     size="icon"
-                                    variant="outline"
-                                    className="group hover:bg-background/50 h-8 w-8 rounded-full bg-transparent backdrop-blur"
+                                    variant="ghost"
+                                    className="group h-16 w-16 bg-transparent hover:bg-transparent focus:ring-0"
                                     onClick={goNext}
                                 >
-                                    <ChevronRight className="text-foreground/50 group-hover:text-primary h-4 w-4" />
+                                    <div className="group-hover:bg-background/70 bg-background/50 ml-auto h-8 w-8 content-center rounded-full backdrop-blur">
+                                        <ChevronRight
+                                            strokeWidth={4}
+                                            className="text-foreground/70 group-hover:text-primary mx-auto h-4 w-4"
+                                        />
+                                    </div>
                                 </Button>
                             </div>
                         </div>
 
-                        <div className="absolute inset-x-0 bottom-2 flex justify-center gap-1.5">
-                            {images.map((image, dotIndex) => (
-                                <Button
-                                    key={`${image.src}-${dotIndex}`}
-                                    type="button"
-                                    aria-label={`Show image ${dotIndex + 1}`}
-                                    onClick={() => setIndex(dotIndex)}
-                                    className={[
-                                        'h-1.5 rounded-full transition-all',
-                                        dotIndex === index
-                                            ? 'bg-primary w-5'
-                                            : 'bg-muted-foreground/40 w-2',
-                                    ].join(' ')}
-                                />
-                            ))}
+                        <div className="absolute inset-x-0 bottom-2">
+                            <div className="bg-background/50 mx-auto flex w-fit justify-center gap-1.5 rounded-full p-1 backdrop-blur">
+                                {images.map((image, dotIndex) => (
+                                    <button
+                                        key={`${image.src}-${dotIndex}`}
+                                        type="button"
+                                        aria-label={`Show image ${dotIndex + 1}`}
+                                        onClick={() => setIndex(dotIndex)}
+                                        className={[
+                                            'h-2 rounded-full backdrop-blur transition-all',
+                                            dotIndex === index
+                                                ? 'bg-primary shadow-primary-shadow-glow w-5 shadow-sm/50'
+                                                : 'bg-foreground/70 w-2',
+                                        ].join(' ')}
+                                    />
+                                ))}
+                            </div>
                         </div>
                     </>
                 )}
