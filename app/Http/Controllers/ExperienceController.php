@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreExperienceRequest;
-use App\Http\Requests\UpdateExperienceRequest;
+use App\Http\Requests\Experience\StoreExperienceRequest;
+use App\Http\Requests\Experience\UpdateExperienceRequest;
 use App\Models\Experience;
 use App\Services\ExperienceService;
 use Illuminate\Http\RedirectResponse;

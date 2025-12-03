@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Course;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -27,10 +27,11 @@ class UpdateCourseRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'institution' => ['required', 'string', 'max:255'],
-            'short_description' => ['required', 'string', 'max:255'],
-            'long_description' => ['required', 'string'],
-            'start_date' => ['required', 'date'],
-            'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
+            'category' => ['required', 'string', 'max:255'],
+            'summary' => ['required', 'string', 'max:255'],
+            'description' => ['required', 'string'],
+            'started_at' => ['nullable', 'date'],
+            'completed_at' => ['nullable', 'date', 'after_or_equal:started_at'],
             'display' => ['sometimes', 'boolean'],
         ];
     }

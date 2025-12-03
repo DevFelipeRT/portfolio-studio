@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Initiative;
 
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
- * Request for creating initiatives.
+ * Request for updating initiatives.
  */
-class StoreInitiativeRequest extends FormRequest
+class UpdateInitiativeRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -20,7 +20,7 @@ class StoreInitiativeRequest extends FormRequest
     }
 
     /**
-     * Validation rules for creating an initiative.
+     * Validation rules for updating an initiative.
      *
      * @return array<string,mixed>
      */

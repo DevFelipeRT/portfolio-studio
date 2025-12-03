@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Project;
 
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
- * Request payload validation for updating an existing project.
+ * Request payload validation for creating a new project.
  */
-class UpdateProjectRequest extends FormRequest
+class StoreProjectRequest extends FormRequest
 {
     /**
      * Authorization check for the request.
@@ -40,8 +40,6 @@ class UpdateProjectRequest extends FormRequest
             'images'           => ['nullable', 'array'],
             'images.*.file'    => ['required_with:images', 'file', 'image'],
             'images.*.alt'     => ['nullable', 'string', 'max:255'],
-
-            'display'          => ['nullable', 'bool'],
         ];
     }
 }

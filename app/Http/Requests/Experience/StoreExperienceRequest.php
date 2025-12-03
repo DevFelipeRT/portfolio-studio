@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Experience;
 
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
- * Request object for storing courses.
+ * Form request for storing a new experience.
  */
-class StoreCourseRequest extends FormRequest
+class StoreExperienceRequest extends FormRequest
 {
     /**
-     * Authorize the request.
+     * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
@@ -20,18 +20,20 @@ class StoreCourseRequest extends FormRequest
     }
 
     /**
-     * Validation rules for storing a course.
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, mixed>
      */
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
-            'institution' => ['required', 'string', 'max:255'],
+            'position' => ['required', 'string', 'max:255'],
+            'company' => ['required', 'string', 'max:255'],
             'short_description' => ['required', 'string', 'max:255'],
             'long_description' => ['required', 'string'],
             'start_date' => ['required', 'date'],
             'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
-            'display' => ['sometimes', 'boolean'],
+            'display' => ['required', 'boolean'],
         ];
     }
 }

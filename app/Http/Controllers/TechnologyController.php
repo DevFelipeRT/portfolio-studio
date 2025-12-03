@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Enums\TechnologyCategories;
-use App\Http\Requests\StoreTechnologyRequest;
-use App\Http\Requests\UpdateTechnologyRequest;
+use App\Http\Requests\Technology\StoreTechnologyRequest;
+use App\Http\Requests\Technology\UpdateTechnologyRequest;
 use App\Models\Technology;
 use App\Services\TechnologyService;
 use Illuminate\Http\RedirectResponse;

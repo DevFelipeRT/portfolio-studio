@@ -2,16 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Technology;
 
 use App\Enums\TechnologyCategories;
+use App\Models\Technology;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 /**
- * Request object for storing a new technology.
+ * Request object for updating an existing technology.
  */
-class StoreTechnologyRequest extends FormRequest
+class UpdateTechnologyRequest extends FormRequest
 {
     /**
      * Determines whether the user is authorized to perform this request.
@@ -22,18 +23,23 @@ class StoreTechnologyRequest extends FormRequest
     }
 
     /**
-     * Returns the validation rules for storing a technology.
+     * Returns the validation rules for updating a technology.
      *
      * @return array<string, mixed>
      */
     public function rules(): array
     {
+        /** @var Technology|null $technology */
+        $technology = $this->route('technology');
+
+        $technologyId = $technology?->id;
+
         return [
             'name' => [
                 'required',
                 'string',
                 'max:255',
-                'unique:technologies,name',
+                Rule::unique('technologies', 'name')->ignore($technologyId),
             ],
             'category' => [
                 'required',

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Initiative;
 
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
- * Form request for storing a new experience.
+ * Request for creating initiatives.
  */
-class StoreExperienceRequest extends FormRequest
+class StoreInitiativeRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -20,20 +20,23 @@ class StoreExperienceRequest extends FormRequest
     }
 
     /**
-     * Get the validation rules that apply to the request.
+     * Validation rules for creating an initiative.
      *
-     * @return array<string, mixed>
+     * @return array<string,mixed>
      */
     public function rules(): array
     {
         return [
-            'position' => ['required', 'string', 'max:255'],
-            'company' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:255'],
             'short_description' => ['required', 'string', 'max:255'],
             'long_description' => ['required', 'string'],
+            'display' => ['sometimes', 'boolean'],
             'start_date' => ['required', 'date'],
             'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
-            'display' => ['required', 'boolean'],
+
+            'images' => ['sometimes', 'array'],
+            'images.*.file' => ['sometimes', 'file', 'image', 'mimes:jpg,jpeg,png,webp,avif,svg', 'max:2048'],
+            'images.*.alt' => ['nullable', 'string', 'max:255'],
         ];
     }
 }

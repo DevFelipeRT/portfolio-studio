@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreInitiativeRequest;
-use App\Http\Requests\UpdateInitiativeRequest;
+use App\Http\Requests\Initiative\StoreInitiativeRequest;
+use App\Http\Requests\Initiative\UpdateInitiativeRequest;
 use App\Models\Initiative;
 use App\Services\InitiativeService;
 use Illuminate\Http\RedirectResponse;
