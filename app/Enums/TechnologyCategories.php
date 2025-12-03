@@ -7,8 +7,10 @@ namespace App\Enums;
 /**
  * Defines the main classification buckets for technologies.
  */
-enum TechnologyCategories: string
+enum TechnologyCategories: string implements IEnum
 {
+    use CommonEnumMethods;
+
     case FRONTEND = 'frontend';
     case BACKEND = 'backend';
     case DEVOPS = 'devops';
@@ -29,21 +31,5 @@ enum TechnologyCategories: string
             self::TESTING => 'Testing',
             self::TOOLING => 'Tooling',
         };
-    }
-
-    /**
-     * Returns all categories as key-value pairs for UI usage.
-     *
-     * @return array<string, string>
-     */
-    public static function options(): array
-    {
-        $options = [];
-
-        foreach (self::cases() as $case) {
-            $options[$case->value] = $case->label();
-        }
-
-        return $options;
     }
 }
