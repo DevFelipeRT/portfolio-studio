@@ -30,5 +30,7 @@ class Experience extends Model
      */
     protected $casts = [
         'id' => 'integer',
+        'start_date' => 'date:Y-m-d',
+        'end_date' => 'date:Y-m-d',
     ];
 }
