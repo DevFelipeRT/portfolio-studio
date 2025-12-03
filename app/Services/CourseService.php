@@ -19,7 +19,7 @@ class CourseService
     public function paginate(int $perPage = 15): LengthAwarePaginator
     {
         return Course::query()
-            ->orderByDesc('start_date')
+            ->orderByDesc('started_at')
             ->orderBy('name')
             ->paginate($perPage);
     }
@@ -64,7 +64,7 @@ class CourseService
     {
         return Course::query()
             ->where('display', true)
-            ->orderByDesc('start_date')
+            ->orderByDesc('started_at')
             ->orderByDesc('id')
             ->get();
     }
@@ -74,7 +74,7 @@ class CourseService
      */
     private function normalizePayload(array $data): array
     {
-        if (! array_key_exists('display', $data)) {
+        if (!array_key_exists('display', $data)) {
             $data['display'] = false;
         }
 
