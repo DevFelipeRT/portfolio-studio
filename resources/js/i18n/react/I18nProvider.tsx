@@ -53,10 +53,11 @@ export function I18nProvider({
     const contextValue = useMemo(
         () => ({
             locale: activeLocale,
+            supportedLocales: localeResolver.supportedLocales,
             setLocale,
             translate,
         }),
-        [activeLocale, setLocale, translate],
+        [activeLocale, localeResolver, setLocale, translate],
     );
 
     return (

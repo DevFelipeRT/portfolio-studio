@@ -5,6 +5,7 @@ import type { Locale, Namespace, TranslationParams } from '../core/types';
 
 export interface I18nContextValue {
     locale: Locale;
+    supportedLocales: readonly Locale[];
     setLocale(nextLocale: string): Locale;
     translate(
         key: string,
