@@ -19,6 +19,12 @@ type LocalizationSharedProps = {
     };
 };
 
+type AppMetadataSharedProps = {
+    appOwner?: unknown;
+};
+
+let appOwner: string | null = null;
+
 function resolveInitialLocale(props: unknown): string | null {
     const inertiaProps =
         typeof props === 'object' && props !== null
@@ -72,14 +78,36 @@ function resolveRuntimeLocalizationConfig(props: unknown): {
     };
 }
 
+function resolveAppOwner(props: unknown): string | null {
+    const inertiaProps =
+        typeof props === 'object' && props !== null
+            ? (props as { initialPage?: { props?: Record<string, unknown> } })
+            : null;
+
+    const pageProps = inertiaProps?.initialPage?.props ?? {};
+    const shared = pageProps as AppMetadataSharedProps;
+
+    if (typeof shared.appOwner === 'string' && shared.appOwner.trim() !== '') {
+        return shared.appOwner;
+    }
+
+    return null;
+}
+
 createInertiaApp({
-    title: (title) => `${title} - ${appName}`,
+    title: (title) => {
+        const base = appOwner && appOwner.trim() !== '' ? appOwner : appName;
+
+        return title ? `${title} | ${base}` : base;
+    },
     resolve: (name) =>
         resolvePageComponent(
             `./Pages/${name}.tsx`,
             import.meta.glob('./Pages/**/*.tsx'),
         ),
     setup({ el, App, props }) {
+        appOwner = resolveAppOwner(props);
+
         const runtimeLocalization = resolveRuntimeLocalizationConfig(props);
 
         const { localeResolver, translationResolver } = createI18nEnvironment({
