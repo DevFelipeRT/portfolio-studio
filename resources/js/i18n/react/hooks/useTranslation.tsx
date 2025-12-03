@@ -1,8 +1,8 @@
 'use client';
 
 import { useContext } from 'react';
-import type { Namespace, TranslationParams } from '../core/types';
-import { I18nContext } from './I18nContext';
+import type { Namespace, TranslationParams } from '../../core/types';
+import { I18nContext } from '../I18nContext';
 
 type TranslationFunction = {
     (key: string, params?: TranslationParams): string;
