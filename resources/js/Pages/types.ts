@@ -49,10 +49,12 @@ export interface Course extends HasTimestamps {
     id: number;
     name: string;
     institution: string;
-    short_description: string;
-    long_description: string;
-    start_date: string;
-    end_date: string | null;
+    category: string;
+    status: string;
+    summary: string;
+    description: string;
+    started_at: string;
+    completed_at: string | null;
     display: boolean;
 }
 
