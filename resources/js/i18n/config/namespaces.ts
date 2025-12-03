@@ -9,7 +9,7 @@ export const NAMESPACES = {
     home: 'home' as Namespace,
     experience: 'experience' as Namespace,
     projects: 'projects' as Namespace,
-    education: 'education' as Namespace,
+    courses: 'courses' as Namespace,
     contact: 'contact' as Namespace,
 } as const;
 
