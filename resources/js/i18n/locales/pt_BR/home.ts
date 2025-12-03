@@ -94,6 +94,13 @@ const home: TranslationTree = {
         badge: {
             notHighlighted: 'Não está destacado atualmente',
         },
+        categories: {
+            academic_degree: 'Graduação',
+            technical_course: 'Curso técnico',
+            certification: 'Certificação',
+            workshop: 'Workshop',
+            other: 'Outro',
+        },
     },
     contact: {
         sectionLabel: 'Contato e colaboração',

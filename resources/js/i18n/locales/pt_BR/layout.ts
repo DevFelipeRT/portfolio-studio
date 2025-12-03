@@ -32,7 +32,7 @@ const layout: TranslationTree = {
 
     userMenu: {
         openLabel: 'Abrir menu do usuário',
-        dashboard: 'Dashboard',
+        dashboard: 'Painel',
         profile: 'Perfil',
         settings: 'Configurações',
         logout: 'Sair',
