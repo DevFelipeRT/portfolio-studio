@@ -2,7 +2,7 @@
 
 import { Button } from '@/Components/Ui/button';
 import { Checkbox } from '@/Components/Ui/checkbox';
-import { SingleDatePicker } from '@/Components/Ui/date-picker';
+import { DatePicker } from '@/Components/Ui/date-picker';
 import { Input } from '@/Components/Ui/input';
 import { Label } from '@/Components/Ui/label';
 import { Textarea } from '@/Components/Ui/textarea';
@@ -184,7 +184,7 @@ export function InitiativeForm({
                         )}
                     </div>
 
-                    <SingleDatePicker
+                    <DatePicker
                         id="start_date"
                         label="Date or start date"
                         value={data.start_date}
@@ -213,7 +213,7 @@ export function InitiativeForm({
                         )}
                     </div>
 
-                    <SingleDatePicker
+                    <DatePicker
                         id="end_date"
                         label="End date (optional)"
                         value={data.end_date}
