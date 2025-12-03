@@ -23,7 +23,7 @@ import { Menu } from 'lucide-react';
 import { MouseEvent, useEffect, useState } from 'react';
 
 import { NAMESPACES } from '@/i18n/config/namespaces';
-import { useTranslation } from '@/i18n/react/useTranslation';
+import { useTranslation } from '@/i18n/react/hooks/useTranslation';
 
 export type AuthUser = {
     name: string;

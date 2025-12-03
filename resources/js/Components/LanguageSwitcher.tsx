@@ -10,8 +10,8 @@ import {
     DropdownMenuTrigger,
 } from '@/Components/Ui/dropdown-menu';
 import { NAMESPACES } from '@/i18n/config/namespaces';
-import { useSetLocale } from '@/i18n/react/useSetLocale';
-import { useTranslation } from '@/i18n/react/useTranslation';
+import { useSetLocale } from '@/i18n/react/hooks/useSetLocale';
+import { useTranslation } from '@/i18n/react/hooks/useTranslation';
 import { usePage } from '@inertiajs/react';
 import { Languages } from 'lucide-react';
 import { MouseEvent } from 'react';
@@ -108,7 +108,7 @@ export function LanguageSwitcher({
  */
 function formatLocaleLabel(code: string): string {
     switch (code) {
-        case 'pt-BR':
+        case 'pt_BR':
             return 'Português (Brasil)';
         case 'en':
             return 'English';
@@ -122,8 +122,8 @@ function formatLocaleLabel(code: string): string {
  */
 function formatLocaleShortLabel(code: string): string {
     switch (code) {
-        case 'pt-BR':
-            return 'pt-BR';
+        case 'pt_BR':
+            return 'pt_BR';
         case 'en':
             return 'en';
         default:

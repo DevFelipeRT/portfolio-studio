@@ -16,7 +16,7 @@ import {
     DropdownMenuTrigger,
 } from '@/Components/Ui/dropdown-menu';
 import { NAMESPACES } from '@/i18n/config/namespaces';
-import { useTranslation } from '@/i18n/react/useTranslation';
+import { useTranslation } from '@/i18n/react/hooks/useTranslation';
 
 type NavUserProps = {
     user: {
