@@ -94,6 +94,13 @@ const home: TranslationTree = {
         badge: {
             notHighlighted: 'Not currently highlighted',
         },
+        categories: {
+            academic_degree: 'Academic degree',
+            technical_course: 'Technical course',
+            certification: 'Certification',
+            workshop: 'Workshop',
+            other: 'Other',
+        },
     },
     contact: {
         sectionLabel: 'Contact and collaboration',
@@ -114,8 +121,7 @@ const home: TranslationTree = {
             },
             message: {
                 label: 'Message',
-                placeholder:
-                    'Share what you have in mind and how I can help.',
+                placeholder: 'Share what you have in mind and how I can help.',
             },
             submit: {
                 default: 'Send message',
