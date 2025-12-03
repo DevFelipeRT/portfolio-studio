@@ -1,21 +1,98 @@
-// resources/js/Pages/Home/Partials/InitiativeCard.tsx
-
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/Ui/card';
+import { DateDisplay } from '@/Components/Ui/date-display'; // Importação adicionada
+import { useTranslation } from '@/i18n'; // Importação adicionada
 import { Initiative } from '@/Pages/types';
+import { JSX } from 'react';
 
 type InitiativeCardProps = {
     initiative: Initiative;
 };
 
 /**
+ * Renders the period of an initiative (start date to end date) using DateDisplay components.
+ *
+ * This component handles two cases: a single date (if only one is provided) or a date range (Start – End).
+ *
+ * @param {Initiative} initiative The initiative data containing start and end dates.
+ * @param {string} locale The current locale for date formatting.
+ * @returns {JSX.Element | null} The rendered period string or null if no dates are provided.
+ */
+function InitiativePeriodDisplay({
+    initiative,
+    locale,
+}: {
+    initiative: Initiative;
+    locale: string;
+}): JSX.Element | null {
+    const { start_date, end_date } = initiative;
+
+    const format = 'PP'; // Formato de data padrão localizado (ex: '3 Mar, 2020')
+    const separator = ' – ';
+
+    // Case 1: Only start_date available
+    if (start_date && !end_date) {
+        return (
+            <DateDisplay
+                value={start_date}
+                locale={locale}
+                format={format}
+                key="start-only"
+            />
+        );
+    }
+
+    // Case 2: Only end_date available (Unusual, but handled)
+    if (!start_date && end_date) {
+        return (
+            <DateDisplay
+                value={end_date}
+                locale={locale}
+                format={format}
+                key="end-only"
+            />
+        );
+    }
+
+    // Case 3: Both dates available (Date Range)
+    if (start_date && end_date) {
+        return (
+            <>
+                <DateDisplay
+                    value={start_date}
+                    locale={locale}
+                    format={format}
+                    key="start-date"
+                />
+                {separator}
+                <DateDisplay
+                    value={end_date}
+                    locale={locale}
+                    format={format}
+                    key="end-date"
+                />
+            </>
+        );
+    }
+
+    // Case 4: No dates available
+    return null;
+}
+
+/**
  * InitiativeCard renders a single initiative card for the landing page.
  */
 export function InitiativeCard({ initiative }: InitiativeCardProps) {
+    // Need access to locale for DateDisplay
+    const { locale } = useTranslation('home');
+
     const coverImage = initiative.images?.[0] ?? null;
-    const dateLabel = formatInitiativeDate(
-        initiative.start_date,
-        initiative.end_date,
+
+    // Use the new component for date labeling
+    const periodLabel = (
+        <InitiativePeriodDisplay initiative={initiative} locale={locale} />
     );
+
+    const hasDates = !!initiative.start_date || !!initiative.end_date;
 
     return (
         <Card className="bg-card/80 flex h-full flex-col overflow-hidden border shadow-sm">
@@ -35,9 +112,10 @@ export function InitiativeCard({ initiative }: InitiativeCardProps) {
                     {initiative.name}
                 </CardTitle>
 
-                {dateLabel && (
+                {/* Render the new component if dates exist */}
+                {hasDates && periodLabel && (
                     <p className="text-muted-foreground text-xs tracking-wide uppercase">
-                        {dateLabel}
+                        {periodLabel}
                     </p>
                 )}
             </CardHeader>
@@ -51,66 +129,4 @@ export function InitiativeCard({ initiative }: InitiativeCardProps) {
             </CardContent>
         </Card>
     );
-}
-
-function formatInitiativeDate(
-    startDate?: string | null,
-    endDate?: string | null,
-): string | null {
-    const start = parseDate(startDate);
-    const end = parseDate(endDate);
-
-    if (!start && !end) {
-        return null;
-    }
-
-    if (start && !end) {
-        return start.toLocaleDateString(undefined, {
-            day: '2-digit',
-            month: 'short',
-            year: 'numeric',
-        });
-    }
-
-    if (!start && end) {
-        return end.toLocaleDateString(undefined, {
-            day: '2-digit',
-            month: 'short',
-            year: 'numeric',
-        });
-    }
-
-    if (!start || !end) {
-        return null;
-    }
-
-    const sameYear = start.getFullYear() === end.getFullYear();
-
-    const fromLabel = start.toLocaleDateString(undefined, {
-        day: '2-digit',
-        month: 'short',
-        year: sameYear ? undefined : 'numeric',
-    });
-
-    const toLabel = end.toLocaleDateString(undefined, {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-    });
-
-    return `${fromLabel} – ${toLabel}`;
-}
-
-function parseDate(value?: string | null): Date | null {
-    if (!value) {
-        return null;
-    }
-
-    const date = new Date(value);
-
-    if (Number.isNaN(date.getTime())) {
-        return null;
-    }
-
-    return date;
 }
