@@ -1,5 +1,10 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link } from '@inertiajs/react';
+import { CourseOverlay } from '@/Pages/Courses/Partials/CourseOverlay';
+import { CoursesEmptyState } from '@/Pages/Courses/Partials/CoursesEmptyState';
+import { CoursesHeader } from '@/Pages/Courses/Partials/CoursesHeader';
+import { CoursesTable } from '@/Pages/Courses/Partials/CoursesTable';
+import { Head } from '@inertiajs/react';
+import React from 'react';
 import { Course } from '../types';
 
 interface CoursesIndexProps {
@@ -12,20 +17,29 @@ export default function Index({ courses }: CoursesIndexProps) {
     const items = courses.data ?? [];
     const hasCourses = items.length > 0;
 
-    const truncate = (text: string, maxLength: number): string => {
-        if (text.length <= maxLength) {
-            return text;
-        }
+    // State for the overlay
+    const [selectedCourse, setSelectedCourse] = React.useState<Course | null>(
+        null,
+    );
+    const [isOverlayOpen, setIsOverlayOpen] = React.useState(false);
 
-        return `${text.slice(0, maxLength - 1)}…`;
+    /**
+     * Opens the course details overlay.
+     */
+    const handleRowClick = (course: Course) => {
+        setSelectedCourse(course);
+        setIsOverlayOpen(true);
     };
 
-    const formatPeriod = (course: Course): string => {
-        if (!course.end_date) {
-            return course.start_date;
+    /**
+     * Closes the course details overlay.
+     */
+    const handleOverlayOpenChange = (open: boolean) => {
+        setIsOverlayOpen(open);
+        if (!open) {
+            // Short delay to allow animation to finish before clearing data
+            setTimeout(() => setSelectedCourse(null), 200);
         }
-
-        return `${course.start_date} – ${course.end_date}`;
     };
 
     return (
@@ -39,116 +53,25 @@ export default function Index({ courses }: CoursesIndexProps) {
             <Head title="Courses" />
 
             <div className="overflow-hidden">
-                <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                        <p className="text-muted-foreground mt-1 text-sm">
-                            Manage the courses displayed on your portfolio.
-                        </p>
-                    </div>
+                <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
+                    <CoursesHeader />
 
-                    <Link
-                        href={route('courses.create')}
-                        className="bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-ring inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium shadow-sm transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
-                    >
-                        New course
-                    </Link>
+                    {!hasCourses && <CoursesEmptyState />}
+
+                    {hasCourses && (
+                        <CoursesTable
+                            items={items}
+                            onRowClick={handleRowClick}
+                        />
+                    )}
                 </div>
-
-                {!hasCourses && (
-                    <p className="text-muted-foreground text-sm">
-                        No courses have been created yet.
-                    </p>
-                )}
-
-                {hasCourses && (
-                    <div className="bg-card overflow-hidden rounded-lg border">
-                        <table className="min-w-full divide-y text-sm">
-                            <thead className="bg-muted/60">
-                                <tr>
-                                    <th className="text-muted-foreground px-4 py-3 text-left font-medium">
-                                        Name
-                                    </th>
-                                    <th className="text-muted-foreground px-4 py-3 text-left font-medium">
-                                        Institution
-                                    </th>
-                                    <th className="text-muted-foreground px-4 py-3 text-left font-medium">
-                                        Period
-                                    </th>
-                                    <th className="text-muted-foreground px-4 py-3 text-left font-medium">
-                                        Display on portfolio
-                                    </th>
-                                    <th className="text-muted-foreground px-4 py-3 text-left font-medium">
-                                        Updated at
-                                    </th>
-                                    <th className="text-muted-foreground px-4 py-3 text-right font-medium">
-                                        Actions
-                                    </th>
-                                </tr>
-                            </thead>
-
-                            <tbody className="divide-y">
-                                {items.map((course) => (
-                                    <tr key={course.id}>
-                                        <td className="px-4 py-3 align-top">
-                                            <div className="font-medium">
-                                                {course.name}
-                                            </div>
-                                            <div className="text-muted-foreground mt-0.5 text-xs">
-                                                {truncate(
-                                                    course.short_description,
-                                                    80,
-                                                )}
-                                            </div>
-                                        </td>
-
-                                        <td className="text-muted-foreground px-4 py-3 align-top text-xs">
-                                            {course.institution}
-                                        </td>
-
-                                        <td className="text-muted-foreground px-4 py-3 align-top text-xs whitespace-nowrap">
-                                            {formatPeriod(course)}
-                                        </td>
-
-                                        <td className="text-muted-foreground px-4 py-3 align-top text-xs">
-                                            {course.display ? 'Yes' : 'No'}
-                                        </td>
-
-                                        <td className="text-muted-foreground px-4 py-3 align-top text-xs whitespace-nowrap">
-                                            {course.updated_at ?? '—'}
-                                        </td>
-
-                                        <td className="px-4 py-3 align-top">
-                                            <div className="flex justify-end gap-3 text-xs">
-                                                <Link
-                                                    href={route(
-                                                        'courses.edit',
-                                                        course.id,
-                                                    )}
-                                                    className="text-primary font-medium hover:underline"
-                                                >
-                                                    Edit
-                                                </Link>
-
-                                                <Link
-                                                    href={route(
-                                                        'courses.destroy',
-                                                        course.id,
-                                                    )}
-                                                    method="delete"
-                                                    as="button"
-                                                    className="text-destructive font-medium hover:underline"
-                                                >
-                                                    Delete
-                                                </Link>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                )}
             </div>
+
+            <CourseOverlay
+                open={isOverlayOpen}
+                course={selectedCourse}
+                onOpenChange={handleOverlayOpenChange}
+            />
         </AuthenticatedLayout>
     );
 }

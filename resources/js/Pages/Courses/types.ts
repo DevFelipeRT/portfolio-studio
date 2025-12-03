@@ -1,9 +1,10 @@
-type CourseFormData = {
+export type CourseFormData = {
     name: string;
     institution: string;
-    short_description: string;
-    long_description: string;
-    start_date: string;
-    end_date: string;
+    category: string;
+    summary: string;
+    description: string;
+    started_at: string;
+    completed_at: string;
     display: boolean;
 };
