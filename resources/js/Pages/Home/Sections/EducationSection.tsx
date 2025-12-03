@@ -1,42 +1,77 @@
-// resources/js/Pages/Home/Sections/EducationSection.tsx
-
+import { ExpandableCard } from '@/Components/ExpandableCard';
 import { Badge } from '@/Components/Ui/badge';
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from '@/Components/Ui/card';
+import { DateDisplay } from '@/Components/Ui/date-display';
 import { useTranslation } from '@/i18n';
 import { GraduationCap } from 'lucide-react';
 import { Course } from '../../types';
 import { SectionHeader } from '../Partials/SectionHeader';
+import { JSX } from 'react';
 
 type EducationSectionProps = {
     courses: Course[];
 };
 
-const formatCoursePeriod = (
-    startDate: string,
-    endDate: string | null,
-    presentLabel: string,
-): string => {
-    if (!endDate) {
-        return `${startDate} – ${presentLabel}`;
+/**
+ * Renders the period of a course (start date to end date/present) using DateDisplay components.
+ *
+ * @param {Course} course The course data containing start and completion dates.
+ * @param {string} locale The current locale for date formatting.
+ * @param {string} presentLabel Translated string for "Present".
+ * @returns {JSX.Element} The rendered period string.
+ */
+function CoursePeriodDisplay({
+    course,
+    locale,
+    presentLabel,
+}: {
+    course: Course;
+    locale: string;
+    presentLabel: string;
+}): JSX.Element {
+    // Assumption: Course type includes 'started_at' as a required date string
+    const startDateDisplay = (
+        <DateDisplay
+            value={course.started_at}
+            locale={locale}
+            format="PP"
+            key="start-date"
+        />
+    );
+
+    // If completed_at is available, display the full period: 'Start – End'
+    if (course.completed_at) {
+        return (
+            <>
+                {startDateDisplay}
+                {' – '}
+                <DateDisplay
+                    value={course.completed_at}
+                    locale={locale}
+                    format="PP"
+                    key="end-date"
+                />
+            </>
+        );
     }
 
-    return `${startDate} – ${endDate}`;
-};
+    // Otherwise, the course is ongoing: 'Start – Present'
+    return (
+        <>
+            {startDateDisplay}
+            {' – '}
+            <span key="present-label">{presentLabel}</span>
+        </>
+    );
+}
 
 /**
  * EducationSection highlights formal and complementary education.
+ * Displays each course with period, category, and optional long description.
  */
 export function EducationSection({ courses }: EducationSectionProps) {
-    const { translate } = useTranslation('home');
+    const { translate, locale } = useTranslation('home');
 
-    const hasCourses = courses.length > 0;
-
+    // --- Translations for readability and separation of concerns
     const sectionLabel = translate(
         'education.sectionLabel',
         'Academic degree and technical courses',
@@ -64,6 +99,9 @@ export function EducationSection({ courses }: EducationSectionProps) {
         'Not currently highlighted',
     );
 
+    // --- Component Logic
+    const hasCourses = courses.length > 0;
+
     return (
         <section
             id="education"
@@ -83,66 +121,55 @@ export function EducationSection({ courses }: EducationSectionProps) {
 
             {hasCourses && (
                 <div className="grid gap-6 md:grid-cols-2">
-                    {courses.map((course) => (
-                        <Card
-                            key={course.id}
-                            className="border-border/60 bg-card/50 hover:border-border/80 hover:bg-card/80 backdrop-blur transition-colors"
-                        >
-                            <CardHeader className="pb-3">
-                                <div className="flex items-start justify-between gap-3">
-                                    <div className="space-y-1.5">
-                                        <CardTitle className="text-base leading-none font-semibold tracking-tight">
-                                            {course.name}
-                                        </CardTitle>
+                    {courses.map((course) => {
+                        const categoryLabel = translate(
+                            `education.categories.${course.category}`,
+                        );
 
-                                        <p className="text-muted-foreground text-sm font-medium">
-                                            {course.institution}
-                                        </p>
-                                    </div>
+                        const hasLongDescription =
+                            !!course.description &&
+                            course.description.trim() !== '';
 
-                                    <div className="flex shrink-0 flex-col items-end gap-2">
-                                        <span className="bg-secondary text-secondary-foreground rounded-md px-2 py-1 text-xs font-medium whitespace-nowrap">
-                                            {formatCoursePeriod(
-                                                course.start_date,
-                                                course.end_date,
-                                                presentLabel,
-                                            )}
-                                        </span>
-
-                                        <GraduationCap
-                                            className="text-muted-foreground h-4 w-4"
-                                            aria-hidden="true"
-                                        />
-                                    </div>
-                                </div>
-
-                                {course.short_description && (
-                                    <CardDescription className="text-muted-foreground mt-2 text-xs leading-relaxed sm:text-sm">
-                                        {course.short_description}
-                                    </CardDescription>
-                                )}
-                            </CardHeader>
-
-                            {course.long_description && (
-                                <CardContent className="pt-0">
+                        return (
+                            <ExpandableCard
+                                key={course.id}
+                                title={course.name}
+                                subtitle={course.institution}
+                                description={course.summary}
+                                icon={
+                                    <GraduationCap
+                                        className="text-muted-foreground h-4 w-4"
+                                        aria-hidden="true"
+                                    />
+                                }
+                                meta={
+                                    <CoursePeriodDisplay
+                                        course={course}
+                                        locale={locale}
+                                        presentLabel={presentLabel}
+                                    />
+                                }
+                                tags={categoryLabel ? [categoryLabel] : []}
+                            >
+                                {hasLongDescription && (
                                     <p className="text-muted-foreground text-xs leading-relaxed sm:text-sm">
-                                        {course.long_description}
+                                        {course.description}
                                     </p>
+                                )}
 
-                                    {!course.display && (
-                                        <div className="mt-3">
-                                            <Badge
-                                                variant="outline"
-                                                className="text-[0.7rem] font-normal"
-                                            >
-                                                {notHighlightedLabel}
-                                            </Badge>
-                                        </div>
-                                    )}
-                                </CardContent>
-                            )}
-                        </Card>
-                    ))}
+                                {!course.display && (
+                                    <div className="mt-3">
+                                        <Badge
+                                            variant="outline"
+                                            className="text-[0.7rem] font-normal"
+                                        >
+                                            {notHighlightedLabel}
+                                        </Badge>
+                                    </div>
+                                )}
+                            </ExpandableCard>
+                        );
+                    })}
                 </div>
             )}
         </section>
