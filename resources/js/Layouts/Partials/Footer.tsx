@@ -12,7 +12,7 @@ export default function Footer() {
                 <span>
                     © {new Date().getFullYear()} Portfolio. {madeByLabel}
                 </span>
-                <span className="hidden sm:inline">
+                <span className="sm:inline">
                     {rightsLabel}
                 </span>
             </div>
