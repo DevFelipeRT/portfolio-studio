@@ -12,7 +12,7 @@ return [
     */
 
     'supported_locales' => [
-        'pt-BR',
+        'pt_BR',
         'en',
     ],
 
