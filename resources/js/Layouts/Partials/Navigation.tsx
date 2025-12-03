@@ -336,7 +336,7 @@ export default function Navigation({ items, user }: NavigationProps) {
     }
 
     function desktopItemClass(isActive: boolean | undefined): string {
-        const base = 'border-l-3 md:border-l-0 md:border-b-3';
+        const base = 'border-l-3 md:border-l-0 md:border-b-3 transition';
         const active = 'border-primary';
         const inactive = 'border-transparent';
         return [base, isActive ? active : inactive].join(' ');
