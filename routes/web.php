@@ -4,6 +4,7 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\ExperienceController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InitiativeController;
+use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
@@ -22,6 +23,8 @@ Route::get('/welcome', function () {
 });
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+
+Route::post('/set-locale', [LocaleController::class, 'set']);
 
 /**
  * Public contact form endpoint (landing page).
