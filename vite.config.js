@@ -1,56 +1,76 @@
-// vite.config.ts
-
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import laravel from 'laravel-vite-plugin';
 import path from 'path';
-import { defineConfig } from 'vite';
+import { fileURLToPath } from 'url';
+import { defineConfig, loadEnv } from 'vite';
 
 /**
- * Vite configuration for Laravel + Blade over LAN or Docker.
- * Uses a fixed dev host (0.0.0.0) and exposes HMR to the browser-facing host.
- * Enables CORS so the Blade page (different port) can load JS/CSS and @vite/client.
+ * Reconstructs directory context for ESM environment.
  */
-const HOST = process.env.VITE_HOST || 'localhost';
-const PORT = Number(process.env.VITE_PORT || 5173);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-export default defineConfig({
-    plugins: [
-        laravel({
-            input: ['resources/css/app.css', 'resources/js/app.js'],
-            refresh: true,
-        }),
-        react(),
-        tailwindcss(),
-    ],
-    resolve: {
-        alias: {
-            '@': path.resolve(__dirname, './resources/js/'),
-        },
-        dedupe: ['react', 'react-dom', 'react-i18next'],
-    },
-    server: {
-        host: '0.0.0.0',
-        port: PORT,
-        strictPort: true,
+export default defineConfig(({ mode }) => {
+    const env = loadEnv(mode, process.cwd(), '');
+    const host = env.VITE_HOST || 'localhost';
+    const port = parseInt(env.VITE_PORT || '5173');
 
-        // Allow the Blade origin to fetch assets from the Vite server (different port).
-        cors: {
-            origin: [`http://${HOST}`, 'http://localhost'],
-            credentials: false,
+    return {
+        plugins: [
+            laravel({
+                input: ['resources/css/app.css', 'resources/js/app.tsx'],
+                refresh: true,
+            }),
+            react(),
+            tailwindcss(),
+        ],
+        resolve: {
+            /**
+             * Forces resolution to a single instance of React packages.
+             * Required to prevent multiple instance errors in production builds.
+             */
+            dedupe: ['react', 'react-dom', 'react-i18next', 'i18next'],
+            alias: {
+                '@': path.resolve(__dirname, './resources/js/'),
+                react: path.resolve(__dirname, 'node_modules/react'),
+                'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
+            },
         },
-
-        // Extra safety for some proxy setups.
-        headers: {
-            'Access-Control-Allow-Origin': '*',
+        build: {
+            rollupOptions: {
+                output: {
+                    /**
+                     * Groups core dependencies into a shared vendor chunk.
+                     * Ensures consistent singleton behavior for React hooks and context.
+                     */
+                    manualChunks: (id) => {
+                        if (id.includes('node_modules')) {
+                            if (
+                                id.includes('react') ||
+                                id.includes('react-dom') ||
+                                id.includes('i18next') ||
+                                id.includes('@inertiajs')
+                            ) {
+                                return 'vendor-core';
+                            }
+                        }
+                    },
+                },
+            },
         },
-
-        // HMR: point to the host the browser actually uses to reach your machine.
-        hmr: {
-            host: HOST,
-            port: PORT,
-            protocol: 'ws',
-            clientPort: PORT,
+        server: {
+            host: '0.0.0.0',
+            port: port,
+            strictPort: true,
+            cors: {
+                origin: '*',
+                credentials: true,
+            },
+            hmr: {
+                host: host === 'localhost' ? 'localhost' : host,
+                clientPort: port,
+            },
         },
-    },
+    };
 });
