@@ -28,7 +28,6 @@ export default defineConfig(({ mode }) => {
         resolve: {
             /**
              * Forces resolution to a single instance of React packages.
-             * Required to prevent multiple instance errors in production builds.
              */
             dedupe: ['react', 'react-dom', 'react-i18next', 'i18next'],
             alias: {
@@ -41,10 +40,10 @@ export default defineConfig(({ mode }) => {
             rollupOptions: {
                 output: {
                     /**
-                     * Groups core dependencies into a shared vendor chunk.
-                     * Ensures consistent singleton behavior for React hooks and context.
+                     * Defines manual chunking strategies for vendor and internal core logic.
                      */
                     manualChunks: (id) => {
+                        // Strategy 1: External Vendor Core
                         if (id.includes('node_modules')) {
                             if (
                                 id.includes('react') ||
@@ -54,6 +53,12 @@ export default defineConfig(({ mode }) => {
                             ) {
                                 return 'vendor-core';
                             }
+                        }
+
+                        // Strategy 2: Internal I18n Core
+                        // Groups the i18n context definition and provider into a shared chunk.
+                        if (id.includes('resources/js/i18n')) {
+                            return 'app-i18n';
                         }
                     },
                 },
