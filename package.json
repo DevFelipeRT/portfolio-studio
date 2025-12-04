@@ -3,7 +3,7 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "build": "tsc && vite build && vite build --ssr",
+        "build": "tsc && cross-env ASSET_URL='' vite build && cross-env ASSET_URL='' vite build --ssr",
         "dev": "vite",
         "lint": "eslint resources/js --ext .js,.jsx,.ts,.tsx --ignore-path .gitignore --fix"
     },
@@ -21,6 +21,7 @@
         "autoprefixer": "^10.4.12",
         "axios": "^1.11.0",
         "concurrently": "^9.0.1",
+        "cross-env": "^10.1.0",
         "eslint": "^8.57.0",
         "eslint-config-prettier": "^9.1.0",
         "eslint-plugin-prettier": "^5.1.3",
