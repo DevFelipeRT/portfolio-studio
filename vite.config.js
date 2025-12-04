@@ -27,6 +27,7 @@ export default defineConfig({
         alias: {
             '@': path.resolve(__dirname, './resources/js/'),
         },
+        dedupe: ['react', 'react-dom', 'react-i18next'],
     },
     server: {
         host: '0.0.0.0',
