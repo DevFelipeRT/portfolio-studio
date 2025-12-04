@@ -3,8 +3,8 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "build": "tsc && cross-env ASSET_URL='' vite build && cross-env ASSET_URL='' vite build --ssr",
         "dev": "vite",
+        "build": "tsc && cross-env ASSET_URL='' vite build",
         "lint": "eslint resources/js --ext .js,.jsx,.ts,.tsx --ignore-path .gitignore --fix"
     },
     "devDependencies": {

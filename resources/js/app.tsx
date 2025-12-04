@@ -3,138 +3,87 @@ import './bootstrap';
 
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
-import { createRoot, hydrateRoot } from 'react-dom/client';
-
+import { createRoot } from 'react-dom/client';
 import { I18nProvider, createI18nEnvironment } from './i18n';
 
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+/**
+ * Default application name from environment variables.
+ */
+const defaultAppName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
-type LocalizationSharedProps = {
-    locale?: unknown;
+/**
+ * Mutable state to store the application owner name for the document title.
+ * Updated during the Inertia setup phase.
+ */
+let currentAppOwner: string | null = null;
+
+/**
+ * Structure of the initial page props injected by the backend.
+ */
+interface InertiaPageProps extends Record<string, unknown> {
+    locale?: string;
     localization?: {
-        currentLocale?: unknown;
-        supportedLocales?: unknown;
-        defaultLocale?: unknown;
-        fallbackLocale?: unknown;
+        currentLocale?: string;
+        supportedLocales?: string[];
+        defaultLocale?: string;
+        fallbackLocale?: string;
     };
-};
-
-type AppMetadataSharedProps = {
-    appOwner?: unknown;
-};
-
-let appOwner: string | null = null;
-
-function resolveInitialLocale(props: unknown): string | null {
-    const inertiaProps =
-        typeof props === 'object' && props !== null
-            ? (props as { initialPage?: { props?: Record<string, unknown> } })
-            : null;
-
-    const pageProps = inertiaProps?.initialPage?.props ?? {};
-
-    const locale = (pageProps as LocalizationSharedProps).locale;
-    if (typeof locale === 'string' && locale.trim() !== '') {
-        return locale;
-    }
-
-    const localization = (pageProps as LocalizationSharedProps).localization;
-    const currentLocale = localization?.currentLocale;
-    if (typeof currentLocale === 'string' && currentLocale.trim() !== '') {
-        return currentLocale;
-    }
-
-    const defaultLocale = localization?.defaultLocale;
-    if (typeof defaultLocale === 'string' && defaultLocale.trim() !== '') {
-        return defaultLocale;
-    }
-
-    return null;
+    appOwner?: string;
 }
 
-function resolveRuntimeLocalizationConfig(props: unknown): {
-    currentLocale: string | null;
-    supportedLocales?: unknown;
-    defaultLocale?: unknown;
-    fallbackLocale?: unknown;
-} {
-    const inertiaProps =
-        typeof props === 'object' && props !== null
-            ? (props as { initialPage?: { props?: Record<string, unknown> } })
-            : null;
-
-    const pageProps = inertiaProps?.initialPage?.props ?? {};
-    const shared = pageProps as LocalizationSharedProps;
-
-    const currentLocale = resolveInitialLocale(props) ?? null;
-
-    const localization = shared.localization ?? {};
-
-    return {
-        currentLocale,
-        supportedLocales: localization.supportedLocales,
-        defaultLocale: localization.defaultLocale,
-        fallbackLocale: localization.fallbackLocale,
-    };
-}
-
-function resolveAppOwner(props: unknown): string | null {
-    const inertiaProps =
-        typeof props === 'object' && props !== null
-            ? (props as { initialPage?: { props?: Record<string, unknown> } })
-            : null;
-
-    const pageProps = inertiaProps?.initialPage?.props ?? {};
-    const shared = pageProps as AppMetadataSharedProps;
-
-    if (typeof shared.appOwner === 'string' && shared.appOwner.trim() !== '') {
-        return shared.appOwner;
-    }
-
-    return null;
+/**
+ * Resolves the active locale based on the provided Inertia props hierarchy.
+ */
+function resolveInitialLocale(props: InertiaPageProps): string | undefined {
+    if (props.locale?.trim()) return props.locale;
+    if (props.localization?.currentLocale?.trim())
+        return props.localization.currentLocale;
+    return props.localization?.defaultLocale;
 }
 
 createInertiaApp({
     title: (title) => {
-        const base = appOwner && appOwner.trim() !== '' ? appOwner : appName;
-
-        return title ? `${title} | ${base}` : base;
+        const baseName = currentAppOwner?.trim()
+            ? currentAppOwner
+            : defaultAppName;
+        return title ? `${title} | ${baseName}` : baseName;
     },
+
     resolve: (name) =>
         resolvePageComponent(
             `./Pages/${name}.tsx`,
             import.meta.glob('./Pages/**/*.tsx'),
         ),
-    setup({ el, App, props }) {
-        appOwner = resolveAppOwner(props);
 
-        const runtimeLocalization = resolveRuntimeLocalizationConfig(props);
+    setup({ el, App, props }) {
+        const initialProps = props.initialPage.props as InertiaPageProps;
+
+        if (initialProps.appOwner) {
+            currentAppOwner = initialProps.appOwner;
+        }
+
+        const currentLocale = resolveInitialLocale(initialProps) ?? null;
+        const localizationConfig = initialProps.localization || {};
 
         const { localeResolver, translationResolver } = createI18nEnvironment({
-            supportedLocales: runtimeLocalization.supportedLocales,
-            defaultLocale:
-                runtimeLocalization.currentLocale ??
-                runtimeLocalization.defaultLocale,
-            fallbackLocale: runtimeLocalization.fallbackLocale,
+            supportedLocales: localizationConfig.supportedLocales,
+            defaultLocale: currentLocale,
+            fallbackLocale: localizationConfig.fallbackLocale,
         });
 
-        const app = (
+        const root = createRoot(el);
+
+        root.render(
             <I18nProvider
-                initialLocale={runtimeLocalization.currentLocale}
+                initialLocale={currentLocale}
                 localeResolver={localeResolver}
                 translationResolver={translationResolver}
             >
                 <App {...props} />
-            </I18nProvider>
+            </I18nProvider>,
         );
-
-        if (import.meta.env.SSR) {
-            hydrateRoot(el, app);
-            return;
-        }
-
-        createRoot(el).render(app);
     },
+
     progress: {
         color: '#4B5563',
     },
