@@ -24,7 +24,7 @@ export const defaultSocialLinks: SocialLinkItem[] = [
     {
         label: 'WhatsApp',
         translationKey: 'contact.socials.whatsapp.label',
-        href: 'https://wa.me/551973613744',
+        href: 'https://wa.me/5511973613744',
         icon: MessageCircle,
     },
     {
