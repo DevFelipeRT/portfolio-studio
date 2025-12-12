@@ -10,7 +10,7 @@ import {
     SocialLinkItem,
     SocialLinksBar,
 } from '../../../Components/SocialLinksBar';
-import { SectionHeader } from '../Partials/SectionHeader';
+import { SectionHeader } from '../../../Layouts/Partials/SectionHeader';
 
 export interface ContactSectionProps {
     socialLinks?: SocialLinkItem[];

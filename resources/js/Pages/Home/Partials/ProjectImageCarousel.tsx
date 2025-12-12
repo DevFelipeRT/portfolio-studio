@@ -5,18 +5,18 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/Components/Ui/dialog';
-import { ProjectImage } from '@/Pages/types';
+import type { ProjectImage } from '@/Pages/types';
 import { ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react';
 import { useState } from 'react';
 
 interface ProjectImageCarouselProps {
-    images: ProjectImage[];
+    images: ProjectImage[] | null | undefined;
     title: string;
 }
 
 /**
  * ProjectImageCarousel renders a simple image carousel inside the project card,
- * with optional zoom preview in a modal for the current image.
+ * with optional zoom preview in a modal for the currently selected image.
  */
 export function ProjectImageCarousel({
     images,
@@ -45,9 +45,17 @@ export function ProjectImageCarousel({
 
     const current = images[index];
 
-    const imageUrl = current.src.startsWith('http')
-        ? current.src
-        : `/storage/${current.src}`;
+    if (!current || !current.url) {
+        return (
+            <div className="bg-muted text-muted-foreground flex h-44 w-full items-center justify-center border-b text-xs sm:h-56 md:h-64">
+                No images available.
+            </div>
+        );
+    }
+
+    const imageUrl = current.url;
+    const imageAlt = current.alt_text || current.image_title || title;
+    const dialogTitle = current.alt_text || current.image_title || title;
 
     return (
         <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
@@ -55,7 +63,7 @@ export function ProjectImageCarousel({
                 <div className="h-full w-full">
                     <img
                         src={imageUrl}
-                        alt={current.alt || title}
+                        alt={imageAlt}
                         className="h-full w-full object-cover"
                         loading="lazy"
                     />
@@ -115,7 +123,7 @@ export function ProjectImageCarousel({
                             <div className="bg-background/50 mx-auto flex w-fit justify-center gap-1.5 rounded-full p-1 backdrop-blur">
                                 {images.map((image, dotIndex) => (
                                     <button
-                                        key={`${image.src}-${dotIndex}`}
+                                        key={`${image.id}-${dotIndex}`}
                                         type="button"
                                         aria-label={`Show image ${dotIndex + 1}`}
                                         onClick={() => setIndex(dotIndex)}
@@ -135,13 +143,13 @@ export function ProjectImageCarousel({
 
             <DialogContent className="max-w-3xl">
                 <DialogHeader>
-                    <DialogTitle>{current.alt || title}</DialogTitle>
+                    <DialogTitle>{dialogTitle}</DialogTitle>
                 </DialogHeader>
 
                 <div className="mt-2 flex max-h-[70vh] w-full items-center justify-center overflow-hidden rounded-md">
                     <img
                         src={imageUrl}
-                        alt={current.alt || title}
+                        alt={imageAlt}
                         className="max-h-[70vh] w-auto max-w-full object-contain"
                     />
                 </div>

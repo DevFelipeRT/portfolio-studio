@@ -1,10 +1,10 @@
 import { DateDisplay } from '@/Components/Ui/date-display'; // Importação adicionada
 import { useTranslation } from '@/i18n';
 import { Briefcase } from 'lucide-react';
-import { TimelineItem } from '../../../Components/TimelineItem';
-import { Experience } from '../../types';
-import { SectionHeader } from '../Partials/SectionHeader';
 import { JSX } from 'react';
+import { TimelineItem } from '../../../Components/TimelineItem';
+import { SectionHeader } from '../../../Layouts/Partials/SectionHeader';
+import { Experience } from '../../types';
 
 type ExperienceSectionProps = {
     experiences: Experience[];

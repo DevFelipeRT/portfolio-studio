@@ -64,6 +64,18 @@ export const navigationConfig: NavigationConfigItem[] = [
         fallbackLabel: 'Portfolio',
         children: [
             {
+                id: 'pages',
+                routeName: 'admin.content.pages.index',
+                translationKey: 'header.navigation.portfolioPages',
+                fallbackLabel: 'Pages',
+            },
+            {
+                id: 'images',
+                routeName: 'images.index',
+                translationKey: 'header.navigation.portfolioImages',
+                fallbackLabel: 'Images',
+            },
+            {
                 id: 'projects',
                 routeName: 'projects.index',
                 translationKey: 'header.navigation.portfolioProjects',

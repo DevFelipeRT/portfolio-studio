@@ -2,23 +2,15 @@ import '../css/app.css';
 import './bootstrap';
 
 import { createInertiaApp } from '@inertiajs/react';
-import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
 import { I18nProvider, createI18nEnvironment } from './i18n';
 
-/**
- * Default application name from environment variables.
- */
 const defaultAppName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
-/**
- * Mutable state to store the application owner name for the document title.
- * Updated during the Inertia setup phase.
- */
 let currentAppOwner: string | null = null;
 
 /**
- * Structure of the initial page props injected by the backend.
+ * Base shape for the initial Inertia page props.
  */
 interface InertiaPageProps extends Record<string, unknown> {
     locale?: string;
@@ -32,28 +24,97 @@ interface InertiaPageProps extends Record<string, unknown> {
 }
 
 /**
- * Resolves the active locale based on the provided Inertia props hierarchy.
+ * Resolves the initial locale based on the page props hierarchy.
  */
 function resolveInitialLocale(props: InertiaPageProps): string | undefined {
-    if (props.locale?.trim()) return props.locale;
-    if (props.localization?.currentLocale?.trim())
+    if (props.locale?.trim()) {
+        return props.locale;
+    }
+
+    if (props.localization?.currentLocale?.trim()) {
         return props.localization.currentLocale;
+    }
+
     return props.localization?.defaultLocale;
 }
+
+// Application-level pages: resources/js/Pages/**/*.tsx
+const appPageFiles = import.meta.glob('./Pages/**/*.tsx');
+
+// Module-level pages: resources/js/Modules/**/Pages/**/*.tsx
+const modulePageFiles = import.meta.glob('./Modules/**/Pages/**/*.tsx');
+
+type PageModuleLoader = () => Promise<unknown>;
+
+/**
+ * Registry of all Inertia pages keyed by their logical component name.
+ */
+const pageRegistry: Record<string, PageModuleLoader> = {};
+
+/**
+ * Registers pages from a file map into the global page registry.
+ *
+ * Example mappings:
+ *   "./Pages/Dashboard.tsx"                         → "Dashboard"
+ *   "./Pages/Projects/Index.tsx"                    → "Projects/Index"
+ *   "./Modules/ContentManagement/Pages/Admin/X.tsx" → "ContentManagement/Pages/Admin/X"
+ */
+function registerPages(
+    files: Record<string, PageModuleLoader>,
+    prefix: string,
+): void {
+    Object.entries(files).forEach(([path, loader]) => {
+        if (!path.startsWith(prefix)) {
+            return;
+        }
+
+        const withoutPrefix = path.slice(prefix.length);
+        const withoutExtension = withoutPrefix.replace(/\.tsx$/, '');
+
+        const componentName = withoutExtension;
+
+        pageRegistry[componentName] = loader;
+    });
+}
+
+registerPages(appPageFiles, './Pages/');
+registerPages(modulePageFiles, './Modules/');
 
 createInertiaApp({
     title: (title) => {
         const baseName = currentAppOwner?.trim()
             ? currentAppOwner
             : defaultAppName;
+
         return title ? `${title} | ${baseName}` : baseName;
     },
 
-    resolve: (name) =>
-        resolvePageComponent(
-            `./Pages/${name}.tsx`,
-            import.meta.glob('./Pages/**/*.tsx'),
-        ),
+    /**
+     * Resolves an Inertia component name to a React component using
+     * the normalized page registry.
+     *
+     * Expected backend usage:
+     *   Inertia::render('Dashboard', [...]);
+     *   Inertia::render('Projects/Index', [...]);
+     *   Inertia::render('ContentManagement/Pages/Admin/PageEdit', [...]);
+     */
+    resolve: async (name) => {
+        const loader = pageRegistry[name];
+
+        if (!loader) {
+            throw new Error(`Page not found in registry: ${name}`);
+        }
+
+        const pageModule: any = await loader();
+
+        if (!pageModule?.default) {
+            throw new Error(
+                `Resolved module for "${name}" does not have a default export.`,
+            );
+        }
+
+        return pageModule.default;
+    },
 
     setup({ el, App, props }) {
         const initialProps = props.initialPage.props as InertiaPageProps;

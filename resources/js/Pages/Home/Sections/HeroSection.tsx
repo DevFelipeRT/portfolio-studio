@@ -5,7 +5,7 @@ import {
     SocialLinkItem,
     SocialLinksBar,
 } from '../../../Components/SocialLinksBar';
-import { SectionHeader } from '../Partials/SectionHeader';
+import { SectionHeader } from '../../../Layouts/Partials/SectionHeader';
 
 /**
  * HeroSection renders the main hero block for the portfolio landing page.

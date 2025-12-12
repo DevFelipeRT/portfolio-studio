@@ -1,7 +1,7 @@
 // resources/js/Pages/Home/Sections/TechStackSection.tsx
 import { TechnologyGroup } from '@/Pages/types';
 import { useTranslation } from '@/i18n';
-import { SectionHeader } from '../Partials/SectionHeader';
+import { SectionHeader } from '../../../Layouts/Partials/SectionHeader';
 import { TechnologyBadge } from '../Partials/TechnologyBadge';
 
 type TechStackSectionProps = {

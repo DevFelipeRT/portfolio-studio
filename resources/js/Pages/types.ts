@@ -13,12 +13,55 @@ export interface TechnologyGroup {
     id: string;
     title: string;
     technologies: Technology[];
-};
+}
 
-export interface ProjectImage extends HasTimestamps {
+/**
+ * Base image representation aligned with the backend Image model and mappers.
+ * Used both in global contexts (Images/Index) and as the base for domain-specific images.
+ */
+export interface Image extends HasTimestamps {
     id: number;
-    src: string;
-    alt: string;
+
+    /**
+     * Storage metadata.
+     */
+    storage_disk: string | null;
+    storage_path: string | null;
+    original_filename: string | null;
+    mime_type: string | null;
+    file_size_bytes: number | null;
+    image_width: number | null;
+    image_height: number | null;
+
+    /**
+     * Presentation metadata.
+     */
+    alt_text: string | null;
+    image_title: string | null;
+    caption: string | null;
+
+    /**
+     * Resolved public URL provided by the backend.
+     */
+    url: string | null;
+}
+
+/**
+ * Image as used in the project domain, including relation metadata.
+ */
+export interface ProjectImage extends Image {
+    position: number;
+    is_cover: boolean;
+    caption: string | null;
+}
+
+/**
+ * Image as used in the initiative domain, including relation metadata.
+ */
+export interface InitiativeImage extends Image {
+    position: number;
+    is_cover: boolean;
+    caption: string | null;
 }
 
 export interface Project extends HasTimestamps {
@@ -56,13 +99,6 @@ export interface Course extends HasTimestamps {
     started_at: string;
     completed_at: string | null;
     display: boolean;
-}
-
-export interface InitiativeImage extends HasTimestamps {
-    id: number;
-    initiative_id: number;
-    src: string;
-    alt: string | null;
 }
 
 export interface Initiative extends HasTimestamps {

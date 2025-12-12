@@ -3,9 +3,9 @@ import { Badge } from '@/Components/Ui/badge';
 import { DateDisplay } from '@/Components/Ui/date-display';
 import { useTranslation } from '@/i18n';
 import { GraduationCap } from 'lucide-react';
-import { Course } from '../../types';
-import { SectionHeader } from '../Partials/SectionHeader';
 import { JSX } from 'react';
+import { SectionHeader } from '../../../Layouts/Partials/SectionHeader';
+import { Course } from '../../types';
 
 type EducationSectionProps = {
     courses: Course[];
@@ -28,7 +28,6 @@ function CoursePeriodDisplay({
     locale: string;
     presentLabel: string;
 }): JSX.Element {
-    // Assumption: Course type includes 'started_at' as a required date string
     const startDateDisplay = (
         <DateDisplay
             value={course.started_at}
