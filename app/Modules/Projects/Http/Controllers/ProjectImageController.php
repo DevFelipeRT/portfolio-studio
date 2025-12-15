@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Projects\Http\Controllers;
 
-use App\Modules\Shared\Abstractions\Base\Controller;
+use App\Modules\Shared\Abstractions\Http\Controller;
 use App\Modules\Projects\Domain\Models\Project;
 use App\Modules\Projects\Application\Services\ProjectImageService;
 use App\Modules\Projects\Http\Requests\ProjectImage\StoreProjectImageRequest;

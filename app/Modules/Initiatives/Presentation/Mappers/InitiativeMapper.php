@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Initiatives\Presentation\Mappers;
 
-use App\Modules\Shared\Abstractions\Base\Mapper;
+use App\Modules\Shared\Abstractions\Mapping\Mapper;
 use App\Modules\Initiatives\Domain\Models\Initiative;
 use App\Modules\Images\Domain\Models\Image;
 

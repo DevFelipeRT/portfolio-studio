@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\ContentManagement\Http\Controllers\Public;
 
-use App\Modules\Shared\Abstractions\Base\Controller;
+use App\Modules\Shared\Abstractions\Http\Controller;
 use App\Modules\ContentManagement\Presentation\Presenters\PagePresenter;
 use Illuminate\Http\Request;
 use Inertia\Inertia;

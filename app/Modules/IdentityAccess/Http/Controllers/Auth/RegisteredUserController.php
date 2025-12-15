@@ -2,7 +2,7 @@
 
 // namespace App\Modules\IdentityAccess\Http\Controllers\Auth;
 
-// use App\Modules\Shared\Abstractions\Base\Controller;
+// use App\Modules\Shared\Abstractions\Http\Controller;
 // use App\Modules\IdentityAccess\Domain\Models\User;
 // use Illuminate\Auth\Events\Registered;
 // use Illuminate\Http\RedirectResponse;

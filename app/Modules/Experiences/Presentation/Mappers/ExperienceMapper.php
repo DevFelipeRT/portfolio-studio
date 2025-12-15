@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Experiences\Presentation\Mappers;
 
-use App\Modules\Shared\Abstractions\Base\Mapper;
+use App\Modules\Shared\Abstractions\Mapping\Mapper;
 use App\Modules\Experiences\Domain\Models\Experience;
 
 final class ExperienceMapper extends Mapper

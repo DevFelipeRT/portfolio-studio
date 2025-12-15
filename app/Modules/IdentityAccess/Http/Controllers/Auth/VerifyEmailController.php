@@ -2,7 +2,7 @@
 
 namespace App\Modules\IdentityAccess\Http\Controllers\Auth;
 
-use App\Modules\Shared\Abstractions\Base\Controller;
+use App\Modules\Shared\Abstractions\Http\Controller;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\RedirectResponse;

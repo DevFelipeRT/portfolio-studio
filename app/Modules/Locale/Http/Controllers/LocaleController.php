@@ -2,7 +2,7 @@
 
 namespace App\Modules\Locale\Http\Controllers;
 
-use App\Modules\Shared\Abstractions\Base\Controller;
+use App\Modules\Shared\Abstractions\Http\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 

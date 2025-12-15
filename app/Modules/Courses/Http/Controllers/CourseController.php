@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Courses\Http\Controllers;
 
-use App\Modules\Shared\Abstractions\Base\Controller;
+use App\Modules\Shared\Abstractions\Http\Controller;
 use App\Modules\Courses\Domain\Enums\CourseCategories;
 use App\Modules\Courses\Domain\Models\Course;
 use App\Modules\Courses\Application\Services\CourseService;

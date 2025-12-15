@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Experiences\Http\Controllers;
 
-use App\Modules\Shared\Abstractions\Base\Controller;
+use App\Modules\Shared\Abstractions\Http\Controller;
 use App\Modules\Experiences\Domain\Models\Experience;
 use App\Modules\Experiences\Application\Services\ExperienceService;
 use App\Modules\Experiences\Http\Requests\Experience\StoreExperienceRequest;

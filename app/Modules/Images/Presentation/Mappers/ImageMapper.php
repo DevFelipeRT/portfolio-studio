@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Images\Presentation\Mappers;
 
-use App\Modules\Shared\Abstractions\Base\Mapper;
+use App\Modules\Shared\Abstractions\Mapping\Mapper;
 use App\Modules\Images\Domain\Models\Image;
 
 final class ImageMapper extends Mapper

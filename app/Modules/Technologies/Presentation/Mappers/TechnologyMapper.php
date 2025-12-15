@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Technologies\Presentation\Mappers;
 
-use App\Modules\Shared\Abstractions\Base\Mapper;
+use App\Modules\Shared\Abstractions\Mapping\Mapper;
 use App\Modules\Technologies\Domain\Models\Technology;
 use App\Modules\Technologies\Domain\Enums\TechnologyCategories;
 

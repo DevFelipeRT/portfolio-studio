@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Home;
 
-use App\Modules\Shared\Abstractions\Base\Controller;
+use App\Modules\Shared\Abstractions\Http\Controller;
 
 use App\Modules\Courses\Application\Services\CourseService;
 use App\Modules\Courses\Presentation\Mappers\CourseMapper;

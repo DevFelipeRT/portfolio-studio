@@ -2,7 +2,7 @@
 
 namespace App\Modules\Courses\Domain\Enums;
 
-use App\Modules\Shared\Abstractions\Interfaces\IEnum;
+use App\Modules\Shared\Contracts\Enums\IEnum;
 use App\Modules\Shared\Support\Enums\CommonEnumMethods;
 
 /**

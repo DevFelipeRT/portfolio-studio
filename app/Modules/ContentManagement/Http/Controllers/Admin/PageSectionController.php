@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\ContentManagement\Http\Controllers\Admin;
 
-use App\Modules\Shared\Abstractions\Base\Controller;
+use App\Modules\Shared\Abstractions\Http\Controller;
 use App\Modules\ContentManagement\Application\Services\PageSectionService;
 use App\Modules\ContentManagement\Application\Services\PageService;
 use App\Modules\ContentManagement\Domain\Models\PageSection;

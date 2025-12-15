@@ -2,7 +2,7 @@
 
 namespace App\Modules\IdentityAccess\Http\Controllers;
 
-use App\Modules\Shared\Abstractions\Base\Controller;
+use App\Modules\Shared\Abstractions\Http\Controller;
 use App\Modules\IdentityAccess\Http\Requests\ProfileUpdateRequest;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;

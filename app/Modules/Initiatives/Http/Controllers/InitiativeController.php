@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Initiatives\Http\Controllers;
 
-use App\Modules\Shared\Abstractions\Base\Controller;
+use App\Modules\Shared\Abstractions\Http\Controller;
 use App\Modules\Initiatives\Domain\Models\Initiative;
 use App\Modules\Initiatives\Application\Services\InitiativeService;
 use App\Modules\Initiatives\Http\Requests\Initiative\StoreInitiativeRequest;

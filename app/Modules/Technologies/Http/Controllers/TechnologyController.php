@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Technologies\Http\Controllers;
 
-use App\Modules\Shared\Abstractions\Base\Controller;
+use App\Modules\Shared\Abstractions\Http\Controller;
 use App\Modules\Technologies\Domain\Models\Technology;
 use App\Modules\Technologies\Domain\Enums\TechnologyCategories;
 use App\Modules\Technologies\Application\Services\TechnologyService;

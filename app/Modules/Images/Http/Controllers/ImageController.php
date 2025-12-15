@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Images\Http\Controllers;
 
-use App\Modules\Shared\Abstractions\Base\Controller;
+use App\Modules\Shared\Abstractions\Http\Controller;
 use App\Modules\Images\Domain\Models\Image;
 use App\Modules\Images\Application\Services\ImageService;
 use App\Modules\Images\Http\Requests\Image\BulkDestroyImageRequest;
