@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Shared\Abstractions\Base;
+namespace App\Modules\Shared\Abstractions\Mapping;
 
+use App\Modules\Shared\Contracts\Enums\IEnum;
 use Carbon\CarbonInterface;
 use InvalidArgumentException;
 
@@ -104,7 +105,7 @@ abstract class Mapper
     /**
      * Get enum label.
      */
-    protected static function getEnumLabel(?\App\Enums\IEnum $enum): ?string
+    protected static function getEnumLabel(?IEnum $enum): ?string
     {
         return $enum?->label();
     }

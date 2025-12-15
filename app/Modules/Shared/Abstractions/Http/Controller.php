@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Shared\Abstractions\Base;
+namespace App\Modules\Shared\Abstractions\Http;
 
+use App\Modules\Shared\Abstractions\Mapping\Mapper;
 use Illuminate\Support\Collection;
 use LogicException;
 use InvalidArgumentException;

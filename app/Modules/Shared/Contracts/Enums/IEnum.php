@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Shared\Abstractions\Interfaces;
+namespace App\Modules\Shared\Contracts\Enums;
 
 interface IEnum {
     /**
