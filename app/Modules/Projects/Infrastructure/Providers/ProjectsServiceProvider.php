@@ -2,17 +2,24 @@
 
 namespace App\Modules\Projects\Infrastructure\Providers;
 
+use App\Modules\Projects\Application\Capabilities\Providers\VisibleProjects;
+use App\Modules\Shared\Support\Capabilities\Traits\RegisterCapabilitiesTrait;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
 
 class ProjectsServiceProvider extends ServiceProvider
 {
+    use RegisterCapabilitiesTrait;
+
     /**
      * Register any services.
      */
     public function register(): void
     {
         $this->registerBindings();
+        $this->registerCapabilitiesIfAvailable([
+            VisibleProjects::class,
+        ]);
     }
 
     /**
