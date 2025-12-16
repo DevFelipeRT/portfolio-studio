@@ -5,17 +5,13 @@ declare(strict_types=1);
 namespace App\Modules\Images\Application\Services;
 
 use App\Modules\Images\Domain\Models\Image;
-
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
 /**
- * Infrastructure service for managing image records and stored files.
- *
- * This service provides global operations (admin listing, metadata update,
- * full deletion) and low-level file handling.
+ * Service responsible for managing image records and stored files.
  */
 class ImageService
 {
@@ -25,17 +21,18 @@ class ImageService
      * Paginate images with optional filters.
      *
      * Supported filters:
-     * - search        : string|null
-     * - usage         : "orphans"|"projects"|"initiatives"|null
-     * - mime_type     : string|null
-     * - storage_disk  : string|null
+     * - search       : string|null  (matches filename, title, alt text or caption)
+     * - usage        : string|null  ("orphans"|"used")
+     * - owner_type   : string|null  (attachment owner type, FQCN or morph alias)
+     * - mime_type    : string|null
+     * - storage_disk : string|null
      *
      * @param array<string,mixed> $filters
      */
     public function paginate(array $filters, int $perPage): LengthAwarePaginator
     {
         $query = Image::query()
-            ->withCount(['projects', 'initiatives']);
+            ->withCount('attachments');
 
         $search = $filters['search'] ?? null;
         if (\is_string($search) && $search !== '') {
@@ -49,11 +46,16 @@ class ImageService
 
         $usage = $filters['usage'] ?? null;
         if ($usage === 'orphans') {
-            $query->doesntHave('projects')->doesntHave('initiatives');
-        } elseif ($usage === 'projects') {
-            $query->whereHas('projects');
-        } elseif ($usage === 'initiatives') {
-            $query->whereHas('initiatives');
+            $query->doesntHave('attachments');
+        } elseif ($usage === 'used') {
+            $query->has('attachments');
+        }
+
+        $ownerType = $filters['owner_type'] ?? null;
+        if (\is_string($ownerType) && $ownerType !== '') {
+            $query->whereHas('attachments', static function ($q) use ($ownerType): void {
+                $q->where('owner_type', $ownerType);
+            });
         }
 
         $mimeType = $filters['mime_type'] ?? null;
@@ -72,16 +74,13 @@ class ImageService
     }
 
     /**
-     * Load the image with its project and initiative associations.
+     * Load the image with its attachments ordered by position.
      */
     public function loadUsage(Image $image): Image
     {
         return $image->load([
-            'projects' => static function ($query): void {
-                $query->withPivot(['position', 'is_cover', 'caption']);
-            },
-            'initiatives' => static function ($query): void {
-                $query->withPivot(['position', 'is_cover', 'caption']);
+            'attachments' => static function ($query): void {
+                $query->orderBy('position');
             },
         ]);
     }
@@ -99,15 +98,11 @@ class ImageService
     }
 
     /**
-     * Delete an image and all its associations, regardless of usage.
-     *
-     * This operation detaches the image from projects and initiatives,
-     * deletes the stored file when present and removes the Image record.
+     * Delete an image and all its attachments.
      */
     public function deleteCompletely(Image $image): void
     {
-        $image->projects()->detach();
-        $image->initiatives()->detach();
+        $image->attachments()->delete();
 
         $this->deleteStoredFile($image);
 
@@ -115,7 +110,7 @@ class ImageService
     }
 
     /**
-     * Delete multiple images and their associations in a single operation.
+     * Delete multiple images and their attachments in a single operation.
      *
      * @param array<int,int> $ids
      */
@@ -132,14 +127,13 @@ class ImageService
     }
 
     /**
-     * Delete the Image and its stored file when it is no longer associated with any owner.
+     * Delete the image when it has no attachments.
      */
     public function deleteIfOrphan(Image $image): void
     {
-        $isUsedByProjects = $image->projects()->exists();
-        $isUsedByInitiatives = $image->initiatives()->exists();
+        $hasAttachments = $image->attachments()->exists();
 
-        if ($isUsedByProjects || $isUsedByInitiatives) {
+        if ($hasAttachments) {
             return;
         }
 
@@ -149,7 +143,7 @@ class ImageService
     }
 
     /**
-     * Create a new Image record from an uploaded file and store the file.
+     * Create a new image record from an uploaded file and store the file.
      *
      * @param array<string,mixed> $imageAttributes
      */
@@ -169,14 +163,11 @@ class ImageService
         $data = [
             'storage_disk' => $disk,
             'storage_path' => $storagePath,
-            'original_filename' => $file->getClientOriginalName(),
             'mime_type' => $file->getClientMimeType(),
             'file_size_bytes' => $file->getSize(),
             'image_width' => $width,
             'image_height' => $height,
-            'alt_text' => null,
-            'image_title' => null,
-            'caption' => null,
+            'original_filename' => $file->getClientOriginalName(),
         ];
 
         $data = \array_merge($data, $imageAttributes);
@@ -185,7 +176,7 @@ class ImageService
     }
 
     /**
-     * Replace the stored file associated with an Image.
+     * Replace the stored file associated with an image.
      */
     public function replaceFile(
         Image $image,
@@ -204,7 +195,6 @@ class ImageService
 
         $image->storage_disk = $disk;
         $image->storage_path = $storagePath;
-        $image->original_filename = $file->getClientOriginalName();
         $image->mime_type = $file->getClientMimeType();
         $image->file_size_bytes = $file->getSize();
         $image->image_width = $width;
@@ -214,7 +204,7 @@ class ImageService
     }
 
     /**
-     * Delete the stored file associated with the image, if any.
+     * Delete the stored file associated with the image when present.
      */
     private function deleteStoredFile(Image $image): void
     {
