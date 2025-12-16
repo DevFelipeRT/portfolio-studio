@@ -10,7 +10,6 @@ use App\Modules\Initiatives\Application\Services\InitiativeService;
 use App\Modules\Initiatives\Presentation\Mappers\InitiativeMapper;
 use App\Modules\Projects\Application\Services\ProjectService;
 use App\Modules\Projects\Presentation\Mappers\ProjectMapper;
-use App\Modules\Technologies\Application\Services\TechnologyService;
 
 use Inertia\Inertia;
 use Inertia\Response;
@@ -20,7 +19,6 @@ final class HomeController extends Controller
 {
     public function __construct(
         private readonly ProjectService $projectService,
-        private readonly TechnologyService $techService,
         private readonly InitiativeService $initiativeService,
         private readonly HomeService $homeService,
     ) {
