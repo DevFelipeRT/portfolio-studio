@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Experiences\Infrastructure\Providers;
 
-use App\Modules\Experiences\Application\Services\ExperienceService;
+use App\Modules\Experiences\Application\Capabilities\Providers\VisibleExperiences;
 use App\Modules\Shared\Support\Capabilities\Traits\RegisterCapabilitiesTrait;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
@@ -23,7 +23,7 @@ final class ExperiencesServiceProvider extends ServiceProvider
     {
         $this->registerBindings();
         $this->registerCapabilitiesIfAvailable([
-            ExperienceService::class,
+            VisibleExperiences::class,
         ]);
     }
 
