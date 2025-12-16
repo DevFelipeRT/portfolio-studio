@@ -6,14 +6,11 @@ namespace App\Modules\Home;
 
 use App\Modules\Shared\Abstractions\Http\Controller;
 
-use App\Modules\Courses\Application\Services\CourseService;
-use App\Modules\Courses\Presentation\Mappers\CourseMapper;
 use App\Modules\Initiatives\Application\Services\InitiativeService;
 use App\Modules\Initiatives\Presentation\Mappers\InitiativeMapper;
 use App\Modules\Projects\Application\Services\ProjectService;
 use App\Modules\Projects\Presentation\Mappers\ProjectMapper;
 use App\Modules\Technologies\Application\Services\TechnologyService;
-use App\Modules\Technologies\Presentation\Mappers\TechnologyMapper;
 
 use Inertia\Inertia;
 use Inertia\Response;
