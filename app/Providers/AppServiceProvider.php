@@ -13,8 +13,10 @@ use App\Modules\Mail\Infrastructure\Providers\MailServiceProvider;
 use App\Modules\Projects\Infrastructure\Providers\ProjectsServiceProvider;
 use App\Modules\Technologies\Domain\Enums\TechnologyCategories;
 use App\Modules\Technologies\Infrastructure\Providers\TechnologiesServiceProvider;
-use Illuminate\Support\Facades\Vite;
+
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Vite;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Inertia\Inertia;
 
 class AppServiceProvider extends ServiceProvider
@@ -50,6 +52,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Relation::enforceMorphMap(
+            config('image_owners.morph_map', [])
+        );
+
         Vite::prefetch(concurrency: 3);
 
         Inertia::share([
