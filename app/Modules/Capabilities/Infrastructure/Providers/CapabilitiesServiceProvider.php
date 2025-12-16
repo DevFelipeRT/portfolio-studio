@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\Capabilities\Infrastructure\Providers;
 
+use App\Modules\Capabilities\Application\Services\CapabilitiesFactory;
 use App\Modules\Capabilities\Application\Services\CapabilityCatalogService;
 use App\Modules\Capabilities\Domain\Services\CapabilityParameterValidator;
 use App\Modules\Capabilities\Domain\Services\CapabilityRegistry;
 use App\Modules\Capabilities\Domain\Services\CapabilityResolver;
+use App\Modules\Shared\Contracts\Capabilities\ICapabilitiesFactory;
 use App\Modules\Shared\Contracts\Capabilities\ICapabilityCatalog;
 use App\Modules\Shared\Contracts\Capabilities\ICapabilityDataResolver;
 use Illuminate\Support\ServiceProvider;
@@ -39,6 +41,10 @@ final class CapabilitiesServiceProvider extends ServiceProvider
                 $strictTypes,
                 $allowUnknownParameters,
             );
+        });
+
+        $this->app->singleton(ICapabilitiesFactory::class, function () {
+            return new CapabilitiesFactory();
         });
 
         $this->app->singleton(ICapabilityCatalog::class, function () {
