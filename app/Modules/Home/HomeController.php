@@ -23,7 +23,6 @@ final class HomeController extends Controller
 {
     public function __construct(
         private readonly ProjectService $projectService,
-        private readonly CourseService $courseService,
         private readonly TechnologyService $techService,
         private readonly InitiativeService $initiativeService,
         private readonly HomeService $homeService,
@@ -37,7 +36,6 @@ final class HomeController extends Controller
     {
         $resources = [
             'projects' => [$this->projectService, ProjectMapper::class],
-            'courses' => [$this->courseService, CourseMapper::class],
             'initiatives' => [$this->initiativeService, InitiativeMapper::class],
         ];
 
@@ -47,7 +45,8 @@ final class HomeController extends Controller
         $techGroups = $this->techService->groupedByCategory()->all();
         $data['technologies'] = TechnologyMapper::groupedByCategory($techGroups);
 
-        $data['experiences'] = $this->homeService->loadVisibleExperiences(3);
+        $data['experiences'] = $this->homeService->loadVisibleExperiences();
+        $data['courses'] = $this->homeService->loadVisibleCourses();
 
         VarDumper::dump($data);
 

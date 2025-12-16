@@ -36,4 +36,19 @@ final class HomeService
 
         return \is_array($result) ? $result : [];
     }
+
+    public function loadVisibleCourses(int $limit = 3): array
+    {
+        $key = $this->capabilitiesFactory->createKey('courses.visible.v1');
+
+        $result = $this->dataResolver->resolve(
+            $key,
+            [
+                'limit' => $limit,
+            ],
+        );
+
+        return \is_array($result) ? $result : [];
+    }
+
 }
