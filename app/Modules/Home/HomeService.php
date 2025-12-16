@@ -23,7 +23,7 @@ final class HomeService
      *
      * @return array<int, array<string, mixed>>
      */
-    public function loadVisibleExperiences(int $limit = 3): array
+    public function loadVisibleExperiences(?int $limit = null): array
     {
         $key = $this->capabilitiesFactory->createKey('experiences.visible.v1');
 
@@ -37,7 +37,7 @@ final class HomeService
         return \is_array($result) ? $result : [];
     }
 
-    public function loadVisibleCourses(int $limit = 3): array
+    public function loadVisibleCourses(?int $limit = null): array
     {
         $key = $this->capabilitiesFactory->createKey('courses.visible.v1');
 
@@ -60,7 +60,7 @@ final class HomeService
      *     technologies: array<int, array{id: int, name: string}>
      * }>
      */
-    public function loadTechnologiesByCategory(): array
+    public function loadTechnologiesByCategory(?int $limit = null): array
     {
         $key = $this->capabilitiesFactory->createKey(
             'technologies.grouped_by_category.v1',
@@ -68,15 +68,31 @@ final class HomeService
 
         $result = $this->dataResolver->resolve(
             $key,
-            [],
+            [
+                'limit' => $limit,
+            ],
         );
 
         return \is_array($result) ? $result : [];
     }
 
-    public function loadVisibleInitiatives(int $limit = 3): array
+    public function loadVisibleInitiatives(?int $limit = null): array
     {
         $key = $this->capabilitiesFactory->createKey('initiatives.visible.v1');
+
+        $result = $this->dataResolver->resolve(
+            $key,
+            [
+                'limit' => $limit,
+            ],
+        );
+
+        return \is_array($result) ? $result : [];
+    }
+
+    public function loadVisibleProjects(?int $limit = null): array
+    {
+        $key = $this->capabilitiesFactory->createKey('projects.visible.v1');
 
         $result = $this->dataResolver->resolve(
             $key,
