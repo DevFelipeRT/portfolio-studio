@@ -3,18 +3,26 @@
 namespace App\Modules\Technologies\Infrastructure\Providers;
 
 use App\Modules\Technologies\Domain\Enums\TechnologyCategories;
+use App\Modules\Technologies\Application\Capabilities\Providers\TechnologiesByCategory;
+
+use App\Modules\Shared\Support\Capabilities\Traits\RegisterCapabilitiesTrait;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 class TechnologiesServiceProvider extends ServiceProvider
 {
+    use RegisterCapabilitiesTrait;
+
     /**
      * Register any services.
      */
     public function register(): void
     {
         $this->registerBindings();
+        $this->registerCapabilitiesIfAvailable([
+            TechnologiesByCategory::class,
+        ]);
     }
 
     /**
