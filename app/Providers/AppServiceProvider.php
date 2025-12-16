@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Modules\Capabilities\Infrastructure\Providers\CapabilitiesServiceProvider;
 use App\Modules\ContentManagement\Infrastructure\Providers\ContentManagementServiceProvider;
 use App\Modules\Courses\Infrastructure\Providers\CoursesServiceProvider;
 use App\Modules\Experiences\Infrastructure\Providers\ExperiencesServiceProvider;
@@ -23,6 +24,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        $this->app->register(CapabilitiesServiceProvider::class);
+
         $this->app->register(ContentManagementServiceProvider::class);
 
         $this->app->register(CoursesServiceProvider::class);
