@@ -6,8 +6,6 @@ namespace App\Modules\Home;
 
 use App\Modules\Shared\Abstractions\Http\Controller;
 
-use App\Modules\Initiatives\Application\Services\InitiativeService;
-use App\Modules\Initiatives\Presentation\Mappers\InitiativeMapper;
 use App\Modules\Projects\Application\Services\ProjectService;
 use App\Modules\Projects\Presentation\Mappers\ProjectMapper;
 
@@ -19,7 +17,6 @@ final class HomeController extends Controller
 {
     public function __construct(
         private readonly ProjectService $projectService,
-        private readonly InitiativeService $initiativeService,
         private readonly HomeService $homeService,
     ) {
     }
@@ -31,7 +28,6 @@ final class HomeController extends Controller
     {
         $resources = [
             'projects' => [$this->projectService, ProjectMapper::class],
-            'initiatives' => [$this->initiativeService, InitiativeMapper::class],
         ];
 
         $data = $this->mapResources($resources, 'visible');
@@ -39,6 +35,7 @@ final class HomeController extends Controller
         $data['experiences'] = $this->homeService->loadVisibleExperiences();
         $data['courses'] = $this->homeService->loadVisibleCourses();
         $data['technologies'] = $this->homeService->loadTechnologiesByCategory();
+        $data['initiatives'] = $this->homeService->loadVisibleInitiatives();
 
         VarDumper::dump($data);
 
