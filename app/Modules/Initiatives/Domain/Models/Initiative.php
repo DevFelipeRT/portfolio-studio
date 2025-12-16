@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace App\Modules\Initiatives\Domain\Models;
 
 use App\Modules\Images\Domain\Models\Image;
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 /**
  * Represents a portfolio initiative.
@@ -49,12 +48,21 @@ class Initiative extends Model
     /**
      * Images associated with the initiative.
      *
-     * @return BelongsToMany<Image>
+     * Pivot table: image_attachments
+     * Pivot fields: position, is_cover, caption
+     *
+     * @return MorphToMany<Image>
      */
-    public function images(): BelongsToMany
+    public function images(): MorphToMany
     {
         return $this
-            ->belongsToMany(Image::class, 'initiative_images')
+            ->morphToMany(
+                Image::class,
+                'owner',
+                'image_attachments',
+                'owner_id',
+                'image_id',
+            )
             ->withPivot([
                 'position',
                 'is_cover',

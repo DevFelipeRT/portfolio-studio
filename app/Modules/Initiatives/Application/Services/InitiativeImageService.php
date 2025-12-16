@@ -7,7 +7,6 @@ namespace App\Modules\Initiatives\Application\Services;
 use App\Modules\Initiatives\Domain\Models\Initiative;
 use App\Modules\Images\Domain\Models\Image;
 use App\Modules\Images\Application\Services\ImageService;
-
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection as SupportCollection;
@@ -18,6 +17,9 @@ use Illuminate\Support\Collection as SupportCollection;
 class InitiativeImageService
 {
     private const DIRECTORY = 'initiatives';
+    private const TABLE = 'image_attachments';
+    private const ORDER_BY = 'position';
+
 
     public function __construct(
         private readonly ImageService $imageService,
@@ -34,7 +36,7 @@ class InitiativeImageService
         /** @var EloquentCollection<int,Image> $images */
         $images = $initiative
             ->images()
-            ->orderBy('initiative_images.position')
+            ->orderBy(self::TABLE . '.'. self::ORDER_BY)
             ->get();
 
         return $images;
