@@ -6,13 +6,13 @@ namespace App\Modules\Projects\Domain\Models;
 
 use App\Modules\Images\Domain\Models\Image;
 use App\Modules\Technologies\Domain\Models\Technology;
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 /**
- * Represents a portfolio project.
+ * Eloquent model representing a portfolio project.
  */
 class Project extends Model
 {
@@ -40,17 +40,27 @@ class Project extends Model
      */
     protected $casts = [
         'id' => 'integer',
+        'display' => 'boolean',
     ];
 
     /**
      * Images associated with the project.
      *
-     * @return BelongsToMany<Image>
+     * Pivot table: image_attachments
+     * Pivot fields: position, is_cover, caption
+     *
+     * @return MorphToMany<Image>
      */
-    public function images(): BelongsToMany
+    public function images(): MorphToMany
     {
         return $this
-            ->belongsToMany(Image::class, 'project_images')
+            ->morphToMany(
+                Image::class,
+                'owner',
+                'image_attachments',
+                'owner_id',
+                'image_id',
+            )
             ->withPivot([
                 'position',
                 'is_cover',
@@ -60,14 +70,21 @@ class Project extends Model
     }
 
     /**
-     * Technologies used in the project.
+     * Technologies associated with the project.
+     *
+     * Pivot table: project_technology
      *
      * @return BelongsToMany<Technology>
      */
     public function technologies(): BelongsToMany
     {
         return $this
-            ->belongsToMany(Technology::class)
+            ->belongsToMany(
+                Technology::class,
+                'project_technology',
+                'project_id',
+                'technology_id',
+            )
             ->withTimestamps();
     }
 }
