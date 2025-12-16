@@ -51,4 +51,26 @@ final class HomeService
         return \is_array($result) ? $result : [];
     }
 
+    /**
+     * Load technologies grouped by category using the capabilities layer.
+     *
+     * @return array<int, array{
+     *     id: string,
+     *     title: string,
+     *     technologies: array<int, array{id: int, name: string}>
+     * }>
+     */
+    public function loadTechnologiesByCategory(): array
+    {
+        $key = $this->capabilitiesFactory->createKey(
+            'technologies.grouped_by_category.v1',
+        );
+
+        $result = $this->dataResolver->resolve(
+            $key,
+            [],
+        );
+
+        return \is_array($result) ? $result : [];
+    }
 }

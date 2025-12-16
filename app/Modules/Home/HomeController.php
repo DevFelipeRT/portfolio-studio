@@ -41,12 +41,9 @@ final class HomeController extends Controller
 
         $data = $this->mapResources($resources, 'visible');
 
-        // Transform technologies grouped by category
-        $techGroups = $this->techService->groupedByCategory()->all();
-        $data['technologies'] = TechnologyMapper::groupedByCategory($techGroups);
-
         $data['experiences'] = $this->homeService->loadVisibleExperiences();
         $data['courses'] = $this->homeService->loadVisibleCourses();
+        $data['technologies'] = $this->homeService->loadTechnologiesByCategory();
 
         VarDumper::dump($data);
 
