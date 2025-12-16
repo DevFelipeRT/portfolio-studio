@@ -8,8 +8,6 @@ use App\Modules\Shared\Abstractions\Http\Controller;
 
 use App\Modules\Courses\Application\Services\CourseService;
 use App\Modules\Courses\Presentation\Mappers\CourseMapper;
-use App\Modules\Experiences\Application\Services\ExperienceService;
-use App\Modules\Experiences\Presentation\Mappers\ExperienceMapper;
 use App\Modules\Initiatives\Application\Services\InitiativeService;
 use App\Modules\Initiatives\Presentation\Mappers\InitiativeMapper;
 use App\Modules\Projects\Application\Services\ProjectService;
@@ -19,15 +17,16 @@ use App\Modules\Technologies\Presentation\Mappers\TechnologyMapper;
 
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\VarDumper\VarDumper;
 
 final class HomeController extends Controller
 {
     public function __construct(
         private readonly ProjectService $projectService,
-        private readonly ExperienceService $experienceService,
         private readonly CourseService $courseService,
         private readonly TechnologyService $techService,
         private readonly InitiativeService $initiativeService,
+        private readonly HomeService $homeService,
     ) {
     }
 
@@ -38,7 +37,6 @@ final class HomeController extends Controller
     {
         $resources = [
             'projects' => [$this->projectService, ProjectMapper::class],
-            'experiences' => [$this->experienceService, ExperienceMapper::class],
             'courses' => [$this->courseService, CourseMapper::class],
             'initiatives' => [$this->initiativeService, InitiativeMapper::class],
         ];
@@ -48,6 +46,10 @@ final class HomeController extends Controller
         // Transform technologies grouped by category
         $techGroups = $this->techService->groupedByCategory()->all();
         $data['technologies'] = TechnologyMapper::groupedByCategory($techGroups);
+
+        $data['experiences'] = $this->homeService->loadVisibleExperiences(3);
+
+        VarDumper::dump($data);
 
         return Inertia::render('Home/Home', $data);
     }
