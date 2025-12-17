@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\ContentManagement\Domain\Template;
+namespace App\Modules\ContentManagement\Domain\Templates;
 
 /**
  * Describes a single configurable field within a template definition.

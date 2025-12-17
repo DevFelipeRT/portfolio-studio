@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\ContentManagement\Domain\Template;
+namespace App\Modules\ContentManagement\Domain\Templates;
 
 use App\Modules\ContentManagement\Domain\ValueObjects\SlotName;
 use App\Modules\ContentManagement\Domain\ValueObjects\TemplateKey;
@@ -150,6 +150,12 @@ final class TemplateRegistry
      *         default?: mixed,
      *         validation?: string|string[],
      *     }>,
+     *     'data_source'   => array{
+     *         type?: string, // defaults to "capability"
+     *         capability_key: string,
+     *         parameter_mapping?: array<string,string>,
+     *         target_field?: string, // defaults to "items"
+     *     }|null,
      * ]
      *
      * @param array<int,array<string,mixed>> $config
@@ -196,12 +202,50 @@ final class TemplateRegistry
                 }
             }
 
+            $dataSource = null;
+            $rawDataSource = $entry['data_source'] ?? null;
+
+            if (is_array($rawDataSource)) {
+                $type = (string) ($rawDataSource['type'] ?? TemplateDataSource::TYPE_CAPABILITY);
+
+                if ($type === TemplateDataSource::TYPE_CAPABILITY) {
+                    $capabilityKey = (string) ($rawDataSource['capability_key'] ?? '');
+
+                    if ($capabilityKey !== '') {
+                        $parameterMapping = [];
+                        $rawMapping = $rawDataSource['parameter_mapping'] ?? [];
+
+                        if (is_array($rawMapping)) {
+                            foreach ($rawMapping as $dataKey => $parameterName) {
+                                $dataKeyString = trim((string) $dataKey);
+                                $parameterNameString = trim((string) $parameterName);
+
+                                if ($dataKeyString === '' || $parameterNameString === '') {
+                                    continue;
+                                }
+
+                                $parameterMapping[$dataKeyString] = $parameterNameString;
+                            }
+                        }
+
+                        $targetField = (string) ($rawDataSource['target_field'] ?? 'items');
+
+                        $dataSource = TemplateDataSource::forCapability(
+                            $capabilityKey,
+                            $parameterMapping,
+                            $targetField,
+                        );
+                    }
+                }
+            }
+
             $definitions[] = new TemplateDefinition(
                 key: $templateKey,
                 label: $label,
                 description: $description,
                 allowedSlots: $allowedSlots,
                 fields: $fields,
+                dataSource: $dataSource,
             );
         }
 

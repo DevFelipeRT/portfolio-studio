@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\ContentManagement\Domain\Template;
+namespace App\Modules\ContentManagement\Domain\Templates;
 
 use App\Modules\ContentManagement\Domain\ValueObjects\SlotName;
 use App\Modules\ContentManagement\Domain\ValueObjects\TemplateKey;
@@ -11,7 +11,8 @@ use App\Modules\ContentManagement\Domain\ValueObjects\TemplateKey;
  * Describes a content template available to the Content Management module.
  *
  * A template definition combines a unique template key, descriptive
- * metadata and the list of fields that define its schema.
+ * metadata, the list of fields that define its schema and optional
+ * data source configuration for dynamic content resolution.
  */
 final class TemplateDefinition
 {
@@ -45,9 +46,15 @@ final class TemplateDefinition
     private array $fields;
 
     /**
+     * Optional configuration describing how this template retrieves
+     * dynamic data from an external source such as capabilities.
+     */
+    private ?TemplateDataSource $dataSource;
+
+    /**
      * Creates a new TemplateDefinition instance.
      *
-     * @param array<int,SlotName>     $allowedSlots
+     * @param array<int,SlotName>      $allowedSlots
      * @param array<int,TemplateField> $fields
      */
     public function __construct(
@@ -56,12 +63,14 @@ final class TemplateDefinition
         ?string $description,
         array $allowedSlots,
         array $fields,
+        ?TemplateDataSource $dataSource = null,
     ) {
         $this->key = $key;
         $this->label = $label;
         $this->description = $description;
         $this->allowedSlots = $allowedSlots;
         $this->fields = $fields;
+        $this->dataSource = $dataSource;
     }
 
     /**
@@ -120,5 +129,22 @@ final class TemplateDefinition
         }
 
         return null;
+    }
+
+    /**
+     * Returns the configured data source definition or null when
+     * the template does not use an external data source.
+     */
+    public function dataSource(): ?TemplateDataSource
+    {
+        return $this->dataSource;
+    }
+
+    /**
+     * Indicates whether this template declares an external data source.
+     */
+    public function hasDataSource(): bool
+    {
+        return $this->dataSource !== null;
     }
 }
