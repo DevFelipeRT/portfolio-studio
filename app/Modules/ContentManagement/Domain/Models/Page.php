@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\ContentManagement\Domain\Models;
 
-use App\Models\Image;
+use App\Modules\Images\Domain\Models\Image;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -34,7 +34,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property \Illuminate\Support\Carbon|null $updated_at
  *
  * @property-read Collection<int,\App\Modules\ContentManagement\Domain\Models\PageSection> $sections
- * @property-read \App\Models\Image|null $metaImage
+ * @property-read Image|null $metaImage
  */
 class Page extends Model
 {
