@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\ContentManagement\Application\Services\Template;
+namespace App\Modules\ContentManagement\Application\Services\Templates;
 
-use App\Modules\ContentManagement\Domain\Template\TemplateDefinition;
-use App\Modules\ContentManagement\Domain\Template\TemplateRegistry;
+use App\Modules\ContentManagement\Domain\Templates\TemplateDefinition;
+use App\Modules\ContentManagement\Domain\Templates\TemplateRegistry;
 use App\Modules\ContentManagement\Domain\ValueObjects\TemplateKey;
 
 /**
@@ -61,6 +61,11 @@ final class TemplateValidationService
     /**
      * Builds validation rules for all fields of the given template definition.
      *
+     * Rules are derived from:
+     *  - field.required: drives required/nullable when no explicit presence rule is defined;
+     *  - field.type: provides a base type rule when no explicit type rule is defined;
+     *  - field.validationRules(): additional rules from template configuration.
+     *
      * @return array<string,array<int,string>>
      */
     public function buildRulesForDefinition(
@@ -72,14 +77,28 @@ final class TemplateValidationService
         foreach ($definition->fields() as $field) {
             $fieldPath = sprintf('%s.%s', $dataRoot, $field->name());
 
-            $fieldRules = $field->validationRules();
+            $explicitRules = $field->validationRules();
+            $fieldRules = [];
 
-            if ($fieldRules === []) {
+            // 1) Presence rule (required/nullable), unless already defined explicitly
+            if (!$this->hasPresenceRule($explicitRules)) {
                 if ($field->isRequired()) {
-                    $fieldRules = ['required'];
+                    $fieldRules[] = 'required';
                 } else {
-                    $fieldRules = [];
+                    $fieldRules[] = 'nullable';
                 }
+            }
+
+            // 2) Base type rule, unless already present explicitly
+            $baseTypeRule = $this->mapTypeToBaseRule($field->type());
+
+            if ($baseTypeRule !== null && !$this->hasTypeRule($explicitRules, $baseTypeRule)) {
+                $fieldRules[] = $baseTypeRule;
+            }
+
+            // 3) Additional explicit rules from template configuration
+            foreach ($explicitRules as $rule) {
+                $fieldRules[] = $rule;
             }
 
             if ($fieldRules !== []) {
@@ -129,5 +148,51 @@ final class TemplateValidationService
         }
 
         return $normalized;
+    }
+
+    /**
+     * Checks if a rule set already defines presence semantics.
+     *
+     * @param array<int,string> $rules
+     */
+    private function hasPresenceRule(array $rules): bool
+    {
+        foreach ($rules as $rule) {
+            if ($rule === 'required' || $rule === 'nullable' || $rule === 'sometimes') {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Maps a template field type to a base Laravel validation rule.
+     */
+    private function mapTypeToBaseRule(string $type): ?string
+    {
+        return match ($type) {
+            'string', 'text', 'rich_text' => 'string',
+            'integer' => 'integer',
+            'boolean' => 'boolean',
+            'array', 'array_integer' => 'array',
+            default => null,
+        };
+    }
+
+    /**
+     * Checks if a rule set already defines a base type rule compatible with the given rule.
+     *
+     * @param array<int,string> $rules
+     */
+    private function hasTypeRule(array $rules, string $baseTypeRule): bool
+    {
+        foreach ($rules as $rule) {
+            if ($rule === $baseTypeRule) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
