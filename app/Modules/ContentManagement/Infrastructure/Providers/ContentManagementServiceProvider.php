@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace App\Modules\ContentManagement\Infrastructure\Providers;
 
+use App\Modules\ContentManagement\Application\Capabilities\SectionCapabilitiesDataFetcher;
+use App\Modules\ContentManagement\Application\Capabilities\CapabilitiesGateway;
 use App\Modules\ContentManagement\Domain\Repositories\IPageRepository;
 use App\Modules\ContentManagement\Domain\Repositories\IPageSectionRepository;
-use App\Modules\ContentManagement\Domain\Template\TemplateRegistry;
+use App\Modules\ContentManagement\Domain\Templates\TemplateRegistry;
 use App\Modules\ContentManagement\Infrastructure\Repositories\PageRepository;
 use App\Modules\ContentManagement\Infrastructure\Repositories\PageSectionRepository;
+use App\Modules\Shared\Contracts\Capabilities\ICapabilitiesFactory;
+use App\Modules\Shared\Contracts\Capabilities\ICapabilityDataResolver;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
@@ -48,6 +52,19 @@ final class ContentManagementServiceProvider extends ServiceProvider
             }
 
             return TemplateRegistry::fromConfigArray($config);
+        });
+
+        $this->app->singleton(CapabilitiesGateway::class, static function ($app): CapabilitiesGateway {
+            return new CapabilitiesGateway(
+                $app->make(ICapabilitiesFactory::class),
+                $app->make(ICapabilityDataResolver::class),
+            );
+        });
+
+        $this->app->singleton(SectionCapabilitiesDataFetcher::class, static function ($app): SectionCapabilitiesDataFetcher {
+            return new SectionCapabilitiesDataFetcher(
+                $app->make(CapabilitiesGateway::class),
+            );
         });
     }
 
