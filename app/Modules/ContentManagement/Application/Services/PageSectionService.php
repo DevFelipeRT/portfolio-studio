@@ -6,7 +6,7 @@ namespace App\Modules\ContentManagement\Application\Services;
 
 use App\Modules\ContentManagement\Application\Dtos\PageSectionDto;
 use App\Modules\ContentManagement\Application\Mappers\PageSectionMapper;
-use App\Modules\ContentManagement\Application\Services\Template\TemplateValidationService;
+use App\Modules\ContentManagement\Application\Services\Templates\TemplateValidationService;
 use App\Modules\ContentManagement\Domain\Enums\SectionVisibility;
 use App\Modules\ContentManagement\Domain\Models\Page;
 use App\Modules\ContentManagement\Domain\Models\PageSection;

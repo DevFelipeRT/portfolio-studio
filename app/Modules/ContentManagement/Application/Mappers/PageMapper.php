@@ -6,9 +6,6 @@ namespace App\Modules\ContentManagement\Application\Mappers;
 
 use App\Modules\ContentManagement\Application\Dtos\PageDto;
 use App\Modules\ContentManagement\Domain\Models\Page;
-use App\Modules\Shared\Support\Normalizers\DateNormalizer;
-use Carbon\CarbonInterface;
-use Illuminate\Support\Carbon;
 
 /**
  * Maps Page domain models to PageDto instances and array payloads.

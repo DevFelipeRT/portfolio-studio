@@ -9,6 +9,7 @@ use App\Modules\ContentManagement\Presentation\Presenters\PagePresenter;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * HTTP controller responsible for rendering public content-managed pages.
@@ -32,6 +33,8 @@ final class PageRenderController extends Controller
         if ($viewModel === null) {
             abort(404);
         }
+
+        VarDumper::dump($viewModel);
 
         return Inertia::render('ContentManagement/Pages/Public/RenderedPage', [
             'page' => $viewModel->page,

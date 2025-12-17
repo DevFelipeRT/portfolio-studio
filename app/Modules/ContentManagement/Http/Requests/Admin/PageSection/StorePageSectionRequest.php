@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\ContentManagement\Http\Requests\Admin\PageSection;
 
-use App\Modules\ContentManagement\Application\Services\Template\TemplateValidationService;
+use App\Modules\ContentManagement\Application\Services\Templates\TemplateValidationService;
 use App\Modules\ContentManagement\Domain\Models\Page;
 use App\Modules\ContentManagement\Domain\ValueObjects\TemplateKey;
 use Illuminate\Foundation\Http\FormRequest;

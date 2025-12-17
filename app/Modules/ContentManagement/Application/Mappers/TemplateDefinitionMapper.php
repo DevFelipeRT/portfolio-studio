@@ -6,8 +6,8 @@ namespace App\Modules\ContentManagement\Application\Mappers;
 
 use App\Modules\ContentManagement\Application\Dtos\TemplateDefinitionDto;
 use App\Modules\ContentManagement\Application\Dtos\TemplateFieldDto;
-use App\Modules\ContentManagement\Domain\Template\TemplateDefinition;
-use App\Modules\ContentManagement\Domain\Template\TemplateField;
+use App\Modules\ContentManagement\Domain\Templates\TemplateDefinition;
+use App\Modules\ContentManagement\Domain\Templates\TemplateField;
 
 /**
  * Maps template domain definitions to DTOs and array payloads.
