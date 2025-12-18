@@ -3,6 +3,7 @@
 import { HeroPrimarySection } from '@/Modules/ContentManagement/Components/Sections/HeroPrimarySection';
 import { ProjectHighlightListSection } from '@/Modules/ContentManagement/Components/Sections/ProjectHighlightListSection';
 import { RichTextSection } from '@/Modules/ContentManagement/Components/Sections/RichTextSection';
+import { CardsGridSection } from '@/Modules/ContentManagement/Components/Sections/CardsGridSection';
 import type {
     PageSectionDto,
     TemplateDefinitionDto,
@@ -24,4 +25,5 @@ export const SECTION_COMPONENT_REGISTRY: Record<
     hero_primary: HeroPrimarySection,
     rich_text: RichTextSection,
     project_highlight_list: ProjectHighlightListSection,
+    cards_grid_primary: CardsGridSection,
 };
