@@ -18,6 +18,11 @@ use InvalidArgumentException;
 final class TemplateRegistry
 {
     /**
+     * Maximum allowed nesting depth for collection item fields.
+     */
+    private const MAX_COLLECTION_NESTING_DEPTH = 5;
+
+    /**
      * @var array<string,TemplateDefinition>
      */
     private array $definitionsByKey;
@@ -149,6 +154,15 @@ final class TemplateRegistry
      *         required?: bool,
      *         default?: mixed,
      *         validation?: string|string[],
+     *         item_fields?: array<int,array{
+     *             name: string,
+     *             label: string,
+     *             type: string,
+     *             required?: bool,
+     *             default?: mixed,
+     *             validation?: string|string[],
+     *             item_fields?: array<int,array<mixed>>,
+     *         }>,
      *     }>,
      *     'data_source'   => array{
      *         type?: string, // defaults to "capability"
@@ -185,20 +199,11 @@ final class TemplateRegistry
 
             if (is_array($rawFields)) {
                 foreach ($rawFields as $fieldConfig) {
-                    $validation = $fieldConfig['validation'] ?? [];
-
-                    if (is_string($validation)) {
-                        $validation = [$validation];
+                    if (!is_array($fieldConfig)) {
+                        continue;
                     }
 
-                    $fields[] = new TemplateField(
-                        name: (string) ($fieldConfig['name'] ?? ''),
-                        label: (string) ($fieldConfig['label'] ?? ''),
-                        type: (string) ($fieldConfig['type'] ?? ''),
-                        required: (bool) ($fieldConfig['required'] ?? false),
-                        defaultValue: $fieldConfig['default'] ?? null,
-                        validationRules: is_array($validation) ? $validation : [],
-                    );
+                    $fields[] = self::buildFieldFromConfig($fieldConfig, 0);
                 }
             }
 
@@ -250,5 +255,75 @@ final class TemplateRegistry
         }
 
         return new self($definitions);
+    }
+
+    /**
+     * Builds a TemplateField instance from configuration.
+     *
+     * @param array<string,mixed> $fieldConfig
+     */
+    private static function buildFieldFromConfig(array $fieldConfig, int $nestingDepth): TemplateField
+    {
+        $name = (string) ($fieldConfig['name'] ?? '');
+        $label = (string) ($fieldConfig['label'] ?? '');
+        $type = (string) ($fieldConfig['type'] ?? '');
+        $required = (bool) ($fieldConfig['required'] ?? false);
+        $defaultValue = $fieldConfig['default'] ?? null;
+
+        $validation = $fieldConfig['validation'] ?? [];
+        if (is_string($validation)) {
+            $validation = [$validation];
+        }
+
+        $validationRules = [];
+        if (is_array($validation)) {
+            foreach ($validation as $rule) {
+                if (is_string($rule) && $rule !== '') {
+                    $validationRules[] = $rule;
+                }
+            }
+        }
+
+        $itemFields = [];
+
+        if ($type === 'collection') {
+            if ($nestingDepth >= self::MAX_COLLECTION_NESTING_DEPTH) {
+                throw new InvalidArgumentException(sprintf(
+                    'Maximum collection nesting depth of %d exceeded for field "%s".',
+                    self::MAX_COLLECTION_NESTING_DEPTH,
+                    $name,
+                ));
+            }
+
+            $rawItemFields = $fieldConfig['item_fields'] ?? [];
+
+            if (!is_array($rawItemFields)) {
+                throw new InvalidArgumentException(sprintf(
+                    'Field "%s" of type "collection" must define an "item_fields" array.',
+                    $name,
+                ));
+            }
+
+            foreach ($rawItemFields as $rawItemFieldConfig) {
+                if (!is_array($rawItemFieldConfig)) {
+                    continue;
+                }
+
+                $itemFields[] = self::buildFieldFromConfig(
+                    $rawItemFieldConfig,
+                    $nestingDepth + 1,
+                );
+            }
+        }
+
+        return new TemplateField(
+            name: $name,
+            label: $label,
+            type: $type,
+            required: $required,
+            defaultValue: $defaultValue,
+            validationRules: $validationRules,
+            itemFields: $itemFields,
+        );
     }
 }

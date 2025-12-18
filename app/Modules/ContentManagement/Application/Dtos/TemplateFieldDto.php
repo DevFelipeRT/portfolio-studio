@@ -10,7 +10,8 @@ namespace App\Modules\ContentManagement\Application\Dtos;
 final class TemplateFieldDto
 {
     /**
-     * @param array<int,string> $validationRules
+     * @param array<int,string>          $validationRules
+     * @param array<int,TemplateFieldDto> $itemFields
      */
     public function __construct(
         public readonly string $name,
@@ -19,6 +20,7 @@ final class TemplateFieldDto
         public readonly bool $required,
         public readonly mixed $defaultValue,
         public readonly array $validationRules,
+        public readonly array $itemFields = [],
     ) {
     }
 }

@@ -7,8 +7,7 @@ namespace App\Modules\ContentManagement\Domain\Templates;
 /**
  * Describes a single configurable field within a template definition.
  *
- * Each field declaration defines how a specific piece of data should be
- * captured and validated for a given content template.
+ * Fields with type "collection" describe an item schema through nested item fields.
  */
 final class TemplateField
 {
@@ -23,7 +22,7 @@ final class TemplateField
     private string $label;
 
     /**
-     * Logical data type identifier (for example "string", "text", "boolean").
+     * Logical data type identifier (for example "string", "text", "boolean", "collection").
      */
     private string $type;
 
@@ -49,9 +48,19 @@ final class TemplateField
     private array $validationRules;
 
     /**
+     * Nested item fields when this field represents a collection.
+     *
+     * Each item field describes one property of the collection item payload.
+     *
+     * @var array<int,TemplateField>
+     */
+    private array $itemFields;
+
+    /**
      * Creates a new TemplateField instance.
      *
-     * @param array<int,string> $validationRules
+     * @param array<int,string>       $validationRules
+     * @param array<int,TemplateField> $itemFields
      */
     public function __construct(
         string $name,
@@ -60,6 +69,7 @@ final class TemplateField
         bool $required = false,
         mixed $defaultValue = null,
         array $validationRules = [],
+        array $itemFields = [],
     ) {
         $this->name = $name;
         $this->label = $label;
@@ -67,6 +77,7 @@ final class TemplateField
         $this->required = $required;
         $this->defaultValue = $defaultValue;
         $this->validationRules = $validationRules;
+        $this->itemFields = $itemFields;
     }
 
     /**
@@ -119,5 +130,23 @@ final class TemplateField
     public function validationRules(): array
     {
         return $this->validationRules;
+    }
+
+    /**
+     * Indicates whether this field represents a collection of items.
+     */
+    public function isCollection(): bool
+    {
+        return $this->type === 'collection';
+    }
+
+    /**
+     * Returns the item fields when this field represents a collection.
+     *
+     * @return array<int,TemplateField>
+     */
+    public function itemFields(): array
+    {
+        return $this->itemFields;
     }
 }

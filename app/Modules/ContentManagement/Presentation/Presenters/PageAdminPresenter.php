@@ -18,8 +18,8 @@ use App\Modules\Shared\Support\Data\DataTransformer;
 use ValueError;
 
 /**
- * Presentation-level presenter that orchestrates data needed
- * by administrative pages for listing and editing content-managed pages.
+ * Presenter responsible for building administrative view models
+ * for listing and editing content-managed pages.
  */
 final class PageAdminPresenter
 {
@@ -32,6 +32,8 @@ final class PageAdminPresenter
 
     /**
      * Builds the view model for the administrative page index screen.
+     *
+     * Pages are exposed as snake_case arrays derived from PageDto instances.
      *
      * @param array<string,mixed> $filters
      * @param array<string,mixed> $extraPayload
@@ -65,7 +67,7 @@ final class PageAdminPresenter
     /**
      * Builds the view model for the administrative page edit screen.
      *
-     * Returns null when the page does not exist.
+     * Returns null when the requested page is not found.
      *
      * @param array<string,mixed> $extraPayload
      */
@@ -74,18 +76,23 @@ final class PageAdminPresenter
         array $extraPayload = [],
     ): ?PageEditViewModel {
         $data = $this->buildPageData($pageId);
-        $templateDtos = $this->buildTemplateDtos();
+
+        if ($data === []) {
+            return null;
+        }
+
+        $templates = $this->buildTemplatesData();
 
         return new PageEditViewModel(
             page: $data['page'],
             sections: $data['sections'],
-            availableTemplates: $templateDtos,
+            availableTemplates: $templates,
             extraPayload: $extraPayload,
         );
     }
 
     /**
-     * Converts a raw status filter into a PageStatus instance.
+     * Resolves a raw status filter into a PageStatus instance.
      */
     private function resolveStatusFilter(?string $rawStatus): ?PageStatus
     {
@@ -100,6 +107,16 @@ final class PageAdminPresenter
         }
     }
 
+    /**
+     * Builds page and section data arrays for the given page identifier.
+     *
+     * The returned structure contains snake_case arrays for the page and its sections.
+     *
+     * @return array{
+     *     page: array<string,mixed>,
+     *     sections: array<int,array<string,mixed>>
+     * }|array{}
+     */
     private function buildPageData(int $pageId): array
     {
         $pageDto = $this->pageService->getById($pageId);
@@ -119,38 +136,55 @@ final class PageAdminPresenter
 
         return [
             'page' => $page,
-            'sections' => $sections
+            'sections' => $sections,
         ];
     }
 
+    /**
+     * Transforms section DTOs into snake_case arrays suitable for the admin UI.
+     *
+     * @param array<int,mixed> $sectionDtos
+     * @return array<int,array<string,mixed>>
+     */
     private function buildSectionsData(array $sectionDtos): array
     {
         $sections = [];
+
         foreach ($sectionDtos as $sectionDto) {
             $sections[] = DataTransformer::transform($sectionDto)
                 ->toArray()
                 ->toSnakeCase()
                 ->result();
         }
+
         return $sections;
     }
 
     /**
-     * Builds TemplateDefinitionDto instances for all registered templates.
+     * Builds template definition metadata for the administrative editor.
      *
-     * @return array<int,\App\Modules\ContentManagement\Application\Dtos\TemplateDefinitionDto>
+     * Template definitions are mapped to DTOs and then converted to
+     * snake_case arrays, including nested field structures and collection
+     * item fields.
+     *
+     * @return array<int,array<string,mixed>>
      */
-    private function buildTemplateDtos(): array
+    private function buildTemplatesData(): array
     {
         /** @var array<int,TemplateDefinition> $definitions */
         $definitions = $this->templateRegistry->all();
 
-        $result = [];
+        $templates = [];
 
         foreach ($definitions as $definition) {
-            $result[] = TemplateDefinitionMapper::toDto($definition);
+            $templates[] = TemplateDefinitionMapper::toDto($definition);
         }
 
-        return $result;
+        $data = DataTransformer::transform($templates)
+            ->toArray()
+            ->toSnakeCase()
+            ->result();
+
+        return $data;
     }
 }

@@ -9,6 +9,7 @@ import {
 } from '@/Components/Ui/dialog';
 import { Input } from '@/Components/Ui/input';
 import { Label } from '@/Components/Ui/label';
+import { cn } from '@/lib/utils';
 import { TemplateSectionForm } from '@/Modules/ContentManagement/Components/Editor/TemplateSectionForm';
 import { TemplateSelector } from '@/Modules/ContentManagement/Components/Editor/TemplateSelector';
 import type {
@@ -16,6 +17,7 @@ import type {
     SectionData,
     TemplateDefinitionDto,
 } from '@/Modules/ContentManagement/types';
+import { ScrollArea } from '@/Components/Ui/scroll-area';
 import React from 'react';
 
 export interface EditSectionPayload {
@@ -137,8 +139,13 @@ export function PageSectionEditDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-2xl">
-                <DialogHeader>
+            <DialogContent
+                className={cn(
+                    'max-h-10/12 min-h-0 max-w-2xl gap-y-0 p-0',
+                    section ? 'h-10/12' : 'h-auto',
+                )}
+            >
+                <DialogHeader className="border-b p-6">
                     <DialogTitle>Edit section</DialogTitle>
                     <DialogDescription>
                         Update this section metadata and template content.
@@ -151,73 +158,77 @@ export function PageSectionEditDialog({
                     </p>
                 )}
 
-                {section && (
-                    <div className="space-y-6">
-                        <div className="grid gap-4 md:grid-cols-2">
-                            <div className="space-y-1.5">
-                                <Label htmlFor="edit-section-template">
-                                    Template
-                                </Label>
-                                <TemplateSelector
-                                    templates={templates}
-                                    value={templateKey}
-                                    onChange={handleTemplateChange}
-                                    placeholder="Select a template"
-                                    disabled={templateSelectDisabled}
-                                />
+                <ScrollArea className="px-5">
+                    {section && (
+                        <div className="mx-1 my-4 space-y-6">
+                            <div className="grid gap-4 md:grid-cols-2">
+                                <div className="space-y-1.5">
+                                    <Label htmlFor="edit-section-template">
+                                        Template
+                                    </Label>
+                                    <TemplateSelector
+                                        templates={templates}
+                                        value={templateKey}
+                                        onChange={handleTemplateChange}
+                                        placeholder="Select a template"
+                                        disabled={templateSelectDisabled}
+                                    />
+                                </div>
+
+                                <div className="space-y-1.5">
+                                    <Label htmlFor="edit-section-slot">
+                                        Slot
+                                    </Label>
+                                    <Input
+                                        id="edit-section-slot"
+                                        value={slot}
+                                        onChange={(event) =>
+                                            setSlot(event.target.value)
+                                        }
+                                    />
+                                </div>
+
+                                <div className="space-y-1.5">
+                                    <Label htmlFor="edit-section-anchor">
+                                        Anchor
+                                    </Label>
+                                    <Input
+                                        id="edit-section-anchor"
+                                        value={anchor}
+                                        onChange={(event) =>
+                                            setAnchor(event.target.value)
+                                        }
+                                    />
+                                </div>
+
+                                <div className="space-y-1.5">
+                                    <Label htmlFor="edit-section-locale">
+                                        Locale
+                                    </Label>
+                                    <Input
+                                        id="edit-section-locale"
+                                        value={locale}
+                                        onChange={(event) =>
+                                            setLocale(event.target.value)
+                                        }
+                                    />
+                                </div>
                             </div>
 
-                            <div className="space-y-1.5">
-                                <Label htmlFor="edit-section-slot">Slot</Label>
-                                <Input
-                                    id="edit-section-slot"
-                                    value={slot}
-                                    onChange={(event) =>
-                                        setSlot(event.target.value)
-                                    }
-                                />
-                            </div>
-
-                            <div className="space-y-1.5">
-                                <Label htmlFor="edit-section-anchor">
-                                    Anchor
-                                </Label>
-                                <Input
-                                    id="edit-section-anchor"
-                                    value={anchor}
-                                    onChange={(event) =>
-                                        setAnchor(event.target.value)
-                                    }
-                                />
-                            </div>
-
-                            <div className="space-y-1.5">
-                                <Label htmlFor="edit-section-locale">
-                                    Locale
-                                </Label>
-                                <Input
-                                    id="edit-section-locale"
-                                    value={locale}
-                                    onChange={(event) =>
-                                        setLocale(event.target.value)
-                                    }
-                                />
-                            </div>
+                            {selectedTemplate && (
+                                <div className="bg-muted/40 rounded-md border p-4">
+                                    <TemplateSectionForm
+                                        template={selectedTemplate}
+                                        value={data}
+                                        onChange={setData}
+                                    />
+                                </div>
+                            )}
                         </div>
+                    )}
+                </ScrollArea>
 
-                        {selectedTemplate && (
-                            <div className="bg-muted/40 rounded-md border p-4">
-                                <TemplateSectionForm
-                                    template={selectedTemplate}
-                                    value={data}
-                                    onChange={setData}
-                                />
-                            </div>
-                        )}
-                    </div>
-                )}
-
-                <DialogFooter>
+                <DialogFooter className="border-t p-6">
                     <Button
                         type="button"
                         variant="outline"

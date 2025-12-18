@@ -1,7 +1,27 @@
 // resources/js/Modules/ContentManagement/types/index.ts
 
 export type SectionDataPrimitive = string | number | boolean | null;
-export type SectionDataValue = SectionDataPrimitive | SectionDataPrimitive[];
+
+/**
+ * Represents a single item in a collection-valued field.
+ *
+ * Each item is a record of section data values, allowing nested collections
+ * when needed.
+ */
+export interface SectionDataCollectionItem {
+    [key: string]: SectionDataValue;
+}
+
+/**
+ * Represents any supported value for a section data field.
+ *
+ * Fields can hold primitives, arrays of primitives or collections of objects.
+ */
+export type SectionDataValue =
+    | SectionDataPrimitive
+    | SectionDataPrimitive[]
+    | SectionDataCollectionItem[];
+
 export type SectionData = Record<string, SectionDataValue>;
 
 export interface HasTimestamps {
@@ -63,7 +83,8 @@ export type TemplateFieldPrimitiveType =
     | 'rich_text'
     | 'integer'
     | 'boolean'
-    | 'array_integer';
+    | 'array_integer'
+    | 'collection';
 
 /**
  * Describes a single field inside a template definition.
@@ -75,6 +96,7 @@ export interface TemplateFieldDto {
     required: boolean;
     default_value: unknown;
     validation_rules: string[];
+    item_fields?: TemplateFieldDto[];
 }
 
 /**
