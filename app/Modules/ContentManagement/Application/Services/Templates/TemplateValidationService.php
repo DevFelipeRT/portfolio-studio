@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\ContentManagement\Application\Services\Templates;
 
 use App\Modules\ContentManagement\Domain\Templates\TemplateDefinition;
+use App\Modules\ContentManagement\Domain\Templates\TemplateField;
 use App\Modules\ContentManagement\Domain\Templates\TemplateRegistry;
 use App\Modules\ContentManagement\Domain\ValueObjects\TemplateKey;
 
@@ -66,6 +67,9 @@ final class TemplateValidationService
      *  - field.type: provides a base type rule when no explicit type rule is defined;
      *  - field.validationRules(): additional rules from template configuration.
      *
+     * Collection fields produce rules for the collection itself and for each item
+     * using wildcard notation (for example, "data.cards.*.title").
+     *
      * @return array<string,array<int,string>>
      */
     public function buildRulesForDefinition(
@@ -74,37 +78,11 @@ final class TemplateValidationService
     ): array {
         $rules = [];
 
-        foreach ($definition->fields() as $field) {
-            $fieldPath = sprintf('%s.%s', $dataRoot, $field->name());
-
-            $explicitRules = $field->validationRules();
-            $fieldRules = [];
-
-            // 1) Presence rule (required/nullable), unless already defined explicitly
-            if (!$this->hasPresenceRule($explicitRules)) {
-                if ($field->isRequired()) {
-                    $fieldRules[] = 'required';
-                } else {
-                    $fieldRules[] = 'nullable';
-                }
-            }
-
-            // 2) Base type rule, unless already present explicitly
-            $baseTypeRule = $this->mapTypeToBaseRule($field->type());
-
-            if ($baseTypeRule !== null && !$this->hasTypeRule($explicitRules, $baseTypeRule)) {
-                $fieldRules[] = $baseTypeRule;
-            }
-
-            // 3) Additional explicit rules from template configuration
-            foreach ($explicitRules as $rule) {
-                $fieldRules[] = $rule;
-            }
-
-            if ($fieldRules !== []) {
-                $rules[$fieldPath] = $fieldRules;
-            }
-        }
+        $this->buildRulesForFields(
+            fields: $definition->fields(),
+            dataRoot: $dataRoot,
+            rules: $rules,
+        );
 
         return $rules;
     }
@@ -130,6 +108,9 @@ final class TemplateValidationService
     /**
      * Normalizes a data payload for the given template definition.
      *
+     * Defaults are applied at the field level. Collections rely on their
+     * configured default value when the collection field is missing.
+     *
      * @param array<string,mixed> $data
      * @return array<string,mixed>
      */
@@ -148,6 +129,53 @@ final class TemplateValidationService
         }
 
         return $normalized;
+    }
+
+    /**
+     * Recursively builds rules for the given field collection and data root.
+     *
+     * @param array<int,TemplateField>       $fields
+     * @param array<string,array<int,string>> $rules
+     */
+    private function buildRulesForFields(array $fields, string $dataRoot, array &$rules): void
+    {
+        foreach ($fields as $field) {
+            $fieldPath = sprintf('%s.%s', $dataRoot, $field->name());
+            $explicitRules = $field->validationRules();
+            $fieldRules = [];
+
+            if (!$this->hasPresenceRule($explicitRules)) {
+                if ($field->isRequired()) {
+                    $fieldRules[] = 'required';
+                } else {
+                    $fieldRules[] = 'nullable';
+                }
+            }
+
+            $baseTypeRule = $this->mapTypeToBaseRule($field->type());
+
+            if ($baseTypeRule !== null && !$this->hasTypeRule($explicitRules, $baseTypeRule)) {
+                $fieldRules[] = $baseTypeRule;
+            }
+
+            foreach ($explicitRules as $rule) {
+                $fieldRules[] = $rule;
+            }
+
+            if ($fieldRules !== []) {
+                $rules[$fieldPath] = $fieldRules;
+            }
+
+            if ($field->isCollection()) {
+                $itemRoot = sprintf('%s.*', $fieldPath);
+
+                $this->buildRulesForFields(
+                    fields: $field->itemFields(),
+                    dataRoot: $itemRoot,
+                    rules: $rules,
+                );
+            }
+        }
     }
 
     /**
@@ -175,7 +203,7 @@ final class TemplateValidationService
             'string', 'text', 'rich_text' => 'string',
             'integer' => 'integer',
             'boolean' => 'boolean',
-            'array', 'array_integer' => 'array',
+            'array', 'array_integer', 'collection' => 'array',
             default => null,
         };
     }

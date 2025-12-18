@@ -55,14 +55,7 @@ final class TemplateDefinitionMapper
             'description' => $dto->description,
             'allowed_slots' => $dto->allowedSlots,
             'fields' => array_map(
-                static fn(TemplateFieldDto $field): array => [
-                    'name' => $field->name,
-                    'label' => $field->label,
-                    'type' => $field->type,
-                    'required' => $field->required,
-                    'default' => $field->defaultValue,
-                    'rules' => $field->validationRules,
-                ],
+                static fn(TemplateFieldDto $field): array => self::mapFieldDtoToArray($field),
                 $dto->fields,
             ),
         ];
@@ -73,6 +66,14 @@ final class TemplateDefinitionMapper
      */
     private static function mapFieldToDto(TemplateField $field): TemplateFieldDto
     {
+        $itemFieldDtos = [];
+
+        if ($field->isCollection()) {
+            foreach ($field->itemFields() as $itemField) {
+                $itemFieldDtos[] = self::mapFieldToDto($itemField);
+            }
+        }
+
         return new TemplateFieldDto(
             name: $field->name(),
             label: $field->label(),
@@ -80,6 +81,30 @@ final class TemplateDefinitionMapper
             required: $field->isRequired(),
             defaultValue: $field->defaultValue(),
             validationRules: $field->validationRules(),
+            itemFields: $itemFieldDtos,
         );
+    }
+
+    /**
+     * Builds an array payload from a TemplateFieldDto.
+     *
+     * @return array<string,mixed>
+     */
+    private static function mapFieldDtoToArray(TemplateFieldDto $field): array
+    {
+        $itemFields = array_map(
+            static fn(TemplateFieldDto $itemField): array => self::mapFieldDtoToArray($itemField),
+            $field->itemFields,
+        );
+
+        return [
+            'name' => $field->name,
+            'label' => $field->label,
+            'type' => $field->type,
+            'required' => $field->required,
+            'default' => $field->defaultValue,
+            'rules' => $field->validationRules,
+            'item_fields' => $itemFields,
+        ];
     }
 }
