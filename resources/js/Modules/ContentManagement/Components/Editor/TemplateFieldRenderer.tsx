@@ -4,6 +4,7 @@ import type {
 } from '@/Modules/ContentManagement/types';
 import { ArrayIntegerFieldControl } from './fields/ArrayIntegerFieldControl';
 import { BooleanFieldControl } from './fields/BooleanFieldControl';
+import { CollectionFieldControl } from './fields/CollectionFieldControl';
 import { IntegerFieldControl } from './fields/IntegerFieldControl';
 import { RichTextFieldControl } from './fields/RichTextFieldControl';
 import { TextFieldControl } from './fields/TextFieldControl';
@@ -96,6 +97,15 @@ export function TemplateFieldRenderer({
                 />
             );
         }
+
+        case 'collection':
+            return (
+                <CollectionFieldControl
+                    field={field}
+                    value={value}
+                    onChange={onChange}
+                />
+            );
 
         default:
             return (
