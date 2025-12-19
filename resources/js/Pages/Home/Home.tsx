@@ -1,4 +1,5 @@
-import HomeLayout from '@/Layouts/HomeLayout';
+import PublicLayout from '@/Layouts/PublicLayout';
+import { defaultSocialLinks } from '@/config/socials';
 import { useTranslation } from '@/i18n';
 import { Head } from '@inertiajs/react';
 import {
@@ -18,7 +19,6 @@ import {
 } from './Sections';
 import { EducationSection } from './Sections/EducationSection';
 import { InitiativeSection } from './Sections/InitiativeSection';
-import { defaultSocialLinks } from '@/config/socials';
 
 interface HomeProps {
     projects: Project[];
@@ -53,7 +53,7 @@ export default function Home({
     );
 
     return (
-        <HomeLayout>
+        <PublicLayout>
             <Head title={pageTitle} />
 
             <main className="text-foreground" aria-label={mainLabel}>
@@ -82,6 +82,6 @@ export default function Home({
                     </div>
                 </div>
             </main>
-        </HomeLayout>
+        </PublicLayout>
     );
 }
