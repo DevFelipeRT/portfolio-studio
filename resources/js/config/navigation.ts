@@ -1,40 +1,36 @@
 // resources/js/config/navigation.ts
 
-export type NavigationConfigChild = {
+export type NavigationConfigKind = 'link' | 'section' | 'group';
+
+export type NavigationConfigBaseNode = {
     id: string;
-    routeName: string;
+    kind: NavigationConfigKind;
     translationKey: string;
     fallbackLabel: string;
+    children?: NavigationConfigNode[];
 };
 
-export type NavigationConfigItem = {
-    id: string;
+export type NavigationConfigLinkNode = NavigationConfigBaseNode & {
     kind: 'link';
     routeName: string;
-    translationKey: string;
-    fallbackLabel: string;
-    children?: NavigationConfigChild[];
 };
 
-export type HomeNavigationConfigChild = {
-    id: string;
-    translationKey: string;
-    fallbackLabel: string;
-    targetId?: string;
-    scrollToTop?: boolean;
-};
-
-export type HomeNavigationConfigItem = {
-    id: string;
+export type NavigationConfigSectionNode = NavigationConfigBaseNode & {
     kind: 'section';
-    translationKey: string;
-    fallbackLabel: string;
     targetId?: string;
     scrollToTop?: boolean;
-    children?: HomeNavigationConfigChild[];
 };
 
-export const navigationConfig: NavigationConfigItem[] = [
+export type NavigationConfigGroupNode = NavigationConfigBaseNode & {
+    kind: 'group';
+};
+
+export type NavigationConfigNode =
+    | NavigationConfigLinkNode
+    | NavigationConfigSectionNode
+    | NavigationConfigGroupNode;
+
+export const navigationConfig: NavigationConfigNode[] = [
     {
         id: 'home',
         kind: 'link',
@@ -65,42 +61,49 @@ export const navigationConfig: NavigationConfigItem[] = [
         children: [
             {
                 id: 'pages',
+                kind: 'link',
                 routeName: 'admin.content.pages.index',
                 translationKey: 'header.navigation.portfolioPages',
                 fallbackLabel: 'Pages',
             },
             {
                 id: 'images',
+                kind: 'link',
                 routeName: 'images.index',
                 translationKey: 'header.navigation.portfolioImages',
                 fallbackLabel: 'Images',
             },
             {
                 id: 'projects',
+                kind: 'link',
                 routeName: 'projects.index',
                 translationKey: 'header.navigation.portfolioProjects',
                 fallbackLabel: 'Projects',
             },
             {
                 id: 'experiences',
+                kind: 'link',
                 routeName: 'experiences.index',
                 translationKey: 'header.navigation.portfolioExperiences',
                 fallbackLabel: 'Experiences',
             },
             {
                 id: 'courses',
+                kind: 'link',
                 routeName: 'courses.index',
                 translationKey: 'header.navigation.portfolioCourses',
                 fallbackLabel: 'Courses',
             },
             {
                 id: 'technologies',
+                kind: 'link',
                 routeName: 'technologies.index',
                 translationKey: 'header.navigation.portfolioTechnologies',
                 fallbackLabel: 'Technologies',
             },
             {
                 id: 'initiatives',
+                kind: 'link',
                 routeName: 'initiatives.index',
                 translationKey: 'header.navigation.portfolioInitiatives',
                 fallbackLabel: 'Initiatives',
@@ -109,7 +112,7 @@ export const navigationConfig: NavigationConfigItem[] = [
     },
 ];
 
-export const homeNavigationConfig: HomeNavigationConfigItem[] = [
+export const publicNavigationConfig: NavigationConfigNode[] = [
     {
         id: 'home',
         kind: 'section',
@@ -123,13 +126,6 @@ export const homeNavigationConfig: HomeNavigationConfigItem[] = [
         translationKey: 'header.navigation.highlights',
         fallbackLabel: 'Highlights',
         targetId: 'highlights',
-    },
-    {
-        id: 'tech-stack',
-        kind: 'section',
-        translationKey: 'header.navigation.stack',
-        fallbackLabel: 'Stack',
-        targetId: 'tech-stack',
     },
     {
         id: 'projects',
@@ -146,18 +142,33 @@ export const homeNavigationConfig: HomeNavigationConfigItem[] = [
         targetId: 'initiatives',
     },
     {
-        id: 'experience',
+        id: 'about',
         kind: 'section',
-        translationKey: 'header.navigation.experience',
-        fallbackLabel: 'Carrer',
-        targetId: 'experience',
-    },
-    {
-        id: 'education',
-        kind: 'section',
-        translationKey: 'header.navigation.education',
-        fallbackLabel: 'Education',
-        targetId: 'education',
+        translationKey: 'header.navigation.about',
+        fallbackLabel: 'About me',
+        children: [
+            {
+                id: 'tech-stack',
+                kind: 'section',
+                translationKey: 'header.navigation.stack',
+                fallbackLabel: 'Stack',
+                targetId: 'tech-stack',
+            },
+            {
+                id: 'experience',
+                kind: 'section',
+                translationKey: 'header.navigation.experience',
+                fallbackLabel: 'Career',
+                targetId: 'experience',
+            },
+            {
+                id: 'education',
+                kind: 'section',
+                translationKey: 'header.navigation.education',
+                fallbackLabel: 'Education',
+                targetId: 'education',
+            },
+        ],
     },
     {
         id: 'contact',
