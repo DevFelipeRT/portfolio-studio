@@ -4,10 +4,15 @@ import {
     SECTION_COMPONENT_REGISTRY,
     type SectionComponentProps,
 } from '@/Modules/ContentManagement/config/sectionComponents';
+import { SectionFieldResolverProvider } from '@/Modules/ContentManagement/context/SectionFieldResolverContext';
 import type {
     PageSectionDto,
     TemplateDefinitionDto,
 } from '@/Modules/ContentManagement/types';
+import {
+    createSectionFieldResolver,
+    type SectionFieldResolver,
+} from '@/Modules/ContentManagement/utils/sectionFieldResolver';
 import React, { JSX } from 'react';
 
 export interface SectionRendererProps {
@@ -18,6 +23,10 @@ export interface SectionRendererProps {
 /**
  * Renders a list of page sections, using template-specific components when available
  * and falling back to a generic template-based renderer otherwise.
+ *
+ * Each rendered section receives a field resolver through context so that
+ * components can read CMS values with the correct precedence between
+ * persisted section data and template defaults.
  */
 export function SectionRenderer({
     sections,
@@ -35,16 +44,30 @@ export function SectionRenderer({
                     section.template_key,
                 );
 
-                const Component = resolveTemplateComponent(section.template_key);
+                const Component = resolveTemplateComponent(
+                    section.template_key,
+                );
 
+                // If there is no specialized component and no template definition,
+                // there is nothing to render for this section.
                 if (!Component && !template) {
                     return null;
                 }
 
+                // Field resolver for this specific section and template.
+                const fieldResolver = createSectionFieldResolver(
+                    section.data ?? null,
+                    template,
+                );
+
                 const content = Component ? (
                     <Component section={section} template={template} />
                 ) : (
-                    renderGenericTemplateSection(section, template)
+                    renderGenericTemplateSection(
+                        section,
+                        template,
+                        fieldResolver,
+                    )
                 );
 
                 if (!content) {
@@ -52,13 +75,17 @@ export function SectionRenderer({
                 }
 
                 return (
-                    <section
+                    <SectionFieldResolverProvider
                         key={section.id}
-                        id={section.anchor ?? undefined}
-                        className="py-12"
+                        resolver={fieldResolver}
                     >
-                        {content}
-                    </section>
+                        <section
+                            id={section.anchor ?? undefined}
+                            className="py-12"
+                        >
+                            {content}
+                        </section>
+                    </SectionFieldResolverProvider>
                 );
             })}
         </>
@@ -85,6 +112,7 @@ function resolveTemplateComponent(
 function renderGenericTemplateSection(
     section: PageSectionDto,
     template: TemplateDefinitionDto | undefined,
+    fieldResolver: SectionFieldResolver,
 ): JSX.Element | null {
     if (!template) {
         return null;
@@ -94,11 +122,13 @@ function renderGenericTemplateSection(
 
     const renderedFields = fields
         .map((field) => {
-            const value = section.data
-                ? (section.data as Record<string, unknown>)[field.name]
-                : undefined;
+            const value = fieldResolver.getValue<unknown>(field.name);
 
-            if (value === null || value === undefined || value === '') {
+            if (
+                value === null ||
+                value === undefined ||
+                (typeof value === 'string' && value === '')
+            ) {
                 return null;
             }
 
