@@ -5,7 +5,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/Components/Ui/alert';
 import { Toaster } from '@/Components/Ui/sonner';
 import {
     navigationConfig,
-    type NavigationConfigItem,
+    type NavigationConfigNode,
 } from '@/config/navigation';
 import { useTranslation } from '@/i18n';
 import { usePage } from '@inertiajs/react';
@@ -13,7 +13,10 @@ import { PropsWithChildren, ReactNode, useEffect } from 'react';
 import { toast } from 'sonner';
 import Footer from './Partials/Footer';
 import Header from './Partials/Header';
-import Navigation, { AuthUser, NavigationItem } from './Partials/Navigation';
+import Navigation, {
+    type AuthUser,
+    type NavigationItem,
+} from './Partials/Navigation';
 
 type SharedProps = {
     auth: {
@@ -24,30 +27,59 @@ type SharedProps = {
 };
 
 function mapConfigToNavigationItems(
-    items: NavigationConfigItem[],
+    items: NavigationConfigNode[],
     translate: (key: string, fallback: string) => string,
 ): NavigationItem[] {
     return items.map<NavigationItem>((item) => {
-        const href = route(item.routeName);
-        const isActive =
-            !!route().current(item.routeName) ||
-            !!item.children?.some((child) => route().current(child.routeName));
+        const base = {
+            id: item.id,
+            label: translate(item.translationKey, item.fallbackLabel),
+        };
+
+        if (item.kind === 'link') {
+            const href = route(item.routeName);
+            const isActive =
+                !!route().current(item.routeName) ||
+                !!item.children?.some(
+                    (child) =>
+                        child.kind === 'link' &&
+                        route().current(child.routeName),
+                );
+
+            const children = item.children
+                ? mapConfigToNavigationItems(item.children, translate)
+                : undefined;
+
+            return {
+                ...base,
+                kind: 'link',
+                href,
+                isActive,
+                children,
+            };
+        }
+
+        if (item.kind === 'section') {
+            const children = item.children
+                ? mapConfigToNavigationItems(item.children, translate)
+                : undefined;
+
+            return {
+                ...base,
+                kind: 'section',
+                targetId: item.targetId,
+                scrollToTop: item.scrollToTop,
+                children,
+            };
+        }
 
         const children = item.children
-            ? item.children.map((child) => ({
-                  id: child.id,
-                  label: translate(child.translationKey, child.fallbackLabel),
-                  href: route(child.routeName),
-                  isActive: !!route().current(child.routeName),
-              }))
+            ? mapConfigToNavigationItems(item.children, translate)
             : undefined;
 
         return {
-            id: item.id,
-            label: translate(item.translationKey, item.fallbackLabel),
-            kind: item.kind,
-            href,
-            isActive,
+            ...base,
+            kind: 'group',
             children,
         };
     });
