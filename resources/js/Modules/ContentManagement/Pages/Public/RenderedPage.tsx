@@ -1,5 +1,5 @@
 // resources/js/Modules/ContentManagement/Pages/Public/RenderedPage.tsx
-import HomeLayout from '@/Layouts/HomeLayout';
+import PublicLayout from '@/Layouts/PublicLayout';
 
 import { SectionRenderer } from '@/Modules/ContentManagement/Components/Sections/SectionRenderer';
 import type {
@@ -51,7 +51,7 @@ export default function RenderedPage({
     };
 
     return (
-        <HomeLayout>
+        <PublicLayout>
             <SectionEnvironmentProvider value={environment}>
                 <Head title={headTitle}>
                     {headDescription && (
@@ -86,6 +86,6 @@ export default function RenderedPage({
                     )}
                 </main>
             </SectionEnvironmentProvider>
-        </HomeLayout>
+        </PublicLayout>
     );
 }

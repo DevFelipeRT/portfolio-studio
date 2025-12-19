@@ -1,16 +1,13 @@
-// resources/js/Layouts/AuthenticatedLayout.tsx
+// resources/js/Layouts/PublicLayout.tsx
 
 import { ThemeProvider } from '@/Components/Theme/ThemeProvider';
-import { Alert, AlertDescription, AlertTitle } from '@/Components/Ui/alert';
-import { Toaster } from '@/Components/Ui/sonner';
 import {
-    navigationConfig,
+    publicNavigationConfig,
     type NavigationConfigNode,
 } from '@/config/navigation';
 import { useTranslation } from '@/i18n';
 import { usePage } from '@inertiajs/react';
-import { PropsWithChildren, ReactNode, useEffect } from 'react';
-import { toast } from 'sonner';
+import { PropsWithChildren } from 'react';
 import Footer from './Partials/Footer';
 import Header from './Partials/Header';
 import Navigation, {
@@ -22,8 +19,6 @@ type SharedProps = {
     auth: {
         user: AuthUser | null;
     };
-    errors: Record<string, string>;
-    status?: string | null;
 };
 
 function mapConfigToNavigationItems(
@@ -85,34 +80,14 @@ function mapConfigToNavigationItems(
     });
 }
 
-export default function Authenticated({
-    header,
-    children,
-}: PropsWithChildren<{ header?: ReactNode }>) {
-    const { auth, errors, status } = usePage().props as SharedProps;
+export default function PublicLayout({ children }: PropsWithChildren) {
+    const { auth } = usePage().props as SharedProps;
     const { translate } = useTranslation('layout');
 
     const navItems: NavigationItem[] = mapConfigToNavigationItems(
-        navigationConfig,
+        publicNavigationConfig,
         (key, fallback) => translate(key, fallback),
     );
-
-    const hasErrors = !!errors && Object.keys(errors).length > 0;
-
-    useEffect(() => {
-        if (!status) {
-            return;
-        }
-
-        if (status.endsWith('.failed') || status.endsWith('_failed')) {
-            return;
-        }
-
-        const messageKey = `flash.${status}`;
-        const message = translate(messageKey, status);
-
-        toast.success(message);
-    }, [status, translate]);
 
     return (
         <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
@@ -121,45 +96,13 @@ export default function Authenticated({
                     <Navigation items={navItems} user={auth.user} />
                 </Header>
 
-                <main className="w-full grow py-4 sm:py-6">
-                    {header && (
-                        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-                            {header}
-                        </div>
-                    )}
-
-                    <div className="mx-auto max-w-7xl grow px-4 sm:px-6 lg:px-8">
-                        {hasErrors && (
-                            <div className="mb-4">
-                                <Alert variant="destructive">
-                                    <AlertTitle>
-                                        {translate(
-                                            'validation.title',
-                                            'There were some problems with your submission.',
-                                        )}
-                                    </AlertTitle>
-                                    <AlertDescription>
-                                        <ul className="list-disc space-y-1 pl-5 text-sm">
-                                            {Object.entries(errors).map(
-                                                ([field, message]) => (
-                                                    <li key={field}>
-                                                        {message}
-                                                    </li>
-                                                ),
-                                            )}
-                                        </ul>
-                                    </AlertDescription>
-                                </Alert>
-                            </div>
-                        )}
-
+                <main className="w-full grow">
+                    <div className="mx-auto max-w-7xl grow px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
                         {children}
                     </div>
                 </main>
 
                 <Footer />
-
-                <Toaster richColors closeButton />
             </div>
         </ThemeProvider>
     );
