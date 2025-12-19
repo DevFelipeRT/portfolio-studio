@@ -1,3 +1,4 @@
+// resources/js/Layouts/Partials/Navigation.tsx
 'use client';
 
 import { Button } from '@/Components/Ui/button';
@@ -18,12 +19,11 @@ import {
     SheetTrigger,
 } from '@/Components/Ui/sheet';
 import { NavUser } from '@/Layouts/Partials/NavUser';
-import { Link, usePage } from '@inertiajs/react';
-import { Menu } from 'lucide-react';
-import { MouseEvent, useEffect, useState } from 'react';
-
 import { NAMESPACES } from '@/i18n/config/namespaces';
 import { useTranslation } from '@/i18n/react/hooks/useTranslation';
+import { Link, usePage } from '@inertiajs/react';
+import { Menu } from 'lucide-react';
+import { MouseEvent, useEffect, useMemo, useState } from 'react';
 
 export type AuthUser = {
     name: string;
@@ -31,31 +31,35 @@ export type AuthUser = {
     avatar?: string | null;
 };
 
-type NestedNavigationLink = {
-    id: string;
-    label: string;
-    href: string;
-    isActive?: boolean;
-};
-
-type NavigationLinkItem = {
+export type NavigationLinkItem = {
     id: string;
     label: string;
     kind: 'link';
     href: string;
     isActive?: boolean;
-    children?: NestedNavigationLink[];
+    children?: NavigationItem[];
 };
 
-type NavigationSectionItem = {
+export type NavigationSectionItem = {
     id: string;
     label: string;
     kind: 'section';
     targetId?: string;
     scrollToTop?: boolean;
+    children?: NavigationItem[];
 };
 
-export type NavigationItem = NavigationLinkItem | NavigationSectionItem;
+export type NavigationGroupItem = {
+    id: string;
+    label: string;
+    kind: 'group';
+    children?: NavigationItem[];
+};
+
+export type NavigationItem =
+    | NavigationLinkItem
+    | NavigationSectionItem
+    | NavigationGroupItem;
 
 type NavigationProps = {
     items: NavigationItem[];
@@ -67,12 +71,21 @@ type SectionPosition = {
     top: number;
 };
 
+type SectionTargetNode = {
+    identity: string;
+    node: NavigationSectionItem;
+};
+
 function isLinkItem(item: NavigationItem): item is NavigationLinkItem {
     return item.kind === 'link';
 }
 
 function isSectionItem(item: NavigationItem): item is NavigationSectionItem {
     return item.kind === 'section';
+}
+
+function isGroupItem(item: NavigationItem): item is NavigationGroupItem {
+    return item.kind === 'group';
 }
 
 function getHeaderHeight(): number {
@@ -88,8 +101,46 @@ function getHeaderHeight(): number {
     return header.getBoundingClientRect().height;
 }
 
+function buildSectionIdentity(
+    parentIdentity: string | null,
+    id: string,
+): string {
+    if (!parentIdentity) {
+        return id;
+    }
+
+    return `${parentIdentity}.${id}`;
+}
+
+function collectSectionTargets(
+    items: NavigationItem[],
+    parentIdentity: string | null = null,
+    accumulator: SectionTargetNode[] = [],
+): SectionTargetNode[] {
+    items.forEach((item) => {
+        const currentIdentity = buildSectionIdentity(parentIdentity, item.id);
+
+        if (isSectionItem(item)) {
+            accumulator.push({
+                identity: currentIdentity,
+                node: item,
+            });
+        }
+
+        if (item.children && item.children.length > 0) {
+            collectSectionTargets(item.children, currentIdentity, accumulator);
+        }
+    });
+
+    return accumulator;
+}
+
 /**
- * Navigation renders the primary navigation with grouped links and section anchors.
+ * Navigation renders a hybrid navigation bar that supports:
+ * - Link items (routes).
+ * - Section items (scroll to page sections).
+ * - Group items (semantic groups for children).
+ * All of them can be mixed and nested in a single configuration tree.
  */
 export default function Navigation({ items, user }: NavigationProps) {
     if (!items || items.length === 0) {
@@ -97,12 +148,32 @@ export default function Navigation({ items, user }: NavigationProps) {
     }
 
     const { url } = usePage();
-    const hasSections = items.some(isSectionItem);
+
+    const sectionTargets = useMemo(() => collectSectionTargets(items), [items]);
+
+    const hasSections = sectionTargets.length > 0;
 
     const [activeSectionId, setActiveSectionId] = useState<string | null>(
         () => {
-            const firstSection = items.find(isSectionItem);
-            return firstSection ? firstSection.id : null;
+            if (sectionTargets.length === 0) {
+                return null;
+            }
+
+            const topTarget = sectionTargets.find(
+                (target) => target.node.scrollToTop,
+            );
+
+            if (topTarget) {
+                return topTarget.identity;
+            }
+
+            const firstWithTarget = sectionTargets.find(
+                (target) => !!target.node.targetId && !target.node.scrollToTop,
+            );
+
+            return firstWithTarget
+                ? firstWithTarget.identity
+                : sectionTargets[0].identity;
         },
     );
 
@@ -151,17 +222,25 @@ export default function Navigation({ items, user }: NavigationProps) {
 
         const targets: string[] = [];
 
-        items.forEach((item) => {
-            if (isSectionItem(item) && !item.scrollToTop && item.targetId) {
-                const element = document.getElementById(item.targetId);
-                if (element) {
-                    targets.push(item.targetId);
-                }
+        sectionTargets.forEach((target) => {
+            const node = target.node;
+
+            if (node.scrollToTop) {
+                return;
+            }
+
+            if (!node.targetId) {
+                return;
+            }
+
+            const element = document.getElementById(node.targetId);
+            if (element && !targets.includes(node.targetId)) {
+                targets.push(node.targetId);
             }
         });
 
         setRenderableSectionTargets(targets);
-    }, [items, hasSections]);
+    }, [hasSections, sectionTargets]);
 
     useEffect(() => {
         if (!hasSections) {
@@ -177,27 +256,36 @@ export default function Navigation({ items, user }: NavigationProps) {
             const headerHeight = getHeaderHeight();
             const positions: SectionPosition[] = [];
 
-            items.forEach((item) => {
-                if (
-                    isSectionItem(item) &&
-                    !item.scrollToTop &&
-                    item.targetId &&
-                    (renderableSectionTargets === null ||
-                        renderableSectionTargets.includes(item.targetId))
-                ) {
-                    const element = document.getElementById(item.targetId);
-                    if (!element) {
-                        return;
-                    }
+            sectionTargets.forEach((target) => {
+                const node = target.node;
 
-                    const rect = element.getBoundingClientRect();
-                    const top = window.scrollY + rect.top - headerHeight;
-
-                    positions.push({
-                        id: item.id,
-                        top,
-                    });
+                if (node.scrollToTop) {
+                    return;
                 }
+
+                if (!node.targetId) {
+                    return;
+                }
+
+                if (
+                    renderableSectionTargets !== null &&
+                    !renderableSectionTargets.includes(node.targetId)
+                ) {
+                    return;
+                }
+
+                const element = document.getElementById(node.targetId);
+                if (!element) {
+                    return;
+                }
+
+                const rect = element.getBoundingClientRect();
+                const top = window.scrollY + rect.top - headerHeight;
+
+                positions.push({
+                    id: target.identity,
+                    top,
+                });
             });
 
             positions.sort((first, second) => first.top - second.top);
@@ -211,7 +299,7 @@ export default function Navigation({ items, user }: NavigationProps) {
         return () => {
             window.removeEventListener('resize', collectSectionPositions);
         };
-    }, [items, hasSections, renderableSectionTargets]);
+    }, [hasSections, sectionTargets, renderableSectionTargets]);
 
     useEffect(() => {
         if (!hasSections) {
@@ -222,7 +310,7 @@ export default function Navigation({ items, user }: NavigationProps) {
             return;
         }
 
-        if (sectionPositions.length === 0) {
+        if (sectionPositions.length === 0 && sectionTargets.length === 0) {
             return;
         }
 
@@ -246,14 +334,16 @@ export default function Navigation({ items, user }: NavigationProps) {
             }
 
             if (!currentSectionId) {
-                const topItem = items.find(
-                    (item) => isSectionItem(item) && item.scrollToTop,
+                const topTarget = sectionTargets.find(
+                    (target) => target.node.scrollToTop,
                 );
 
-                if (topItem && isSectionItem(topItem)) {
-                    currentSectionId = topItem.id;
-                } else {
+                if (topTarget) {
+                    currentSectionId = topTarget.identity;
+                } else if (sectionPositions.length > 0) {
                     currentSectionId = sectionPositions[0].id;
+                } else if (sectionTargets.length > 0) {
+                    currentSectionId = sectionTargets[0].identity;
                 }
             }
 
@@ -269,7 +359,7 @@ export default function Navigation({ items, user }: NavigationProps) {
         return () => {
             window.removeEventListener('scroll', handleScroll);
         };
-    }, [hasSections, items, sectionPositions]);
+    }, [hasSections, sectionPositions, sectionTargets]);
 
     useEffect(() => {
         setIsSheetOpen(false);
@@ -277,7 +367,8 @@ export default function Navigation({ items, user }: NavigationProps) {
 
     function handleSectionNavigate(
         event: MouseEvent<HTMLButtonElement>,
-        item: NavigationSectionItem,
+        node: NavigationSectionItem,
+        identity: string,
     ): void {
         event.preventDefault();
 
@@ -285,23 +376,23 @@ export default function Navigation({ items, user }: NavigationProps) {
             return;
         }
 
-        if (item.scrollToTop) {
+        if (node.scrollToTop) {
             window.scrollTo({
                 top: 0,
                 behavior: 'smooth',
             });
 
             window.history.replaceState(null, '', '#top');
-            setActiveSectionId(item.id);
+            setActiveSectionId(identity);
 
             return;
         }
 
-        if (!item.targetId) {
+        if (!node.targetId) {
             return;
         }
 
-        const targetElement = document.getElementById(item.targetId);
+        const targetElement = document.getElementById(node.targetId);
         if (!targetElement) {
             return;
         }
@@ -315,16 +406,74 @@ export default function Navigation({ items, user }: NavigationProps) {
             behavior: 'smooth',
         });
 
-        window.history.replaceState(null, '', `#${item.targetId}`);
-        setActiveSectionId(item.id);
+        window.history.replaceState(null, '', `#${node.targetId}`);
+        setActiveSectionId(identity);
     }
 
-    function shouldRenderSection(item: NavigationSectionItem): boolean {
-        if (item.scrollToTop) {
+    function shouldRenderSectionNode(node: NavigationSectionItem): boolean {
+        const hasChildren = !!node.children && node.children.length > 0;
+
+        if (!hasChildren) {
+            if (node.scrollToTop) {
+                return true;
+            }
+
+            if (!node.targetId) {
+                return false;
+            }
+
+            if (renderableSectionTargets === null) {
+                return true;
+            }
+
+            return renderableSectionTargets.includes(node.targetId);
+        }
+
+        const hasRenderableChild = node.children!.some((child) => {
+            if (!isSectionItem(child)) {
+                return false;
+            }
+
+            if (child.scrollToTop) {
+                return true;
+            }
+
+            if (!child.targetId) {
+                return false;
+            }
+
+            if (renderableSectionTargets === null) {
+                return true;
+            }
+
+            return renderableSectionTargets.includes(child.targetId);
+        });
+
+        if (node.scrollToTop || node.targetId) {
+            if (node.scrollToTop) {
+                return true;
+            }
+
+            if (!node.targetId) {
+                return hasRenderableChild;
+            }
+
+            if (renderableSectionTargets === null) {
+                return true;
+            }
+
+            return renderableSectionTargets.includes(node.targetId);
+        }
+
+        return hasRenderableChild;
+    }
+
+    function shouldRenderSectionChild(node: NavigationSectionItem): boolean {
+        if (node.scrollToTop) {
             return true;
         }
 
-        if (!item.targetId) {
+        if (!node.targetId) {
             return false;
         }
 
@@ -332,7 +481,7 @@ export default function Navigation({ items, user }: NavigationProps) {
             return true;
         }
 
-        return renderableSectionTargets.includes(item.targetId);
+        return renderableSectionTargets.includes(node.targetId);
     }
 
     function desktopItemClass(isActive: boolean | undefined): string {
@@ -376,6 +525,28 @@ export default function Navigation({ items, user }: NavigationProps) {
         return [base, isActive ? active : inactive].join(' ');
     }
 
+    function isSectionIdentityActive(identity: string): boolean {
+        return hasSections && activeSectionId === identity;
+    }
+
+    function hasActiveSectionDescendant(
+        parentIdentity: string,
+        children: NavigationItem[] | undefined,
+    ): boolean {
+        if (!children || children.length === 0) {
+            return false;
+        }
+
+        return children.some((child) => {
+            if (!isSectionItem(child)) {
+                return false;
+            }
+
+            const identity = buildSectionIdentity(parentIdentity, child.id);
+            return isSectionIdentityActive(identity);
+        });
+    }
+
     return (
         <nav
             className="flex grow items-center justify-center gap-3"
@@ -386,19 +557,13 @@ export default function Navigation({ items, user }: NavigationProps) {
                 <NavigationMenu>
                     <NavigationMenuList>
                         {items.map((item) => {
+                            const hasChildren =
+                                !!item.children && item.children.length > 0;
+
                             if (isLinkItem(item)) {
-                                const hasChildren =
-                                    item.children && item.children.length > 0;
+                                if (!hasChildren) {
+                                    const isActive = !!item.isActive;
 
-                                const isActive =
-                                    !!item.isActive ||
-                                    (hasChildren
-                                        ? item.children!.some(
-                                              (child) => child.isActive,
-                                          )
-                                        : false);
-
-                                if (hasChildren) {
                                     return (
                                         <NavigationMenuItem
                                             key={item.id}
@@ -406,18 +571,77 @@ export default function Navigation({ items, user }: NavigationProps) {
                                                 isActive,
                                             )}
                                         >
-                                            <NavigationMenuTrigger
+                                            <NavigationMenuLink
+                                                asChild
                                                 className={desktopTriggerClass(
                                                     isActive,
                                                 )}
                                             >
-                                                {item.label}
-                                            </NavigationMenuTrigger>
+                                                <Link href={item.href}>
+                                                    {item.label}
+                                                </Link>
+                                            </NavigationMenuLink>
+                                        </NavigationMenuItem>
+                                    );
+                                }
 
-                                            <NavigationMenuContent className="bg-popover rounded-md border p-2 shadow-lg">
-                                                <ul className="grid w-[200px] gap-2">
-                                                    {item.children!.map(
-                                                        (child) => (
+                                const anyActiveChild = item.children!.some(
+                                    (child) => {
+                                        if (isLinkItem(child)) {
+                                            return !!child.isActive;
+                                        }
+
+                                        if (isSectionItem(child)) {
+                                            const identity =
+                                                buildSectionIdentity(
+                                                    item.id,
+                                                    child.id,
+                                                );
+                                            return isSectionIdentityActive(
+                                                identity,
+                                            );
+                                        }
+
+                                        return false;
+                                    },
+                                );
+
+                                const isActiveRoot =
+                                    !!item.isActive || anyActiveChild;
+
+                                return (
+                                    <NavigationMenuItem
+                                        key={item.id}
+                                        className={desktopItemClass(
+                                            isActiveRoot,
+                                        )}
+                                    >
+                                        <NavigationMenuTrigger
+                                            className={desktopTriggerClass(
+                                                isActiveRoot,
+                                            )}
+                                        >
+                                            {item.label}
+                                        </NavigationMenuTrigger>
+
+                                        <NavigationMenuContent className="bg-popover rounded-md border p-2 shadow-lg">
+                                            <ul className="grid w-[220px] gap-2">
+                                                <li key={`${item.id}.__self`}>
+                                                    <NavigationMenuLink
+                                                        asChild
+                                                        className={submenuLinkClass(
+                                                            !!item.isActive,
+                                                        )}
+                                                    >
+                                                        <Link href={item.href}>
+                                                            {item.label}
+                                                        </Link>
+                                                    </NavigationMenuLink>
+                                                </li>
+
+                                                {item.children!.map((child) => {
+                                                    if (isLinkItem(child)) {
+                                                        return (
                                                             <li key={child.id}>
                                                                 <NavigationMenuLink
                                                                     asChild
@@ -436,7 +660,307 @@ export default function Navigation({ items, user }: NavigationProps) {
                                                                     </Link>
                                                                 </NavigationMenuLink>
                                                             </li>
-                                                        ),
+                                                        );
+                                                    }
+
+                                                    if (isSectionItem(child)) {
+                                                        if (
+                                                            !shouldRenderSectionChild(
+                                                                child,
+                                                            )
+                                                        ) {
+                                                            return null;
+                                                        }
+
+                                                        const identity =
+                                                            buildSectionIdentity(
+                                                                item.id,
+                                                                child.id,
+                                                            );
+
+                                                        const isActiveChild =
+                                                            isSectionIdentityActive(
+                                                                identity,
+                                                            );
+
+                                                        return (
+                                                            <li key={identity}>
+                                                                <NavigationMenuLink
+                                                                    asChild
+                                                                    className={submenuLinkClass(
+                                                                        isActiveChild,
+                                                                    )}
+                                                                >
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={(
+                                                                            event,
+                                                                        ) =>
+                                                                            handleSectionNavigate(
+                                                                                event,
+                                                                                child,
+                                                                                identity,
+                                                                            )
+                                                                        }
+                                                                    >
+                                                                        {
+                                                                            child.label
+                                                                        }
+                                                                    </button>
+                                                                </NavigationMenuLink>
+                                                            </li>
+                                                        );
+                                                    }
+
+                                                    return null;
+                                                })}
+                                            </ul>
+                                        </NavigationMenuContent>
+                                    </NavigationMenuItem>
+                                );
+                            }
+
+                            if (isGroupItem(item)) {
+                                if (!hasChildren) {
+                                    return null;
+                                }
+
+                                const anyActiveChild = item.children!.some(
+                                    (child) => {
+                                        if (isLinkItem(child)) {
+                                            return !!child.isActive;
+                                        }
+
+                                        if (isSectionItem(child)) {
+                                            const identity =
+                                                buildSectionIdentity(
+                                                    item.id,
+                                                    child.id,
+                                                );
+                                            return isSectionIdentityActive(
+                                                identity,
+                                            );
+                                        }
+
+                                        return false;
+                                    },
+                                );
+
+                                const isActiveRoot = anyActiveChild;
+
+                                return (
+                                    <NavigationMenuItem
+                                        key={item.id}
+                                        className={desktopItemClass(
+                                            isActiveRoot,
+                                        )}
+                                    >
+                                        <NavigationMenuTrigger
+                                            className={desktopTriggerClass(
+                                                isActiveRoot,
+                                            )}
+                                        >
+                                            {item.label}
+                                        </NavigationMenuTrigger>
+
+                                        <NavigationMenuContent className="bg-popover rounded-md border p-2 shadow-lg">
+                                            <ul className="grid w-[220px] gap-2">
+                                                {item.children!.map((child) => {
+                                                    if (isLinkItem(child)) {
+                                                        return (
+                                                            <li key={child.id}>
+                                                                <NavigationMenuLink
+                                                                    asChild
+                                                                    className={submenuLinkClass(
+                                                                        !!child.isActive,
+                                                                    )}
+                                                                >
+                                                                    <Link
+                                                                        href={
+                                                                            child.href
+                                                                        }
+                                                                    >
+                                                                        {
+                                                                            child.label
+                                                                        }
+                                                                    </Link>
+                                                                </NavigationMenuLink>
+                                                            </li>
+                                                        );
+                                                    }
+
+                                                    if (isSectionItem(child)) {
+                                                        if (
+                                                            !shouldRenderSectionChild(
+                                                                child,
+                                                            )
+                                                        ) {
+                                                            return null;
+                                                        }
+
+                                                        const identity =
+                                                            buildSectionIdentity(
+                                                                item.id,
+                                                                child.id,
+                                                            );
+                                                        const isActiveChild =
+                                                            isSectionIdentityActive(
+                                                                identity,
+                                                            );
+
+                                                        return (
+                                                            <li key={identity}>
+                                                                <NavigationMenuLink
+                                                                    asChild
+                                                                    className={submenuLinkClass(
+                                                                        isActiveChild,
+                                                                    )}
+                                                                >
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={(
+                                                                            event,
+                                                                        ) =>
+                                                                            handleSectionNavigate(
+                                                                                event,
+                                                                                child,
+                                                                                identity,
+                                                                            )
+                                                                        }
+                                                                    >
+                                                                        {
+                                                                            child.label
+                                                                        }
+                                                                    </button>
+                                                                </NavigationMenuLink>
+                                                            </li>
+                                                        );
+                                                    }
+
+                                                    return null;
+                                                })}
+                                            </ul>
+                                        </NavigationMenuContent>
+                                    </NavigationMenuItem>
+                                );
+                            }
+
+                            if (isSectionItem(item)) {
+                                if (!shouldRenderSectionNode(item)) {
+                                    return null;
+                                }
+
+                                if (hasChildren) {
+                                    const sectionChildren =
+                                        item.children!.filter(isSectionItem);
+
+                                    const visibleChildren =
+                                        sectionChildren.filter(
+                                            shouldRenderSectionChild,
+                                        );
+
+                                    const anyActiveChild =
+                                        hasActiveSectionDescendant(
+                                            item.id,
+                                            sectionChildren,
+                                        );
+
+                                    const isActiveRoot =
+                                        isSectionIdentityActive(item.id) ||
+                                        anyActiveChild;
+
+                                    return (
+                                        <NavigationMenuItem
+                                            key={item.id}
+                                            className={desktopItemClass(
+                                                isActiveRoot,
+                                            )}
+                                        >
+                                            <NavigationMenuTrigger
+                                                className={desktopTriggerClass(
+                                                    isActiveRoot,
+                                                )}
+                                            >
+                                                {item.label}
+                                            </NavigationMenuTrigger>
+
+                                            <NavigationMenuContent className="bg-popover rounded-md border p-2 shadow-lg">
+                                                <ul className="grid w-[220px] gap-2">
+                                                    {item.scrollToTop ||
+                                                    item.targetId ? (
+                                                        <li
+                                                            key={`${item.id}.__self`}
+                                                        >
+                                                            <NavigationMenuLink
+                                                                asChild
+                                                                className={submenuLinkClass(
+                                                                    isSectionIdentityActive(
+                                                                        item.id,
+                                                                    ),
+                                                                )}
+                                                            >
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={(
+                                                                        event,
+                                                                    ) =>
+                                                                        handleSectionNavigate(
+                                                                            event,
+                                                                            item,
+                                                                            item.id,
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    {item.label}
+                                                                </button>
+                                                            </NavigationMenuLink>
+                                                        </li>
+                                                    ) : null}
+
+                                                    {visibleChildren.map(
+                                                        (child) => {
+                                                            const identity =
+                                                                buildSectionIdentity(
+                                                                    item.id,
+                                                                    child.id,
+                                                                );
+                                                            const isActiveChild =
+                                                                isSectionIdentityActive(
+                                                                    identity,
+                                                                );
+
+                                                            return (
+                                                                <li
+                                                                    key={
+                                                                        identity
+                                                                    }
+                                                                >
+                                                                    <NavigationMenuLink
+                                                                        asChild
+                                                                        className={submenuLinkClass(
+                                                                            isActiveChild,
+                                                                        )}
+                                                                    >
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={(
+                                                                                event,
+                                                                            ) =>
+                                                                                handleSectionNavigate(
+                                                                                    event,
+                                                                                    child,
+                                                                                    identity,
+                                                                                )
+                                                                            }
+                                                                        >
+                                                                            {
+                                                                                child.label
+                                                                            }
+                                                                        </button>
+                                                                    </NavigationMenuLink>
+                                                                </li>
+                                                            );
+                                                        },
                                                     )}
                                                 </ul>
                                             </NavigationMenuContent>
@@ -444,52 +968,37 @@ export default function Navigation({ items, user }: NavigationProps) {
                                     );
                                 }
 
+                                const isActiveSection = isSectionIdentityActive(
+                                    item.id,
+                                );
+
                                 return (
                                     <NavigationMenuItem
                                         key={item.id}
-                                        className={desktopItemClass(isActive)}
+                                        className={desktopItemClass(
+                                            isActiveSection,
+                                        )}
                                     >
-                                        <NavigationMenuLink
-                                            asChild
+                                        <button
+                                            type="button"
                                             className={desktopTriggerClass(
-                                                isActive,
+                                                isActiveSection,
                                             )}
+                                            onClick={(event) =>
+                                                handleSectionNavigate(
+                                                    event,
+                                                    item,
+                                                    item.id,
+                                                )
+                                            }
                                         >
-                                            <Link href={item.href}>
-                                                {item.label}
-                                            </Link>
-                                        </NavigationMenuLink>
+                                            {item.label}
+                                        </button>
                                     </NavigationMenuItem>
                                 );
                             }
 
-                            if (!shouldRenderSection(item)) {
-                                return null;
-                            }
-
-                            const isActiveSection =
-                                hasSections && activeSectionId === item.id;
-
-                            return (
-                                <NavigationMenuItem
-                                    key={item.id}
-                                    className={desktopItemClass(
-                                        isActiveSection,
-                                    )}
-                                >
-                                    <button
-                                        type="button"
-                                        className={desktopTriggerClass(
-                                            isActiveSection,
-                                        )}
-                                        onClick={(event) =>
-                                            handleSectionNavigate(event, item)
-                                        }
-                                    >
-                                        {item.label}
-                                    </button>
-                                </NavigationMenuItem>
-                            );
+                            return null;
                         })}
                     </NavigationMenuList>
                 </NavigationMenu>
@@ -522,12 +1031,271 @@ export default function Navigation({ items, user }: NavigationProps) {
 
                         <div className="flex flex-col gap-2 pt-2">
                             {items.map((item) => {
+                                const hasChildren =
+                                    !!item.children && item.children.length > 0;
+
                                 if (isLinkItem(item)) {
-                                    const hasChildren =
-                                        item.children &&
-                                        item.children.length > 0;
+                                    if (!hasChildren) {
+                                        const isActive = !!item.isActive;
+
+                                        return (
+                                            <div
+                                                key={item.id}
+                                                className={mobileWrapperClass(
+                                                    isActive,
+                                                )}
+                                            >
+                                                <Link
+                                                    href={item.href}
+                                                    className={mobileButtonClass(
+                                                        isActive,
+                                                    )}
+                                                    onClick={() =>
+                                                        setIsSheetOpen(false)
+                                                    }
+                                                >
+                                                    {item.label}
+                                                </Link>
+                                            </div>
+                                        );
+                                    }
+
+                                    return (
+                                        <div
+                                            key={item.id}
+                                            className="flex flex-col gap-1"
+                                        >
+                                            <div className="text-muted-foreground px-3 pt-2 text-xs font-semibold tracking-wide uppercase">
+                                                {item.label}
+                                            </div>
+
+                                            <div
+                                                className={mobileWrapperClass(
+                                                    !!item.isActive,
+                                                )}
+                                            >
+                                                <Link
+                                                    href={item.href}
+                                                    className={mobileButtonClass(
+                                                        !!item.isActive,
+                                                    )}
+                                                    onClick={() =>
+                                                        setIsSheetOpen(false)
+                                                    }
+                                                >
+                                                    {item.label}
+                                                </Link>
+                                            </div>
+
+                                            {item.children!.map((child) => {
+                                                if (isLinkItem(child)) {
+                                                    const isActiveChild =
+                                                        !!child.isActive;
+
+                                                    return (
+                                                        <div
+                                                            key={child.id}
+                                                            className={mobileWrapperClass(
+                                                                isActiveChild,
+                                                            )}
+                                                        >
+                                                            <Link
+                                                                href={
+                                                                    child.href
+                                                                }
+                                                                className={mobileButtonClass(
+                                                                    isActiveChild,
+                                                                )}
+                                                                onClick={() =>
+                                                                    setIsSheetOpen(
+                                                                        false,
+                                                                    )
+                                                                }
+                                                            >
+                                                                {child.label}
+                                                            </Link>
+                                                        </div>
+                                                    );
+                                                }
+
+                                                if (isSectionItem(child)) {
+                                                    if (
+                                                        !shouldRenderSectionChild(
+                                                            child,
+                                                        )
+                                                    ) {
+                                                        return null;
+                                                    }
+
+                                                    const identity =
+                                                        buildSectionIdentity(
+                                                            item.id,
+                                                            child.id,
+                                                        );
+                                                    const isActiveChild =
+                                                        isSectionIdentityActive(
+                                                            identity,
+                                                        );
+
+                                                    return (
+                                                        <div
+                                                            key={identity}
+                                                            className={mobileWrapperClass(
+                                                                isActiveChild,
+                                                            )}
+                                                        >
+                                                            <Button
+                                                                type="button"
+                                                                variant="ghost"
+                                                                className={mobileButtonClass(
+                                                                    isActiveChild,
+                                                                )}
+                                                                onClick={(
+                                                                    event,
+                                                                ) => {
+                                                                    handleSectionNavigate(
+                                                                        event,
+                                                                        child,
+                                                                        identity,
+                                                                    );
+                                                                    setIsSheetOpen(
+                                                                        false,
+                                                                    );
+                                                                }}
+                                                            >
+                                                                {child.label}
+                                                            </Button>
+                                                        </div>
+                                                    );
+                                                }
+
+                                                return null;
+                                            })}
+                                        </div>
+                                    );
+                                }
+
+                                if (isGroupItem(item)) {
+                                    if (!hasChildren) {
+                                        return null;
+                                    }
+
+                                    return (
+                                        <div
+                                            key={item.id}
+                                            className="flex flex-col gap-1"
+                                        >
+                                            <div className="text-muted-foreground px-3 pt-2 text-xs font-semibold tracking-wide uppercase">
+                                                {item.label}
+                                            </div>
+
+                                            {item.children!.map((child) => {
+                                                if (isLinkItem(child)) {
+                                                    const isActiveChild =
+                                                        !!child.isActive;
+
+                                                    return (
+                                                        <div
+                                                            key={child.id}
+                                                            className={mobileWrapperClass(
+                                                                isActiveChild,
+                                                            )}
+                                                        >
+                                                            <Link
+                                                                href={
+                                                                    child.href
+                                                                }
+                                                                className={mobileButtonClass(
+                                                                    isActiveChild,
+                                                                )}
+                                                                onClick={() =>
+                                                                    setIsSheetOpen(
+                                                                        false,
+                                                                    )
+                                                                }
+                                                            >
+                                                                {child.label}
+                                                            </Link>
+                                                        </div>
+                                                    );
+                                                }
+
+                                                if (isSectionItem(child)) {
+                                                    if (
+                                                        !shouldRenderSectionChild(
+                                                            child,
+                                                        )
+                                                    ) {
+                                                        return null;
+                                                    }
+
+                                                    const identity =
+                                                        buildSectionIdentity(
+                                                            item.id,
+                                                            child.id,
+                                                        );
+                                                    const isActiveChild =
+                                                        isSectionIdentityActive(
+                                                            identity,
+                                                        );
+
+                                                    return (
+                                                        <div
+                                                            key={identity}
+                                                            className={mobileWrapperClass(
+                                                                isActiveChild,
+                                                            )}
+                                                        >
+                                                            <Button
+                                                                type="button"
+                                                                variant="ghost"
+                                                                className={mobileButtonClass(
+                                                                    isActiveChild,
+                                                                )}
+                                                                onClick={(
+                                                                    event,
+                                                                ) => {
+                                                                    handleSectionNavigate(
+                                                                        event,
+                                                                        child,
+                                                                        identity,
+                                                                    );
+                                                                    setIsSheetOpen(
+                                                                        false,
+                                                                    );
+                                                                }}
+                                                            >
+                                                                {child.label}
+                                                            </Button>
+                                                        </div>
+                                                    );
+                                                }
+
+                                                return null;
+                                            })}
+                                        </div>
+                                    );
+                                }
+
+                                if (isSectionItem(item)) {
+                                    if (!shouldRenderSectionNode(item)) {
+                                        return null;
+                                    }
 
                                     if (hasChildren) {
+                                        const sectionChildren =
+                                            item.children!.filter(
+                                                isSectionItem,
+                                            );
+                                        const visibleChildren =
+                                            sectionChildren.filter(
+                                                shouldRenderSectionChild,
+                                            );
+
+                                        if (visibleChildren.length === 0) {
+                                            return null;
+                                        }
+
                                         return (
                                             <div
                                                 key={item.id}
@@ -536,88 +1304,124 @@ export default function Navigation({ items, user }: NavigationProps) {
                                                 <div className="text-muted-foreground px-3 pt-2 text-xs font-semibold tracking-wide uppercase">
                                                     {item.label}
                                                 </div>
-                                                {item.children!.map((child) => (
+
+                                                {item.scrollToTop ||
+                                                item.targetId ? (
                                                     <div
-                                                        key={child.id}
                                                         className={mobileWrapperClass(
-                                                            !!child.isActive,
+                                                            isSectionIdentityActive(
+                                                                item.id,
+                                                            ),
                                                         )}
                                                     >
-                                                        <Link
-                                                            href={child.href}
+                                                        <Button
+                                                            type="button"
+                                                            variant="ghost"
                                                             className={mobileButtonClass(
-                                                                !!child.isActive,
+                                                                isSectionIdentityActive(
+                                                                    item.id,
+                                                                ),
                                                             )}
-                                                            onClick={() =>
+                                                            onClick={(
+                                                                event,
+                                                            ) => {
+                                                                handleSectionNavigate(
+                                                                    event,
+                                                                    item,
+                                                                    item.id,
+                                                                );
                                                                 setIsSheetOpen(
                                                                     false,
-                                                                )
-                                                            }
+                                                                );
+                                                            }}
                                                         >
-                                                            {child.label}
-                                                        </Link>
+                                                            {item.label}
+                                                        </Button>
                                                     </div>
-                                                ))}
+                                                ) : null}
+
+                                                {visibleChildren.map(
+                                                    (child) => {
+                                                        const identity =
+                                                            buildSectionIdentity(
+                                                                item.id,
+                                                                child.id,
+                                                            );
+                                                        const isActiveChild =
+                                                            isSectionIdentityActive(
+                                                                identity,
+                                                            );
+
+                                                        return (
+                                                            <div
+                                                                key={identity}
+                                                                className={mobileWrapperClass(
+                                                                    isActiveChild,
+                                                                )}
+                                                            >
+                                                                <Button
+                                                                    type="button"
+                                                                    variant="ghost"
+                                                                    className={mobileButtonClass(
+                                                                        isActiveChild,
+                                                                    )}
+                                                                    onClick={(
+                                                                        event,
+                                                                    ) => {
+                                                                        handleSectionNavigate(
+                                                                            event,
+                                                                            child,
+                                                                            identity,
+                                                                        );
+                                                                        setIsSheetOpen(
+                                                                            false,
+                                                                        );
+                                                                    }}
+                                                                >
+                                                                    {
+                                                                        child.label
+                                                                    }
+                                                                </Button>
+                                                            </div>
+                                                        );
+                                                    },
+                                                )}
                                             </div>
                                         );
                                     }
 
-                                    const isActive = !!item.isActive;
+                                    const isActiveSection =
+                                        isSectionIdentityActive(item.id);
 
                                     return (
                                         <div
                                             key={item.id}
                                             className={mobileWrapperClass(
-                                                isActive,
+                                                isActiveSection,
                                             )}
                                         >
-                                            <Link
-                                                href={item.href}
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
                                                 className={mobileButtonClass(
-                                                    isActive,
+                                                    isActiveSection,
                                                 )}
-                                                onClick={() =>
-                                                    setIsSheetOpen(false)
-                                                }
+                                                onClick={(event) => {
+                                                    handleSectionNavigate(
+                                                        event,
+                                                        item,
+                                                        item.id,
+                                                    );
+                                                    setIsSheetOpen(false);
+                                                }}
                                             >
                                                 {item.label}
-                                            </Link>
+                                            </Button>
                                         </div>
                                     );
                                 }
 
-                                if (!shouldRenderSection(item)) {
-                                    return null;
-                                }
-
-                                const isActiveSection =
-                                    hasSections && activeSectionId === item.id;
-
-                                return (
-                                    <div
-                                        key={item.id}
-                                        className={mobileWrapperClass(
-                                            isActiveSection,
-                                        )}
-                                    >
-                                        <Button
-                                            type="button"
-                                            variant="ghost"
-                                            className={mobileButtonClass(
-                                                isActiveSection,
-                                            )}
-                                            onClick={(event) => {
-                                                handleSectionNavigate(
-                                                    event,
-                                                    item,
-                                                );
-                                                setIsSheetOpen(false);
-                                            }}
-                                        >
-                                            {item.label}
-                                        </Button>
-                                    </div>
-                                );
+                                return null;
                             })}
                         </div>
 
