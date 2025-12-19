@@ -1,5 +1,8 @@
 // resources/js/Modules/ContentManagement/types/index.ts
 
+export type { SectionEnvironment } from './sectionEnvironment';
+export { createDefaultSectionEnvironment } from './sectionEnvironment';
+
 export type SectionDataPrimitive = string | number | boolean | null;
 
 /**
