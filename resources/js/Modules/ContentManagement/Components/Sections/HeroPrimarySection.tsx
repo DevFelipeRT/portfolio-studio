@@ -2,7 +2,10 @@
 import { Button } from '@/Components/Ui/button';
 import { SectionHeader } from '@/Layouts/Partials/SectionHeader';
 import type { SectionComponentProps } from '@/Modules/ContentManagement/config/sectionComponents';
-import type { SectionData } from '@/Modules/ContentManagement/types';
+import type {
+    SectionData,
+    SectionImage,
+} from '@/Modules/ContentManagement/types';
 import { JSX } from 'react';
 
 /**
@@ -13,6 +16,16 @@ export function HeroPrimarySection({
     template,
 }: SectionComponentProps): JSX.Element | null {
     const data = (section.data ?? {}) as SectionData;
+
+    const rawHeroImage = data.hero_image as
+        | SectionImage
+        | SectionImage[]
+        | null
+        | undefined;
+
+    const heroImage: SectionImage | null = Array.isArray(rawHeroImage)
+        ? (rawHeroImage[0] ?? null)
+        : (rawHeroImage ?? null);
 
     const getString = (key: string): string | undefined => {
         const value = data[key];
@@ -73,7 +86,18 @@ export function HeroPrimarySection({
 
                     {/* Image / visual column */}
                     <div className="relative" aria-hidden="true">
-                        <div className="bg-muted relative h-48 w-full overflow-hidden rounded-2xl border md:h-64 lg:h-72" />
+                        {heroImage ? (
+                            <div className="relative h-48 w-full overflow-hidden rounded-2xl border md:h-64 lg:h-72">
+                                <img
+                                    src={heroImage.url}
+                                    alt={heroImage.alt ?? heroImage.title ?? ''}
+                                    className="h-full w-full object-cover"
+                                />
+                                <div className="from-background/60 via-background/20 pointer-events-none absolute inset-0 bg-gradient-to-tr to-transparent" />
+                            </div>
+                        ) : (
+                            <div className="bg-muted relative h-48 w-full overflow-hidden rounded-2xl border md:h-64 lg:h-72" />
+                        )}
                     </div>
                 </div>
             </div>
