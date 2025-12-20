@@ -201,9 +201,9 @@ final class TemplateValidationService
     {
         return match ($type) {
             'string', 'text', 'rich_text' => 'string',
-            'integer' => 'integer',
+            'integer', 'image' => 'integer',
             'boolean' => 'boolean',
-            'array', 'array_integer', 'collection' => 'array',
+            'array', 'array_integer', 'collection', 'image_gallery' => 'array',
             default => null,
         };
     }
