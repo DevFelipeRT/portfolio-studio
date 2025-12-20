@@ -15,10 +15,12 @@ import { CoursesHighlightGridSection } from '../Components/Sections/CoursesHighl
 import { ContactPrimarySection } from '../Components/Sections/ContactPrimarySection';
 import { TechStackPrimarySection } from '../Components/Sections/TechStackPrimarySection';
 
-export interface SectionComponentProps {
+export type SectionComponentProps = {
     section: PageSectionDto;
     template?: TemplateDefinitionDto;
-}
+    anchorId?: string;
+    className?: string;
+};
 
 /**
  * Registry that maps template keys to specialized section components.
