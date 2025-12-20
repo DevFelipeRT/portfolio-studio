@@ -2,8 +2,8 @@
 
 import { Initiative } from '@/Pages/types';
 import { useTranslation } from '@/i18n';
+import { SectionHeader } from '../../../Layouts/Partials/SectionHeader';
 import { InitiativeCard } from '../Partials/InitiativeCard';
-import { SectionHeader } from '../Partials/SectionHeader';
 
 export interface InitiativeSectionProps {
     initiatives?: Initiative[];

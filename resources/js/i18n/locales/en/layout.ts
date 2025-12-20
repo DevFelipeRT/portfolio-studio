@@ -20,6 +20,7 @@ const layout: TranslationTree = {
             inbox: 'Inbox',
             portfolio: 'Portfolio',
             portfolioProjects: 'Projects',
+            portfolioImages: 'Images',
             portfolioExperiences: 'Experiences',
             portfolioCourses: 'Courses',
             portfolioTechnologies: 'Technologies',

@@ -1,8 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/Ui/card';
-import { DateDisplay } from '@/Components/Ui/date-display'; // Importação adicionada
-import { useTranslation } from '@/i18n'; // Importação adicionada
-import { Initiative } from '@/Pages/types';
-import { JSX } from 'react';
+import { DateDisplay } from '@/Components/Ui/date-display';
+import { useTranslation } from '@/i18n';
+import type { Initiative } from '@/Pages/types';
+import type { JSX } from 'react';
 
 type InitiativeCardProps = {
     initiative: Initiative;
@@ -26,34 +26,19 @@ function InitiativePeriodDisplay({
 }): JSX.Element | null {
     const { start_date, end_date } = initiative;
 
-    const format = 'PP'; // Formato de data padrão localizado (ex: '3 Mar, 2020')
+    const format = 'PP';
     const separator = ' – ';
 
-    // Case 1: Only start_date available
     if (start_date && !end_date) {
         return (
-            <DateDisplay
-                value={start_date}
-                locale={locale}
-                format={format}
-                key="start-only"
-            />
+            <DateDisplay value={start_date} locale={locale} format={format} />
         );
     }
 
-    // Case 2: Only end_date available (Unusual, but handled)
     if (!start_date && end_date) {
-        return (
-            <DateDisplay
-                value={end_date}
-                locale={locale}
-                format={format}
-                key="end-only"
-            />
-        );
+        return <DateDisplay value={end_date} locale={locale} format={format} />;
     }
 
-    // Case 3: Both dates available (Date Range)
     if (start_date && end_date) {
         return (
             <>
@@ -61,20 +46,13 @@ function InitiativePeriodDisplay({
                     value={start_date}
                     locale={locale}
                     format={format}
-                    key="start-date"
                 />
                 {separator}
-                <DateDisplay
-                    value={end_date}
-                    locale={locale}
-                    format={format}
-                    key="end-date"
-                />
+                <DateDisplay value={end_date} locale={locale} format={format} />
             </>
         );
     }
 
-    // Case 4: No dates available
     return null;
 }
 
@@ -82,12 +60,13 @@ function InitiativePeriodDisplay({
  * InitiativeCard renders a single initiative card for the landing page.
  */
 export function InitiativeCard({ initiative }: InitiativeCardProps) {
-    // Need access to locale for DateDisplay
     const { locale } = useTranslation('home');
 
     const coverImage = initiative.images?.[0] ?? null;
+    const coverUrl = coverImage?.url ?? null;
+    const coverAlt =
+        coverImage?.alt_text || coverImage?.image_title || initiative.name;
 
-    // Use the new component for date labeling
     const periodLabel = (
         <InitiativePeriodDisplay initiative={initiative} locale={locale} />
     );
@@ -96,11 +75,11 @@ export function InitiativeCard({ initiative }: InitiativeCardProps) {
 
     return (
         <Card className="bg-card/80 flex h-full flex-col overflow-hidden border shadow-sm">
-            {coverImage && (
+            {coverUrl && (
                 <div className="relative h-40 w-full overflow-hidden">
                     <img
-                        src={coverImage.src}
-                        alt={coverImage.alt ?? initiative.name}
+                        src={coverUrl}
+                        alt={coverAlt}
                         className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-[1.02]"
                         loading="lazy"
                     />
@@ -112,7 +91,6 @@ export function InitiativeCard({ initiative }: InitiativeCardProps) {
                     {initiative.name}
                 </CardTitle>
 
-                {/* Render the new component if dates exist */}
                 {hasDates && periodLabel && (
                     <p className="text-muted-foreground text-xs tracking-wide uppercase">
                         {periodLabel}

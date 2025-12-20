@@ -12,8 +12,8 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->web(append: [
-            \App\Http\Middleware\ResolveLocale::class,
-            \App\Http\Middleware\HandleInertiaRequests::class,
+            \App\Modules\Locale\Http\Middleware\ResolveLocale::class,
+            \App\Modules\Inertia\Http\Middleware\HandleInertiaRequests::class,
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
         ]);
 

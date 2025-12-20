@@ -1,8 +1,8 @@
 // resources/js/Pages/Home/Sections/ProjectSection.tsx
 import { Project } from '@/Pages/types';
 import { useTranslation } from '@/i18n';
+import { SectionHeader } from '../../../Layouts/Partials/SectionHeader';
 import { ProjectCarousel } from '../Partials/ProjectCarousel';
-import { SectionHeader } from '../Partials/SectionHeader';
 
 export interface ProjectProps {
     projects?: Project[];

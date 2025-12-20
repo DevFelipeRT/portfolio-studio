@@ -1,29 +1,20 @@
 <?php
 
-use App\Http\Controllers\CourseController;
-use App\Http\Controllers\ExperienceController;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\InitiativeController;
-use App\Http\Controllers\LocaleController;
-use App\Http\Controllers\MessageController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\ProjectController;
-use App\Http\Controllers\TechnologyController;
-use Illuminate\Foundation\Application;
+use App\Modules\Home\HomeController;
+use App\Modules\Locale\Http\Controllers\LocaleController;
+use App\Modules\Mail\Http\Controllers\MessageController;
+
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/welcome', function () {
-    return Inertia::render('Welcome', [
-        'canLogin'       => Route::has('login'),
-        'canRegister'    => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion'     => PHP_VERSION,
-    ]);
-});
-
+/**
+ * Public endpoint (landing page).
+ */
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
+/**
+ * Public locale endpoint.
+ */
 Route::post('/set-locale', [LocaleController::class, 'set']);
 
 /**
@@ -32,50 +23,13 @@ Route::post('/set-locale', [LocaleController::class, 'set']);
 Route::post('/contact/messages', [MessageController::class, 'store'])
     ->name('messages.store');
 
+/**
+ * Protected admin dashboard endpoint.
+ */
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', function () {
         return Inertia::render('Dashboard');
     })->name('dashboard');
-
-    Route::resource('projects', ProjectController::class)->names('projects');
-
-    Route::delete('projects/{project}/images/{image}', [ProjectController::class, 'destroyImage'])
-        ->name('projects.images.destroy');
-
-    Route::resource('technologies', TechnologyController::class)->names('technologies');
-
-    Route::resource('experiences', ExperienceController::class)->names('experiences');
-
-    Route::resource('courses', CourseController::class)->names('courses');
-
-    Route::resource('initiatives', InitiativeController::class)->names('initiatives');
-
-    Route::put('initiatives/{initiative}', [InitiativeController::class, 'toggleDisplay'])->name('initiatives.toggleDisplay');
-
-    /**
-     * Admin messages management (Inertia React).
-     */
-    Route::resource('messages', MessageController::class)
-        ->only(['index', 'show', 'destroy'])
-        ->names('messages');
-
-    Route::patch('/messages/{message}/important', [MessageController::class, 'markAsImportant'])
-        ->name('messages.mark-as-important');
-
-    Route::patch('/messages/{message}/not-important', [MessageController::class, 'markAsNotImportant'])
-        ->name('messages.mark-as-not-important');
-
-    Route::patch('/messages/{message}/seen', [MessageController::class, 'markAsSeen'])
-        ->name('messages.mark-as-seen');
-
-    Route::patch('/messages/{message}/unseen', [MessageController::class, 'markAsUnseen'])
-        ->name('messages.mark-as-unseen');
-});
-
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
 require __DIR__ . '/auth.php';

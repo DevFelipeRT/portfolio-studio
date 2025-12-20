@@ -1,7 +1,7 @@
 // resources/js/Pages/Home/Sections/HighlightsSection.tsx
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/Ui/card';
 import { useTranslation } from '@/i18n';
-import { SectionHeader } from '../Partials/SectionHeader';
+import { SectionHeader } from '../../../Layouts/Partials/SectionHeader';
 
 /**
  * HighlightsSection presents a set of key strengths or value propositions.
