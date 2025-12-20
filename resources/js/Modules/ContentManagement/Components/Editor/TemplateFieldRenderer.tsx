@@ -9,6 +9,8 @@ import { IntegerFieldControl } from './fields/IntegerFieldControl';
 import { RichTextFieldControl } from './fields/RichTextFieldControl';
 import { TextFieldControl } from './fields/TextFieldControl';
 import { TextareaFieldControl } from './fields/TextareaFieldControl';
+import { ImageFieldControl } from './fields/ImageFieldControl';
+import { ImageGalleryFieldControl } from './fields/ImageGalleryFieldControl';
 
 interface TemplateFieldRendererProps {
     field: TemplateFieldDto;
@@ -104,6 +106,29 @@ export function TemplateFieldRenderer({
                     field={field}
                     value={value}
                     onChange={onChange}
+                />
+            );
+
+        case 'image':
+            return (
+                <ImageFieldControl
+                    {...common}
+                    value={typeof value === 'number' ? value : null}
+                    onChange={(nextId) => onChange(nextId ?? null)}
+                />
+            );
+
+        case 'image_gallery':
+            return (
+                <ImageGalleryFieldControl
+                    {...common}
+                    value={
+                        Array.isArray(value) &&
+                        value.every((item) => typeof item === 'number')
+                            ? (value as number[])
+                            : []
+                    }
+                    onChange={(nextIds) => onChange(nextIds)}
                 />
             );
 
