@@ -80,5 +80,13 @@ return [
             'default' => null,
             'validation' => ['max:80'],
         ],
+        [
+            'name' => 'hero_image',
+            'label' => 'Hero image',
+            'type' => 'image',
+            'required' => false,
+            'default' => null,
+            'validation' => [],
+        ],
     ],
 ];
