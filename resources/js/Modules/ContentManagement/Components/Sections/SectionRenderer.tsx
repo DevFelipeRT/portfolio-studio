@@ -18,6 +18,11 @@ import React, { JSX } from 'react';
 export interface SectionRendererProps {
     sections: PageSectionDto[];
     templates?: TemplateDefinitionDto[];
+    /**
+     * Optional base class names applied to all rendered sections.
+     * Components can merge this value with their own internal classes.
+     */
+    sectionClassName?: string;
 }
 
 /**
@@ -27,10 +32,14 @@ export interface SectionRendererProps {
  * Each rendered section receives a field resolver through context so that
  * components can read CMS values with the correct precedence between
  * persisted section data and template defaults.
+ *
+ * Layout-related metadata (anchor id and class names) is passed down
+ * to section components instead of wrapping them with an extra <section>.
  */
 export function SectionRenderer({
     sections,
     templates,
+    sectionClassName,
 }: SectionRendererProps): JSX.Element | null {
     if (!sections.length) {
         return null;
@@ -48,25 +57,38 @@ export function SectionRenderer({
                     section.template_key,
                 );
 
-                // If there is no specialized component and no template definition,
-                // there is nothing to render for this section.
                 if (!Component && !template) {
                     return null;
                 }
 
-                // Field resolver for this specific section and template.
                 const fieldResolver = createSectionFieldResolver(
                     section.data ?? null,
                     template,
                 );
 
+                const anchorId = section.anchor ?? undefined;
+
+                const baseSectionClassName = 'm-0';
+                const resolvedSectionClassName =
+                    [baseSectionClassName, sectionClassName]
+                        .filter(Boolean)
+                        .join(' ')
+                        .trim() || undefined;
+
                 const content = Component ? (
-                    <Component section={section} template={template} />
+                    <Component
+                        section={section}
+                        template={template}
+                        anchorId={anchorId}
+                        className={resolvedSectionClassName}
+                    />
                 ) : (
                     renderGenericTemplateSection(
                         section,
                         template,
                         fieldResolver,
+                        anchorId,
+                        resolvedSectionClassName,
                     )
                 );
 
@@ -79,12 +101,7 @@ export function SectionRenderer({
                         key={section.id}
                         resolver={fieldResolver}
                     >
-                        <section
-                            id={section.anchor ?? undefined}
-                            className="py-12"
-                        >
-                            {content}
-                        </section>
+                        {content}
                     </SectionFieldResolverProvider>
                 );
             })}
@@ -113,6 +130,8 @@ function renderGenericTemplateSection(
     section: PageSectionDto,
     template: TemplateDefinitionDto | undefined,
     fieldResolver: SectionFieldResolver,
+    anchorId?: string,
+    className?: string,
 ): JSX.Element | null {
     if (!template) {
         return null;
@@ -133,7 +152,7 @@ function renderGenericTemplateSection(
             }
 
             return (
-                <div key={field.name} className="mb-4">
+                <div key={field.name} className='mb-4'>
                     <div className="text-muted-foreground text-sm font-medium">
                         {field.label}
                     </div>
@@ -147,14 +166,21 @@ function renderGenericTemplateSection(
         return null;
     }
 
+    const sectionId = anchorId ?? section.anchor ?? undefined;
+
+    const baseSectionClassName = 'm-0';
+    const resolvedSectionClassName =
+        [baseSectionClassName, className].filter(Boolean).join(' ').trim() ||
+        undefined;
+
     return (
-        <div className="container mx-auto">
-            {template.label && (
-                <h2 className="mb-6 text-2xl font-semibold">
-                    {template.label}
-                </h2>
-            )}
-            {renderedFields}
-        </div>
+        <section id={sectionId} className={resolvedSectionClassName}>
+            <div className="container mx-auto">
+                {template.label && (
+                    <h2 className="mb-6 text-2xl font-semibold">{template.label}</h2>
+                )}
+                {renderedFields}
+            </div>
+        </section>
     );
 }
