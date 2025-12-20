@@ -31,6 +31,7 @@ final class PageSectionService
         private readonly IPageSectionRepository $sections,
         private readonly TemplateValidationService $templateValidation,
         private readonly SectionVisibilityResolver $visibilityResolver,
+        private readonly PageSectionImageService $sectionImageService,
     ) {
     }
 
@@ -117,12 +118,15 @@ final class PageSectionService
         $this->fillSection($section, $attributes);
 
         $data = is_array($section->data) ? $section->data : [];
-        $section->data = $this->templateValidation->normalizeDataForTemplateKey(
+        $normalizedData = $this->templateValidation->normalizeDataForTemplateKey(
             $templateKey,
             $data,
         );
 
+        $section->data = $normalizedData;
+
         $this->sections->save($section);
+        $this->syncImagesForSection($section, $templateKey, $normalizedData);
 
         return PageSectionMapper::toDto($section);
     }
@@ -145,12 +149,15 @@ final class PageSectionService
         $this->fillSection($section, $attributes);
 
         $data = is_array($section->data) ? $section->data : [];
-        $section->data = $this->templateValidation->normalizeDataForTemplateKey(
+        $normalizedData = $this->templateValidation->normalizeDataForTemplateKey(
             $templateKey,
             $data,
         );
 
+        $section->data = $normalizedData;
+
         $this->sections->save($section);
+        $this->syncImagesForSection($section, $templateKey, $normalizedData);
 
         return PageSectionMapper::toDto($section);
     }
@@ -532,5 +539,55 @@ final class PageSectionService
         }
 
         return TemplateKey::fromString((string) $section->template_key);
+    }
+
+    /**
+     * Resolves media fields for the given template key.
+     *
+     * @return array<int,array{name: string, type: string}>
+     */
+    private function resolveMediaFieldsForTemplate(TemplateKey $templateKey): array
+    {
+        $definition = $this->templateValidation->getDefinitionForKey($templateKey);
+
+        $mediaFields = [];
+
+        foreach ($definition->fields() as $field) {
+            $type = $field->type();
+
+            if ($type !== 'image' && $type !== 'image_gallery') {
+                continue;
+            }
+
+            $mediaFields[] = [
+                'name' => $field->name(),
+                'type' => $type,
+            ];
+        }
+
+        return $mediaFields;
+    }
+
+    /**
+     * Synchronizes image attachments for the given section and template.
+     *
+     * @param array<string,mixed> $normalizedData
+     */
+    private function syncImagesForSection(
+        PageSection $section,
+        TemplateKey $templateKey,
+        array $normalizedData
+    ): void {
+        $mediaFields = $this->resolveMediaFieldsForTemplate($templateKey);
+
+        if ($mediaFields === []) {
+            return;
+        }
+
+        $this->sectionImageService->syncSectionImages(
+            $section,
+            $mediaFields,
+            $normalizedData,
+        );
     }
 }
