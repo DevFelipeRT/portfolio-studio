@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\ContentManagement\Domain\Models;
 
+use App\Modules\Images\Domain\Models\Image;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Carbon;
 use Carbon\CarbonInterface;
 
@@ -116,5 +118,32 @@ class PageSection extends Model
                     ->whereNull('visible_until')
                     ->orWhere('visible_until', '>=', $reference);
             });
+    }
+
+    /**
+     * Images associated with this page section.
+     *
+     * Pivot table: image_attachments
+     * Pivot fields: slot, position, is_cover, caption
+     *
+     * @return MorphToMany<Image>
+     */
+    public function images(): MorphToMany
+    {
+        return $this
+            ->morphToMany(
+                Image::class,
+                'owner',
+                'image_attachments',
+                'owner_id',
+                'image_id',
+            )
+            ->withPivot([
+                'slot',
+                'position',
+                'is_cover',
+                'caption',
+            ])
+            ->withTimestamps();
     }
 }
