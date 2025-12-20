@@ -22,7 +22,7 @@ final class TemplateField
     private string $label;
 
     /**
-     * Logical data type identifier (for example "string", "text", "boolean", "collection").
+     * Logical data type identifier (for example "string", "text", "boolean", "collection", "image").
      */
     private string $type;
 
