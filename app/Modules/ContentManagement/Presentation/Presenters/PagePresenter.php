@@ -11,9 +11,11 @@ use App\Modules\ContentManagement\Application\Mappers\TemplateDefinitionMapper;
 use App\Modules\ContentManagement\Application\Services\PageSectionService;
 use App\Modules\ContentManagement\Application\Services\PageService;
 use App\Modules\ContentManagement\Domain\Models\Page;
+use App\Modules\ContentManagement\Domain\Models\PageSection;
 use App\Modules\ContentManagement\Domain\Templates\TemplateDataSource;
 use App\Modules\ContentManagement\Domain\Templates\TemplateRegistry;
 use App\Modules\ContentManagement\Presentation\ViewModels\Public\PageRenderViewModel;
+use App\Modules\Images\Domain\Models\Image;
 use App\Modules\Shared\Support\Data\DataTransformer;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
@@ -33,6 +35,7 @@ final class PagePresenter
      */
     private const string SECTION_TEMPLATE_KEY = 'template_key';
     private const string SECTION_DATA_KEY = 'data';
+    private const string SECTION_ID_KEY = 'id';
 
     /**
      * Extra payload keys.
@@ -139,6 +142,8 @@ final class PagePresenter
 
             $sections[] = $sectionArray;
         }
+
+        $sections = $this->enrichSectionsWithImages($sections);
 
         $templates = $this->buildTemplatesData($sections);
 
@@ -275,4 +280,201 @@ final class PagePresenter
 
         return $mapped;
     }
+
+    /**
+     * Enriches rendered sections with image data resolved from attachments.
+     *
+     * @param array<int,array<string,mixed>> $sections
+     * @return array<int,array<string,mixed>>
+     */
+    private function enrichSectionsWithImages(array $sections): array
+    {
+        if ($sections === []) {
+            return $sections;
+        }
+
+        $sectionIds = [];
+
+        foreach ($sections as $section) {
+            $id = $section[self::SECTION_ID_KEY] ?? null;
+
+            if (is_int($id)) {
+                $sectionIds[] = $id;
+            }
+        }
+
+        $sectionIds = array_values(array_unique($sectionIds));
+
+        if ($sectionIds === []) {
+            return $sections;
+        }
+
+        /** @var \Illuminate\Support\Collection<int,PageSection> $models */
+        $models = PageSection::query()
+            ->with('images')
+            ->whereIn('id', $sectionIds)
+            ->get()
+            ->keyBy('id');
+
+        foreach ($sections as $index => $section) {
+            $id = $section[self::SECTION_ID_KEY] ?? null;
+
+            if (!is_int($id)) {
+                continue;
+            }
+
+            /** @var PageSection|null $model */
+            $model = $models->get($id);
+
+            if (!$model instanceof PageSection) {
+                continue;
+            }
+
+            $templateKey = $section[self::SECTION_TEMPLATE_KEY] ?? null;
+
+            if (!is_string($templateKey) || $templateKey === '') {
+                continue;
+            }
+
+            $definition = $this->templateRegistry->find($templateKey);
+
+            if ($definition === null) {
+                continue;
+            }
+
+            $data = $section[self::SECTION_DATA_KEY] ?? [];
+
+            if (!is_array($data)) {
+                $data = [];
+            }
+
+            foreach ($definition->fields() as $field) {
+                $type = $field->type();
+
+                if ($type !== 'image' && $type !== 'image_gallery') {
+                    continue;
+                }
+
+                $name = $field->name();
+
+                $resolved = $this->resolveImagesForField($model, $name, $type);
+
+                if ($resolved === null) {
+                    $data[$name] = $type === 'image_gallery' ? [] : null;
+
+                    continue;
+                }
+
+                $data[$name] = $resolved;
+            }
+
+            $section[self::SECTION_DATA_KEY] = $data;
+            $sections[$index] = $section;
+        }
+
+        return $sections;
+    }
+
+    /**
+     * Resolves image data for a single template field.
+     *
+     * @param PageSection $section
+     * @param string $fieldName
+     * @param string $fieldType
+     * @return array<mixed>|array<int,array<string,mixed>>|null
+     */
+    private function resolveImagesForField(
+        PageSection $section,
+        string $fieldName,
+        string $fieldType
+    ): array|null {
+        $images = $section->images
+            ->filter(static function (Image $image) use ($fieldName): bool {
+                /** @var object|null $pivot */
+                $pivot = $image->pivot ?? null;
+
+                if ($pivot === null) {
+                    return false;
+                }
+
+                return $pivot->slot === $fieldName;
+            })
+            ->sortBy(static function (Image $image): int {
+                /** @var object|null $pivot */
+                $pivot = $image->pivot ?? null;
+
+                $position = $pivot?->position ?? 0;
+
+                return is_int($position) ? $position : 0;
+            })
+            ->values();
+
+        if ($images->isEmpty()) {
+            return null;
+        }
+
+        if ($fieldType === 'image') {
+            /** @var Image $image */
+            $image = $images->first();
+
+            return $this->mapImageToViewArray($image);
+        }
+
+        $results = [];
+
+        foreach ($images as $image) {
+            if (!$image instanceof Image) {
+                continue;
+            }
+
+            $results[] = $this->mapImageToViewArray($image);
+        }
+
+        return $results;
+    }
+
+    /**
+     * Builds a public-facing image payload from the image model and its pivot.
+     *
+     * @return array{
+     *     id: int,
+     *     url: string,
+     *     alt: ?string,
+     *     title: ?string,
+     *     caption: ?string,
+     *     position: ?int,
+     *     is_cover: bool,
+     *     owner_caption: ?string
+     * }
+     */
+    private function mapImageToViewArray(Image $image): array
+    {
+        /** @var object|null $pivot */
+        $pivot = $image->pivot ?? null;
+
+        $position = $pivot?->position ?? null;
+
+        if (!is_int($position)) {
+            $position = null;
+        }
+
+        $isCover = (bool) ($pivot->is_cover ?? false);
+        $ownerCaption = $pivot?->caption ?? null;
+
+        if (!is_string($ownerCaption)) {
+            $ownerCaption = null;
+        }
+
+        return [
+            'id' => $image->id,
+            'url' => $image->url,
+            'alt' => $image->alt_text,
+            'title' => $image->image_title,
+            'caption' => $image->caption,
+            'position' => $position,
+            'is_cover' => $isCover,
+            'owner_caption' => $ownerCaption,
+        ];
+    }
+
 }
