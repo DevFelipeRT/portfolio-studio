@@ -45,6 +45,7 @@ class ImageAttachment extends Model
     protected $casts = [
         'position' => 'int',
         'is_cover' => 'bool',
+        'slot' => 'string',
     ];
 
     /**
