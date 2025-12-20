@@ -23,7 +23,10 @@ export interface SectionDataCollectionItem {
 export type SectionDataValue =
     | SectionDataPrimitive
     | SectionDataPrimitive[]
-    | SectionDataCollectionItem[];
+    | SectionDataCollectionItem[]
+    | SectionImage
+    | SectionImage[]
+    | null;
 
 export type SectionData = Record<string, SectionDataValue>;
 
@@ -77,6 +80,18 @@ export interface PageSectionDto extends HasTimestamps {
     locale: string | null;
 }
 
+export type SectionImage = {
+    id: number;
+    url: string;
+    alt: string | null;
+    title: string | null;
+    caption: string | null;
+    position: number | null;
+    is_cover: boolean;
+    owner_caption: string | null;
+};
+
+
 /**
  * Represents the supported primitive field kinds for template-driven sections.
  */
@@ -87,7 +102,9 @@ export type TemplateFieldPrimitiveType =
     | 'integer'
     | 'boolean'
     | 'array_integer'
-    | 'collection';
+    | 'collection'
+    | 'image'
+    | 'image_gallery';
 
 /**
  * Describes a single field inside a template definition.
