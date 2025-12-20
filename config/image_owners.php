@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Modules\ContentManagement\Domain\Models\PageSection;
 use App\Modules\Projects\Domain\Models\Project;
 use App\Modules\Initiatives\Domain\Models\Initiative;
 
@@ -20,6 +21,7 @@ return [
     'morph_map' => [
         'project' => Project::class,
         'initiative' => Initiative::class,
+        'page_section' => PageSection::class,
     ],
 
 ];
