@@ -25,6 +25,7 @@ final class PageService
     public function __construct(
         private readonly IPageRepository $pages,
         private readonly PageStatusResolver $statusResolver,
+        private ContentSettingsService $contentSettings,
     ) {
     }
 
@@ -111,10 +112,14 @@ final class PageService
      */
     public function update(Page $page, array $attributes): PageDto
     {
+        $previousSlug = $page->slug;
+
         $this->fillPage($page, $attributes);
         $this->ensurePublicationConsistency($page);
 
         $this->pages->save($page);
+
+        $this->contentSettings->handlePageSlugUpdated($previousSlug, $page->slug);
 
         return PageMapper::toDto($page);
     }
@@ -165,6 +170,14 @@ final class PageService
     public function resolveStatus(Page $page): PageStatus
     {
         return $this->statusResolver->resolveForPage($page);
+    }
+
+    /**
+     * Marks the given page as the home page by updating the home slug.
+     */
+    public function setHomePage(Page $page): void
+    {
+        $this->contentSettings->setHomeFromPage($page);
     }
 
     /**
