@@ -6,6 +6,7 @@ namespace App\Modules\ContentManagement\Presentation\Presenters;
 
 use App\Modules\ContentManagement\Application\Dtos\PageDto;
 use App\Modules\ContentManagement\Application\Mappers\TemplateDefinitionMapper;
+use App\Modules\ContentManagement\Application\Services\ContentSettingsService;
 use App\Modules\ContentManagement\Application\Services\PageSectionService;
 use App\Modules\ContentManagement\Application\Services\PageService;
 use App\Modules\ContentManagement\Domain\Enums\PageStatus;
@@ -27,6 +28,7 @@ final class PageAdminPresenter
         private readonly PageService $pageService,
         private readonly PageSectionService $pageSectionService,
         private readonly TemplateRegistry $templateRegistry,
+        private readonly ContentSettingsService $contentSettings,
     ) {
     }
 
@@ -57,10 +59,17 @@ final class PageAdminPresenter
             }
         );
 
+        $effectiveExtraPayload = array_merge(
+            [
+                'homeSlug' => $this->contentSettings->getHomeSlug(),
+            ],
+            $extraPayload,
+        );
+
         return new PageIndexViewModel(
             pages: $pages,
             filters: $filters,
-            extraPayload: $extraPayload,
+            extraPayload: $effectiveExtraPayload,
         );
     }
 
