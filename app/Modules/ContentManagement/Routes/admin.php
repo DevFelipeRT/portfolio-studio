@@ -12,6 +12,10 @@ Route::prefix('admin/content')
         // Pages CRUD (admin.content.pages.*)
         Route::resource('pages', PageController::class)->except(['show']);
 
+        // Home page setter
+        Route::post('pages/{page}/set-home', [PageController::class, 'setHome'])
+            ->name('pages.set-home');
+
         // Sections CRUD and auxiliary operations (admin.content.sections.*)
         Route::post('sections', [PageSectionController::class, 'store'])
             ->name('sections.store');
