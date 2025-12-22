@@ -39,4 +39,25 @@ final class PageRenderController extends Controller
             'extra' => $viewModel->extraPayload,
         ]);
     }
+
+    /**
+     * Displays the configured home page for the current locale.
+     */
+    public function home(Request $request): Response
+    {
+        $locale = (string) app()->getLocale();
+
+        $viewModel = $this->pagePresenter->renderHomeByLocale($locale);
+
+        if ($viewModel === null) {
+            abort(404);
+        }
+
+        return Inertia::render('ContentManagement/Pages/Public/RenderedPage', [
+            'page' => $viewModel->page,
+            'sections' => $viewModel->sections,
+            'extra' => $viewModel->extraPayload,
+        ]);
+    }
+
 }
