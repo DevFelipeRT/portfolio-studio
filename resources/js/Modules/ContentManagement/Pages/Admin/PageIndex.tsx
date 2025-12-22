@@ -50,7 +50,14 @@ export default function PageIndex({
                     }
                 />
 
-                <PageTable pages={pages} />
+                <PageTable
+                    pages={pages}
+                    homeSlug={
+                        typeof extra.homeSlug === 'string'
+                            ? extra.homeSlug
+                            : undefined
+                    }
+                />
             </div>
         </AuthenticatedLayout>
     );
