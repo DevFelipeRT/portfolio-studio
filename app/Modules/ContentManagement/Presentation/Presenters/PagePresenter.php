@@ -8,6 +8,7 @@ use App\Modules\ContentManagement\Application\Capabilities\SectionCapabilitiesDa
 use App\Modules\ContentManagement\Application\Dtos\PageDto;
 use App\Modules\ContentManagement\Application\Dtos\PageSectionDto;
 use App\Modules\ContentManagement\Application\Mappers\TemplateDefinitionMapper;
+use App\Modules\ContentManagement\Application\Services\ContentSettingsService;
 use App\Modules\ContentManagement\Application\Services\PageSectionService;
 use App\Modules\ContentManagement\Application\Services\PageService;
 use App\Modules\ContentManagement\Domain\Models\Page;
@@ -65,6 +66,7 @@ final class PagePresenter
         private readonly PageSectionService $pageSections,
         private readonly TemplateRegistry $templateRegistry,
         private readonly SectionCapabilitiesDataFetcher $sectionCapabilitiesDataFetcher,
+        private readonly ContentSettingsService $contentSettings,
     ) {
     }
 
@@ -94,6 +96,27 @@ final class PagePresenter
         }
 
         return $this->renderPage($pageModel, $pageDto, $referenceTime, $extraPayload);
+    }
+
+    /**
+     * Renders the configured home page for the given locale.
+     *
+     * Resolves the home slug from content settings and delegates to the
+     * standard renderBySlugAndLocale pipeline.
+     */
+    public function renderHomeByLocale(
+        string $locale,
+        ?CarbonInterface $referenceTime = null,
+        array $extraPayload = [],
+    ): ?PageRenderViewModel {
+        $homeSlug = $this->contentSettings->getHomeSlug();
+
+        return $this->renderBySlugAndLocale(
+            $homeSlug,
+            $locale,
+            $referenceTime,
+            $extraPayload,
+        );
     }
 
     /**
