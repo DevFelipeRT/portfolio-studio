@@ -6,9 +6,11 @@ namespace App\Modules\ContentManagement\Infrastructure\Providers;
 
 use App\Modules\ContentManagement\Application\Capabilities\SectionCapabilitiesDataFetcher;
 use App\Modules\ContentManagement\Application\Capabilities\CapabilitiesGateway;
+use App\Modules\ContentManagement\Domain\Repositories\IContentSettingsRepository;
 use App\Modules\ContentManagement\Domain\Repositories\IPageRepository;
 use App\Modules\ContentManagement\Domain\Repositories\IPageSectionRepository;
 use App\Modules\ContentManagement\Domain\Templates\TemplateRegistry;
+use App\Modules\ContentManagement\Infrastructure\Repositories\ContentSettingsRepository;
 use App\Modules\ContentManagement\Infrastructure\Repositories\PageRepository;
 use App\Modules\ContentManagement\Infrastructure\Repositories\PageSectionRepository;
 use App\Modules\Shared\Contracts\Capabilities\ICapabilitiesFactory;
@@ -43,6 +45,7 @@ final class ContentManagementServiceProvider extends ServiceProvider
     {
         $this->app->bind(IPageRepository::class, PageRepository::class);
         $this->app->bind(IPageSectionRepository::class, PageSectionRepository::class);
+        $this->app->bind(IContentSettingsRepository::class, ContentSettingsRepository::class);
 
         $this->app->singleton(TemplateRegistry::class, static function ($app): TemplateRegistry {
             $config = $app['config']->get('content_management.templates', []);
