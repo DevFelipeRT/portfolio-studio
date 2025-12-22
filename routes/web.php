@@ -1,16 +1,10 @@
 <?php
 
-use App\Modules\Home\HomeController;
 use App\Modules\Locale\Http\Controllers\LocaleController;
 use App\Modules\Mail\Http\Controllers\MessageController;
 
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-
-/**
- * Public endpoint (landing page).
- */
-Route::get('/', [HomeController::class, 'index'])->name('home');
 
 /**
  * Public locale endpoint.
