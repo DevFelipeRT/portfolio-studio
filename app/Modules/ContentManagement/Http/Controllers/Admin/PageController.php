@@ -99,6 +99,18 @@ final class PageController extends Controller
     }
 
     /**
+     * Marks the given page as the home page and redirects to the index.
+     */
+    public function setHome(Page $page): RedirectResponse
+    {
+        $this->pageService->setHomePage($page);
+
+        return redirect()
+            ->route('admin.content.pages.index')
+            ->with('status', 'page.set_home');
+    }
+
+    /**
      * Deletes a page and redirects to the index.
      */
     public function destroy(Page $page): RedirectResponse
