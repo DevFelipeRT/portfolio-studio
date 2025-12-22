@@ -8,20 +8,21 @@ import {
     TableHeader,
     TableRow,
 } from '@/Components/Ui/table';
+import { useGetLocale } from '@/i18n';
 import type { PageDto, Paginated } from '@/Modules/ContentManagement/types';
 import { Link } from '@inertiajs/react';
 import { ChevronRight } from 'lucide-react';
 import { PageStatusBadge } from './PageStatusBadge';
-import { useGetLocale } from '@/i18n';
 
 interface PageTableProps {
     pages: Paginated<PageDto>;
+    homeSlug?: string;
 }
 
 /**
  * Data table for listing content-managed pages.
  */
-export function PageTable({ pages }: PageTableProps) {
+export function PageTable({ pages, homeSlug }: PageTableProps) {
     const hasItems = pages.data.length > 0;
     const locale = useGetLocale();
 
@@ -69,9 +70,17 @@ export function PageTable({ pages }: PageTableProps) {
                             </TableCell>
 
                             <TableCell>
-                                <span className="bg-muted text-muted-foreground inline-flex rounded px-2 py-0.5 font-mono text-xs">
-                                    {page.slug}
-                                </span>
+                                <div className="flex items-center gap-2">
+                                    <span className="bg-muted text-muted-foreground inline-flex rounded px-2 py-0.5 font-mono text-xs">
+                                        {page.slug}
+                                    </span>
+
+                                    {homeSlug && page.slug === homeSlug && (
+                                        <span className="bg-primary/10 text-primary inline-flex rounded px-2 py-0.5 text-[10px] font-semibold tracking-wide uppercase">
+                                            Home
+                                        </span>
+                                    )}
+                                </div>
                             </TableCell>
 
                             <TableCell className="text-muted-foreground hidden text-xs tracking-wide uppercase md:table-cell">
@@ -87,11 +96,32 @@ export function PageTable({ pages }: PageTableProps) {
                                     value={page.updated_at}
                                     fallback={'—'}
                                     locale={locale}
-                                    format='PP'
+                                    format="PP"
                                 />
                             </TableCell>
 
-                            <TableCell className="text-right">
+                            <TableCell className="space-x-2 text-right">
+                                {homeSlug !== page.slug && (
+                                    <Button
+                                        asChild
+                                        variant="outline"
+                                        size="sm"
+                                        className="gap-1"
+                                    >
+                                        <Link
+                                            href={route(
+                                                'admin.content.pages.set-home',
+                                                page.id,
+                                            )}
+                                            method="post"
+                                            as="button"
+                                            preserveScroll
+                                        >
+                                            Set as home
+                                        </Link>
+                                    </Button>
+                                )}
+
                                 <Button
                                     asChild
                                     variant="ghost"
