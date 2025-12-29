@@ -6,15 +6,19 @@ import { fileURLToPath } from 'url';
 import { defineConfig, loadEnv } from 'vite';
 
 /**
- * Reconstructs directory context for ESM environment.
+ * Reconstructs directory context for the ESM runtime.
  */
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, process.cwd(), '');
-    const host = env.VITE_HOST || 'localhost';
-    const port = parseInt(env.VITE_PORT || '5173');
+
+    /**
+     * Resolves host and port used by the dev server and HMR client.
+     */
+    const viteHost = env.VITE_HOST || 'localhost';
+    const vitePort = Number(env.VITE_PORT) || 5173;
 
     return {
         plugins: [
@@ -27,7 +31,7 @@ export default defineConfig(({ mode }) => {
         ],
         resolve: {
             /**
-             * Forces resolution to a single instance of React packages.
+             * Ensures a single instance for React related packages.
              */
             dedupe: ['react', 'react-dom', 'react-i18next', 'i18next'],
             alias: {
@@ -40,10 +44,9 @@ export default defineConfig(({ mode }) => {
             rollupOptions: {
                 output: {
                     /**
-                     * Defines manual chunking strategies for vendor and internal core logic.
+                     * Groups vendor core and internal i18n modules into dedicated chunks.
                      */
                     manualChunks: (id) => {
-                        // Strategy 1: External Vendor Core
                         if (id.includes('node_modules')) {
                             if (
                                 id.includes('react') ||
@@ -55,26 +58,26 @@ export default defineConfig(({ mode }) => {
                             }
                         }
 
-                        // Strategy 2: Internal I18n Core
-                        // Groups the i18n context definition and provider into a shared chunk.
                         if (id.includes('resources/js/i18n')) {
                             return 'app-i18n';
                         }
+
+                        return undefined;
                     },
                 },
             },
         },
         server: {
             host: '0.0.0.0',
-            port: port,
+            port: vitePort,
             strictPort: true,
             cors: {
                 origin: '*',
                 credentials: true,
             },
             hmr: {
-                host: host === 'localhost' ? 'localhost' : host,
-                clientPort: port,
+                host: viteHost,
+                clientPort: vitePort,
             },
         },
     };
