@@ -38,6 +38,18 @@ class Image extends Model
         /** @var \Illuminate\Contracts\Filesystem\Cloud $disk */
         $disk = Storage::disk($diskName);
 
-        return $disk->url($this->storage_path);
+        $url = $disk->url($this->storage_path);
+
+        if (str_starts_with($url, 'http://') || str_starts_with($url, 'https://')) {
+            return $url;
+        }
+
+        $base = config('app.url');
+
+        if ($base === null || $base === '') {
+            return $url;
+        }
+
+        return rtrim($base, '/') . '/' . ltrim($url, '/');
     }
 }
