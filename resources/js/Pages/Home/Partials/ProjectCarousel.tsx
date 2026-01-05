@@ -1,9 +1,9 @@
 import { Button } from '@/Components/Ui/button';
 import { ScrollArea, ScrollBar } from '@/Components/Ui/scroll-area';
+import { Project } from '@/Pages/types';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { ProjectCard } from './ProjectCard';
-import { Project } from '@/Pages/types';
 
 interface ProjectCarouselProps {
     projects: Project[];
@@ -87,7 +87,7 @@ export function ProjectCarousel({ projects }: ProjectCarouselProps) {
             </div>
 
             <ScrollArea className="w-full">
-                <div ref={viewportRef} className="flex w-max gap-4 pb-6">
+                <div ref={viewportRef} className="flex w-max gap-4">
                     {projects.map((project, index) => (
                         <div
                             key={project.id}
