@@ -1,7 +1,7 @@
 // resources/js/Modules/ContentManagement/Pages/Public/RenderedPage.tsx
 import PublicLayout from '@/Layouts/PublicLayout';
 
-import { SectionRenderer } from '@/Modules/ContentManagement/Components/Sections/SectionRenderer';
+import { SectionRenderer } from '@/Modules/ContentManagement/Components/SectionRenderer';
 import type {
     PageRenderViewModelProps,
     PageSectionDto,
@@ -70,21 +70,19 @@ export default function RenderedPage({
                     )}
                 </Head>
 
-                <main className="space-y-16">
-                    {heroSections.length > 0 && (
-                        <SectionRenderer
-                            sections={heroSections}
-                            templates={templates}
-                        />
-                    )}
+                {heroSections.length > 0 && (
+                    <SectionRenderer
+                        sections={heroSections}
+                        templates={templates}
+                    />
+                )}
 
-                    {otherSections.length > 0 && (
-                        <SectionRenderer
-                            sections={otherSections}
-                            templates={templates}
-                        />
-                    )}
-                </main>
+                {otherSections.length > 0 && (
+                    <SectionRenderer
+                        sections={otherSections}
+                        templates={templates}
+                    />
+                )}
             </SectionEnvironmentProvider>
         </PublicLayout>
     );
