@@ -1,6 +1,6 @@
 import { SectionHeader } from '@/Layouts/Partials/SectionHeader';
 import type { SectionComponentProps } from '@/Modules/ContentManagement/config/sectionComponents';
-import type { SectionData } from '@/Modules/ContentManagement/types';
+import { useSectionFieldResolver } from '@/Modules/ContentManagement/context/SectionFieldResolverContext';
 import { JSX } from 'react';
 
 /**
@@ -8,45 +8,43 @@ import { JSX } from 'react';
  */
 export function RichTextSection({
     section,
-    template,
+    className,
 }: SectionComponentProps): JSX.Element | null {
-    const data = (section.data ?? {}) as SectionData;
+    const fieldResolver = useSectionFieldResolver();
 
-    const getString = (key: string): string | undefined => {
-        const value = data[key];
+    const targetId = section.anchor || `rich-text-${section.id}`;
 
-        if (typeof value === 'string') {
-            return value;
-        }
+    const eyebrow = fieldResolver.getValue<string>('eyebrow');
 
-        return undefined;
-    };
-
-    const eyebrow = getString('eyebrow');
-
-    const rawTitle =
-        getString('title') ??
-        getString('headline') ??
-        getString('heading') ??
-        undefined;
+    const title =
+        fieldResolver.getValue<string>('title') ??
+        fieldResolver.getValue<string>('headline') ??
+        fieldResolver.getValue<string>('heading') ??
+        '';
 
     const description =
-        getString('subtitle') ?? getString('description') ?? undefined;
-
-    const content =
-        getString('content') ??
-        getString('body') ??
-        getString('text') ??
+        fieldResolver.getValue<string>('subtitle') ??
+        fieldResolver.getValue<string>('description') ??
         undefined;
 
-    const title = rawTitle ?? template?.label ?? '';
+    const content =
+        fieldResolver.getValue<string>('content') ??
+        fieldResolver.getValue<string>('body') ??
+        fieldResolver.getValue<string>('text') ??
+        undefined;
 
     if (!title && !description && !content) {
         return null;
     }
 
+    const baseSectionClassName = 'py-12 md:py-16';
+    const resolvedSectionClassName = [baseSectionClassName, className]
+        .filter(Boolean)
+        .join(' ')
+        .trim();
+
     return (
-        <div className="py-12 md:py-16">
+        <section id={targetId} className={resolvedSectionClassName}>
             <div className="container mx-auto">
                 <div className="space-y-6">
                     <SectionHeader
@@ -64,6 +62,6 @@ export function RichTextSection({
                     )}
                 </div>
             </div>
-        </div>
+        </section>
     );
 }

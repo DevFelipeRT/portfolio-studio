@@ -1,10 +1,11 @@
 import { ExpandableCard } from '@/Components/ExpandableCard';
 import { Badge } from '@/Components/Ui/badge';
 import { DateDisplay } from '@/Components/Ui/date-display';
-import { useTranslation } from '@/i18n';
 import { SectionHeader } from '@/Layouts/Partials/SectionHeader';
 import type { SectionComponentProps } from '@/Modules/ContentManagement/config/sectionComponents';
-import type { SectionData } from '@/Modules/ContentManagement/types';
+import { useSectionFieldResolver } from '@/Modules/ContentManagement/context/SectionFieldResolverContext';
+import type { SectionDataValue } from '@/Modules/ContentManagement/types';
+import { useGetLocale } from '@/i18n';
 import { GraduationCap } from 'lucide-react';
 import { JSX } from 'react';
 
@@ -70,48 +71,33 @@ function CoursePeriodDisplay({
 /**
  * Renders a courses highlight grid section driven by ContentManagement capabilities data.
  *
- * Courses are expected to be provided in section.data.courses
- * by the backend layer integrating with the courses.visible.v1 capability.
+ * Courses are expected to be provided in section data by the backend layer
+ * integrating with the courses.visible.v1 capability.
  */
 export function CoursesHighlightGridSection({
     section,
-    template,
+    className,
 }: SectionComponentProps): JSX.Element | null {
-    const { translate, locale } = useTranslation('home');
+    const fieldResolver = useSectionFieldResolver();
+    const locale = useGetLocale();
 
-    const data = (section.data ?? {}) as SectionData;
+    const targetId = section.anchor || `education-${section.id}`;
 
-    const getString = (key: string): string | undefined => {
-        const value = data[key];
-
-        if (typeof value === 'string') {
-            return value;
-        }
-
-        return undefined;
-    };
-
-    const getNumber = (key: string): number | undefined => {
-        const value = data[key];
-
-        if (typeof value === 'number' && Number.isFinite(value)) {
-            return value;
-        }
-
-        return undefined;
-    };
-
-    const rawCourses = data['courses'] as unknown;
+    const rawCourses = fieldResolver.getValue<SectionDataValue>('courses');
 
     const allCourses: CapabilityCourseCollection = Array.isArray(rawCourses)
         ? rawCourses.filter(
               (item): item is CapabilityCourse =>
-                  item !== null && typeof item === 'object',
+                  item !== null &&
+                  typeof item === 'object' &&
+                  !Array.isArray(item),
           )
         : [];
 
     const maxItems =
-        getNumber('max_items') ?? getNumber('maxItems') ?? undefined;
+        fieldResolver.getValue<number>('max_items') ??
+        fieldResolver.getValue<number>('maxItems') ??
+        undefined;
 
     const visibleCourses: CapabilityCourseCollection =
         typeof maxItems === 'number' && maxItems > 0
@@ -120,68 +106,47 @@ export function CoursesHighlightGridSection({
 
     const hasCourses = visibleCourses.length > 0;
 
-    const sectionLabel = translate(
-        'education.sectionLabel',
-        'Academic degree and technical courses',
-    );
+    const sectionLabel =
+        fieldResolver.getValue<string>('section_label') ??
+        'Academic degree and technical courses';
 
-    const eyebrowFromData = getString('eyebrow');
-    const eyebrowFromTranslation = translate(
-        'education.header.eyebrow',
-        'Education',
-    );
-    const eyebrow = eyebrowFromData ?? eyebrowFromTranslation;
+    const eyebrow = fieldResolver.getValue<string>('eyebrow') ?? 'Education';
 
-    const titleFromData = getString('title');
-    const titleFromTemplate = template?.label;
-    const titleFromTranslation = translate(
-        'education.header.title',
-        'Academic Degree & Technical Courses',
-    );
     const title =
-        titleFromData ?? titleFromTemplate ?? titleFromTranslation ?? '';
+        fieldResolver.getValue<string>('title') ??
+        'Academic Degree & Technical Courses';
 
-    const subtitleFromData = getString('subtitle') ?? getString('description');
-    const subtitleFromTemplate = template?.description ?? undefined;
-    const subtitleFromTranslation = translate(
-        'education.header.description',
-        'Academic background and complementary technical courses that strengthen my profile as a software developer.',
-    );
     const subtitle =
-        subtitleFromData ?? subtitleFromTemplate ?? subtitleFromTranslation;
+        fieldResolver.getValue<string>('subtitle') ??
+        fieldResolver.getValue<string>('description') ??
+        'Academic background and complementary technical courses that strengthen my profile as a software developer.';
 
-    const emptyMessageFromData = getString('empty_message');
-    const emptyMessageFromTranslation = translate(
-        'education.emptyMessage',
-        'No education records available to display yet.',
-    );
-    const emptyMessage = emptyMessageFromData ?? emptyMessageFromTranslation;
+    const emptyMessage =
+        fieldResolver.getValue<string>('empty_message') ??
+        'No education records available to display yet.';
 
-    const presentLabelFromData = getString('present_label');
-    const presentLabelFromTranslation = translate(
-        'education.presentLabel',
-        'Present',
-    );
-    const presentLabel = presentLabelFromData ?? presentLabelFromTranslation;
+    const presentLabel =
+        fieldResolver.getValue<string>('present_label') ?? 'Present';
 
-    const notHighlightedLabelFromData = getString('not_highlighted_label');
-    const notHighlightedLabelFromTranslation = translate(
-        'education.badge.notHighlighted',
-        'Not currently highlighted',
-    );
     const notHighlightedLabel =
-        notHighlightedLabelFromData ?? notHighlightedLabelFromTranslation;
-
-    const sectionId = section.anchor || 'education';
+        fieldResolver.getValue<string>('not_highlighted_label') ??
+        'Not currently highlighted';
 
     if (!hasCourses && !title && !subtitle && !eyebrow) {
         return null;
     }
 
+    const baseSectionClassName = 'flex flex-col gap-10';
+
+    const resolvedSectionClassName = [baseSectionClassName, className]
+        .filter(Boolean)
+        .join(' ')
+        .trim();
+
     return (
         <section
-            id={sectionId}
-            className="flex flex-col gap-10 border-t pt-16 md:pt-24"
+            id={targetId}
+            className={resolvedSectionClassName}
             aria-label={sectionLabel}
         >
             <SectionHeader
@@ -198,13 +163,10 @@ export function CoursesHighlightGridSection({
             {hasCourses && (
                 <div className="grid gap-6 md:grid-cols-2">
                     {visibleCourses.map((course) => {
-                        const categoryKey = course.category
-                            ? `education.categories.${course.category}`
-                            : undefined;
-
+                        const rawCategory = course.category ?? undefined;
                         const categoryLabel =
-                            categoryKey !== undefined
-                                ? translate(categoryKey)
+                            rawCategory && rawCategory.trim().length > 0
+                                ? rawCategory
                                 : undefined;
 
                         const hasLongDescription =

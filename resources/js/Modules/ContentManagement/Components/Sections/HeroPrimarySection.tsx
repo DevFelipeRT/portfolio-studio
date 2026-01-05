@@ -1,11 +1,12 @@
-// resources/js/Modules/ContentManagement/Components/Sections/HeroPrimarySection.tsx
 import { Button } from '@/Components/Ui/button';
 import { SectionHeader } from '@/Layouts/Partials/SectionHeader';
 import type { SectionComponentProps } from '@/Modules/ContentManagement/config/sectionComponents';
+import { useSectionFieldResolver } from '@/Modules/ContentManagement/context/SectionFieldResolverContext';
 import type {
-    SectionData,
+    SectionDataValue,
     SectionImage,
 } from '@/Modules/ContentManagement/types';
+import { AspectRatio } from '@radix-ui/react-aspect-ratio';
 import { JSX } from 'react';
 
 /**
@@ -13,55 +14,52 @@ import { JSX } from 'react';
  */
 export function HeroPrimarySection({
     section,
-    template,
+    className,
 }: SectionComponentProps): JSX.Element | null {
-    const data = (section.data ?? {}) as SectionData;
+    const fieldResolver = useSectionFieldResolver();
 
-    const rawHeroImage = data.hero_image as
-        | SectionImage
-        | SectionImage[]
-        | null
-        | undefined;
+    const targetId = section.anchor || `hero-${section.id}`;
 
-    const heroImage: SectionImage | null = Array.isArray(rawHeroImage)
-        ? (rawHeroImage[0] ?? null)
-        : (rawHeroImage ?? null);
+    const baseClassName = 'lg:py-28';
 
-    const getString = (key: string): string | undefined => {
-        const value = data[key];
-
-        if (typeof value === 'string') {
-            return value;
-        }
-
-        return undefined;
-    };
-
-    const eyebrow = getString('eyebrow');
-
-    const rawTitle =
-        getString('headline') ??
-        getString('title') ??
-        getString('heading') ??
+    const resolvedClassName =
+        [baseClassName, className].filter(Boolean).join(' ').trim() ||
         undefined;
 
-    const description =
-        getString('subheadline') ?? getString('description') ?? undefined;
+    const rawHeroImage = fieldResolver.getValue<SectionDataValue>('hero_image');
 
-    const title = rawTitle ?? template?.label ?? '';
+    const heroImage: SectionImage | null = Array.isArray(rawHeroImage)
+        ? ((rawHeroImage[0] as SectionImage | undefined) ?? null)
+        : ((rawHeroImage as SectionImage | null | undefined) ?? null);
+
+    const eyebrow = fieldResolver.getValue<string>('eyebrow');
+
+    const title =
+        fieldResolver.getValue<string>('headline') ??
+        fieldResolver.getValue<string>('title') ??
+        fieldResolver.getValue<string>('heading') ??
+        '';
+
+    const description =
+        fieldResolver.getValue<string>('subheadline') ??
+        fieldResolver.getValue<string>('description') ??
+        undefined;
 
     const primaryCtaLabel =
-        getString('primary_cta_label') ?? getString('primaryCtaLabel');
+        fieldResolver.getValue<string>('primary_cta_label') ??
+        fieldResolver.getValue<string>('primaryCtaLabel');
+
     const primaryCtaUrl =
-        getString('primary_cta_url') ?? getString('primaryCtaUrl');
+        fieldResolver.getValue<string>('primary_cta_url') ??
+        fieldResolver.getValue<string>('primaryCtaUrl');
 
     if (!title && !description && !primaryCtaLabel) {
         return null;
     }
 
     return (
-        <div className="py-12 md:py-20 lg:py-24">
-            <div className="container mx-auto">
+        <section id={targetId} className={resolvedClassName}>
+            <div className="mx-auto">
                 <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
                     {/* Text column */}
                     <div className="space-y-8">
@@ -87,12 +85,18 @@ export function HeroPrimarySection({
                     {/* Image / visual column */}
                     <div className="relative" aria-hidden="true">
                         {heroImage ? (
-                            <div className="relative h-48 w-full overflow-hidden rounded-2xl border md:h-64 lg:h-72">
-                                <img
-                                    src={heroImage.url}
-                                    alt={heroImage.alt ?? heroImage.title ?? ''}
-                                    className="h-full w-full object-cover"
-                                />
+                            <div className="relative w-full overflow-hidden rounded-2xl border">
+                                <AspectRatio ratio={4 / 3}>
+                                    <img
+                                        src={heroImage.url}
+                                        alt={
+                                            heroImage.alt ??
+                                            heroImage.title ??
+                                            ''
+                                        }
+                                        className="h-full w-full object-cover"
+                                    />
+                                </AspectRatio>
                                 <div className="from-background/60 via-background/20 pointer-events-none absolute inset-0 bg-gradient-to-tr to-transparent" />
                             </div>
                         ) : (
@@ -101,6 +105,6 @@ export function HeroPrimarySection({
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
     );
 }

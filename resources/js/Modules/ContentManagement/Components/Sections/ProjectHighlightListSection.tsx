@@ -1,6 +1,7 @@
 import { SectionHeader } from '@/Layouts/Partials/SectionHeader';
 import type { SectionComponentProps } from '@/Modules/ContentManagement/config/sectionComponents';
-import type { SectionData } from '@/Modules/ContentManagement/types';
+import { useSectionFieldResolver } from '@/Modules/ContentManagement/context/SectionFieldResolverContext';
+import type { SectionDataValue } from '@/Modules/ContentManagement/types';
 import { ProjectCarousel } from '@/Pages/Home/Partials/ProjectCarousel';
 import type { Project } from '@/Pages/types';
 import { JSX } from 'react';
@@ -19,52 +20,23 @@ type CapabilityProject = {
 /**
  * Renders a project highlight list section for a content-managed page.
  *
- * Primary source for all content is the section data, with template
- * metadata used as a fallback when applicable.
+ * Primary source for all content is the section field resolver.
  */
 export function ProjectHighlightListSection({
     section,
-    template,
+    className,
 }: SectionComponentProps): JSX.Element | null {
-    const data = (section.data ?? {}) as SectionData;
+    const fieldResolver = useSectionFieldResolver();
 
-    const getString = (key: string): string | undefined => {
-        const value = data[key];
-
-        if (typeof value === 'string') {
-            return value;
-        }
-
-        return undefined;
-    };
-
-    const getNumber = (key: string): number | undefined => {
-        const value = data[key];
-
-        if (typeof value === 'number' && Number.isFinite(value)) {
-            return value;
-        }
-
-        return undefined;
-    };
-
-    const getBoolean = (key: string): boolean | undefined => {
-        const value = data[key];
-
-        if (typeof value === 'boolean') {
-            return value;
-        }
-
-        return undefined;
-    };
+    const targetId = section.anchor || `projects-${section.id}`;
 
     const highlightOnly =
-        getBoolean('highlight_only') ??
-        getBoolean('highlightOnly') ??
+        fieldResolver.getValue<boolean>('highlight_only') ??
+        fieldResolver.getValue<boolean>('highlightOnly') ??
         undefined;
 
-    const eyebrow = (): string | undefined => {
-        const fromData = getString('eyebrow');
+    const eyebrow = (() => {
+        const fromData = fieldResolver.getValue<string>('eyebrow');
 
         if (fromData) {
             return fromData;
@@ -75,28 +47,32 @@ export function ProjectHighlightListSection({
         }
 
         return undefined;
-    };
+    })();
 
-    const titleFromData = getString('title');
-    const titleFallbackFromTemplate = template?.label;
-    const title = titleFromData ?? titleFallbackFromTemplate ?? '';
+    const title = fieldResolver.getValue<string>('title') ?? '';
 
-    const descriptionFromData =
-        getString('subtitle') ?? getString('description');
-    const descriptionFallbackFromTemplate = template?.description ?? undefined;
-    const description = descriptionFromData ?? descriptionFallbackFromTemplate;
+    const description =
+        fieldResolver.getValue<string>('subtitle') ??
+        fieldResolver.getValue<string>('description') ??
+        undefined;
 
     const maxItems =
-        getNumber('max_items') ?? getNumber('maxItems') ?? undefined;
+        fieldResolver.getValue<number>('max_items') ??
+        fieldResolver.getValue<number>('maxItems') ??
+        undefined;
 
-    const rawProjects = data['projects'] as unknown;
+    const rawProjects = fieldResolver.getValue<SectionDataValue>('projects');
 
-    const allProjects: CapabilityProject[] = Array.isArray(rawProjects)
-        ? rawProjects.filter(
-              (item): item is CapabilityProject =>
-                  item !== null && typeof item === 'object',
-          )
-        : [];
+    const projectsArray = Array.isArray(rawProjects) ? rawProjects : [];
+
+    const allProjects: CapabilityProject[] = projectsArray
+        .filter(
+            (item) =>
+                item !== null &&
+                typeof item === 'object' &&
+                !Array.isArray(item),
+        )
+        .map((item) => item as CapabilityProject);
 
     const limitedProjects: Project[] =
         typeof maxItems === 'number' && maxItems > 0
@@ -109,20 +85,23 @@ export function ProjectHighlightListSection({
         return null;
     }
 
-    const ariaLabel =
-        title ||
-        description ||
-        template?.label ||
-        template?.description ||
-        undefined;
+    const ariaLabel = title || description || undefined;
+
+    const baseSectionClassName = 'flex flex-col gap-8';
+
+    const resolvedSectionClasses = [baseSectionClassName, className]
+        .filter(Boolean)
+        .join(' ')
+        .trim();
 
     return (
         <section
-            className="flex flex-col gap-8 border-t pt-12 md:pt-16"
+            id={targetId}
+            className={resolvedSectionClasses}
             aria-label={ariaLabel}
         >
             <SectionHeader
-                eyebrow={eyebrow()}
+                eyebrow={eyebrow}
                 title={title}
                 description={description}
                 align="left"

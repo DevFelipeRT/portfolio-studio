@@ -1,9 +1,10 @@
 import { TimelineItem } from '@/Components/TimelineItem';
 import { DateDisplay } from '@/Components/Ui/date-display';
-import { useTranslation } from '@/i18n';
 import { SectionHeader } from '@/Layouts/Partials/SectionHeader';
 import type { SectionComponentProps } from '@/Modules/ContentManagement/config/sectionComponents';
-import type { SectionData } from '@/Modules/ContentManagement/types';
+import { useSectionFieldResolver } from '@/Modules/ContentManagement/context/SectionFieldResolverContext';
+import type { SectionDataValue } from '@/Modules/ContentManagement/types';
+import { useGetLocale } from '@/i18n';
 import { Briefcase } from 'lucide-react';
 import { JSX } from 'react';
 
@@ -67,50 +68,36 @@ function ExperiencePeriodDisplay({
 /**
  * Renders an experience timeline section driven by ContentManagement capabilities data.
  *
- * Experiences are expected to be provided in section.data.experiences
- * by the backend layer integrating with the experiences.visible.v1 capability.
+ * Experiences are expected to be provided in section data by the backend layer
+ * integrating with the experiences.visible.v1 capability.
  */
 export function ExperienceTimelineSection({
     section,
-    template,
+    className,
 }: SectionComponentProps): JSX.Element | null {
-    const { translate, locale } = useTranslation('home');
+    const fieldResolver = useSectionFieldResolver();
+    const locale = useGetLocale();
 
-    const data = (section.data ?? {}) as SectionData;
+    const targetId = section.anchor || `experience-${section.id}`;
 
-    const getString = (key: string): string | undefined => {
-        const value = data[key];
-
-        if (typeof value === 'string') {
-            return value;
-        }
-
-        return undefined;
-    };
-
-    const getNumber = (key: string): number | undefined => {
-        const value = data[key];
-
-        if (typeof value === 'number' && Number.isFinite(value)) {
-            return value;
-        }
-
-        return undefined;
-    };
-
-    const rawExperiences = data['experiences'] as unknown;
+    const rawExperiences =
+        fieldResolver.getValue<SectionDataValue>('experiences');
 
     const allExperiences: CapabilityExperienceCollection = Array.isArray(
         rawExperiences,
     )
         ? rawExperiences.filter(
               (item): item is CapabilityExperience =>
-                  item !== null && typeof item === 'object',
+                  item !== null &&
+                  typeof item === 'object' &&
+                  !Array.isArray(item),
           )
         : [];
 
     const maxItems =
-        getNumber('max_items') ?? getNumber('maxItems') ?? undefined;
+        fieldResolver.getValue<number>('max_items') ??
+        fieldResolver.getValue<number>('maxItems') ??
+        undefined;
 
     const visibleExperiences: CapabilityExperienceCollection =
         typeof maxItems === 'number' && maxItems > 0
@@ -119,63 +106,42 @@ export function ExperienceTimelineSection({
 
     const hasExperiences = visibleExperiences.length > 0;
 
-    const sectionLabel = translate(
-        'experience.sectionLabel',
-        'Professional experience timeline',
-    );
+    const sectionLabel =
+        fieldResolver.getValue<string>('section_label') ??
+        'Professional experience timeline';
 
-    const eyebrowFromData = getString('eyebrow');
-    const eyebrowFromTranslation = translate(
-        'experience.header.eyebrow',
-        'Career',
-    );
-    const eyebrow = eyebrowFromData ?? eyebrowFromTranslation;
+    const eyebrow = fieldResolver.getValue<string>('eyebrow') ?? 'Career';
 
-    const titleFromData = getString('title');
-    const titleFromTemplate = template?.label;
-    const titleFromTranslation = translate(
-        'experience.header.title',
-        'Professional Experience',
-    );
     const title =
-        titleFromData ?? titleFromTemplate ?? titleFromTranslation ?? '';
+        fieldResolver.getValue<string>('title') ?? 'Professional Experience';
 
-    const descriptionFromData =
-        getString('subtitle') ?? getString('description');
-    const descriptionFromTemplate = template?.description ?? undefined;
-    const descriptionFromTranslation = translate(
-        'experience.header.description',
-        'A timeline of roles and responsibilities that shaped my professional journey.',
-    );
     const description =
-        descriptionFromData ??
-        descriptionFromTemplate ??
-        descriptionFromTranslation;
+        fieldResolver.getValue<string>('subtitle') ??
+        fieldResolver.getValue<string>('description') ??
+        'A timeline of roles and responsibilities that shaped my professional journey.';
 
-    const emptyMessageFromData = getString('empty_message');
-    const emptyMessageFromTranslation = translate(
-        'experience.emptyMessage',
-        'No professional experience available to display yet.',
-    );
-    const emptyMessage = emptyMessageFromData ?? emptyMessageFromTranslation;
+    const emptyMessage =
+        fieldResolver.getValue<string>('empty_message') ??
+        'No professional experience available to display yet.';
 
-    const presentLabelFromData = getString('present_label');
-    const presentLabelFromTranslation = translate(
-        'experience.presentLabel',
-        'Present',
-    );
-    const presentLabel = presentLabelFromData ?? presentLabelFromTranslation;
-
-    const sectionId = section.anchor || 'experience';
+    const presentLabel =
+        fieldResolver.getValue<string>('present_label') ?? 'Present';
 
     if (!hasExperiences && !title && !description && !eyebrow) {
         return null;
     }
 
+    const baseSectionClassName = 'flex flex-col gap-10';
+
+    const resolvedSectionClassName = [baseSectionClassName, className]
+        .filter(Boolean)
+        .join(' ')
+        .trim();
+
     return (
         <section
-            id={sectionId}
-            className="flex flex-col gap-10 border-t pt-16 md:pt-24"
+            id={targetId}
+            className={resolvedSectionClassName}
             aria-label={sectionLabel}
         >
             <SectionHeader

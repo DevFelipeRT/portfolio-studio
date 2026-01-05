@@ -7,120 +7,76 @@ import { SectionHeader } from '@/Layouts/Partials/SectionHeader';
 import type { SectionComponentProps } from '@/Modules/ContentManagement/config/sectionComponents';
 import { useSectionEnvironment } from '@/Modules/ContentManagement/context/SectionEnvironmentContext';
 import { useSectionFieldResolver } from '@/Modules/ContentManagement/context/SectionFieldResolverContext';
-import { useTranslation } from '@/i18n';
 import { useForm } from '@inertiajs/react';
 import type { FormEvent, JSX } from 'react';
 
 /**
  * Renders the primary contact section driven by ContentManagement template data.
  *
- * Text content can be configured through section data, with translation
- * fallbacks when values are not provided by the template.
- * Social links are provided through the front-only section environment.
+ * Text content is resolved through the section field resolver, with static
+ * defaults when CMS values are not provided. Social links are provided
+ * through the front-only section environment.
  */
 export function ContactPrimarySection({
     section,
-    template,
+    className,
 }: SectionComponentProps): JSX.Element | null {
-    const { translate } = useTranslation('home');
     const environment = useSectionEnvironment();
     const fieldResolver = useSectionFieldResolver();
 
-    const getString = (key: string): string | undefined => {
-        const value = fieldResolver.getValue<string>(key);
-
-        if (typeof value === 'string' && value.trim() !== '') {
-            return value;
-        }
-
-        return undefined;
-    };
+    const targetId = section.anchor || `contact-${section.id}`;
 
     const sectionLabel =
-        getString('section_label') ??
-        translate('contact.sectionLabel', 'Contact and collaboration');
+        fieldResolver.getValue<string>('section_label') ??
+        'Contact and collaboration';
 
-    const eyebrow =
-        getString('eyebrow') ?? translate('contact.header.eyebrow', 'Contact');
+    const eyebrow = fieldResolver.getValue<string>('eyebrow') ?? 'Contact';
 
     const title =
-        getString('title') ??
-        template?.label ??
-        translate(
-            'contact.header.title',
-            'Let us talk about opportunities, projects, or collaboration.',
-        ) ??
-        '';
+        fieldResolver.getValue<string>('title') ??
+        'Let us talk about opportunities, projects, or collaboration.';
 
     const description =
-        getString('description') ??
-        getString('subtitle') ??
-        template?.description ??
-        translate(
-            'contact.header.description',
-            'If you are looking for a developer to strengthen your team, support a specific project, or start a technical collaboration, use the form or the channels below to get in touch.',
-        );
+        fieldResolver.getValue<string>('description') ??
+        fieldResolver.getValue<string>('subtitle') ??
+        'If you are looking for a developer to strengthen your team, support a specific project, or start a technical collaboration, use the form or the channels below to get in touch.';
 
     const formTitle =
-        getString('form_title') ??
-        template?.label ??
-        translate(
-            'contact.header.formTitle',
-            'Let us talk about opportunities, projects, or collaboration.',
-        ) ??
-        '';
+        fieldResolver.getValue<string>('form_title') ?? 'Send a message';
 
     const formDescription =
-        getString('form_description') ??
-        translate(
-            'contact.header.formDescription',
-            'If you are looking for a developer to strengthen your team, support a specific project, or start a technical collaboration, use the form or the channels below to get in touch.',
-        );
+        fieldResolver.getValue<string>('form_description') ??
+        'Share what you have in mind and how I can help.';
 
-    const nameLabel =
-        getString('name_label') ?? translate('contact.form.name.label', 'Name');
+    const nameLabel = fieldResolver.getValue<string>('name_label') ?? 'Name';
     const namePlaceholder =
-        getString('name_placeholder') ??
-        translate('contact.form.name.placeholder', 'Your name');
+        fieldResolver.getValue<string>('name_placeholder') ?? 'Your name';
 
-    const emailLabel =
-        getString('email_label') ??
-        translate('contact.form.email.label', 'Email');
+    const emailLabel = fieldResolver.getValue<string>('email_label') ?? 'Email';
     const emailPlaceholder =
-        getString('email_placeholder') ??
-        translate('contact.form.email.placeholder', 'you@example.com');
+        fieldResolver.getValue<string>('email_placeholder') ??
+        'you@example.com';
 
     const messageLabel =
-        getString('message_label') ??
-        translate('contact.form.message.label', 'Message');
+        fieldResolver.getValue<string>('message_label') ?? 'Message';
     const messagePlaceholder =
-        getString('message_placeholder') ??
-        translate(
-            'contact.form.message.placeholder',
-            'Share what you have in mind and how I can help.',
-        );
+        fieldResolver.getValue<string>('message_placeholder') ??
+        'Write your message here.';
 
     const submitLabel =
-        getString('submit_label') ??
-        translate('contact.form.submit.default', 'Send message');
+        fieldResolver.getValue<string>('submit_label') ?? 'Send message';
     const submitProcessingLabel =
-        getString('submit_processing_label') ??
-        translate('contact.form.submit.processing', 'Sending…');
+        fieldResolver.getValue<string>('submit_processing_label') ?? 'Sending…';
 
-    // Social links: front-only environment (not CMS data)
     const socialLinks = environment.socialLinks ?? [];
     const hasSocialLinks = Array.isArray(socialLinks) && socialLinks.length > 0;
 
-    const socialsHeading = translate(
-        'contact.sidebar.heading',
-        'Other contact channels',
-    );
-    const socialsDescription = translate(
-        'contact.sidebar.description',
-        'You can also contact me through your preferred channel using the links below to access my profiles and learn more about my work.',
-    );
-
-    const sectionId = section.anchor || 'contact';
+    const socialsHeading =
+        fieldResolver.getValue<string>('sidebar_heading') ??
+        'Other contact channels';
+    const socialsDescription =
+        fieldResolver.getValue<string>('sidebar_description') ??
+        'You can also contact me through your preferred channel using the links below to access my profiles and learn more about my work.';
 
     const {
         data: formData,
@@ -150,10 +106,17 @@ export function ContactPrimarySection({
         return null;
     }
 
+    const baseSectionClassName = 'flex flex-col gap-10';
+
+    const resolvedSectionClassName = [baseSectionClassName, className]
+        .filter(Boolean)
+        .join(' ')
+        .trim();
+
     return (
         <section
-            id={sectionId}
-            className="flex flex-col gap-8 border-t pt-12 pb-16 md:pt-16 md:pb-20"
+            id={targetId}
+            className={resolvedSectionClassName}
             aria-label={sectionLabel}
         >
             <SectionHeader
@@ -163,7 +126,7 @@ export function ContactPrimarySection({
                 align="left"
             />
 
-            <div className="flex flex-col gap-6 p-0.5 md:flex-row md:items-start md:justify-between md:gap-6">
+            <div className="flex flex-col gap-6 p-0.5 md:flex-row md:items-start md:justify-between md:gap-8">
                 <section
                     aria-label={formTitle}
                     className="space-y-4 md:max-w-xl md:flex-1"
@@ -180,8 +143,10 @@ export function ContactPrimarySection({
                         onSubmit={handleSubmit}
                         noValidate
                     >
-                        <div className="space-y-1.5">
-                            <Label htmlFor="contact-name">{nameLabel}</Label>
+                        <div>
+                            <Label className="pb-1.5" htmlFor="contact-name">
+                                {nameLabel}
+                            </Label>
                             <Input
                                 id="contact-name"
                                 name="name"
@@ -210,8 +175,10 @@ export function ContactPrimarySection({
                             )}
                         </div>
 
-                        <div className="space-y-1.5">
-                            <Label htmlFor="contact-email">{emailLabel}</Label>
+                        <div>
+                            <Label className="pb-1.5" htmlFor="contact-email">
+                                {emailLabel}
+                            </Label>
                             <Input
                                 id="contact-email"
                                 type="email"
@@ -241,8 +208,8 @@ export function ContactPrimarySection({
                             )}
                         </div>
 
-                        <div className="space-y-1.5">
-                            <Label htmlFor="contact-message">
+                        <div>
+                            <Label className="pb-1.5" htmlFor="contact-message">
                                 {messageLabel}
                             </Label>
                             <Textarea

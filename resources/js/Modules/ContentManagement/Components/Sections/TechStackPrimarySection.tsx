@@ -2,7 +2,6 @@ import { SectionHeader } from '@/Layouts/Partials/SectionHeader';
 import type { SectionComponentProps } from '@/Modules/ContentManagement/config/sectionComponents';
 import { useSectionFieldResolver } from '@/Modules/ContentManagement/context/SectionFieldResolverContext';
 import { TechnologyBadge } from '@/Pages/Home/Partials/TechnologyBadge';
-import { useTranslation } from '@/i18n';
 import type { JSX } from 'react';
 
 type CapabilityTechnology = {
@@ -20,49 +19,30 @@ type CapabilityTechnologyGroup = {
  * TechStackPrimarySection shows technologies grouped by category,
  * driven by ContentManagement template data and capabilities output.
  *
- * Header content can be customized via template fields, with
- * translations as final fallback.
+ * Header content is resolved through the section field resolver,
+ * with static defaults as final fallback.
  */
 export function TechStackPrimarySection({
     section,
+    className,
 }: SectionComponentProps): JSX.Element | null {
-    const { translate } = useTranslation('home');
     const fieldResolver = useSectionFieldResolver();
 
-    const getString = (key: string): string | undefined => {
-        const value = fieldResolver.getValue<string>(key);
-
-        if (typeof value === 'string' && value.trim() !== '') {
-            return value;
-        }
-
-        return undefined;
-    };
+    const targetId = section.anchor || `tech-stack-${section.id}`;
 
     const sectionLabel =
-        getString('section_label') ??
-        translate(
-            'techStack.sectionLabel',
-            'Technologies used across my projects',
-        );
+        fieldResolver.getValue<string>('section_label') ??
+        'Technologies used across my projects';
 
-    const eyebrow =
-        getString('eyebrow') ??
-        translate('techStack.header.eyebrow', 'Tech stack');
+    const eyebrow = fieldResolver.getValue<string>('eyebrow') ?? 'Tech stack';
 
     const title =
-        getString('title') ??
-        translate(
-            'techStack.header.title',
-            'Technologies I work with on a daily basis.',
-        );
+        fieldResolver.getValue<string>('title') ??
+        'Technologies I work with on a daily basis.';
 
     const description =
-        getString('description') ??
-        translate(
-            'techStack.header.description',
-            'A selection of tools and frameworks that I use to design, build and operate web applications.',
-        );
+        fieldResolver.getValue<string>('description') ??
+        'A selection of tools and frameworks that I use to design, build and operate web applications.';
 
     const rawGroups = fieldResolver.getValue<unknown>('groups');
 
@@ -74,16 +54,22 @@ export function TechStackPrimarySection({
         : [];
 
     const hasGroups = groups.length > 0;
-    const sectionId = section.anchor || 'tech-stack';
 
     if (!title && !description && !hasGroups) {
         return null;
     }
 
+    const baseSectionClassName = 'flex flex-col gap-8';
+
+    const resolvedSectionClassName = [baseSectionClassName, className]
+        .filter(Boolean)
+        .join(' ')
+        .trim();
+
     return (
         <section
-            id={sectionId}
-            className="flex flex-col gap-8 border-t pt-12 md:pt-16"
+            id={targetId}
+            className={resolvedSectionClassName}
             aria-label={sectionLabel}
         >
             <SectionHeader

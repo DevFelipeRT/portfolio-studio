@@ -10,8 +10,8 @@ import {
 } from '@/Components/Ui/card';
 import { SectionHeader } from '@/Layouts/Partials/SectionHeader';
 import type { SectionComponentProps } from '@/Modules/ContentManagement/config/sectionComponents';
+import { useSectionFieldResolver } from '@/Modules/ContentManagement/context/SectionFieldResolverContext';
 import type {
-    SectionData,
     SectionDataCollectionItem,
     SectionDataValue,
 } from '@/Modules/ContentManagement/types';
@@ -30,69 +30,31 @@ interface CardsGridItem {
  */
 export function CardsGridSection({
     section,
-    template,
+    className,
 }: SectionComponentProps): JSX.Element | null {
-    const data = (section.data ?? {}) as SectionData;
+    const fieldResolver = useSectionFieldResolver();
+    const targetId = section.anchor || `cards-grid-${section.id}`;
 
-    const getString = (key: string): string | undefined => {
-        const value = data[key];
+    const eyebrow = fieldResolver.getValue<string>('eyebrow');
+    const title = fieldResolver.getValue<string>('title') ?? '';
+    const description = fieldResolver.getValue<string>('description');
 
-        if (typeof value === 'string') {
-            return value;
-        }
-
-        return undefined;
-    };
-
-    const getBoolean = (key: string, defaultValue: boolean): boolean => {
-        const value = data[key];
-
-        if (typeof value === 'boolean') {
-            return value;
-        }
-
-        return defaultValue;
-    };
-
-    const getNumber = (key: string): number | undefined => {
-        const value = data[key];
-
-        if (typeof value === 'number' && Number.isFinite(value)) {
-            return value;
-        }
-
-        if (typeof value === 'string') {
-            const parsed = Number.parseInt(value, 10);
-
-            if (Number.isFinite(parsed)) {
-                return parsed;
-            }
-        }
-
-        return undefined;
-    };
-
-    const eyebrow = getString('eyebrow');
-
-    const rawTitle = getString('title');
-    const description = getString('description');
-
-    const title = rawTitle ?? template?.label ?? '';
-
-    const hasBorderTop = getBoolean('has_border_top', true);
-    const rawColumns = getNumber('columns');
+    const rawColumns = fieldResolver.getValue<number>('columns');
     const columns = rawColumns === 2 ? 2 : 3;
 
-    const alignHeader =
-        getString('align_header') === 'center' ? 'center' : 'left';
+    const rawAlignHeader = fieldResolver.getValue<string>('align_header');
+    const alignHeader = rawAlignHeader === 'center' ? 'center' : 'left';
 
-    const rawMaxItems = getNumber('max_items') ?? getNumber('maxItems');
+    const rawMaxItems =
+        fieldResolver.getValue<number>('max_items') ??
+        fieldResolver.getValue<number>('maxItems');
+
     const maxItems =
         typeof rawMaxItems === 'number' && rawMaxItems > 0
             ? rawMaxItems
             : undefined;
 
-    const rawCards: SectionDataValue | undefined = data.cards;
+    const rawCards = fieldResolver.getValue<SectionDataValue>('cards');
 
     const collectionItems: SectionDataCollectionItem[] = Array.isArray(rawCards)
         ? rawCards.filter(
@@ -146,18 +108,16 @@ export function CardsGridSection({
         return null;
     }
 
-    const sectionClasses = [
-        'flex flex-col gap-8',
-        hasBorderTop ? 'border-t pt-12 md:pt-16' : 'pt-8 md:pt-12',
-    ]
+    const resolvedSectionClasses = ['flex flex-col gap-8', className]
         .filter(Boolean)
-        .join(' ');
+        .join(' ')
+        .trim();
 
     const gridColumnsClass =
         columns === 2 ? 'md:grid-cols-2' : 'md:grid-cols-3';
 
     return (
-        <div className={sectionClasses}>
+        <section className={resolvedSectionClasses} id={targetId}>
             <SectionHeader
                 eyebrow={eyebrow}
                 title={title}
@@ -194,6 +154,6 @@ export function CardsGridSection({
                     </Card>
                 ))}
             </div>
-        </div>
+        </section>
     );
 }

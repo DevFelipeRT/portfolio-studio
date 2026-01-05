@@ -1,18 +1,8 @@
 import { SectionHeader } from '@/Layouts/Partials/SectionHeader';
 import type { SectionComponentProps } from '@/Modules/ContentManagement/config/sectionComponents';
-import type { SectionData } from '@/Modules/ContentManagement/types';
+import { useSectionFieldResolver } from '@/Modules/ContentManagement/context/SectionFieldResolverContext';
+import type { SectionDataValue } from '@/Modules/ContentManagement/types';
 import { JSX } from 'react';
-
-type CapabilityInitiativeImage = {
-    id: number;
-    url: string;
-    alt?: string | null;
-    title?: string | null;
-    caption?: string | null;
-    position?: number | null;
-    is_cover: boolean;
-    owner_caption?: string | null;
-};
 
 type CapabilityInitiative = {
     id: number;
@@ -22,58 +12,28 @@ type CapabilityInitiative = {
     display?: boolean;
     start_date?: string | null;
     end_date?: string | null;
-    images?: CapabilityInitiativeImage[] | unknown;
 };
 
 /**
  * Renders an initiative highlight list section for a content-managed page.
  *
- * Primary source for all content is the section data, with template
- * metadata used as a fallback when applicable.
+ * Primary source for all content is the section field resolver.
  */
 export function InitiativeHighlightListSection({
     section,
-    template,
+    className,
 }: SectionComponentProps): JSX.Element | null {
-    const data = (section.data ?? {}) as SectionData;
+    const fieldResolver = useSectionFieldResolver();
 
-    const getString = (key: string): string | undefined => {
-        const value = data[key];
-
-        if (typeof value === 'string') {
-            return value;
-        }
-
-        return undefined;
-    };
-
-    const getNumber = (key: string): number | undefined => {
-        const value = data[key];
-
-        if (typeof value === 'number' && Number.isFinite(value)) {
-            return value;
-        }
-
-        return undefined;
-    };
-
-    const getBoolean = (key: string): boolean | undefined => {
-        const value = data[key];
-
-        if (typeof value === 'boolean') {
-            return value;
-        }
-
-        return undefined;
-    };
+    const targetId = section.anchor || `initiatives-${section.id}`;
 
     const highlightOnly =
-        getBoolean('highlight_only') ??
-        getBoolean('highlightOnly') ??
+        fieldResolver.getValue<boolean>('highlight_only') ??
+        fieldResolver.getValue<boolean>('highlightOnly') ??
         undefined;
 
-    const eyebrow = (): string | undefined => {
-        const fromData = getString('eyebrow');
+    const eyebrow = (() => {
+        const fromData = fieldResolver.getValue<string>('eyebrow');
 
         if (fromData) {
             return fromData;
@@ -84,105 +44,108 @@ export function InitiativeHighlightListSection({
         }
 
         return undefined;
-    };
+    })();
 
-    const titleFromData = getString('title');
-    const titleFallbackFromTemplate = template?.label;
-    const title = titleFromData ?? titleFallbackFromTemplate ?? '';
+    const title = fieldResolver.getValue<string>('title') ?? '';
 
-    const descriptionFromData =
-        getString('subtitle') ?? getString('description');
-    const descriptionFallbackFromTemplate = template?.description ?? undefined;
-    const description = descriptionFromData ?? descriptionFallbackFromTemplate;
+    const description =
+        fieldResolver.getValue<string>('subtitle') ??
+        fieldResolver.getValue<string>('description') ??
+        undefined;
 
     const maxItems =
-        getNumber('max_items') ?? getNumber('maxItems') ?? undefined;
+        fieldResolver.getValue<number>('max_items') ??
+        fieldResolver.getValue<number>('maxItems') ??
+        undefined;
 
-    const rawInitiatives = data['initiatives'] as unknown;
+    const rawInitiatives =
+        fieldResolver.getValue<SectionDataValue>('initiatives');
 
-    const allInitiatives: CapabilityInitiative[] = Array.isArray(rawInitiatives)
-        ? rawInitiatives.filter(
-              (item): item is CapabilityInitiative =>
-                  item !== null && typeof item === 'object',
-          )
+    const initiativesArray = Array.isArray(rawInitiatives)
+        ? rawInitiatives
         : [];
+
+    const allInitiatives: CapabilityInitiative[] = initiativesArray
+        .filter(
+            (item) =>
+                item !== null &&
+                typeof item === 'object' &&
+                !Array.isArray(item),
+        )
+        .map((item) => item as CapabilityInitiative);
 
     const limitedInitiatives: CapabilityInitiative[] =
         typeof maxItems === 'number' && maxItems > 0
             ? allInitiatives.slice(0, maxItems)
             : allInitiatives;
 
-    const headerEyebrow = eyebrow();
-
-    if (
-        !headerEyebrow &&
-        !title &&
-        !description &&
-        limitedInitiatives.length === 0
-    ) {
+    if (!eyebrow && !title && !description && limitedInitiatives.length === 0) {
         return null;
     }
 
+    const baseSectionClassName = 'mx-auto space-y-8';
+
+    const resolvedSectionClassName = [baseSectionClassName, className]
+        .filter(Boolean)
+        .join(' ')
+        .trim();
+
     return (
-        <section className="border-t py-12 md:py-16">
-            <div className="container mx-auto">
-                <div className="space-y-8">
-                    <SectionHeader
-                        eyebrow={headerEyebrow}
-                        title={title}
-                        description={description}
-                        align="left"
-                        level={2}
-                    />
+        <section id={targetId} className={resolvedSectionClassName}>
+            <SectionHeader
+                eyebrow={eyebrow}
+                title={title}
+                description={description}
+                align="left"
+                level={2}
+            />
 
-                    {limitedInitiatives.length > 0 ? (
-                        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                            {limitedInitiatives.map((initiative) => {
-                                const name = initiative.name;
-                                const shortDescription =
-                                    initiative.short_description ??
-                                    initiative.long_description ??
-                                    null;
-                                const startDate = initiative.start_date ?? null;
-                                const endDate = initiative.end_date ?? null;
+            {limitedInitiatives.length > 0 ? (
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    {limitedInitiatives.map((initiative) => {
+                        const name = initiative.name;
+                        const shortDescription =
+                            initiative.short_description ??
+                            initiative.long_description ??
+                            null;
+                        const startDate = initiative.start_date ?? null;
+                        const endDate = initiative.end_date ?? null;
 
-                                return (
-                                    <article
-                                        key={initiative.id}
-                                        className="bg-card text-card-foreground flex h-full flex-col rounded-2xl border p-6 shadow-sm"
-                                    >
-                                        <div className="space-y-2">
-                                            <h3 className="text-base leading-tight font-semibold tracking-tight">
-                                                {name}
-                                            </h3>
+                        return (
+                            <article
+                                key={initiative.id}
+                                className="bg-card text-card-foreground flex h-full flex-col rounded-2xl border p-6 shadow-sm"
+                            >
+                                <div className="space-y-2">
+                                    <h3 className="text-base leading-tight font-semibold tracking-tight">
+                                        {name}
+                                    </h3>
 
-                                            {shortDescription && (
-                                                <p className="text-muted-foreground text-sm leading-relaxed">
-                                                    {shortDescription}
-                                                </p>
-                                            )}
+                                    {shortDescription && (
+                                        <p className="text-muted-foreground text-sm leading-relaxed">
+                                            {shortDescription}
+                                        </p>
+                                    )}
 
-                                            {(startDate || endDate) && (
-                                                <p className="text-muted-foreground text-xs">
-                                                    {startDate && endDate
-                                                        ? `${startDate} – ${endDate}`
-                                                        : startDate
-                                                          ? startDate
-                                                          : endDate}
-                                                </p>
-                                            )}
-                                        </div>
-                                    </article>
-                                );
-                            })}
-                        </div>
-                    ) : (
-                        <p className="text-muted-foreground text-sm">
-                            Nenhuma iniciativa retornada para esta seção.
-                        </p>
-                    )}
+                                    {(startDate || endDate) && (
+                                        <p className="text-muted-foreground text-xs">
+                                            {startDate && endDate
+                                                ? `${startDate} – ${endDate}`
+                                                : startDate
+                                                  ? startDate
+                                                  : endDate}
+                                        </p>
+                                    )}
+                                </div>
+                            </article>
+                        );
+                    })}
                 </div>
-            </div>
+            ) : (
+                <p className="text-muted-foreground text-sm">
+                    Nenhuma iniciativa retornada para esta seção.
+                </p>
+            )}
         </section>
     );
 }
