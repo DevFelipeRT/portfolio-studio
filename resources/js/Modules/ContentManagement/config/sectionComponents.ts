@@ -9,10 +9,10 @@ import type {
     TemplateDefinitionDto,
 } from '@/Modules/ContentManagement/types';
 import React from 'react';
+import { ContactPrimarySection } from '../Components/Sections/ContactPrimarySection';
+import { CoursesHighlightGridSection } from '../Components/Sections/CoursesHighlightGridSection';
 import { ExperienceTimelineSection } from '../Components/Sections/ExperienceTimelineSection';
 import { InitiativeHighlightListSection } from '../Components/Sections/InitiativeHighlightListSection';
-import { CoursesHighlightGridSection } from '../Components/Sections/CoursesHighlightGridSection';
-import { ContactPrimarySection } from '../Components/Sections/ContactPrimarySection';
 import { TechStackPrimarySection } from '../Components/Sections/TechStackPrimarySection';
 
 export type SectionComponentProps = {
