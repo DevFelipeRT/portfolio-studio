@@ -1,7 +1,7 @@
 // resources/js/Modules/ContentManagement/types/index.ts
 
-export type { SectionEnvironment } from './sectionEnvironment';
 export { createDefaultSectionEnvironment } from './sectionEnvironment';
+export type { SectionEnvironment } from './sectionEnvironment';
 
 export type SectionDataPrimitive = string | number | boolean | null;
 
@@ -90,7 +90,6 @@ export type SectionImage = {
     is_cover: boolean;
     owner_caption: string | null;
 };
-
 
 /**
  * Represents the supported primitive field kinds for template-driven sections.
