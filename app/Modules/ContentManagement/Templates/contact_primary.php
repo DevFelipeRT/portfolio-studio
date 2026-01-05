@@ -20,7 +20,7 @@ return [
             'label' => 'Section aria label',
             'type' => 'string',
             'required' => false,
-            'default' => null,
+            'default' => 'Contact',
             'validation' => ['max:160'],
         ],
         [
@@ -28,7 +28,7 @@ return [
             'label' => 'Section eyebrow',
             'type' => 'string',
             'required' => false,
-            'default' => null,
+            'default' => 'Contact',
             'validation' => ['max:80'],
         ],
         [
@@ -36,7 +36,7 @@ return [
             'label' => 'Section title',
             'type' => 'string',
             'required' => false,
-            'default' => null,
+            'default' => 'Let us talk about opportunities, projects, or collaboration.',
             'validation' => ['max:160'],
         ],
         [
@@ -44,7 +44,7 @@ return [
             'label' => 'Section description',
             'type' => 'text',
             'required' => false,
-            'default' => null,
+            'default' => 'If you are looking for a developer to strengthen your team, support a specific project, or start a technical collaboration, use the form or the channels below to get in touch.',
             'validation' => ['max:300'],
         ],
 
@@ -54,7 +54,7 @@ return [
             'label' => 'Form section title',
             'type' => 'string',
             'required' => false,
-            'default' => 'Teste',
+            'default' => 'Send a message',
             'validation' => ['max:160'],
         ],
         [
@@ -62,7 +62,7 @@ return [
             'label' => 'Form section description',
             'type' => 'text',
             'required' => false,
-            'default' => null,
+            'default' => 'Share what you have in mind and how I can help.',
             'validation' => ['max:300'],
         ],
 
@@ -72,7 +72,7 @@ return [
             'label' => 'Name field label',
             'type' => 'string',
             'required' => false,
-            'default' => null,
+            'default' => 'Name',
             'validation' => ['max:80'],
         ],
         [
@@ -80,7 +80,7 @@ return [
             'label' => 'Name field placeholder',
             'type' => 'string',
             'required' => false,
-            'default' => null,
+            'default' => 'Your name',
             'validation' => ['max:120'],
         ],
 
@@ -90,7 +90,7 @@ return [
             'label' => 'Email field label',
             'type' => 'string',
             'required' => false,
-            'default' => null,
+            'default' => 'Email',
             'validation' => ['max:80'],
         ],
         [
@@ -98,7 +98,7 @@ return [
             'label' => 'Email field placeholder',
             'type' => 'string',
             'required' => false,
-            'default' => null,
+            'default' => 'you@example.com',
             'validation' => ['max:120'],
         ],
 
@@ -108,7 +108,7 @@ return [
             'label' => 'Message field label',
             'type' => 'string',
             'required' => false,
-            'default' => null,
+            'default' => 'Message',
             'validation' => ['max:80'],
         ],
         [
@@ -116,7 +116,7 @@ return [
             'label' => 'Message field placeholder',
             'type' => 'string',
             'required' => false,
-            'default' => null,
+            'default' => 'Write your message here.',
             'validation' => ['max:220'],
         ],
 
@@ -126,7 +126,7 @@ return [
             'label' => 'Submit button label (idle)',
             'type' => 'string',
             'required' => false,
-            'default' => null,
+            'default' => 'Send message',
             'validation' => ['max:80'],
         ],
         [
@@ -134,8 +134,26 @@ return [
             'label' => 'Submit button label (processing)',
             'type' => 'string',
             'required' => false,
-            'default' => null,
+            'default' => 'Sending…',
             'validation' => ['max:80'],
+        ],
+
+        // Socials sidebar
+        [
+            'name' => 'sidebar_heading',
+            'label' => 'Socials sidebar heading',
+            'type' => 'string',
+            'required' => false,
+            'default' => 'Other contact channels',
+            'validation' => ['max:160'],
+        ],
+        [
+            'name' => 'sidebar_description',
+            'label' => 'Socials sidebar description',
+            'type' => 'text',
+            'required' => false,
+            'default' => 'You can also contact me through your preferred channel using the links below to access my profiles and learn more about my work.',
+            'validation' => ['max:300'],
         ],
     ],
 ];
