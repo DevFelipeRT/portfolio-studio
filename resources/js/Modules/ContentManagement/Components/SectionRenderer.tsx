@@ -1,4 +1,4 @@
-// resources/js/Modules/ContentManagement/Components/Sections/SectionRenderer.tsx
+// resources/js/Modules/ContentManagement/Components/SectionRenderer.tsx
 
 import {
     SECTION_COMPONENT_REGISTRY,
@@ -66,9 +66,8 @@ export function SectionRenderer({
                     template,
                 );
 
-                const anchorId = section.anchor ?? undefined;
-
-                const baseSectionClassName = 'm-0';
+                const baseSectionClassName =
+                    'm-0 border-b py-8 md:py-12 lg:py-16';
                 const resolvedSectionClassName =
                     [baseSectionClassName, sectionClassName]
                         .filter(Boolean)
@@ -79,7 +78,6 @@ export function SectionRenderer({
                     <Component
                         section={section}
                         template={template}
-                        anchorId={anchorId}
                         className={resolvedSectionClassName}
                     />
                 ) : (
@@ -87,7 +85,6 @@ export function SectionRenderer({
                         section,
                         template,
                         fieldResolver,
-                        anchorId,
                         resolvedSectionClassName,
                     )
                 );
@@ -130,7 +127,6 @@ function renderGenericTemplateSection(
     section: PageSectionDto,
     template: TemplateDefinitionDto | undefined,
     fieldResolver: SectionFieldResolver,
-    anchorId?: string,
     className?: string,
 ): JSX.Element | null {
     if (!template) {
@@ -152,7 +148,7 @@ function renderGenericTemplateSection(
             }
 
             return (
-                <div key={field.name} className='mb-4'>
+                <div key={field.name} className="mb-4">
                     <div className="text-muted-foreground text-sm font-medium">
                         {field.label}
                     </div>
@@ -166,7 +162,7 @@ function renderGenericTemplateSection(
         return null;
     }
 
-    const sectionId = anchorId ?? section.anchor ?? undefined;
+    const sectionId = section.anchor ?? undefined;
 
     const baseSectionClassName = 'm-0';
     const resolvedSectionClassName =
@@ -177,7 +173,9 @@ function renderGenericTemplateSection(
         <section id={sectionId} className={resolvedSectionClassName}>
             <div className="container mx-auto">
                 {template.label && (
-                    <h2 className="mb-6 text-2xl font-semibold">{template.label}</h2>
+                    <h2 className="mb-6 text-2xl font-semibold">
+                        {template.label}
+                    </h2>
                 )}
                 {renderedFields}
             </div>
