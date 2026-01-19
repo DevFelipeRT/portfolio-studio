@@ -8,15 +8,12 @@ import {
     type NavigationConfigNode,
 } from '@/config/navigation';
 import { useTranslation } from '@/i18n';
+import { Navigation, type AuthUser, type NavigationItem } from '@/Navigation';
 import { usePage } from '@inertiajs/react';
 import { PropsWithChildren, ReactNode, useEffect } from 'react';
 import { toast } from 'sonner';
 import Footer from './Partials/Footer';
 import Header from './Partials/Header';
-import Navigation, {
-    type AuthUser,
-    type NavigationItem,
-} from './Partials/Navigation';
 
 type SharedProps = {
     auth: {
