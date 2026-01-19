@@ -7,7 +7,7 @@ namespace App\Modules\Projects\Presentation\Mappers;
 use App\Modules\Shared\Abstractions\Mapping\Mapper;
 use App\Modules\Projects\Domain\Models\Project;
 use App\Modules\Images\Domain\Models\Image;
-use App\Modules\Technologies\Domain\Models\Technology;
+use App\Modules\Skills\Domain\Models\Skill;
 
 use Illuminate\Support\Collection;
 
@@ -56,13 +56,14 @@ final class ProjectMapper extends Mapper
                 ],
             ),
 
-            'technologies' => $project->technologies
+            'skills' => $project->skills
                 ->map(
-                    static function (Technology $tech): array {
+                    static function (Skill $skill): array {
                         return [
-                            'id' => $tech->id,
-                            'name' => $tech->name,
-                            'category' => $tech->category,
+                            'id' => $skill->id,
+                            'name' => $skill->name,
+                            'category' => $skill->category,
+                            'skill_category_id' => $skill->skill_category_id,
                         ];
                     }
                 )

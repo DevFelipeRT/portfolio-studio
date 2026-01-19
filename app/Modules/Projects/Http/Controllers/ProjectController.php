@@ -9,7 +9,7 @@ use App\Modules\Projects\Domain\Models\Project;
 use App\Modules\Projects\Application\Services\ProjectService;
 use App\Modules\Projects\Http\Requests\Project\StoreProjectRequest;
 use App\Modules\Projects\Http\Requests\Project\UpdateProjectRequest;
-use App\Modules\Technologies\Application\Services\TechnologyService;
+use App\Modules\Skills\Application\Services\SkillService;
 
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
@@ -22,7 +22,7 @@ class ProjectController extends Controller
 {
     public function __construct(
         private readonly ProjectService $projectService,
-        private readonly TechnologyService $technologyService,
+        private readonly SkillService $skillService,
     ) {
     }
 
@@ -43,10 +43,10 @@ class ProjectController extends Controller
      */
     public function create(): Response
     {
-        $technologies = $this->technologyService->all();
+        $skills = $this->skillService->all();
 
         return Inertia::render('Projects/Create', [
-            'technologies' => $technologies,
+            'skills' => $skills,
         ]);
     }
 
@@ -66,12 +66,12 @@ class ProjectController extends Controller
             'live_url' => $data['live_url'] ?? null,
         ];
 
-        $technologyIds = $data['technology_ids'] ?? [];
+        $skillIds = $data['skill_ids'] ?? [];
         $images = $data['images'] ?? [];
 
         $project = $this->projectService->create(
             $attributes,
-            $technologyIds,
+            $skillIds,
             $images,
         );
 
@@ -85,13 +85,13 @@ class ProjectController extends Controller
      */
     public function edit(Project $project): Response
     {
-        $project->load(['images', 'technologies']);
+        $project->load(['images', 'skills.category']);
 
-        $technologies = $this->technologyService->all();
+        $skills = $this->skillService->all();
 
         return Inertia::render('Projects/Edit', [
             'project' => $project,
-            'technologies' => $technologies,
+            'skills' => $skills,
         ]);
     }
 
@@ -112,13 +112,13 @@ class ProjectController extends Controller
             'display' => $data['display'] ?? null,
         ];
 
-        $technologyIds = $data['technology_ids'] ?? [];
+        $skillIds = $data['skill_ids'] ?? [];
         $images = $data['images'] ?? [];
 
         $this->projectService->update(
             $project,
             $attributes,
-            $technologyIds,
+            $skillIds,
             $images,
         );
 
