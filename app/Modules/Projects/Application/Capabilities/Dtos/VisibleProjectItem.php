@@ -6,7 +6,7 @@ namespace App\Modules\Projects\Application\Capabilities\Dtos;
 
 use App\Modules\Projects\Domain\Models\Project;
 use App\Modules\Images\Domain\Models\Image;
-use App\Modules\Technologies\Domain\Models\Technology;
+use App\Modules\Skills\Domain\Models\Skill;
 use Illuminate\Support\Collection;
 
 /**
@@ -16,7 +16,12 @@ final class VisibleProjectItem
 {
     /**
      * @param VisibleProjectImageItem[] $images
-     * @param array<int, array{id: int, name: string, category: string}> $technologies
+     * @param array<int, array{
+     *     id: int,
+     *     name: string,
+     *     category: ?array{id: int, name: string, slug: string},
+     *     skill_category_id: ?int
+     * }> $skills
      */
     public function __construct(
         private readonly int $id,
@@ -27,7 +32,7 @@ final class VisibleProjectItem
         private readonly ?string $liveUrl,
         private readonly bool $display,
         private readonly array $images,
-        private readonly array $technologies,
+        private readonly array $skills,
     ) {
     }
 
@@ -47,13 +52,14 @@ final class VisibleProjectItem
             ->values()
             ->all();
 
-        $technologyDtos = $project->technologies
+        $skillDtos = $project->skills
             ->map(
-                static function (Technology $technology): array {
+                static function (Skill $skill): array {
                     return [
-                        'id' => $technology->id,
-                        'name' => $technology->name,
-                        'category' => $technology->category,
+                        'id' => $skill->id,
+                        'name' => $skill->name,
+                        'category' => $skill->category,
+                        'skill_category_id' => $skill->skill_category_id,
                     ];
                 }
             )
@@ -69,7 +75,7 @@ final class VisibleProjectItem
             $project->live_url,
             (bool) $project->display,
             $imageDtos,
-            $technologyDtos,
+            $skillDtos,
         );
     }
 
@@ -92,7 +98,12 @@ final class VisibleProjectItem
      *         is_cover: bool,
      *         owner_caption: ?string
      *     }>,
-     *     technologies: array<int, array{id: int, name: string, category: string}>
+     *     skills: array<int, array{
+     *         id: int,
+     *         name: string,
+     *         category: ?array{id: int, name: string, slug: string},
+     *         skill_category_id: ?int
+     *     }>
      * }
      */
     public function toArray(): array
@@ -109,7 +120,7 @@ final class VisibleProjectItem
                 static fn(VisibleProjectImageItem $image): array => $image->toArray(),
                 $this->images,
             ),
-            'technologies' => $this->technologies,
+            'skills' => $this->skills,
         ];
     }
 }
