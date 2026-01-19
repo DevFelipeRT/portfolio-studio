@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-use App\Modules\Technologies\Http\Controllers\TechnologyController;
+use App\Modules\Courses\Http\Controllers\CourseController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')
     ->group(static function (): void {
-        // Technologies CRUD (admin.technologies.pages.*)
-        Route::resource('technologies', TechnologyController::class)->names('technologies');
+        // Courses CRUD (admin.courses.pages.*)
+        Route::resource('courses', CourseController::class)->names('courses');
     });
