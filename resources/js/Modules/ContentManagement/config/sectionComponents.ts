@@ -37,5 +37,5 @@ export const SECTION_COMPONENT_REGISTRY: Record<
     experience_timeline: ExperienceTimelineSection,
     courses_highlight_grid: CoursesHighlightGridSection,
     contact_primary: ContactPrimarySection,
-    tech_stack_primary: TechStackPrimarySection,
+    skills_primary: TechStackPrimarySection,
 };
