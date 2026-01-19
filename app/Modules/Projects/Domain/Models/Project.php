@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Projects\Domain\Models;
 
 use App\Modules\Images\Domain\Models\Image;
-use App\Modules\Skills\Domain\Models\Skill;
+use App\Modules\Technologies\Domain\Models\Technology;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -70,20 +70,20 @@ class Project extends Model
     }
 
     /**
-     * Skills associated with the project.
+     * Technologies associated with the project.
      *
-     * Pivot table: project_skill
+     * Pivot table: project_technology
      *
-     * @return BelongsToMany<Skill>
+     * @return BelongsToMany<Technology>
      */
-    public function skills(): BelongsToMany
+    public function technologies(): BelongsToMany
     {
         return $this
             ->belongsToMany(
-                Skill::class,
-                'project_skill',
+                Technology::class,
+                'project_technology',
                 'project_id',
-                'skill_id',
+                'technology_id',
             )
             ->withTimestamps();
     }

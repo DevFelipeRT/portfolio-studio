@@ -29,7 +29,7 @@ class ProjectService
     public function all(): Collection
     {
         return Project::query()
-            ->with(['images', 'skills.category'])
+            ->with(['images', 'technologies'])
             ->orderByDesc('created_at')
             ->orderByDesc('id')
             ->get();
@@ -55,65 +55,65 @@ class ProjectService
     {
         return Project::query()
             ->where('display', true)
-            ->with(['images', 'skills.category'])
+            ->with(['images', 'technologies'])
             ->orderByDesc('created_at')
             ->get();
     }
 
     /**
-     * Create a new project with skills and images.
+     * Create a new project with technologies and images.
      *
      * @param array<string,mixed>            $attributes    Project attributes.
-     * @param array<int,int>                 $skillIds      Skill primary keys.
+     * @param array<int,int>                 $technologyIds Technology primary keys.
      * @param array<int,array<string,mixed>> $images        Image payloads with uploaded file and metadata.
      */
     public function create(
         array $attributes,
-        array $skillIds = [],
+        array $technologyIds = [],
         array $images = []
     ): Project {
-        return DB::transaction(function () use ($attributes, $skillIds, $images): Project {
+        return DB::transaction(function () use ($attributes, $technologyIds, $images): Project {
             /** @var Project $project */
             $project = Project::query()->create($attributes);
 
-            if (!empty($skillIds)) {
-                $project->skills()->sync($skillIds);
+            if (!empty($technologyIds)) {
+                $project->technologies()->sync($technologyIds);
             }
 
             if (!empty($images)) {
                 $this->projectImageService->replace($project, $images);
             }
 
-            return $project->load(['images', 'skills.category']);
+            return $project->load(['images', 'technologies']);
         });
     }
 
     /**
-     * Update a project with skills and images.
+     * Update a project with technologies and images.
      *
-     * Existing skills are synced and images are replaced
+     * Existing technologies are synced and images are replaced
      * only when a new collection is provided.
      *
      * @param array<string,mixed>            $attributes    Project attributes.
-     * @param array<int,int>                 $skillIds      Skill primary keys.
+     * @param array<int,int>                 $technologyIds Technology primary keys.
      * @param array<int,array<string,mixed>> $images        Image payloads with uploaded file and metadata.
      */
     public function update(
         Project $project,
         array $attributes,
-        array $skillIds = [],
+        array $technologyIds = [],
         array $images = []
     ): Project {
-        return DB::transaction(function () use ($project, $attributes, $skillIds, $images): Project {
+        return DB::transaction(function () use ($project, $attributes, $technologyIds, $images): Project {
             $project->update($attributes);
 
-            $project->skills()->sync($skillIds);
+            $project->technologies()->sync($technologyIds);
 
             if (!empty($images)) {
                 $this->projectImageService->replace($project, $images);
             }
 
-            return $project->load(['images', 'skills.category']);
+            return $project->load(['images', 'technologies']);
         });
     }
 

@@ -34,8 +34,8 @@ class UpdateProjectRequest extends FormRequest
             'repository_url' => ['nullable', 'string', 'max:2048', 'url'],
             'live_url' => ['nullable', 'string', 'max:2048', 'url'],
 
-            'skill_ids' => ['nullable', 'array'],
-            'skill_ids.*' => ['integer', 'exists:skills,id'],
+            'technology_ids' => ['nullable', 'array'],
+            'technology_ids.*' => ['integer', 'exists:technologies,id'],
 
             /**
              * When present, images represents a full replacement of the

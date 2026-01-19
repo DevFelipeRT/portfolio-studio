@@ -14,7 +14,7 @@ use App\Modules\Shared\Contracts\Capabilities\ICapabilityProvider;
 use Illuminate\Support\Collection;
 
 /**
- * Capability provider that exposes public visible projects with images and skills.
+ * Capability provider that exposes public visible projects with images and technologies.
  */
 final class VisibleProjects implements ICapabilityProvider
 {
@@ -34,7 +34,7 @@ final class VisibleProjects implements ICapabilityProvider
 
         $this->definition = $this->capabilitiesFactory->createPublicDefinition(
             'projects.visible.v1',
-            'Returns public visible projects with images and skills, ordered by most recent creation date.',
+            'Returns public visible projects with images and technologies, ordered by most recent creation date.',
             [
                 'limit' => [
                     'required' => false,
@@ -68,12 +68,7 @@ final class VisibleProjects implements ICapabilityProvider
      *         is_cover: bool,
      *         owner_caption: ?string
      *     }>,
-     *     skills: array<int, array{
-     *         id: int,
-     *         name: string,
-     *         category: ?array{id: int, name: string, slug: string},
-     *         skill_category_id: ?int
-     *     }>
+     *     technologies: array<int, array{id: int, name: string, category: string}>
      * }>
      */
     public function execute(
@@ -139,12 +134,7 @@ final class VisibleProjects implements ICapabilityProvider
      *         is_cover: bool,
      *         owner_caption: ?string
      *     }>,
-     *     skills: array<int, array{
-     *         id: int,
-     *         name: string,
-     *         category: ?array{id: int, name: string, slug: string},
-     *         skill_category_id: ?int
-     *     }>
+     *     technologies: array<int, array{id: int, name: string, category: string}>
      * }>
      */
     private function mapProjects(Collection $projects): array
