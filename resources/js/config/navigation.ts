@@ -95,11 +95,18 @@ export const navigationConfig: NavigationConfigNode[] = [
                 fallbackLabel: 'Courses',
             },
             {
-                id: 'technologies',
+                id: 'skills',
                 kind: 'link',
-                routeName: 'technologies.index',
+                routeName: 'skills.index',
                 translationKey: 'header.navigation.portfolioTechnologies',
-                fallbackLabel: 'Technologies',
+                fallbackLabel: 'Skills',
+            },
+            {
+                id: 'skill-categories',
+                kind: 'link',
+                routeName: 'skill-categories.index',
+                translationKey: 'header.navigation.portfolioSkillCategories',
+                fallbackLabel: 'Skill categories',
             },
             {
                 id: 'initiatives',

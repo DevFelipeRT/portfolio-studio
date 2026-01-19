@@ -44,10 +44,10 @@ const home: TranslationTree = {
         },
     },
     techStack: {
-        sectionLabel: 'Tecnologias usadas nos meus projetos',
+        sectionLabel: 'Habilidades usadas nos meus projetos',
         header: {
-            eyebrow: 'Stack de tecnologias',
-            title: 'Tecnologias com as quais trabalho no dia a dia.',
+            eyebrow: 'Stack de habilidades',
+            title: 'Habilidades com as quais trabalho no dia a dia.',
             description:
                 'Uma seleção de ferramentas e frameworks que utilizo para projetar, desenvolver e operar aplicações web.',
         },
