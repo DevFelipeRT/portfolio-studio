@@ -1,37 +1,27 @@
-// resources/js/Pages/Technologies/Edit.tsx
-
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { PageProps } from '@/types';
-import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import { SkillCategory } from '@/Pages/types';
+import { Head, Link, useForm } from '@inertiajs/react';
 import React from 'react';
-import { Technology } from '../types';
-import { TechForm } from './Partials/TechForm';
+import { SkillCategoryForm } from './Partials/SkillCategoryForm';
 
-interface EditTechnologyProps {
-    technology: Technology;
+interface EditSkillCategoryProps {
+    category: SkillCategory;
 }
 
-type PagePropsWithTechnologyCategories = PageProps<{
-    technologyCategories: Record<string, string>;
-}>;
-
-export default function Edit({ technology }: EditTechnologyProps) {
-    const { technologyCategories } =
-        usePage<PagePropsWithTechnologyCategories>().props;
-
+export default function Edit({ category }: EditSkillCategoryProps) {
     const { data, setData, put, processing, errors } =
-        useForm<TechnologyFormData>({
-            name: technology.name,
-            category: technology.category ?? '',
+        useForm<SkillCategoryFormData>({
+            name: category.name,
+            slug: category.slug ?? '',
         });
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
-        put(route('technologies.update', technology.id));
+        put(route('skill-categories.update', category.id));
     };
 
     const handleChange = (
-        field: keyof TechnologyFormData,
+        field: keyof SkillCategoryFormData,
         value: string,
     ): void => {
         setData(field, value);
@@ -41,35 +31,34 @@ export default function Edit({ technology }: EditTechnologyProps) {
         <AuthenticatedLayout
             header={
                 <h1 className="text-xl leading-tight font-semibold">
-                    Edit technology
+                    Edit skill category
                 </h1>
             }
         >
-            <Head title={`Edit technology: ${technology.name}`} />
+            <Head title={`Edit skill category: ${category.name}`} />
 
             <div className="overflow-hidden">
                 <div className="mx-auto max-w-xl px-4 py-8 sm:px-6 lg:px-8">
                     <div className="mb-4">
                         <Link
-                            href={route('technologies.index')}
+                            href={route('skill-categories.index')}
                             className="text-muted-foreground hover:text-foreground text-sm"
                         >
-                            Back to technologies
+                            Back to categories
                         </Link>
                     </div>
 
-                    <TechForm
+                    <SkillCategoryForm
                         data={data}
                         errors={errors}
-                        categories={technologyCategories}
                         processing={processing}
                         onChange={handleChange}
                         onSubmit={handleSubmit}
-                        cancelHref={route('technologies.index')}
+                        cancelHref={route('skill-categories.index')}
                         submitLabel="Save changes"
                         deleteHref={route(
-                            'technologies.destroy',
-                            technology.id,
+                            'skill-categories.destroy',
+                            category.id,
                         )}
                         deleteLabel="Delete"
                         alignActions="split"

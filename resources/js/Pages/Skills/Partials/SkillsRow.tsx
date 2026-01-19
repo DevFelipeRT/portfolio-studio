@@ -1,6 +1,6 @@
-// resources/js/Pages/Technologies/Partials/TechnologiesRow.tsx
+// resources/js/Pages/Skills/Partials/SkillsRow.tsx
 
-import { Technology } from '../../types';
+import { Skill } from '../../types';
 
 import { Badge } from '@/Components/Ui/badge';
 import { Button } from '@/Components/Ui/button';
@@ -15,33 +15,31 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { MoreVertical, Pencil, Tag, Trash2 } from 'lucide-react';
 import React, { JSX } from 'react';
 
-interface TechnologiesRowProps {
-    technology: Technology;
-    categories: Record<string, string>;
-    onEdit(technology: Technology, event?: React.MouseEvent): void;
-    onDelete(technology: Technology, event?: React.MouseEvent): void;
+interface SkillsRowProps {
+    skill: Skill;
+    onEdit(skill: Skill, event?: React.MouseEvent): void;
+    onDelete(skill: Skill, event?: React.MouseEvent): void;
 }
 
 /**
- * TechnologiesRow renders a single technology row with category and actions.
+ * SkillsRow renders a single skill row with category and actions.
  */
-export function TechnologiesRow({
-    technology,
-    categories,
+export function SkillsRow({
+    skill,
     onEdit,
     onDelete,
-}: TechnologiesRowProps) {
-    const updatedLabel = formatUpdatedAt(technology.updated_at);
-    const categoryLabel = resolveCategoryLabel(technology.category, categories);
+}: SkillsRowProps) {
+    const updatedLabel = formatUpdatedAt(skill.updated_at);
+    const categoryLabel = skill.category?.name ?? 'Uncategorized';
 
     function handleEdit(event: React.MouseEvent): void {
         event.stopPropagation();
-        onEdit(technology, event);
+        onEdit(skill, event);
     }
 
     function handleDelete(event: React.MouseEvent): void {
         event.stopPropagation();
-        onDelete(technology, event);
+        onDelete(skill, event);
     }
 
     function renderCategory(): JSX.Element {
@@ -59,7 +57,7 @@ export function TechnologiesRow({
             <TableCell className="min-w-0 content-center pr-2 align-top sm:w-48">
                 <div className="flex min-w-0 flex-col gap-0.5">
                     <p className="line-clamp-1 min-w-0 truncate font-medium text-pretty hyphens-auto">
-                        {technology.name}
+                        {skill.name}
                     </p>
                 </div>
             </TableCell>
@@ -111,17 +109,6 @@ export function TechnologiesRow({
             </TableCell>
         </TableRow>
     );
-}
-
-function resolveCategoryLabel(
-    category: string | null | undefined,
-    categories: Record<string, string>,
-): string {
-    if (!category) {
-        return 'Uncategorized';
-    }
-
-    return categories[category] ?? category;
 }
 
 function formatUpdatedAt(value: string | null | undefined): string {

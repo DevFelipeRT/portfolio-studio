@@ -3,16 +3,23 @@ export interface HasTimestamps {
     updated_at: string | null;
 }
 
-export interface Technology extends HasTimestamps {
+export interface Skill extends HasTimestamps {
     id: number;
     name: string;
-    category: string;
+    category?: SkillCategory | null;
+    skill_category_id?: number | null;
 }
 
-export interface TechnologyGroup {
+export interface SkillGroup {
     id: string;
     title: string;
-    technologies: Technology[];
+    skills: Skill[];
+}
+
+export interface SkillCategory extends HasTimestamps {
+    id: number;
+    name: string;
+    slug: string;
 }
 
 /**
@@ -73,7 +80,7 @@ export interface Project extends HasTimestamps {
     repository_url: string | null;
     live_url: string | null;
     images: ProjectImage[] | null;
-    technologies: Technology[];
+    skills: Skill[];
     display: boolean;
 }
 

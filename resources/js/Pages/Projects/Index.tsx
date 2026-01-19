@@ -1,6 +1,6 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link } from '@inertiajs/react';
-import { Project, Technology } from '../types';
+import { Project, Skill } from '../types';
 
 interface ProjectsIndexProps {
     projects: Project[];
@@ -9,8 +9,8 @@ interface ProjectsIndexProps {
 export default function Index({ projects }: ProjectsIndexProps) {
     const hasProjects = projects.length > 0;
 
-    const technologies = (project: Project): Technology[] => {
-        return project.technologies ?? [];
+    const skills = (project: Project): Skill[] => {
+        return project.skills ?? [];
     };
 
     const truncate = (text: string, maxLength: number): string => {
@@ -69,7 +69,7 @@ export default function Index({ projects }: ProjectsIndexProps) {
                                         Display on landing
                                     </th>
                                     <th className="text-muted-foreground px-4 py-3 text-left font-medium">
-                                        Technologies
+                                        Skills
                                     </th>
                                     <th className="text-muted-foreground px-4 py-3 text-left font-medium">
                                         Updated at
@@ -104,27 +104,22 @@ export default function Index({ projects }: ProjectsIndexProps) {
                                         </td>
 
                                         <td className="text-muted-foreground px-4 py-3 align-top text-xs">
-                                            {technologies(project).length ===
+                                            {skills(project).length ===
                                                 0 && (
                                                 <span className="text-muted-foreground/70">
-                                                    No technologies
+                                                    No skills
                                                 </span>
                                             )}
 
-                                            {technologies(project).length >
-                                                0 && (
+                                            {skills(project).length > 0 && (
                                                 <ul className="flex flex-wrap gap-1">
-                                                    {technologies(project).map(
-                                                        (technology) => (
+                                                    {skills(project).map(
+                                                        (skill) => (
                                                             <li
-                                                                key={
-                                                                    technology.id
-                                                                }
+                                                                key={skill.id}
                                                                 className="bg-muted rounded-full px-2 py-0.5 text-[0.7rem]"
                                                             >
-                                                                {
-                                                                    technology.name
-                                                                }
+                                                                {skill.name}
                                                             </li>
                                                         ),
                                                     )}

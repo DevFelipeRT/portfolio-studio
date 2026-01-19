@@ -1,20 +1,20 @@
 import { Badge, type BadgeProps } from '@/Components/Ui/badge';
 import { ReactNode } from 'react';
 
-interface TechnologyBadgeProps {
+interface SkillBadgeProps {
     label: string;
     icon?: ReactNode;
     variant?: BadgeProps['variant'];
 }
 
 /**
- * TechnologyBadge renders a compact badge representing a single technology.
+ * SkillBadge renders a compact badge representing a single skill.
  */
-export function TechnologyBadge({
+export function SkillBadge({
     label,
     icon,
     variant = 'outline',
-}: TechnologyBadgeProps) {
+}: SkillBadgeProps) {
     return (
         <Badge
             variant={variant}

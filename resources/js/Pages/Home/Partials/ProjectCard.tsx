@@ -26,14 +26,14 @@ export function ProjectCard({
     name,
     short_description,
     long_description,
-    technologies,
+    skills,
     status,
     images,
     repository_url,
     live_url,
 }: Project) {
     const hasImages = Array.isArray(images) && images.length > 0;
-    const hasTech = Array.isArray(technologies) && technologies.length > 0;
+    const hasTech = Array.isArray(skills) && skills.length > 0;
     const hasActions = Boolean(repository_url || live_url);
     const [isOpen, setIsOpen] = useState(false);
 
@@ -49,8 +49,8 @@ export function ProjectCard({
             : 'No short description available.';
 
     const effectiveTechStack = hasTech
-        ? technologies.map((tech) => tech.name)
-        : ['No technologies listed yet.'];
+        ? skills.map((skill) => skill.name)
+        : ['No skills listed yet.'];
 
     const shouldRenderLongDescription =
         typeof long_description === 'string' &&

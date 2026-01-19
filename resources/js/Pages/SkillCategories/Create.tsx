@@ -1,32 +1,22 @@
-// resources/js/Pages/Technologies/Create.tsx
-
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { PageProps } from '@/types';
-import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import React from 'react';
-import { TechForm } from './Partials/TechForm';
-
-type PagePropsWithTechnologyCategories = PageProps<{
-    technologyCategories: Record<string, string>;
-}>;
+import { SkillCategoryForm } from './Partials/SkillCategoryForm';
 
 export default function Create() {
-    const { technologyCategories } =
-        usePage<PagePropsWithTechnologyCategories>().props;
-
     const { data, setData, post, processing, errors } =
-        useForm<TechnologyFormData>({
+        useForm<SkillCategoryFormData>({
             name: '',
-            category: '',
+            slug: '',
         });
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
-        post(route('technologies.store'));
+        post(route('skill-categories.store'));
     };
 
     const handleChange = (
-        field: keyof TechnologyFormData,
+        field: keyof SkillCategoryFormData,
         value: string,
     ): void => {
         setData(field, value);
@@ -36,31 +26,30 @@ export default function Create() {
         <AuthenticatedLayout
             header={
                 <h1 className="text-xl leading-tight font-semibold">
-                    New technology
+                    New skill category
                 </h1>
             }
         >
-            <Head title="New technology" />
+            <Head title="New skill category" />
 
             <div className="overflow-hidden">
                 <div className="mx-auto max-w-xl px-4 py-8 sm:px-6 lg:px-8">
                     <div className="mb-4">
                         <Link
-                            href={route('technologies.index')}
+                            href={route('skill-categories.index')}
                             className="text-muted-foreground hover:text-foreground text-sm"
                         >
-                            Back to technologies
+                            Back to categories
                         </Link>
                     </div>
 
-                    <TechForm
+                    <SkillCategoryForm
                         data={data}
                         errors={errors}
-                        categories={technologyCategories}
                         processing={processing}
                         onChange={handleChange}
                         onSubmit={handleSubmit}
-                        cancelHref={route('technologies.index')}
+                        cancelHref={route('skill-categories.index')}
                         submitLabel="Save"
                         alignActions="right"
                     />

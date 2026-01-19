@@ -1,22 +1,22 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
 import React from 'react';
-import type { Project, ProjectImage, Technology } from '../types';
+import type { Project, ProjectImage, Skill } from '../types';
 import { ProjectForm } from './Partials/ProjectForm';
 
 interface EditProjectProps {
     project: Project;
-    technologies: Technology[];
+    skills: Skill[];
 }
 
 /**
  * Edit project page that wires Inertia form state to the reusable ProjectForm.
  */
-export default function Edit({ project, technologies }: EditProjectProps) {
+export default function Edit({ project, skills }: EditProjectProps) {
     const existingImages: ProjectImage[] = project.images ?? [];
 
-    const initialTechnologyIds: number[] = project.technologies.map(
-        (tech: Technology) => tech.id,
+    const initialSkillIds: number[] = project.skills.map(
+        (skill: Skill) => skill.id,
     );
 
     const { data, setData, post, processing, errors, transform } =
@@ -28,7 +28,7 @@ export default function Edit({ project, technologies }: EditProjectProps) {
             repository_url: project.repository_url ?? '',
             live_url: project.live_url ?? '',
             display: project.display,
-            technology_ids: initialTechnologyIds,
+            skill_ids: initialSkillIds,
             images: [],
         });
 
@@ -42,17 +42,17 @@ export default function Edit({ project, technologies }: EditProjectProps) {
         }));
     }
 
-    function toggleTechnology(id: number): void {
+    function toggleSkill(id: number): void {
         setData((current: ProjectFormData) => {
-            const exists = current.technology_ids.includes(id);
+            const exists = current.skill_ids.includes(id);
 
             return {
                 ...current,
-                technology_ids: exists
-                    ? current.technology_ids.filter(
+                skill_ids: exists
+                    ? current.skill_ids.filter(
                           (item: number) => item !== id,
                       )
-                    : [...current.technology_ids, id],
+                    : [...current.skill_ids, id],
             };
         });
     }
@@ -150,7 +150,7 @@ export default function Edit({ project, technologies }: EditProjectProps) {
                     </div>
 
                     <ProjectForm
-                        technologies={technologies}
+                        skills={skills}
                         existingImages={existingImages}
                         projectId={project.id}
                         data={data}
@@ -159,7 +159,7 @@ export default function Edit({ project, technologies }: EditProjectProps) {
                         submitLabel="Save changes"
                         onSubmit={submit}
                         onChangeField={changeField}
-                        onToggleTechnology={toggleTechnology}
+                        onToggleSkill={toggleSkill}
                         onAddImageRow={addImageRow}
                         onRemoveImageRow={removeImageRow}
                         onUpdateImageAlt={updateImageAlt}

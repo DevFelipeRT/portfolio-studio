@@ -1,14 +1,14 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
 import React from 'react';
-import type { Technology } from '../types';
+import type { Skill } from '../types';
 import { ProjectForm } from './Partials/ProjectForm';
 
 interface CreateProjectProps {
-    technologies: Technology[];
+    skills: Skill[];
 }
 
-export default function Create({ technologies }: CreateProjectProps) {
+export default function Create({ skills }: CreateProjectProps) {
     const { data, setData, post, processing, errors } =
         useForm<ProjectFormData>({
             name: '',
@@ -18,7 +18,7 @@ export default function Create({ technologies }: CreateProjectProps) {
             repository_url: '',
             live_url: '',
             display: false,
-            technology_ids: [],
+            skill_ids: [],
             images: [],
         });
 
@@ -32,17 +32,17 @@ export default function Create({ technologies }: CreateProjectProps) {
         }));
     }
 
-    function toggleTechnology(id: number): void {
+    function toggleSkill(id: number): void {
         setData((current: ProjectFormData) => {
-            const exists = current.technology_ids.includes(id);
+            const exists = current.skill_ids.includes(id);
 
             return {
                 ...current,
-                technology_ids: exists
-                    ? current.technology_ids.filter(
+                skill_ids: exists
+                    ? current.skill_ids.filter(
                           (item: number) => item !== id,
                       )
-                    : [...current.technology_ids, id],
+                    : [...current.skill_ids, id],
             };
         });
     }
@@ -135,7 +135,7 @@ export default function Create({ technologies }: CreateProjectProps) {
                     </div>
 
                     <ProjectForm
-                        technologies={technologies}
+                        skills={skills}
                         existingImages={[]}
                         projectId={undefined}
                         data={data}
@@ -144,7 +144,7 @@ export default function Create({ technologies }: CreateProjectProps) {
                         submitLabel="Save project"
                         onSubmit={submit}
                         onChangeField={changeField}
-                        onToggleTechnology={toggleTechnology}
+                        onToggleSkill={toggleSkill}
                         onAddImageRow={addImageRow}
                         onRemoveImageRow={removeImageRow}
                         onUpdateImageAlt={updateImageAlt}

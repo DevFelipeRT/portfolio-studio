@@ -1,28 +1,28 @@
 // resources/js/Pages/Home/Sections/TechStackSection.tsx
-import { TechnologyGroup } from '@/Pages/types';
+import { SkillGroup } from '@/Pages/types';
 import { useTranslation } from '@/i18n';
 import { SectionHeader } from '../../../Layouts/Partials/SectionHeader';
-import { TechnologyBadge } from '../Partials/TechnologyBadge';
+import { SkillBadge } from '../Partials/SkillBadge';
 
 type TechStackSectionProps = {
-    groups: TechnologyGroup[];
+    groups: SkillGroup[];
 };
 
 /**
- * TechStackSection shows the main technologies used in projects.
+ * TechStackSection shows the main skills used in projects.
  */
 export function TechStackSection({ groups }: TechStackSectionProps) {
     const { translate } = useTranslation('home');
 
     const sectionLabel = translate(
         'techStack.sectionLabel',
-        'Technologies used across my projects',
+        'Skills used across my projects',
     );
 
     const eyebrow = translate('techStack.header.eyebrow', 'Tech stack');
     const title = translate(
         'techStack.header.title',
-        'Technologies I work with on a daily basis.',
+        'Skills I work with on a daily basis.',
     );
     const description = translate(
         'techStack.header.description',
@@ -42,7 +42,7 @@ export function TechStackSection({ groups }: TechStackSectionProps) {
                 align="left"
             />
 
-            <div className="grid gap-8 md:grid-cols-3">
+    <div className="grid gap-8 md:grid-cols-3">
                 {groups.map((group) => (
                     <div key={group.id} className="space-y-3">
                         <h3 className="text-sm font-semibold tracking-tight">
@@ -50,11 +50,8 @@ export function TechStackSection({ groups }: TechStackSectionProps) {
                         </h3>
 
                         <div className="flex flex-wrap gap-2">
-                            {group.technologies.map((tech) => (
-                                <TechnologyBadge
-                                    key={tech.id}
-                                    label={tech.name}
-                                />
+                            {group.skills.map((skill) => (
+                                <SkillBadge key={skill.id} label={skill.name} />
                             ))}
                         </div>
                     </div>

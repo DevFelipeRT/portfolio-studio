@@ -4,10 +4,10 @@ import { Input } from '@/Components/Ui/input';
 import { Label } from '@/Components/Ui/label';
 import { Textarea } from '@/Components/Ui/textarea';
 import { Link } from '@inertiajs/react';
-import type { ProjectImage, Technology } from '../../types';
+import type { ProjectImage, Skill } from '../../types';
 
 interface ProjectFormProps {
-    technologies: Technology[];
+    skills: Skill[];
     existingImages: ProjectImage[];
     data: ProjectFormData;
     errors: Record<string, string | string[]>;
@@ -19,7 +19,7 @@ interface ProjectFormProps {
         key: K,
         value: ProjectFormData[K],
     ) => void;
-    onToggleTechnology: (id: number) => void;
+    onToggleSkill: (id: number) => void;
     onAddImageRow: () => void;
     onRemoveImageRow: (index: number) => void;
     onUpdateImageAlt: (index: number, value: string) => void;
@@ -34,7 +34,7 @@ interface ProjectFormProps {
  * Reusable project form partial used by both create and edit flows.
  */
 export function ProjectForm({
-    technologies,
+    skills,
     existingImages,
     data,
     errors,
@@ -43,7 +43,7 @@ export function ProjectForm({
     projectId,
     onSubmit,
     onChangeField,
-    onToggleTechnology,
+    onToggleSkill,
     onAddImageRow,
     onRemoveImageRow,
     onUpdateImageAlt,
@@ -196,25 +196,25 @@ export function ProjectForm({
             </section>
 
             <section className="space-y-4">
-                <h2 className="text-lg font-medium">Technologies</h2>
+                <h2 className="text-lg font-medium">Skills</h2>
 
                 <div className="bg-background rounded-md border p-4">
-                    {technologies.length === 0 && (
+                    {skills.length === 0 && (
                         <p className="text-muted-foreground text-sm">
-                            No technologies available.
+                            No skills available.
                         </p>
                     )}
 
-                    {technologies.length > 0 && (
+                    {skills.length > 0 && (
                         <div className="grid gap-2 md:grid-cols-3">
-                            {technologies.map((technology: Technology) => {
-                                const checked = data.technology_ids.includes(
-                                    technology.id,
+                            {skills.map((skill: Skill) => {
+                                const checked = data.skill_ids.includes(
+                                    skill.id,
                                 );
 
                                 return (
                                     <label
-                                        key={technology.id}
+                                        key={skill.id}
                                         className="bg-card flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2 text-sm shadow-sm"
                                     >
                                         <input
@@ -222,12 +222,10 @@ export function ProjectForm({
                                             className="border-muted-foreground h-4 w-4 rounded"
                                             checked={checked}
                                             onChange={() =>
-                                                onToggleTechnology(
-                                                    technology.id,
-                                                )
+                                                onToggleSkill(skill.id)
                                             }
                                         />
-                                        <span>{technology.name}</span>
+                                        <span>{skill.name}</span>
                                     </label>
                                 );
                             })}
@@ -235,9 +233,9 @@ export function ProjectForm({
                     )}
                 </div>
 
-                {errors.technology_ids && (
+                {errors.skill_ids && (
                     <p className="text-destructive text-sm">
-                        {normalizeError(errors.technology_ids)}
+                        {normalizeError(errors.skill_ids)}
                     </p>
                 )}
             </section>

@@ -14,7 +14,7 @@ type CapabilityProject = {
     repository_url?: string | null;
     live_url?: string | null;
     images?: unknown;
-    technologies?: unknown;
+    skills?: unknown;
 };
 
 /**

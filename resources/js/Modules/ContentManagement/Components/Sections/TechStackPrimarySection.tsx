@@ -1,22 +1,22 @@
 import { SectionHeader } from '@/Layouts/Partials/SectionHeader';
 import type { SectionComponentProps } from '@/Modules/ContentManagement/config/sectionComponents';
 import { useSectionFieldResolver } from '@/Modules/ContentManagement/context/SectionFieldResolverContext';
-import { TechnologyBadge } from '@/Pages/Home/Partials/TechnologyBadge';
+import { SkillBadge } from '@/Pages/Home/Partials/SkillBadge';
 import type { JSX } from 'react';
 
-type CapabilityTechnology = {
+type CapabilitySkill = {
     id: number;
     name: string;
 };
 
-type CapabilityTechnologyGroup = {
-    id: number;
+type CapabilitySkillGroup = {
+    id: string;
     title: string;
-    technologies?: CapabilityTechnology[] | null;
+    skills?: CapabilitySkill[] | null;
 };
 
 /**
- * TechStackPrimarySection shows technologies grouped by category,
+ * TechStackPrimarySection shows skills grouped by category,
  * driven by ContentManagement template data and capabilities output.
  *
  * Header content is resolved through the section field resolver,
@@ -32,13 +32,13 @@ export function TechStackPrimarySection({
 
     const sectionLabel =
         fieldResolver.getValue<string>('section_label') ??
-        'Technologies used across my projects';
+        'Skills used across my projects';
 
     const eyebrow = fieldResolver.getValue<string>('eyebrow') ?? 'Tech stack';
 
     const title =
         fieldResolver.getValue<string>('title') ??
-        'Technologies I work with on a daily basis.';
+        'Skills I work with on a daily basis.';
 
     const description =
         fieldResolver.getValue<string>('description') ??
@@ -46,9 +46,9 @@ export function TechStackPrimarySection({
 
     const rawGroups = fieldResolver.getValue<unknown>('groups');
 
-    const groups: CapabilityTechnologyGroup[] = Array.isArray(rawGroups)
+    const groups: CapabilitySkillGroup[] = Array.isArray(rawGroups)
         ? rawGroups.filter(
-              (group): group is CapabilityTechnologyGroup =>
+              (group): group is CapabilitySkillGroup =>
                   group !== null && typeof group === 'object',
           )
         : [];
@@ -82,11 +82,11 @@ export function TechStackPrimarySection({
             {hasGroups && (
                 <div className="grid gap-8 md:grid-cols-3">
                     {groups.map((group) => {
-                        const technologies = Array.isArray(group.technologies)
-                            ? group.technologies
+                        const skills = Array.isArray(group.skills)
+                            ? group.skills
                             : [];
 
-                        if (!technologies.length) {
+                        if (!skills.length) {
                             return null;
                         }
 
@@ -97,10 +97,10 @@ export function TechStackPrimarySection({
                                 </h3>
 
                                 <div className="flex flex-wrap gap-2">
-                                    {technologies.map((tech) => (
-                                        <TechnologyBadge
-                                            key={tech.id}
-                                            label={tech.name}
+                                    {skills.map((skill) => (
+                                        <SkillBadge
+                                            key={skill.id}
+                                            label={skill.name}
                                         />
                                     ))}
                                 </div>

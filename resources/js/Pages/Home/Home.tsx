@@ -7,7 +7,7 @@ import {
     Experience,
     Initiative,
     Project,
-    TechnologyGroup,
+    SkillGroup,
 } from '../types';
 import {
     ContactSection,
@@ -24,7 +24,7 @@ interface HomeProps {
     projects: Project[];
     experiences: Experience[];
     courses: Course[];
-    technologies: TechnologyGroup[];
+    skills: SkillGroup[];
     initiatives: Initiative[];
 }
 
@@ -35,13 +35,13 @@ export default function Home({
     projects,
     experiences,
     courses,
-    technologies,
+    skills,
     initiatives,
 }: HomeProps) {
     const hasProjects = projects.length > 0;
     const hasExperiences = experiences.length > 0;
     const hasCourses = courses.length > 0;
-    const hasTechnologies = technologies.length > 0;
+    const hasSkills = skills.length > 0;
     const hasInitiatives = initiatives.length > 0;
 
     const { translate } = useTranslation('home');
@@ -62,8 +62,8 @@ export default function Home({
                         <HeroSection />
                         <HighlightsSection />
 
-                        {hasTechnologies && (
-                            <TechStackSection groups={technologies} />
+                        {hasSkills && (
+                            <TechStackSection groups={skills} />
                         )}
 
                         {hasProjects && <ProjectSection projects={projects} />}

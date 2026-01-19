@@ -1,7 +1,7 @@
-// resources/js/Pages/Technologies/Partials/TechnologiesTable.tsx
+// resources/js/Pages/Skills/Partials/SkillsTable.tsx
 
-import { Technology } from '../../types';
-import { TechnologiesRow } from './TechnologiesRow';
+import { Skill } from '../../types';
+import { SkillsRow } from './SkillsRow';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/Ui/card';
 import { Separator } from '@/Components/Ui/separator';
@@ -14,32 +14,29 @@ import {
 } from '@/Components/Ui/table';
 import { cn } from '@/lib/utils';
 
-interface TechnologiesTableProps {
-    items: Technology[];
-    categories: Record<string, string>;
-    onEdit(technology: Technology, event?: React.MouseEvent): void;
-    onDelete(technology: Technology, event?: React.MouseEvent): void;
+interface SkillsTableProps {
+    items: Skill[];
+    onEdit(skill: Skill, event?: React.MouseEvent): void;
+    onDelete(skill: Skill, event?: React.MouseEvent): void;
 }
 
 /**
- * TechnologiesTable renders the catalog table with headers and rows.
+ * SkillsTable renders the catalog table with headers and rows.
  */
-export function TechnologiesTable({
+export function SkillsTable({
     items,
-    categories,
     onEdit,
     onDelete,
-}: TechnologiesTableProps) {
+}: SkillsTableProps) {
     const baseClass = 'text-xs font-medium text-muted-foreground';
 
     return (
         <Card className="overflow-hidden border">
             <CardHeader className="flex flex-row items-center justify-between gap-4">
                 <div>
-                    <CardTitle className="text-base">Technologies</CardTitle>
+                    <CardTitle className="text-base">Skills</CardTitle>
                     <p className="text-muted-foreground mt-1 text-xs">
-                        Review and manage the technologies used across your
-                        projects.
+                        Review and manage the skills used across your projects.
                     </p>
                 </div>
             </CardHeader>
@@ -86,11 +83,10 @@ export function TechnologiesTable({
                     </TableHeader>
 
                     <TableBody>
-                        {items.map((technology) => (
-                            <TechnologiesRow
-                                key={technology.id}
-                                technology={technology}
-                                categories={categories}
+                        {items.map((skill) => (
+                            <SkillsRow
+                                key={skill.id}
+                                skill={skill}
                                 onEdit={onEdit}
                                 onDelete={onDelete}
                             />

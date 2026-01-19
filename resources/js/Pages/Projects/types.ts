@@ -11,6 +11,6 @@ type ProjectFormData = {
     repository_url: string;
     live_url: string;
     display: boolean;
-    technology_ids: number[];
+    skill_ids: number[];
     images: ImageInput[];
 };

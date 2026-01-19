@@ -1,48 +1,32 @@
-// resources/js/Pages/Technologies/Partials/TechForm.tsx
-
 import { Button } from '@/Components/Ui/button';
 import { Input } from '@/Components/Ui/input';
 import { Label } from '@/Components/Ui/label';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/Components/Ui/select';
 import { Link } from '@inertiajs/react';
 import React, { JSX } from 'react';
 
-type TechFormValues = {
-    name: string;
-    category: string;
-};
+type SkillCategoryFormErrors = Record<string, string | string[] | undefined>;
 
-type TechFormErrors = Record<string, string | string[] | undefined>;
+type SkillCategoryFormAlignment = 'right' | 'split';
 
-type TechFormAlignment = 'right' | 'split';
-
-interface TechFormProps {
-    data: TechFormValues;
-    errors: TechFormErrors;
-    categories: Record<string, string>;
+interface SkillCategoryFormProps {
+    data: SkillCategoryFormData;
+    errors: SkillCategoryFormErrors;
     processing: boolean;
-    onChange(field: keyof TechFormValues, value: string): void;
+    onChange(field: keyof SkillCategoryFormData, value: string): void;
     onSubmit(event: React.FormEvent<HTMLFormElement>): void;
     cancelHref: string;
     submitLabel: string;
     deleteHref?: string;
     deleteLabel?: string;
-    alignActions?: TechFormAlignment;
+    alignActions?: SkillCategoryFormAlignment;
 }
 
 /**
- * TechForm renders the reusable technology form fields and actions.
+ * SkillCategoryForm renders the reusable skill category form fields.
  */
-export function TechForm({
+export function SkillCategoryForm({
     data,
     errors,
-    categories,
     processing,
     onChange,
     onSubmit,
@@ -51,7 +35,7 @@ export function TechForm({
     deleteHref,
     deleteLabel = 'Delete',
     alignActions = 'right',
-}: TechFormProps) {
+}: SkillCategoryFormProps) {
     const normalizeError = (
         message: string | string[] | undefined,
     ): string | null => {
@@ -124,34 +108,22 @@ export function TechForm({
                 />
                 {errors.name && (
                     <p className="text-destructive text-sm">
-                        {normalizeError(errors.name as string | string[])}
+                        {normalizeError(errors.name)}
                     </p>
                 )}
             </div>
 
             <div className="space-y-1.5">
-                <Label htmlFor="category">Category</Label>
-
-                <Select
-                    value={data.category}
-                    onValueChange={(value) => onChange('category', value)}
-                >
-                    <SelectTrigger id="category">
-                        <SelectValue placeholder="Select a category" />
-                    </SelectTrigger>
-
-                    <SelectContent>
-                        {Object.entries(categories).map(([value, label]) => (
-                            <SelectItem key={value} value={value}>
-                                {label}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-
-                {errors.category && (
+                <Label htmlFor="slug">Slug</Label>
+                <Input
+                    id="slug"
+                    value={data.slug}
+                    onChange={(event) => onChange('slug', event.target.value)}
+                    placeholder="Leave blank to auto-generate"
+                />
+                {errors.slug && (
                     <p className="text-destructive text-sm">
-                        {normalizeError(errors.category as string | string[])}
+                        {normalizeError(errors.slug)}
                     </p>
                 )}
             </div>
