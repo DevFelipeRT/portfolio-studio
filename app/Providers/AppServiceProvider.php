@@ -11,13 +11,11 @@ use App\Modules\Images\Infrastructure\Providers\ImagesServiceProvider;
 use App\Modules\Initiatives\Infrastructure\Providers\InitiativesServiceProvider;
 use App\Modules\Mail\Infrastructure\Providers\MailServiceProvider;
 use App\Modules\Projects\Infrastructure\Providers\ProjectsServiceProvider;
-use App\Modules\Technologies\Domain\Enums\TechnologyCategories;
-use App\Modules\Technologies\Infrastructure\Providers\TechnologiesServiceProvider;
+use App\Modules\Skills\Infrastructure\Providers\SkillsServiceProvider;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Database\Eloquent\Relations\Relation;
-use Inertia\Inertia;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -44,7 +42,7 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->register(ProjectsServiceProvider::class);
 
-        $this->app->register(TechnologiesServiceProvider::class);
+        $this->app->register(SkillsServiceProvider::class);
     }
 
     /**
@@ -58,8 +56,5 @@ class AppServiceProvider extends ServiceProvider
 
         Vite::prefetch(concurrency: 3);
 
-        Inertia::share([
-            'technologyCategories' => fn(): array => TechnologyCategories::options(),
-        ]);
     }
 }
