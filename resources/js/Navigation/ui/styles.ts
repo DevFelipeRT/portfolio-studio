@@ -37,7 +37,7 @@ export function mobileButtonClass(isActive: boolean | undefined): string {
   const base =
     "flex w-full max-w-35 xs:max-w-3xs px-3 rounded-l-none py-2 text-sm justify-start font-medium transition transition-colors focus:text-white";
   const active =
-    'text-white focus-visible:text-white hover:text-white hover:bg-transparent drop-shadow-xs drop-shadow-primary-shadow-strong';
+    'text-white focus-visible:text-white hover:text-white hover:bg-transparent drop-shadow-xs drop-shadow-primary-shadow-soft';
   const inactive =
     "text-muted-foreground hover:text-foreground hover:bg-transparent";
   return [base, isActive ? active : inactive].join(" ");
