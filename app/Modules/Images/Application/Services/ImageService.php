@@ -5,18 +5,149 @@ declare(strict_types=1);
 namespace App\Modules\Images\Application\Services;
 
 use App\Modules\Images\Domain\Models\Image;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 /**
- * Manages image records and their stored files.
+ * Service responsible for managing image records and stored files.
  */
 final class ImageService
 {
     private const DISK_PUBLIC = 'public';
 
     /**
+     * Paginate images with optional filters.
+     *
+     * Supported filters:
+     * - search       : string|null  (matches filename, title, alt text or caption)
+     * - usage        : string|null  ("orphans"|"used")
+     * - owner_type   : string|null  (attachment owner type, FQCN or morph alias)
+     * - mime_type    : string|null
+     * - storage_disk : string|null
+     *
+     * @param array<string,mixed> $filters
+     */
+    public function paginate(array $filters, int $perPage): LengthAwarePaginator
+    {
+        $query = Image::query()
+            ->withCount('attachments');
+
+        $search = $filters['search'] ?? null;
+        if (\is_string($search) && $search !== '') {
+            $query->where(function ($q) use ($search): void {
+                $q->where('original_filename', 'like', '%' . $search . '%')
+                    ->orWhere('image_title', 'like', '%' . $search . '%')
+                    ->orWhere('alt_text', 'like', '%' . $search . '%')
+                    ->orWhere('caption', 'like', '%' . $search . '%');
+            });
+        }
+
+        $usage = $filters['usage'] ?? null;
+        if ($usage === 'orphans') {
+            $query->doesntHave('attachments');
+        } elseif ($usage === 'used') {
+            $query->has('attachments');
+        }
+
+        $ownerType = $filters['owner_type'] ?? null;
+        if (\is_string($ownerType) && $ownerType !== '') {
+            $query->whereHas('attachments', static function ($q) use ($ownerType): void {
+                $q->where('owner_type', $ownerType);
+            });
+        }
+
+        $mimeType = $filters['mime_type'] ?? null;
+        if (\is_string($mimeType) && $mimeType !== '') {
+            $query->where('mime_type', $mimeType);
+        }
+
+        $storageDisk = $filters['storage_disk'] ?? null;
+        if (\is_string($storageDisk) && $storageDisk !== '') {
+            $query->where('storage_disk', $storageDisk);
+        }
+
+        return $query
+            ->orderByDesc('id')
+            ->paginate($perPage);
+    }
+
+    /**
+     * Load the image with its attachments ordered by position.
+     */
+    public function loadUsage(Image $image): Image
+    {
+        return $image->load([
+            'attachments' => static function ($query): void {
+                $query->orderBy('position');
+            },
+        ]);
+    }
+
+    /**
+     * Update global metadata for an image.
+     *
+     * @param array<string,mixed> $attributes
+     */
+    public function updateMetadata(Image $image, array $attributes): Image
+    {
+        $this->applySafeAttributes($image, $attributes);
+
+        $image->save();
+
+        return $image;
+    }
+
+    /**
+     * Delete an image and all its attachments.
+     */
+    public function deleteCompletely(Image $image): void
+    {
+        $image->attachments()->delete();
+
+        $this->deleteStoredFile($image);
+
+        $image->delete();
+    }
+
+    /**
+     * Delete multiple images and their attachments in a single operation.
+     *
+     * @param array<int,int> $ids
+     */
+    public function bulkDeleteCompletely(array $ids): void
+    {
+        /** @var EloquentCollection<int,Image> $images */
+        $images = Image::query()
+            ->whereIn('id', $ids)
+            ->get();
+
+        foreach ($images as $image) {
+            $this->deleteCompletely($image);
+        }
+    }
+
+    /**
+     * Delete the image when it has no attachments.
+     */
+    public function deleteIfOrphan(Image $image): void
+    {
+        $hasAttachments = $image->attachments()->exists();
+
+        if ($hasAttachments) {
+            return;
+        }
+
+        $this->deleteStoredFile($image);
+
+        $image->delete();
+    }
+
+    /**
+     * Create a new image record from an uploaded file and store the file.
+     *
      * @param array<string,mixed> $imageAttributes
      */
     public function createFromUploadedFile(
@@ -54,14 +185,11 @@ final class ImageService
         }
     }
 
+    /**
+     * Replace the stored file associated with an image.
+     */
     public function replaceFile(Image $image, UploadedFile $file, string $directory): void
     {
-        $currentDisk = (\is_string($image->storage_disk) && $image->storage_disk !== '')
-            ? $image->storage_disk
-            : self::DISK_PUBLIC;
-
-        $disk = $this->resolveAllowedDisk($currentDisk);
-
         $oldDisk = (\is_string($image->storage_disk) && $image->storage_disk !== '')
             ? $image->storage_disk
             : null;
@@ -69,6 +197,12 @@ final class ImageService
         $oldPath = (\is_string($image->storage_path) && $image->storage_path !== '')
             ? $image->storage_path
             : null;
+
+        $currentDisk = (\is_string($image->storage_disk) && $image->storage_disk !== '')
+            ? $image->storage_disk
+            : self::DISK_PUBLIC;
+
+        $disk = $this->resolveAllowedDisk($currentDisk);
 
         $dimensions = $this->extractImageDimensions($file);
         $newPath = $file->store($directory, $disk);
@@ -96,13 +230,6 @@ final class ImageService
 
             Storage::disk($resolvedOldDisk)->delete($oldPath);
         }
-    }
-
-    public function deleteCompletely(Image $image): void
-    {
-        $this->deleteStoredFile($image);
-
-        $image->delete();
     }
 
     private function deleteStoredFile(Image $image): void
