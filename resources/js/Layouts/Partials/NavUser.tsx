@@ -157,7 +157,7 @@ export function NavUser({ user, variant = 'full' }: NavUserProps) {
             </DropdownMenuTrigger>
 
             <DropdownMenuContent
-                className="w-[var(--radix-dropdown-menu-trigger-width)] min-w-56 rounded-lg"
+                className="w-[var(--radix-dropdown-menu-trigger-width)] min-w-fit rounded-lg ml-2"
                 align="end"
                 sideOffset={4}
             >
