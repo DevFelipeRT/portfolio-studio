@@ -54,8 +54,7 @@ export const navigationConfig: NavigationConfigNode[] = [
     },
     {
         id: 'portfolio',
-        kind: 'link',
-        routeName: 'projects.index',
+        kind: 'group',
         translationKey: 'header.navigation.portfolio',
         fallbackLabel: 'Portfolio',
         children: [
