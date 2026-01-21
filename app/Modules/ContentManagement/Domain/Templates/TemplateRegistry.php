@@ -181,9 +181,17 @@ final class TemplateRegistry
         foreach ($config as $entry) {
             $templateKey = TemplateKey::fromString((string) ($entry['key'] ?? ''));
             $label = (string) ($entry['label'] ?? '');
+            $labelKey = array_key_exists('label_key', $entry)
+                ? (string) $entry['label_key']
+                : null;
             $description = array_key_exists('description', $entry)
                 ? (string) $entry['description']
                 : null;
+            $descriptionKey = array_key_exists('description_key', $entry)
+                ? (string) $entry['description_key']
+                : null;
+            $origin = (string) ($entry['origin'] ?? '');
+            $templateName = (string) ($entry['template'] ?? '');
 
             $rawSlots = $entry['allowed_slots'] ?? [];
             $allowedSlots = [];
@@ -251,6 +259,10 @@ final class TemplateRegistry
                 allowedSlots: $allowedSlots,
                 fields: $fields,
                 dataSource: $dataSource,
+                labelKey: $labelKey,
+                descriptionKey: $descriptionKey,
+                origin: $origin,
+                templateName: $templateName,
             );
         }
 
@@ -266,9 +278,15 @@ final class TemplateRegistry
     {
         $name = (string) ($fieldConfig['name'] ?? '');
         $label = (string) ($fieldConfig['label'] ?? '');
+        $labelKey = array_key_exists('label_key', $fieldConfig)
+            ? (string) $fieldConfig['label_key']
+            : null;
         $type = (string) ($fieldConfig['type'] ?? '');
         $required = (bool) ($fieldConfig['required'] ?? false);
         $defaultValue = $fieldConfig['default'] ?? null;
+        $defaultKey = array_key_exists('default_key', $fieldConfig)
+            ? (string) $fieldConfig['default_key']
+            : null;
 
         $validation = $fieldConfig['validation'] ?? [];
         if (is_string($validation)) {
@@ -324,6 +342,8 @@ final class TemplateRegistry
             defaultValue: $defaultValue,
             validationRules: $validationRules,
             itemFields: $itemFields,
+            labelKey: $labelKey,
+            defaultKey: $defaultKey,
         );
     }
 }

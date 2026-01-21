@@ -8,7 +8,25 @@ declare(strict_types=1);
  * This file holds layout, locale and SEO defaults, and wires the
  * declarative template catalog.
  */
+$templateOrigins = [
+    resource_path('templates'),
+];
+
 return [
+    /*
+    |--------------------------------------------------------------------------
+    | Template discovery paths
+    |--------------------------------------------------------------------------
+    |
+    | Absolute paths that point to template roots or origin directories
+    | (for example, resources/templates or resources/templates/content-management).
+    | When empty, the templates loader will auto-discover origins under
+    | resources/templates.
+    |
+    */
+
+    'template_origins' => $templateOrigins,
+
 
     /*
     |--------------------------------------------------------------------------

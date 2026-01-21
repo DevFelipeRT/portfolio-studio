@@ -27,9 +27,29 @@ final class TemplateDefinition
     private string $label;
 
     /**
+     * Translation key for the label.
+     */
+    private ?string $labelKey;
+
+    /**
      * Short description of the template purpose.
      */
     private ?string $description;
+
+    /**
+     * Translation key for the description.
+     */
+    private ?string $descriptionKey;
+
+    /**
+     * Template origin namespace (for example "content-management").
+     */
+    private string $origin;
+
+    /**
+     * Template directory name (for example "hero_primary").
+     */
+    private string $templateName;
 
     /**
      * Collection of logical layout slots where this template is allowed.
@@ -64,13 +84,21 @@ final class TemplateDefinition
         array $allowedSlots,
         array $fields,
         ?TemplateDataSource $dataSource = null,
+        ?string $labelKey = null,
+        ?string $descriptionKey = null,
+        string $origin = '',
+        string $templateName = '',
     ) {
         $this->key = $key;
         $this->label = $label;
+        $this->labelKey = $labelKey;
         $this->description = $description;
+        $this->descriptionKey = $descriptionKey;
         $this->allowedSlots = $allowedSlots;
         $this->fields = $fields;
         $this->dataSource = $dataSource;
+        $this->origin = $origin;
+        $this->templateName = $templateName;
     }
 
     /**
@@ -90,11 +118,43 @@ final class TemplateDefinition
     }
 
     /**
+     * Returns the label translation key.
+     */
+    public function labelKey(): ?string
+    {
+        return $this->labelKey;
+    }
+
+    /**
      * Returns the template description.
      */
     public function description(): ?string
     {
         return $this->description;
+    }
+
+    /**
+     * Returns the description translation key.
+     */
+    public function descriptionKey(): ?string
+    {
+        return $this->descriptionKey;
+    }
+
+    /**
+     * Returns the template origin identifier.
+     */
+    public function origin(): string
+    {
+        return $this->origin;
+    }
+
+    /**
+     * Returns the template directory name.
+     */
+    public function templateName(): string
+    {
+        return $this->templateName;
     }
 
     /**

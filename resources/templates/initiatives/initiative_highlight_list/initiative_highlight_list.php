@@ -10,13 +10,16 @@ declare(strict_types=1);
 return [
     'key' => 'initiative_highlight_list',
     'label' => 'Initiative highlight list',
+    'label_key' => 'label',
     'description' => 'Showcases a curated or filtered list of initiatives.',
+    'description_key' => 'description',
     'allowed_slots' => ['main'],
 
     'fields' => [
         [
             'name' => 'eyebrow',
             'label' => 'Eyebrow text',
+            'label_key' => 'fields.eyebrow.label',
             'type' => 'string',
             'required' => false,
             'default' => null,
@@ -25,6 +28,7 @@ return [
         [
             'name' => 'title',
             'label' => 'Section title',
+            'label_key' => 'fields.title.label',
             'type' => 'string',
             'required' => false,
             'default' => null,
@@ -33,6 +37,7 @@ return [
         [
             'name' => 'subtitle',
             'label' => 'Section subtitle',
+            'label_key' => 'fields.subtitle.label',
             'type' => 'string',
             'required' => false,
             'default' => null,
@@ -41,6 +46,7 @@ return [
         [
             'name' => 'max_items',
             'label' => 'Maximum initiatives to display',
+            'label_key' => 'fields.max_items.label',
             'type' => 'integer',
             'required' => false,
             'default' => 6,

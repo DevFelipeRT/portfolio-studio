@@ -13,7 +13,9 @@ declare(strict_types=1);
 return [
     'key' => 'skills_primary',
     'label' => 'Skills primary section',
+    'label_key' => 'label',
     'description' => 'Shows portfolio skills grouped by category using capabilities.',
+    'description_key' => 'description',
     'allowed_slots' => ['main'],
 
     'fields' => [
@@ -21,6 +23,7 @@ return [
         [
             'name' => 'section_label',
             'label' => 'Section aria label',
+            'label_key' => 'fields.section_label.label',
             'type' => 'string',
             'required' => false,
             'default' => null,
@@ -29,6 +32,7 @@ return [
         [
             'name' => 'eyebrow',
             'label' => 'Section eyebrow',
+            'label_key' => 'fields.eyebrow.label',
             'type' => 'string',
             'required' => false,
             'default' => null,
@@ -37,6 +41,7 @@ return [
         [
             'name' => 'title',
             'label' => 'Section title',
+            'label_key' => 'fields.title.label',
             'type' => 'string',
             'required' => false,
             'default' => null,
@@ -45,6 +50,7 @@ return [
         [
             'name' => 'description',
             'label' => 'Section description',
+            'label_key' => 'fields.description.label',
             'type' => 'text',
             'required' => false,
             'default' => null,

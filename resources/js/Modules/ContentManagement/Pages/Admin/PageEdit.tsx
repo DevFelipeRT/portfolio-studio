@@ -1,6 +1,7 @@
 import { Head, router, useForm } from '@inertiajs/react';
 import { Trash2 } from 'lucide-react';
 import React from 'react';
+import { toast } from 'sonner';
 
 import { Button } from '@/Components/Ui/button';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -21,6 +22,8 @@ import type {
     PageEditViewModelProps,
     PageSectionDto,
 } from '@/Modules/ContentManagement/types';
+import { getSectionNavigationGroup } from '@/Modules/ContentManagement/utils/sectionNavigation';
+import { sortSectionsByPosition } from '@/Modules/ContentManagement/utils/sectionSort';
 
 export default function PageEdit({
     page,
@@ -44,6 +47,47 @@ export default function PageEdit({
     const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
     const [selectedSection, setSelectedSection] =
         React.useState<PageSectionDto | null>(null);
+    const sortedSections = React.useMemo(
+        () => sortSectionsByPosition(sections),
+        [sections],
+    );
+    const navigationGroups = React.useMemo(() => {
+        const unique = new Set<string>();
+
+        sections.forEach((section) => {
+            const group = getSectionNavigationGroup(section);
+            if (group) {
+                unique.add(group);
+            }
+        });
+
+        return Array.from(unique).sort((a, b) => a.localeCompare(b));
+    }, [sections]);
+
+    const validateHeroOrder = (
+        orderedSections: PageSectionDto[],
+    ): boolean => {
+        let seenNonHero = false;
+
+        for (const section of orderedSections) {
+            const slot = section.slot ?? '';
+            const isHero = slot.trim().toLowerCase() === 'hero';
+
+            if (!isHero) {
+                seenNonHero = true;
+                continue;
+            }
+
+            if (seenNonHero) {
+                toast.error(
+                    'Hero sections must be positioned first with no other slots before or between them.',
+                );
+                return false;
+            }
+        }
+
+        return true;
+    };
 
     const handleChange = (field: keyof PageFormData, value: unknown): void => {
         setData(field, value as never);
@@ -81,6 +125,8 @@ export default function PageEdit({
                 template_key: payload.template_key,
                 slot: payload.slot,
                 anchor: payload.anchor,
+                navigation_label: payload.navigation_label,
+                is_active: payload.is_active,
                 locale: payload.locale,
                 data: payload.data,
             },
@@ -118,6 +164,8 @@ export default function PageEdit({
                 template_key: payload.templateKey,
                 slot: payload.slot,
                 anchor: payload.anchor,
+                navigation_label: payload.navigation_label,
+                is_active: payload.is_active,
                 locale: payload.locale,
                 data: payload.data,
             },
@@ -161,30 +209,16 @@ export default function PageEdit({
     /**
      * Sections: reorder
      */
-    const handleReorderSection = (
-        section: PageSectionDto,
-        direction: 'up' | 'down',
+    const handleReorderSections = (
+        orderedIds: Array<PageSectionDto['id']>,
     ): void => {
-        const sorted = [...sections].sort((a, b) => a.position - b.position);
+        const orderedSections = orderedIds
+            .map((id) => sortedSections.find((section) => section.id === id))
+            .filter((section): section is PageSectionDto => Boolean(section));
 
-        const index = sorted.findIndex((item) => item.id === section.id);
-
-        if (index === -1) {
+        if (!validateHeroOrder(orderedSections)) {
             return;
         }
-
-        const targetIndex = direction === 'up' ? index - 1 : index + 1;
-
-        if (targetIndex < 0 || targetIndex >= sorted.length) {
-            return;
-        }
-
-        const swapped = [...sorted];
-        const temp = swapped[index];
-        swapped[index] = swapped[targetIndex];
-        swapped[targetIndex] = temp;
-
-        const orderedIds = swapped.map((item) => item.id);
 
         router.post(
             route('admin.content.sections.reorder'),
@@ -197,6 +231,38 @@ export default function PageEdit({
                 preserveState: true,
             },
         );
+    };
+
+    const handleReorderSection = (
+        section: PageSectionDto,
+        direction: 'up' | 'down',
+    ): void => {
+        const index = sortedSections.findIndex(
+            (item) => item.id === section.id,
+        );
+
+        if (index === -1) {
+            return;
+        }
+
+        const targetIndex = direction === 'up' ? index - 1 : index + 1;
+
+        if (targetIndex < 0 || targetIndex >= sortedSections.length) {
+            return;
+        }
+
+        const swapped = [...sortedSections];
+        const temp = swapped[index];
+        swapped[index] = swapped[targetIndex];
+        swapped[targetIndex] = temp;
+
+        const orderedIds = swapped.map((item) => item.id);
+
+        if (!validateHeroOrder(swapped)) {
+            return;
+        }
+
+        handleReorderSections(orderedIds);
     };
 
     return (
@@ -238,13 +304,15 @@ export default function PageEdit({
                 />
 
                 <PageSectionsList
-                    sections={sections}
+                    sections={sortedSections}
                     templates={availableTemplates}
                     onCreateSection={handleCreateSection}
                     onEditSection={handleEditSection}
                     onToggleActive={handleToggleSectionActive}
                     onRemoveSection={handleRemoveSection}
                     onReorder={handleReorderSection}
+                    onReorderIds={handleReorderSections}
+                    onValidateReorder={validateHeroOrder}
                 />
             </div>
 
@@ -253,6 +321,7 @@ export default function PageEdit({
                 onOpenChange={setIsCreateDialogOpen}
                 templates={availableTemplates}
                 defaultLocale={page.locale}
+                navigationGroups={navigationGroups}
                 onSubmit={handleCreateSectionSubmit}
             />
 
@@ -261,6 +330,7 @@ export default function PageEdit({
                 onOpenChange={handleEditDialogOpenChange}
                 section={selectedSection}
                 templates={availableTemplates}
+                navigationGroups={navigationGroups}
                 allowTemplateChange
                 onSubmit={handleEditSectionSubmit}
             />

@@ -1,4 +1,5 @@
 import { Button } from '@/Components/Ui/button';
+import type { ButtonHTMLAttributes, Ref } from 'react';
 import { ArrowDown, ArrowUp, GripVertical } from 'lucide-react';
 
 interface PageSectionReorderControlProps {
@@ -6,6 +7,8 @@ interface PageSectionReorderControlProps {
     canMoveDown: boolean;
     onMoveUp?: () => void;
     onMoveDown?: () => void;
+    dragHandleProps?: ButtonHTMLAttributes<HTMLButtonElement>;
+    dragHandleRef?: Ref<HTMLButtonElement>;
 }
 
 /**
@@ -16,6 +19,8 @@ export function PageSectionReorderControl({
     canMoveDown,
     onMoveUp,
     onMoveDown,
+    dragHandleProps,
+    dragHandleRef,
 }: PageSectionReorderControlProps) {
     return (
         <div className="flex flex-col items-center gap-1 pr-1">
@@ -31,9 +36,15 @@ export function PageSectionReorderControl({
                 <ArrowUp className="h-3 w-3" />
             </Button>
 
-            <div className="bg-background text-muted-foreground rounded-md border p-1">
+            <button
+                type="button"
+                ref={dragHandleRef}
+                className="bg-background text-muted-foreground touch-none cursor-grab rounded-md border p-1 transition active:cursor-grabbing"
+                aria-label="Drag to reorder section"
+                {...dragHandleProps}
+            >
                 <GripVertical className="h-3 w-3" />
-            </div>
+            </button>
 
             <Button
                 type="button"

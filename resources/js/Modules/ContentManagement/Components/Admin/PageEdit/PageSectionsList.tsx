@@ -4,7 +4,23 @@ import type {
     PageSectionDto,
     TemplateDefinitionDto,
 } from '@/Modules/ContentManagement/types';
+import {
+    closestCenter,
+    DndContext,
+    KeyboardSensor,
+    PointerSensor,
+    useSensor,
+    useSensors,
+} from '@dnd-kit/core';
+import type { DragEndEvent } from '@dnd-kit/core';
+import {
+    SortableContext,
+    arrayMove,
+    sortableKeyboardCoordinates,
+    verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 import { Plus } from 'lucide-react';
+import React from 'react';
 import { PageSectionItem } from './PageSectionItem';
 
 interface PageSectionsListProps {
@@ -15,6 +31,8 @@ interface PageSectionsListProps {
     onToggleActive?: (section: PageSectionDto) => void;
     onRemoveSection?: (section: PageSectionDto) => void;
     onReorder?: (section: PageSectionDto, direction: 'up' | 'down') => void;
+    onReorderIds?: (orderedIds: Array<PageSectionDto['id']>) => void;
+    onValidateReorder?: (orderedSections: PageSectionDto[]) => boolean;
 }
 
 /**
@@ -31,7 +49,15 @@ export function PageSectionsList({
     onToggleActive,
     onRemoveSection,
     onReorder,
+    onReorderIds,
+    onValidateReorder,
 }: PageSectionsListProps) {
+    const [orderedSections, setOrderedSections] = React.useState(sections);
+
+    React.useEffect(() => {
+        setOrderedSections(sections);
+    }, [sections]);
+
     const resolveTemplateLabel = (templateKey: string): string => {
         const template = templates.find((item) => item.key === templateKey);
 
@@ -40,6 +66,39 @@ export function PageSectionsList({
         }
 
         return templateKey;
+    };
+
+    const sensors = useSensors(
+        useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        }),
+    );
+
+    const handleDragEnd = (event: DragEndEvent): void => {
+        if (!event.over || event.active.id === event.over.id) {
+            return;
+        }
+
+        const oldIndex = orderedSections.findIndex(
+            (section) => section.id === event.active.id,
+        );
+        const newIndex = orderedSections.findIndex(
+            (section) => section.id === event.over?.id,
+        );
+
+        if (oldIndex === -1 || newIndex === -1) {
+            return;
+        }
+
+        const nextSections = arrayMove(orderedSections, oldIndex, newIndex);
+
+        if (onValidateReorder && !onValidateReorder(nextSections)) {
+            return;
+        }
+
+        setOrderedSections(nextSections);
+        onReorderIds?.(nextSections.map((section) => section.id));
     };
 
     return (
@@ -71,23 +130,34 @@ export function PageSectionsList({
                     </p>
                 )}
 
-                <ul className="space-y-2">
-                    {sections.map((section, index) => (
-                        <PageSectionItem
-                            key={section.id}
-                            section={section}
-                            templateLabel={resolveTemplateLabel(
-                                section.template_key,
-                            )}
-                            index={index}
-                            totalCount={sections.length}
-                            onToggleActive={onToggleActive}
-                            onEdit={onEditSection}
-                            onRemove={onRemoveSection}
-                            onReorder={onReorder}
-                        />
-                    ))}
-                </ul>
+                <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleDragEnd}
+                >
+                    <SortableContext
+                        items={orderedSections.map((section) => section.id)}
+                        strategy={verticalListSortingStrategy}
+                    >
+                        <ul className="space-y-2">
+                            {orderedSections.map((section, index) => (
+                                <PageSectionItem
+                                    key={section.id}
+                                    section={section}
+                                    templateLabel={resolveTemplateLabel(
+                                        section.template_key,
+                                    )}
+                                    index={index}
+                                    totalCount={orderedSections.length}
+                                    onToggleActive={onToggleActive}
+                                    onEdit={onEditSection}
+                                    onRemove={onRemoveSection}
+                                    onReorder={onReorder}
+                                />
+                            ))}
+                        </ul>
+                    </SortableContext>
+                </DndContext>
             </CardContent>
         </Card>
     );

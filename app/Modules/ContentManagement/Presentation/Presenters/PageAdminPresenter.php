@@ -9,12 +9,14 @@ use App\Modules\ContentManagement\Application\Mappers\TemplateDefinitionMapper;
 use App\Modules\ContentManagement\Application\Services\ContentSettingsService;
 use App\Modules\ContentManagement\Application\Services\PageSectionService;
 use App\Modules\ContentManagement\Application\Services\PageService;
+use App\Modules\ContentManagement\Application\Services\Templates\TemplateTranslationService;
 use App\Modules\ContentManagement\Domain\Enums\PageStatus;
 use App\Modules\ContentManagement\Domain\Templates\TemplateDefinition;
 use App\Modules\ContentManagement\Domain\Templates\TemplateRegistry;
 use App\Modules\ContentManagement\Presentation\ViewModels\Admin\PageEditViewModel;
 use App\Modules\ContentManagement\Presentation\ViewModels\Admin\PageIndexViewModel;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\App;
 use App\Modules\Shared\Support\Data\DataTransformer;
 use ValueError;
 
@@ -29,6 +31,7 @@ final class PageAdminPresenter
         private readonly PageSectionService $pageSectionService,
         private readonly TemplateRegistry $templateRegistry,
         private readonly ContentSettingsService $contentSettings,
+        private readonly TemplateTranslationService $templateTranslations,
     ) {
     }
 
@@ -185,8 +188,14 @@ final class PageAdminPresenter
 
         $templates = [];
 
+        $locale = App::getLocale();
+
         foreach ($definitions as $definition) {
-            $templates[] = TemplateDefinitionMapper::toDto($definition);
+            $templates[] = TemplateDefinitionMapper::toDto(
+                $definition,
+                $this->templateTranslations,
+                $locale,
+            );
         }
 
         $data = DataTransformer::transform($templates)

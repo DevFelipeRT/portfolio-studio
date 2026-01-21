@@ -8,6 +8,7 @@ use App\Modules\ContentManagement\Domain\Templates\TemplateDefinition;
 use App\Modules\ContentManagement\Domain\Templates\TemplateField;
 use App\Modules\ContentManagement\Domain\Templates\TemplateRegistry;
 use App\Modules\ContentManagement\Domain\ValueObjects\TemplateKey;
+use App\Modules\ContentManagement\Application\Services\Templates\TemplateTranslationService;
 
 /**
  * Application-level service for building validation rules and
@@ -21,6 +22,7 @@ final class TemplateValidationService
 {
     public function __construct(
         private readonly TemplateRegistry $templateRegistry,
+        private readonly TemplateTranslationService $templateTranslations,
     ) {
     }
 
@@ -99,10 +101,11 @@ final class TemplateValidationService
     public function normalizeDataForTemplateKey(
         TemplateKey|string $key,
         array $data,
+        ?string $locale = null,
     ): array {
         $definition = $this->getDefinitionForKey($key);
 
-        return $this->normalizeDataForDefinition($definition, $data);
+        return $this->normalizeDataForDefinition($definition, $data, $locale);
     }
 
     /**
@@ -117,6 +120,7 @@ final class TemplateValidationService
     public function normalizeDataForDefinition(
         TemplateDefinition $definition,
         array $data,
+        ?string $locale = null,
     ): array {
         $normalized = $data;
 
@@ -124,7 +128,7 @@ final class TemplateValidationService
             $name = $field->name();
 
             if (!array_key_exists($name, $normalized)) {
-                $normalized[$name] = $field->defaultValue();
+                $normalized[$name] = $this->resolveFieldDefault($definition, $field, $locale);
             }
         }
 
@@ -176,6 +180,26 @@ final class TemplateValidationService
                 );
             }
         }
+    }
+
+    private function resolveFieldDefault(
+        TemplateDefinition $definition,
+        TemplateField $field,
+        ?string $locale,
+    ): mixed {
+        if ($locale !== null) {
+            $defaultKey = $field->defaultKey();
+
+            if ($defaultKey !== null) {
+                $translated = $this->templateTranslations->translate($definition, $defaultKey, $locale);
+
+                if ($translated !== null) {
+                    return $translated;
+                }
+            }
+        }
+
+        return $field->defaultValue();
     }
 
     /**

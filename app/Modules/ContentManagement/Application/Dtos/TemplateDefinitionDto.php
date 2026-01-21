@@ -19,6 +19,8 @@ final class TemplateDefinitionDto
         public readonly ?string $description,
         public readonly array $allowedSlots,
         public readonly array $fields,
+        public readonly string $origin,
+        public readonly string $templateName,
     ) {
     }
 }

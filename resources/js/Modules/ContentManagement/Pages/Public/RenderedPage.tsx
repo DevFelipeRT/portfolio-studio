@@ -1,13 +1,15 @@
 // resources/js/Modules/ContentManagement/Pages/Public/RenderedPage.tsx
 import PublicLayout from '@/Layouts/PublicLayout';
 
-import { SectionRenderer } from '@/Modules/ContentManagement/Components/SectionRenderer';
 import type {
     PageRenderViewModelProps,
     PageSectionDto,
     TemplateDefinitionDto,
 } from '@/Modules/ContentManagement/types';
 import type { SectionEnvironment } from '@/Modules/ContentManagement/types/sectionEnvironment';
+import { buildNavigationItemsFromSections } from '@/Modules/ContentManagement/utils/sectionNavigation';
+import { sectionSlotLayoutManager } from '@/Modules/ContentManagement/utils/sectionSlotLayout';
+import { sortSectionsByPosition } from '@/Modules/ContentManagement/utils/sectionSort';
 import { defaultSocialLinks } from '@/config/socials';
 import { Head } from '@inertiajs/react';
 import { JSX } from 'react';
@@ -25,21 +27,13 @@ export default function RenderedPage({
         ? extra.templates
         : [];
 
-    const sortedSections: PageSectionDto[] = [...sections].sort(
-        (a, b) => a.position - b.position,
-    );
+    const sortedSections: PageSectionDto[] = sortSectionsByPosition(sections);
 
     const visibleSections = sortedSections.filter(
         (section) => section.is_active,
     );
 
-    const heroSections = visibleSections.filter(
-        (section) => section.slot === 'hero',
-    );
-
-    const otherSections = visibleSections.filter(
-        (section) => section.slot !== 'hero',
-    );
+    const navigationItems = buildNavigationItemsFromSections(visibleSections);
 
     const headTitle: string = page.meta_title || page.title;
     const headDescription: string | undefined =
@@ -51,7 +45,7 @@ export default function RenderedPage({
     };
 
     return (
-        <PublicLayout>
+        <PublicLayout navigationItems={navigationItems}>
             <SectionEnvironmentProvider value={environment}>
                 <Head title={headTitle}>
                     {headDescription && (
@@ -70,19 +64,7 @@ export default function RenderedPage({
                     )}
                 </Head>
 
-                {heroSections.length > 0 && (
-                    <SectionRenderer
-                        sections={heroSections}
-                        templates={templates}
-                    />
-                )}
-
-                {otherSections.length > 0 && (
-                    <SectionRenderer
-                        sections={otherSections}
-                        templates={templates}
-                    />
-                )}
+                {sectionSlotLayoutManager.render(visibleSections, templates)}
             </SectionEnvironmentProvider>
         </PublicLayout>
     );

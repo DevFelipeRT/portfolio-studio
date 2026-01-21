@@ -36,6 +36,11 @@ export function TemplateSectionForm({
 
     return (
         <div className="space-y-4">
+            {template.description && (
+                <p className="text-muted-foreground text-sm">
+                    {template.description}
+                </p>
+            )}
             {template.fields.map((field) => (
                 <TemplateFieldRenderer
                     key={field.name}

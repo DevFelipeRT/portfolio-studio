@@ -13,39 +13,48 @@ declare(strict_types=1);
 return [
     'key' => 'cards_grid_primary',
     'label' => 'Cards grid',
-    'description' => 'Grid of cards with configurable header, layout and text content.',
-    'allowed_slots' => ['main'],
+    'label_key' => 'label',
+    'description' => 'Flexible grid of cards with optional header copy and layout controls.',
+    'description_key' => 'description',
+    'allowed_slots' => ['hero', 'main'],
     'fields' => [
         // Section header fields
         [
             'name' => 'eyebrow',
-            'label' => 'Eyebrow text',
+            'label' => 'Eyebrow (short kicker)',
+            'label_key' => 'fields.eyebrow.label',
             'type' => 'string',
             'required' => false,
             'default' => 'Highlights',
+            'default_key' => 'fields.eyebrow.default',
             'validation' => ['max:80'],
         ],
         [
             'name' => 'title',
             'label' => 'Section title',
+            'label_key' => 'fields.title.label',
             'type' => 'string',
             'required' => false,
-            'default' => 'How I like to approach software projects.',
+            'default' => 'How I approach software projects.',
+            'default_key' => 'fields.title.default',
             'validation' => ['max:150'],
         ],
         [
             'name' => 'description',
             'label' => 'Section description',
+            'label_key' => 'fields.description.label',
             'type' => 'text',
             'required' => false,
-            'default' => 'These points summarize how I usually think about design, implementation and collaboration in real-world applications.',
+            'default' => 'A few principles that guide my work across design, delivery, and collaboration.',
+            'default_key' => 'fields.description.default',
             'validation' => ['max:500'],
         ],
 
         // Layout options
         [
             'name' => 'columns',
-            'label' => 'Number of columns',
+            'label' => 'Columns (2 or 3)',
+            'label_key' => 'fields.columns.label',
             'type' => 'integer',
             'required' => false,
             'default' => 3,
@@ -53,7 +62,8 @@ return [
         ],
         [
             'name' => 'has_border_top',
-            'label' => 'Show top border',
+            'label' => 'Show top divider',
+            'label_key' => 'fields.has_border_top.label',
             'type' => 'boolean',
             'required' => false,
             'default' => true,
@@ -62,6 +72,7 @@ return [
         [
             'name' => 'align_header',
             'label' => 'Header alignment',
+            'label_key' => 'fields.align_header.label',
             'type' => 'string',
             'required' => false,
             'default' => 'left',
@@ -69,7 +80,8 @@ return [
         ],
         [
             'name' => 'max_items',
-            'label' => 'Maximum cards',
+            'label' => 'Max cards to show',
+            'label_key' => 'fields.max_items.label',
             'type' => 'integer',
             'required' => false,
             'default' => null,
@@ -79,7 +91,8 @@ return [
         // Cards collection
         [
             'name' => 'cards',
-            'label' => 'Cards',
+            'label' => 'Cards list',
+            'label_key' => 'fields.cards.label',
             'type' => 'collection',
             'required' => false,
             'default' => null,
@@ -88,6 +101,7 @@ return [
                 [
                     'name' => 'title',
                     'label' => 'Card title',
+                    'label_key' => 'fields.cards.items.title.label',
                     'type' => 'string',
                     'required' => true,
                     'default' => null,
@@ -96,6 +110,7 @@ return [
                 [
                     'name' => 'subtitle',
                     'label' => 'Card subtitle',
+                    'label_key' => 'fields.cards.items.subtitle.label',
                     'type' => 'string',
                     'required' => false,
                     'default' => null,
@@ -103,7 +118,8 @@ return [
                 ],
                 [
                     'name' => 'content',
-                    'label' => 'Card content',
+                    'label' => 'Card body',
+                    'label_key' => 'fields.cards.items.content.label',
                     'type' => 'text',
                     'required' => false,
                     'default' => null,
@@ -112,6 +128,7 @@ return [
                 [
                     'name' => 'footer',
                     'label' => 'Card footer',
+                    'label_key' => 'fields.cards.items.footer.label',
                     'type' => 'string',
                     'required' => false,
                     'default' => null,
