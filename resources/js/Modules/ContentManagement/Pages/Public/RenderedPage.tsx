@@ -1,13 +1,13 @@
 // resources/js/Modules/ContentManagement/Pages/Public/RenderedPage.tsx
 import PublicLayout from '@/Layouts/PublicLayout';
 
-import { SectionRenderer } from '@/Modules/ContentManagement/Components/SectionRenderer';
 import type {
     PageRenderViewModelProps,
     PageSectionDto,
     TemplateDefinitionDto,
 } from '@/Modules/ContentManagement/types';
 import type { SectionEnvironment } from '@/Modules/ContentManagement/types/sectionEnvironment';
+import { sectionSlotLayoutManager } from '@/Modules/ContentManagement/utils/sectionSlotLayout';
 import { defaultSocialLinks } from '@/config/socials';
 import { Head } from '@inertiajs/react';
 import { JSX } from 'react';
@@ -31,14 +31,6 @@ export default function RenderedPage({
 
     const visibleSections = sortedSections.filter(
         (section) => section.is_active,
-    );
-
-    const heroSections = visibleSections.filter(
-        (section) => section.slot === 'hero',
-    );
-
-    const otherSections = visibleSections.filter(
-        (section) => section.slot !== 'hero',
     );
 
     const headTitle: string = page.meta_title || page.title;
@@ -70,19 +62,7 @@ export default function RenderedPage({
                     )}
                 </Head>
 
-                {heroSections.length > 0 && (
-                    <SectionRenderer
-                        sections={heroSections}
-                        templates={templates}
-                    />
-                )}
-
-                {otherSections.length > 0 && (
-                    <SectionRenderer
-                        sections={otherSections}
-                        templates={templates}
-                    />
-                )}
+                {sectionSlotLayoutManager.render(visibleSections, templates)}
             </SectionEnvironmentProvider>
         </PublicLayout>
     );
