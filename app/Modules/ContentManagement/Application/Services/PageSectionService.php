@@ -27,6 +27,10 @@ use InvalidArgumentException;
  */
 final class PageSectionService
 {
+    private const string HERO_SLOT = 'hero';
+    private const string HERO_ORDER_ERROR =
+        'Hero sections must be positioned first with no other slots before or between them.';
+
     public function __construct(
         private readonly IPageSectionRepository $sections,
         private readonly TemplateValidationService $templateValidation,
@@ -128,6 +132,8 @@ final class PageSectionService
         $section->data = $normalizedData;
 
         $this->sections->save($section);
+        $this->ensureHeroOrdering($page);
+        $section->refresh();
         $this->syncImagesForSection($section, $templateKey, $normalizedData);
 
         return PageSectionMapper::toDto($section);
@@ -145,6 +151,8 @@ final class PageSectionService
     public function update(PageSection $section, array $attributes): PageSectionDto
     {
         $templateKey = $this->resolveTemplateKeyForUpdate($section, $attributes);
+
+        $previousSlot = $section->slot;
 
         $section->template_key = $templateKey->value();
 
@@ -164,6 +172,15 @@ final class PageSectionService
 
         $this->sections->save($section);
         $this->syncImagesForSection($section, $templateKey, $normalizedData);
+
+        if ($this->shouldNormalizeOrder($attributes, $previousSlot, $section->slot)) {
+            $page = $section->page;
+
+            if ($page instanceof Page) {
+                $this->ensureHeroOrdering($page);
+                $section->refresh();
+            }
+        }
 
         return PageSectionMapper::toDto($section);
     }
@@ -209,10 +226,9 @@ final class PageSectionService
         }
 
         // Load current sections ordered by position
-        $sections = $this->sections
-            ->findByPage($page)
-            ->sortBy('position')
-            ->values();
+        $sections = $this->sortSectionsForOrdering(
+            $this->sections->findByPage($page),
+        );
 
         if ($sections->isEmpty()) {
             return;
@@ -234,6 +250,8 @@ final class PageSectionService
 
             return;
         }
+
+        $this->assertHeroSectionsFirst($sections, $orderedSectionIds);
 
         // Map new index by ID for quick lookup
         $newIndexById = [];
@@ -515,6 +533,124 @@ final class PageSectionService
         if ($payload !== []) {
             $section->fill($payload);
         }
+    }
+
+    /**
+     * Ensures hero sections are grouped first and positions are normalized.
+     */
+    private function ensureHeroOrdering(Page $page): void
+    {
+        $sections = $this->sortSectionsForOrdering(
+            $this->sections->findByPage($page),
+        );
+
+        if ($sections->isEmpty()) {
+            return;
+        }
+
+        $orderedIds = $this->buildHeroOrderedIds($sections);
+        $currentIds = $sections->pluck('id')->values()->all();
+        $hasNullPosition = $sections->contains(
+            static fn (PageSection $section): bool => $section->position === null,
+        );
+
+        if (!$hasNullPosition && $orderedIds === $currentIds) {
+            return;
+        }
+
+        $this->reindexFromOrderedIds($page, $orderedIds);
+    }
+
+    /**
+     * Validates that hero sections stay at the top of the ordered list.
+     *
+     * @param \Illuminate\Support\Collection<int,PageSection> $sections
+     * @param array<int,int> $orderedSectionIds
+     */
+    private function assertHeroSectionsFirst(Collection $sections, array $orderedSectionIds): void
+    {
+        $sectionsById = $sections->keyBy('id');
+        $seenNonHero = false;
+
+        foreach ($orderedSectionIds as $sectionId) {
+            /** @var PageSection|null $section */
+            $section = $sectionsById->get($sectionId);
+
+            if (!$section instanceof PageSection) {
+                continue;
+            }
+
+            if ($this->isHeroSlot($section->slot)) {
+                if ($seenNonHero) {
+                    throw new InvalidArgumentException(self::HERO_ORDER_ERROR);
+                }
+            } else {
+                $seenNonHero = true;
+            }
+        }
+    }
+
+    /**
+     * @param \Illuminate\Support\Collection<int,PageSection> $sections
+     * @return array<int,int>
+     */
+    private function buildHeroOrderedIds(Collection $sections): array
+    {
+        $heroIds = [];
+        $otherIds = [];
+
+        foreach ($sections as $section) {
+            if (!$section instanceof PageSection) {
+                continue;
+            }
+
+            if ($this->isHeroSlot($section->slot)) {
+                $heroIds[] = (int) $section->id;
+            } else {
+                $otherIds[] = (int) $section->id;
+            }
+        }
+
+        return array_merge($heroIds, $otherIds);
+    }
+
+    /**
+     * @param \Illuminate\Support\Collection<int,PageSection> $sections
+     * @return \Illuminate\Support\Collection<int,PageSection>
+     */
+    private function sortSectionsForOrdering(Collection $sections): Collection
+    {
+        return $sections
+            ->sortBy(static function (PageSection $section): int {
+                return $section->position ?? PHP_INT_MAX;
+            })
+            ->values();
+    }
+
+    private function isHeroSlot(?string $slot): bool
+    {
+        $normalized = strtolower(trim((string) $slot));
+
+        return $normalized === self::HERO_SLOT;
+    }
+
+    /**
+     * @param array<string,mixed> $attributes
+     */
+    private function shouldNormalizeOrder(
+        array $attributes,
+        ?string $previousSlot,
+        ?string $currentSlot,
+    ): bool {
+        if (array_key_exists('position', $attributes)) {
+            return true;
+        }
+
+        if (!array_key_exists('slot', $attributes)) {
+            return false;
+        }
+
+        return $previousSlot !== $currentSlot;
     }
 
     /**

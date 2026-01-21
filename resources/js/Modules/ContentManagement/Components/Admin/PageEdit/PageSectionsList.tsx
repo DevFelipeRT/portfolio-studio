@@ -32,6 +32,7 @@ interface PageSectionsListProps {
     onRemoveSection?: (section: PageSectionDto) => void;
     onReorder?: (section: PageSectionDto, direction: 'up' | 'down') => void;
     onReorderIds?: (orderedIds: Array<PageSectionDto['id']>) => void;
+    onValidateReorder?: (orderedSections: PageSectionDto[]) => boolean;
 }
 
 /**
@@ -49,6 +50,7 @@ export function PageSectionsList({
     onRemoveSection,
     onReorder,
     onReorderIds,
+    onValidateReorder,
 }: PageSectionsListProps) {
     const [orderedSections, setOrderedSections] = React.useState(sections);
 
@@ -90,6 +92,11 @@ export function PageSectionsList({
         }
 
         const nextSections = arrayMove(orderedSections, oldIndex, newIndex);
+
+        if (onValidateReorder && !onValidateReorder(nextSections)) {
+            return;
+        }
+
         setOrderedSections(nextSections);
         onReorderIds?.(nextSections.map((section) => section.id));
     };

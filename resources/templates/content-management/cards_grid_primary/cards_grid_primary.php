@@ -16,7 +16,7 @@ return [
     'label_key' => 'label',
     'description' => 'Flexible grid of cards with optional header copy and layout controls.',
     'description_key' => 'description',
-    'allowed_slots' => ['main'],
+    'allowed_slots' => ['hero', 'main'],
     'fields' => [
         // Section header fields
         [

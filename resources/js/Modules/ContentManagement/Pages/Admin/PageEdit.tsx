@@ -1,6 +1,7 @@
 import { Head, router, useForm } from '@inertiajs/react';
 import { Trash2 } from 'lucide-react';
 import React from 'react';
+import { toast } from 'sonner';
 
 import { Button } from '@/Components/Ui/button';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -62,6 +63,31 @@ export default function PageEdit({
 
         return Array.from(unique).sort((a, b) => a.localeCompare(b));
     }, [sections]);
+
+    const validateHeroOrder = (
+        orderedSections: PageSectionDto[],
+    ): boolean => {
+        let seenNonHero = false;
+
+        for (const section of orderedSections) {
+            const slot = section.slot ?? '';
+            const isHero = slot.trim().toLowerCase() === 'hero';
+
+            if (!isHero) {
+                seenNonHero = true;
+                continue;
+            }
+
+            if (seenNonHero) {
+                toast.error(
+                    'Hero sections must be positioned first with no other slots before or between them.',
+                );
+                return false;
+            }
+        }
+
+        return true;
+    };
 
     const handleChange = (field: keyof PageFormData, value: unknown): void => {
         setData(field, value as never);
@@ -186,6 +212,14 @@ export default function PageEdit({
     const handleReorderSections = (
         orderedIds: Array<PageSectionDto['id']>,
     ): void => {
+        const orderedSections = orderedIds
+            .map((id) => sortedSections.find((section) => section.id === id))
+            .filter((section): section is PageSectionDto => Boolean(section));
+
+        if (!validateHeroOrder(orderedSections)) {
+            return;
+        }
+
         router.post(
             route('admin.content.sections.reorder'),
             {
@@ -223,6 +257,11 @@ export default function PageEdit({
         swapped[targetIndex] = temp;
 
         const orderedIds = swapped.map((item) => item.id);
+
+        if (!validateHeroOrder(swapped)) {
+            return;
+        }
+
         handleReorderSections(orderedIds);
     };
 
@@ -273,6 +312,7 @@ export default function PageEdit({
                     onRemoveSection={handleRemoveSection}
                     onReorder={handleReorderSection}
                     onReorderIds={handleReorderSections}
+                    onValidateReorder={validateHeroOrder}
                 />
             </div>
 
