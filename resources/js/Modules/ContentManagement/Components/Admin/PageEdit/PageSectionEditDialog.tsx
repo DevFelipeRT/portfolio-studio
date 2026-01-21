@@ -9,6 +9,13 @@ import {
 } from '@/Components/Ui/dialog';
 import { Input } from '@/Components/Ui/input';
 import { Label } from '@/Components/Ui/label';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/Components/Ui/select';
 import { cn } from '@/lib/utils';
 import { TemplateSectionForm } from '@/Modules/ContentManagement/Components/Editor/TemplateSectionForm';
 import { TemplateSelector } from '@/Modules/ContentManagement/Components/Editor/TemplateSelector';
@@ -51,13 +58,14 @@ export function PageSectionEditDialog({
     const [templateKey, setTemplateKey] = React.useState<string>('');
     const [slot, setSlot] = React.useState<string>('');
     const [anchor, setAnchor] = React.useState<string>('');
-    const [locale, setLocale] = React.useState<string>('');
     const [data, setData] = React.useState<SectionData>({});
 
     const selectedTemplate = React.useMemo(
         () => templates.find((item) => item.key === templateKey) ?? null,
         [templates, templateKey],
     );
+    const allowedSlots = selectedTemplate?.allowed_slots ?? [];
+    const hasSlotOptions = allowedSlots.length > 0;
 
     React.useEffect(() => {
         if (!open || !section) {
@@ -67,7 +75,6 @@ export function PageSectionEditDialog({
         setTemplateKey(section.template_key);
         setSlot(section.slot ?? '');
         setAnchor(section.anchor ?? '');
-        setLocale(section.locale ?? '');
         setData(section.data ?? {});
     }, [open, section]);
 
@@ -161,7 +168,7 @@ export function PageSectionEditDialog({
                 <ScrollArea className="px-5">
                     {section && (
                         <div className="mx-1 my-4 space-y-6">
-                            <div className="grid gap-4 md:grid-cols-2">
+                            <div className="grid gap-4">
                                 <div className="space-y-1.5">
                                     <Label htmlFor="edit-section-template">
                                         Template
@@ -172,20 +179,44 @@ export function PageSectionEditDialog({
                                         onChange={handleTemplateChange}
                                         placeholder="Select a template"
                                         disabled={templateSelectDisabled}
+                                        className="h-14 w-full"
                                     />
                                 </div>
+                            </div>
 
+                            <div className="grid gap-4 md:grid-cols-2">
                                 <div className="space-y-1.5">
                                     <Label htmlFor="edit-section-slot">
                                         Slot
                                     </Label>
-                                    <Input
-                                        id="edit-section-slot"
-                                        value={slot}
-                                        onChange={(event) =>
-                                            setSlot(event.target.value)
-                                        }
-                                    />
+                                    {hasSlotOptions ? (
+                                        <Select
+                                            value={slot}
+                                            onValueChange={setSlot}
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select a slot" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {allowedSlots.map((slotOption) => (
+                                                    <SelectItem
+                                                        key={slotOption}
+                                                        value={slotOption}
+                                                    >
+                                                        {slotOption}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    ) : (
+                                        <Input
+                                            id="edit-section-slot"
+                                            value={slot}
+                                            onChange={(event) =>
+                                                setSlot(event.target.value)
+                                            }
+                                        />
+                                    )}
                                 </div>
 
                                 <div className="space-y-1.5">
@@ -197,19 +228,6 @@ export function PageSectionEditDialog({
                                         value={anchor}
                                         onChange={(event) =>
                                             setAnchor(event.target.value)
-                                        }
-                                    />
-                                </div>
-
-                                <div className="space-y-1.5">
-                                    <Label htmlFor="edit-section-locale">
-                                        Locale
-                                    </Label>
-                                    <Input
-                                        id="edit-section-locale"
-                                        value={locale}
-                                        onChange={(event) =>
-                                            setLocale(event.target.value)
                                         }
                                     />
                                 </div>

@@ -10,6 +10,13 @@ import {
 import { Input } from '@/Components/Ui/input';
 import { Label } from '@/Components/Ui/label';
 import { ScrollArea } from '@/Components/Ui/scroll-area';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/Components/Ui/select';
 import { cn } from '@/lib/utils';
 import { TemplateSectionForm } from '@/Modules/ContentManagement/Components/Editor/TemplateSectionForm';
 import { TemplateSelector } from '@/Modules/ContentManagement/Components/Editor/TemplateSelector';
@@ -35,6 +42,8 @@ interface PageSectionCreateDialogProps {
     onSubmit: (payload: CreateSectionPayload) => void;
 }
 
+type TemplateFilterMode = 'all' | 'generic' | 'domain';
+
 /**
  * Dialog used to create a new section for a page.
  *
@@ -50,15 +59,67 @@ export function PageSectionCreateDialog({
 }: PageSectionCreateDialogProps) {
     const [selectedTemplateKey, setSelectedTemplateKey] =
         React.useState<string>('');
+    const [step, setStep] = React.useState<'select' | 'configure'>('select');
+    const [filterMode, setFilterMode] =
+        React.useState<TemplateFilterMode>('all');
+    const [originFilter, setOriginFilter] = React.useState<string>('');
     const [slot, setSlot] = React.useState<string>('');
     const [anchor, setAnchor] = React.useState<string>('');
-    const [locale, setLocale] = React.useState<string>(defaultLocale ?? '');
     const [data, setData] = React.useState<SectionData>({});
 
     const selectedTemplate = React.useMemo(
         () => templates.find((item) => item.key === selectedTemplateKey),
         [templates, selectedTemplateKey],
     );
+    const allowedSlots = selectedTemplate?.allowed_slots ?? [];
+    const hasSlotOptions = allowedSlots.length > 0;
+
+    const origins = React.useMemo(() => {
+        const unique = new Set<string>();
+
+        templates.forEach((template) => {
+            if (template.origin) {
+                unique.add(template.origin);
+            }
+        });
+
+        return Array.from(unique).sort((a, b) => a.localeCompare(b));
+    }, [templates]);
+
+    const domainOrigins = React.useMemo(
+        () => origins.filter((origin) => origin !== 'content-management'),
+        [origins],
+    );
+
+    const visibleTemplates = React.useMemo(() => {
+        if (filterMode === 'generic') {
+            return templates.filter(
+                (template) => template.origin === 'content-management',
+            );
+        }
+
+        if (filterMode === 'domain') {
+            const candidates = templates.filter(
+                (template) => template.origin !== 'content-management',
+            );
+
+            if (!originFilter) {
+                return candidates;
+            }
+
+            return candidates.filter(
+                (template) => template.origin === originFilter,
+            );
+        }
+
+        if (originFilter) {
+            return templates.filter(
+                (template) => template.origin === originFilter,
+            );
+        }
+
+        return templates;
+    }, [filterMode, originFilter, templates]);
 
     const handleTemplateChange = (templateKey: string): void => {
         setSelectedTemplateKey(templateKey);
@@ -78,21 +139,6 @@ export function PageSectionCreateDialog({
                 field.default_value !== undefined
             ) {
                 initial[field.name] = field.default_value as never;
-                continue;
-            }
-
-            if (field.name === 'eyebrow') {
-                initial[field.name] = '' as never;
-                continue;
-            }
-
-            if (field.name === 'title') {
-                initial[field.name] = (template.label ?? '') as never;
-                continue;
-            }
-
-            if (field.name === 'description') {
-                initial[field.name] = (template.description ?? '') as never;
                 continue;
             }
 
@@ -122,6 +168,26 @@ export function PageSectionCreateDialog({
         }
     };
 
+    const handleSelectTemplate = (templateKey: string): void => {
+        handleTemplateChange(templateKey);
+    };
+
+    const handleFilterModeChange = (mode: TemplateFilterMode): void => {
+        setFilterMode(mode);
+
+        if (mode === 'generic') {
+            setOriginFilter('');
+        }
+    };
+
+    const handleContinue = (): void => {
+        if (!selectedTemplateKey) {
+            return;
+        }
+
+        setStep('configure');
+    };
+
     const handleClose = (): void => {
         onOpenChange(false);
     };
@@ -135,7 +201,7 @@ export function PageSectionCreateDialog({
             template_key: selectedTemplateKey,
             slot: slot || null,
             anchor: anchor || null,
-            locale: locale || null,
+            locale: defaultLocale ?? null,
             data,
         });
 
@@ -145,9 +211,11 @@ export function PageSectionCreateDialog({
     React.useEffect(() => {
         if (!open) {
             setSelectedTemplateKey('');
+            setStep('select');
+            setFilterMode('all');
+            setOriginFilter('');
             setSlot('');
             setAnchor('');
-            setLocale(defaultLocale ?? '');
             setData({});
         }
     }, [open, defaultLocale]);
@@ -156,97 +224,286 @@ export function PageSectionCreateDialog({
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent
                 className={cn(
-                    'max-h-10/12 min-h-0 max-w-2xl gap-y-0 p-0',
-                    selectedTemplate ? 'h-10/12' : 'h-auto',
+                    'h-[90vh] max-h-[90vh] min-h-0 max-w-2xl gap-y-0 p-0 flex flex-col',
                 )}
             >
                 <DialogHeader className="border-b p-6">
                     <DialogTitle>Add section</DialogTitle>
                     <DialogDescription>
-                        Choose a template and configure its content and
-                        placement within the page.
+                        {step === 'select'
+                            ? 'Choose a template to preview.'
+                            : 'Configure the selected template and place it on the page.'}
                     </DialogDescription>
                 </DialogHeader>
 
-                <ScrollArea className="px-5">
-                    <div className="mx-1 my-4 space-y-6">
-                        <div className="grid gap-4 md:grid-cols-2">
-                            <div className="space-y-1.5">
-                                <Label htmlFor="section-template">
-                                    Template
+                <ScrollArea className="flex-1 min-h-0 px-5">
+                    {step === 'select' && (
+                        <div className="mx-1 my-4 space-y-6">
+                            <div className="flex flex-wrap items-center gap-2">
+                                <Label className="text-xs uppercase tracking-wide text-muted-foreground">
+                                    Filters
                                 </Label>
-                                <TemplateSelector
-                                    templates={templates}
-                                    value={selectedTemplateKey}
-                                    onChange={handleTemplateChange}
-                                    placeholder="Select a template"
-                                />
+                                <Button
+                                    type="button"
+                                    variant={
+                                        filterMode === 'all'
+                                            ? 'default'
+                                            : 'outline'
+                                    }
+                                    size="sm"
+                                    onClick={() =>
+                                        handleFilterModeChange('all')
+                                    }
+                                >
+                                    All
+                                </Button>
+                                <Button
+                                    type="button"
+                                    variant={
+                                        filterMode === 'generic'
+                                            ? 'default'
+                                            : 'outline'
+                                    }
+                                    size="sm"
+                                    onClick={() =>
+                                        handleFilterModeChange('generic')
+                                    }
+                                >
+                                    Generic
+                                </Button>
+                                <Button
+                                    type="button"
+                                    variant={
+                                        filterMode === 'domain'
+                                            ? 'default'
+                                            : 'outline'
+                                    }
+                                    size="sm"
+                                    onClick={() =>
+                                        handleFilterModeChange('domain')
+                                    }
+                                >
+                                    Domain
+                                </Button>
+
+                                <div className="ml-auto flex items-center gap-2">
+                                    <Label
+                                        htmlFor="template-origin-filter"
+                                        className="text-xs uppercase tracking-wide text-muted-foreground"
+                                    >
+                                        Domain
+                                    </Label>
+                                    <select
+                                        id="template-origin-filter"
+                                        className="border-input bg-background text-foreground rounded-md border px-2 py-1 text-sm"
+                                        value={originFilter}
+                                        onChange={(event) =>
+                                            setOriginFilter(
+                                                event.target.value,
+                                            )
+                                        }
+                                        disabled={filterMode === 'generic'}
+                                    >
+                                        <option value="">All</option>
+                                        {domainOrigins.map((origin) => (
+                                            <option
+                                                key={origin}
+                                                value={origin}
+                                            >
+                                                {origin}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
                             </div>
 
-                            <div className="space-y-1.5">
-                                <Label htmlFor="section-slot">Slot</Label>
-                                <Input
-                                    id="section-slot"
-                                    value={slot}
-                                    onChange={(event) =>
-                                        setSlot(event.target.value)
-                                    }
-                                    placeholder="hero, main, footer"
-                                />
-                            </div>
+                            {visibleTemplates.length === 0 ? (
+                                <p className="text-muted-foreground text-sm">
+                                    No templates match the selected filter.
+                                </p>
+                            ) : (
+                                <div className="grid gap-3 md:grid-cols-2">
+                                    {visibleTemplates.map((template) => {
+                                        const isSelected =
+                                            template.key ===
+                                            selectedTemplateKey;
+                                        const originLabel =
+                                            template.origin ===
+                                            'content-management'
+                                                ? 'Generic'
+                                                : template.origin;
 
-                            <div className="space-y-1.5">
-                                <Label htmlFor="section-anchor">Anchor</Label>
-                                <Input
-                                    id="section-anchor"
-                                    value={anchor}
-                                    onChange={(event) =>
-                                        setAnchor(event.target.value)
-                                    }
-                                    placeholder="about, contact"
-                                />
-                            </div>
-
-                            <div className="space-y-1.5">
-                                <Label htmlFor="section-locale">Locale</Label>
-                                <Input
-                                    id="section-locale"
-                                    value={locale}
-                                    onChange={(event) =>
-                                        setLocale(event.target.value)
-                                    }
-                                    placeholder="pt_BR, en_US"
-                                />
-                            </div>
+                                        return (
+                                            <button
+                                                key={template.key}
+                                                type="button"
+                                                onClick={() =>
+                                                    handleSelectTemplate(
+                                                        template.key,
+                                                    )
+                                                }
+                                                className={cn(
+                                                    'text-left rounded-md border p-4 transition hover:border-foreground/40',
+                                                    isSelected
+                                                        ? 'border-foreground'
+                                                        : 'border-border',
+                                                )}
+                                            >
+                                                <div className="flex items-center justify-between gap-3">
+                                                    <div className="text-sm font-semibold">
+                                                        {template.label}
+                                                    </div>
+                                                    <span className="bg-muted text-muted-foreground rounded-full px-2 py-0.5 text-[0.7rem] uppercase tracking-wide">
+                                                        {originLabel}
+                                                    </span>
+                                                </div>
+                                                {template.description && (
+                                                    <p className="text-muted-foreground mt-2 text-sm">
+                                                        {template.description}
+                                                    </p>
+                                                )}
+                                                {Array.isArray(
+                                                    template.allowed_slots,
+                                                ) &&
+                                                    template.allowed_slots
+                                                        .length > 0 && (
+                                                        <div className="mt-3 flex flex-wrap gap-1">
+                                                            {template.allowed_slots.map(
+                                                                (slot) => (
+                                                                    <span
+                                                                        key={
+                                                                            slot
+                                                                        }
+                                                                        className="border-muted text-muted-foreground rounded-full border px-2 py-0.5 text-[0.7rem]"
+                                                                    >
+                                                                        {slot}
+                                                                    </span>
+                                                                ),
+                                                            )}
+                                                        </div>
+                                                    )}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            )}
                         </div>
+                    )}
 
-                        {selectedTemplate && (
-                            <div className="bg-muted/40 rounded-md border p-4">
-                                <TemplateSectionForm
-                                    template={selectedTemplate}
-                                    value={data}
-                                    onChange={setData}
-                                />
+                    {step === 'configure' && (
+                        <div className="mx-1 my-4 space-y-6">
+                            <div className="grid gap-4">
+                                <div className="space-y-1.5">
+                                    <Label htmlFor="section-template">
+                                        Template
+                                    </Label>
+                                    <TemplateSelector
+                                        templates={templates}
+                                        value={selectedTemplateKey}
+                                        onChange={handleTemplateChange}
+                                        placeholder="Select a template"
+                                        disabled
+                                        className="h-14 w-full"
+                                    />
+                                </div>
                             </div>
-                        )}
-                    </div>
+
+                            <div className="grid gap-4 md:grid-cols-2">
+                                <div className="space-y-1.5">
+                                    <Label htmlFor="section-slot">Slot</Label>
+                                    {hasSlotOptions ? (
+                                        <Select
+                                            value={slot}
+                                            onValueChange={setSlot}
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select a slot" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {allowedSlots.map((slotOption) => (
+                                                    <SelectItem
+                                                        key={slotOption}
+                                                        value={slotOption}
+                                                    >
+                                                        {slotOption}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    ) : (
+                                        <Input
+                                            id="section-slot"
+                                            value={slot}
+                                            onChange={(event) =>
+                                                setSlot(event.target.value)
+                                            }
+                                            placeholder="hero, main, footer"
+                                        />
+                                    )}
+                                </div>
+
+                                <div className="space-y-1.5">
+                                    <Label htmlFor="section-anchor">Anchor</Label>
+                                    <Input
+                                        id="section-anchor"
+                                        value={anchor}
+                                        onChange={(event) =>
+                                            setAnchor(event.target.value)
+                                        }
+                                        placeholder="about, contact"
+                                    />
+                                </div>
+                            </div>
+
+                            {selectedTemplate && (
+                                <div className="bg-muted/40 rounded-md border p-4">
+                                    <TemplateSectionForm
+                                        template={selectedTemplate}
+                                        value={data}
+                                        onChange={setData}
+                                    />
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </ScrollArea>
 
                 <DialogFooter className="border-t p-6">
-                    <Button
-                        type="button"
-                        variant="outline"
-                        onClick={handleClose}
-                    >
-                        Cancel
-                    </Button>
-                    <Button
-                        type="button"
-                        onClick={handleConfirm}
-                        disabled={!selectedTemplateKey}
-                    >
-                        Create section
-                    </Button>
+                    {step === 'select' ? (
+                        <>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={handleClose}
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                type="button"
+                                onClick={handleContinue}
+                                disabled={!selectedTemplateKey}
+                            >
+                                Continue
+                            </Button>
+                        </>
+                    ) : (
+                        <>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => setStep('select')}
+                            >
+                                Change template
+                            </Button>
+                            <Button
+                                type="button"
+                                onClick={handleConfirm}
+                                disabled={!selectedTemplateKey}
+                            >
+                                Create section
+                            </Button>
+                        </>
+                    )}
                 </DialogFooter>
             </DialogContent>
         </Dialog>
