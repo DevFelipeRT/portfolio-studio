@@ -3,6 +3,8 @@ import {
     getSectionNavigationGroup,
     getSectionNavigationLabel,
 } from '@/Modules/ContentManagement/utils/sectionNavigation';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { PageSectionReorderControl } from './PageSectionReorderControl';
 import { PageSectionToolbar } from './PageSectionToolbar';
 import { PageSectionVisibilityBadge } from './PageSectionVisibilityBadge';
@@ -51,14 +53,35 @@ export function PageSectionItem({
     const canMoveDown = index < totalCount - 1;
     const navigationLabel = getSectionNavigationLabel(section);
     const navigationGroup = getSectionNavigationGroup(section);
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        setActivatorNodeRef,
+        transform,
+        transition,
+        isDragging,
+    } = useSortable({ id: section.id });
+    const dragStyle = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+    };
 
     return (
-        <li className="bg-muted/40 flex items-stretch gap-2 rounded-md border px-3 py-2">
+        <li
+            ref={setNodeRef}
+            style={dragStyle}
+            className={`bg-muted/40 flex items-stretch gap-2 rounded-md border px-3 py-2 ${
+                isDragging ? 'opacity-80 shadow-sm' : ''
+            }`}
+        >
             <PageSectionReorderControl
                 canMoveUp={canMoveUp}
                 canMoveDown={canMoveDown}
                 onMoveUp={handleMoveUp}
                 onMoveDown={handleMoveDown}
+                dragHandleRef={setActivatorNodeRef}
+                dragHandleProps={{ ...attributes, ...listeners }}
             />
 
             <div className="flex flex-1 flex-col justify-center gap-1 text-sm">

@@ -183,6 +183,22 @@ export default function PageEdit({
     /**
      * Sections: reorder
      */
+    const handleReorderSections = (
+        orderedIds: Array<PageSectionDto['id']>,
+    ): void => {
+        router.post(
+            route('admin.content.sections.reorder'),
+            {
+                page_id: page.id,
+                ordered_ids: orderedIds,
+            },
+            {
+                preserveScroll: true,
+                preserveState: true,
+            },
+        );
+    };
+
     const handleReorderSection = (
         section: PageSectionDto,
         direction: 'up' | 'down',
@@ -207,18 +223,7 @@ export default function PageEdit({
         swapped[targetIndex] = temp;
 
         const orderedIds = swapped.map((item) => item.id);
-
-        router.post(
-            route('admin.content.sections.reorder'),
-            {
-                page_id: page.id,
-                ordered_ids: orderedIds,
-            },
-            {
-                preserveScroll: true,
-                preserveState: true,
-            },
-        );
+        handleReorderSections(orderedIds);
     };
 
     return (
@@ -267,6 +272,7 @@ export default function PageEdit({
                     onToggleActive={handleToggleSectionActive}
                     onRemoveSection={handleRemoveSection}
                     onReorder={handleReorderSection}
+                    onReorderIds={handleReorderSections}
                 />
             </div>
 
