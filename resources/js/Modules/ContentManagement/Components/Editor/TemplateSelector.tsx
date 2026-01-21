@@ -19,6 +19,7 @@ interface TemplateSelectorProps {
      * declare this slot in allowed_slots will be shown.
      */
     filterBySlot?: string | null;
+    className?: string;
 }
 
 /**
@@ -34,6 +35,7 @@ export function TemplateSelector({
     placeholder = 'Select a template',
     disabled = false,
     filterBySlot = null,
+    className,
 }: TemplateSelectorProps) {
     const normalizedSlot =
         typeof filterBySlot === 'string' && filterBySlot.trim() !== ''
@@ -52,13 +54,29 @@ export function TemplateSelector({
 
     return (
         <Select value={value} onValueChange={onChange} disabled={disabled}>
-            <SelectTrigger>
+            <SelectTrigger className={className}>
                 <SelectValue placeholder={placeholder} />
             </SelectTrigger>
             <SelectContent>
                 {visibleTemplates.map((template) => (
                     <SelectItem key={template.key} value={template.key}>
-                        {template.label}
+                        <div className="flex w-full flex-col gap-1">
+                            <div className="flex items-center justify-between gap-2">
+                                <span className="text-sm font-medium text-left">
+                                    {template.label}
+                                </span>
+                                <span className="text-muted-foreground text-xs">
+                                    {template.origin === 'content-management'
+                                        ? 'Generic'
+                                        : template.origin}
+                                </span>
+                            </div>
+                            {template.description && (
+                                <span className="text-muted-foreground text-xs">
+                                    {template.description}
+                                </span>
+                            )}
+                        </div>
                     </SelectItem>
                 ))}
             </SelectContent>
