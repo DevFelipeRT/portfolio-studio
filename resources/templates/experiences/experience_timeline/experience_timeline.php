@@ -10,13 +10,16 @@ declare(strict_types=1);
 return [
     'key' => 'experience_timeline',
     'label' => 'Experience timeline',
+    'label_key' => 'label',
     'description' => 'Displays a professional experience timeline using capabilities data.',
+    'description_key' => 'description',
     'allowed_slots' => ['main'],
 
     'fields' => [
         [
             'name' => 'eyebrow',
             'label' => 'Section eyebrow',
+            'label_key' => 'fields.eyebrow.label',
             'type' => 'string',
             'required' => false,
             'default' => null,
@@ -25,6 +28,7 @@ return [
         [
             'name' => 'title',
             'label' => 'Section title',
+            'label_key' => 'fields.title.label',
             'type' => 'string',
             'required' => false,
             'default' => null,
@@ -33,6 +37,7 @@ return [
         [
             'name' => 'subtitle',
             'label' => 'Section subtitle',
+            'label_key' => 'fields.subtitle.label',
             'type' => 'string',
             'required' => false,
             'default' => null,
@@ -41,6 +46,7 @@ return [
         [
             'name' => 'empty_message',
             'label' => 'Empty state message',
+            'label_key' => 'fields.empty_message.label',
             'type' => 'string',
             'required' => false,
             'default' => null,
@@ -49,6 +55,7 @@ return [
         [
             'name' => 'present_label',
             'label' => 'Present label',
+            'label_key' => 'fields.present_label.label',
             'type' => 'string',
             'required' => false,
             'default' => null,
@@ -57,6 +64,7 @@ return [
         [
             'name' => 'max_items',
             'label' => 'Maximum experiences to display',
+            'label_key' => 'fields.max_items.label',
             'type' => 'integer',
             'required' => false,
             'default' => 6,

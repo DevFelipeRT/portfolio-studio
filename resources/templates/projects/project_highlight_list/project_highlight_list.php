@@ -10,13 +10,16 @@ declare(strict_types=1);
 return [
     'key' => 'project_highlight_list',
     'label' => 'Project highlight list',
+    'label_key' => 'label',
     'description' => 'Showcases a curated or filtered list of projects.',
+    'description_key' => 'description',
     'allowed_slots' => ['main'],
     'fields' => [
         // Common section header fields
         [
             'name' => 'eyebrow',
             'label' => 'Eyebrow text',
+            'label_key' => 'fields.eyebrow.label',
             'type' => 'string',
             'required' => false,
             'default' => null,
@@ -25,6 +28,7 @@ return [
         [
             'name' => 'title',
             'label' => 'Section title',
+            'label_key' => 'fields.title.label',
             'type' => 'string',
             'required' => false,
             'default' => null,
@@ -33,6 +37,7 @@ return [
         [
             'name' => 'description',
             'label' => 'Section description',
+            'label_key' => 'fields.description.label',
             'type' => 'text',
             'required' => false,
             'default' => null,
@@ -43,6 +48,7 @@ return [
         [
             'name' => 'subtitle',
             'label' => 'Block subtitle',
+            'label_key' => 'fields.subtitle.label',
             'type' => 'text',
             'required' => false,
             'default' => null,
@@ -51,6 +57,7 @@ return [
         [
             'name' => 'max_items',
             'label' => 'Maximum items',
+            'label_key' => 'fields.max_items.label',
             'type' => 'integer',
             'required' => false,
             'default' => null,
@@ -59,6 +66,7 @@ return [
         [
             'name' => 'highlight_only',
             'label' => 'Only highlighted projects',
+            'label_key' => 'fields.highlight_only.label',
             'type' => 'boolean',
             'required' => false,
             'default' => true,
@@ -67,6 +75,7 @@ return [
         [
             'name' => 'project_ids',
             'label' => 'Explicit project IDs',
+            'label_key' => 'fields.project_ids.label',
             'type' => 'array_integer',
             'required' => false,
             'default' => [],
