@@ -5,61 +5,115 @@ declare(strict_types=1);
 /**
  * Aggregates template definitions for the ContentManagement module.
  *
- * Each file inside the Templates directory must return a single
- * template definition array with a non-empty "key".
+ * Each template definition file must return a single template definition
+ * array with a non-empty "key".
  *
  * @return array<int,array<string,mixed>>
  */
-$baseDir = dirname(__DIR__) . '/Templates';
+$originPaths = $templateOrigins ?? [resource_path('templates')];
 
-if (!is_dir($baseDir)) {
-    throw new RuntimeException(
-        sprintf('ContentManagement templates directory not found: [%s].', $baseDir),
-    );
+if (!is_array($originPaths)) {
+    $originPaths = [];
 }
 
-$files = glob($baseDir . '/*.php') ?: [];
+$originPaths = array_values(array_filter(
+    $originPaths,
+    static fn(mixed $path): bool => is_string($path) && $path !== '',
+));
 
-if ($files === []) {
+$originDirs = [];
+
+$originHasTemplates = static function (string $originDir): bool {
+    $templateDirs = glob($originDir . '/*', GLOB_ONLYDIR) ?: [];
+
+    foreach ($templateDirs as $templateDir) {
+        $templateName = basename($templateDir);
+        $templateFile = $templateDir . '/' . $templateName . '.php';
+
+        if (is_file($templateFile)) {
+            return true;
+        }
+    }
+
+    return false;
+};
+
+foreach ($originPaths as $originPath) {
+    $originPath = rtrim($originPath, DIRECTORY_SEPARATOR);
+
+    if (!is_dir($originPath)) {
+        continue;
+    }
+
+    if ($originHasTemplates($originPath)) {
+        $originDirs[] = $originPath;
+        continue;
+    }
+
+    $candidateOrigins = glob($originPath . '/*', GLOB_ONLYDIR) ?: [];
+
+    foreach ($candidateOrigins as $candidateOrigin) {
+        if ($originHasTemplates($candidateOrigin)) {
+            $originDirs[] = $candidateOrigin;
+        }
+    }
+}
+
+$originDirs = array_values(array_unique($originDirs));
+
+if ($originDirs === []) {
     throw new RuntimeException(
-        sprintf('No template definition files found in directory: [%s].', $baseDir),
+        'No template origin directories found for ContentManagement.',
     );
 }
 
 $templates = [];
 $seenKeys = [];
 
-/** @var string $file */
-foreach ($files as $file) {
-    $definition = require $file;
+foreach ($originDirs as $originDir) {
+    $originName = basename($originDir);
+    $templateDirs = glob($originDir . '/*', GLOB_ONLYDIR) ?: [];
 
-    if (!is_array($definition)) {
-        throw new RuntimeException(
-            sprintf('Template file [%s] must return an array definition.', $file),
-        );
+    foreach ($templateDirs as $templateDir) {
+        $templateName = basename($templateDir);
+        $templateFile = $templateDir . '/' . $templateName . '.php';
+
+        if (!is_file($templateFile)) {
+            continue;
+        }
+
+        $definition = require $templateFile;
+
+        if (!is_array($definition)) {
+            throw new RuntimeException(
+                sprintf('Template file [%s] must return an array definition.', $templateFile),
+            );
+        }
+
+        $key = $definition['key'] ?? null;
+
+        if (!is_string($key) || $key === '') {
+            throw new RuntimeException(
+                sprintf('Template file [%s] must define a non-empty "key".', $templateFile),
+            );
+        }
+
+        if (isset($seenKeys[$key])) {
+            throw new RuntimeException(
+                sprintf(
+                    'Duplicate template key [%s] detected in [%s] and [%s].',
+                    $key,
+                    $seenKeys[$key],
+                    $templateFile,
+                ),
+            );
+        }
+
+        $seenKeys[$key] = $templateFile;
+        $definition['origin'] = $definition['origin'] ?? $originName;
+        $definition['template'] = $definition['template'] ?? $templateName;
+        $templates[] = $definition;
     }
-
-    $key = $definition['key'] ?? null;
-
-    if (!is_string($key) || $key === '') {
-        throw new RuntimeException(
-            sprintf('Template file [%s] must define a non-empty "key".', $file),
-        );
-    }
-
-    if (isset($seenKeys[$key])) {
-        throw new RuntimeException(
-            sprintf(
-                'Duplicate template key [%s] detected in [%s] and [%s].',
-                $key,
-                $seenKeys[$key],
-                $file,
-            ),
-        );
-    }
-
-    $seenKeys[$key] = $file;
-    $templates[] = $definition;
 }
 
 return $templates;
