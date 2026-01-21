@@ -11,6 +11,7 @@ use App\Modules\ContentManagement\Application\Mappers\TemplateDefinitionMapper;
 use App\Modules\ContentManagement\Application\Services\ContentSettingsService;
 use App\Modules\ContentManagement\Application\Services\PageSectionService;
 use App\Modules\ContentManagement\Application\Services\PageService;
+use App\Modules\ContentManagement\Application\Services\Templates\TemplateTranslationService;
 use App\Modules\ContentManagement\Domain\Models\Page;
 use App\Modules\ContentManagement\Domain\Models\PageSection;
 use App\Modules\ContentManagement\Domain\Templates\TemplateDataSource;
@@ -67,6 +68,7 @@ final class PagePresenter
         private readonly TemplateRegistry $templateRegistry,
         private readonly SectionCapabilitiesDataFetcher $sectionCapabilitiesDataFetcher,
         private readonly ContentSettingsService $contentSettings,
+        private readonly TemplateTranslationService $templateTranslations,
     ) {
     }
 
@@ -168,7 +170,7 @@ final class PagePresenter
 
         $sections = $this->enrichSectionsWithImages($sections);
 
-        $templates = $this->buildTemplatesData($sections);
+        $templates = $this->buildTemplatesData($sections, $pageDto->locale);
 
         $payload = array_merge(
             [self::PAYLOAD_TEMPLATES_KEY => $templates],
@@ -193,7 +195,7 @@ final class PagePresenter
      * @param array<int,array<string,mixed>> $sections
      * @return array<int,array<string,mixed>>
      */
-    private function buildTemplatesData(array $sections): array
+    private function buildTemplatesData(array $sections, string $locale): array
     {
         $uniqueKeys = [];
 
@@ -214,7 +216,11 @@ final class PagePresenter
                 continue;
             }
 
-            $dto = TemplateDefinitionMapper::toDto($definition);
+            $dto = TemplateDefinitionMapper::toDto(
+                $definition,
+                $this->templateTranslations,
+                $locale,
+            );
             $result[] = $this->toSnakeCaseArray($dto);
         }
 
