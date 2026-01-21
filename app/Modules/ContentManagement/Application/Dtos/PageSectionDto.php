@@ -21,6 +21,7 @@ final class PageSectionDto
         public readonly ?string $slot,
         public readonly int $position,
         public readonly ?string $anchor,
+        public readonly ?string $navigationLabel,
         public readonly array $data,
         public readonly bool $isActive,
         public readonly ?CarbonInterface $visibleFrom,

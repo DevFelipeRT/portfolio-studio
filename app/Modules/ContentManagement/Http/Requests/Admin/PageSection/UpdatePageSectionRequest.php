@@ -9,6 +9,7 @@ use App\Modules\ContentManagement\Domain\Models\Page;
 use App\Modules\ContentManagement\Domain\Models\PageSection;
 use App\Modules\ContentManagement\Domain\ValueObjects\TemplateKey;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 final class UpdatePageSectionRequest extends FormRequest
 {
@@ -26,6 +27,10 @@ final class UpdatePageSectionRequest extends FormRequest
         $section = $this->route('section');
 
         $pageTable = (new Page())->getTable();
+        $pageId = $this->input('page_id', $section?->page_id);
+        $locale = $this->has('locale')
+            ? $this->input('locale')
+            : $section?->locale;
 
         $baseRules = [
             'page_id' => [
@@ -53,6 +58,11 @@ final class UpdatePageSectionRequest extends FormRequest
                 'string',
                 'max:191',
             ],
+            'navigation_label' => [
+                'nullable',
+                'string',
+                'max:191',
+            ],
             'is_active' => [
                 'sometimes',
                 'boolean',
@@ -73,6 +83,40 @@ final class UpdatePageSectionRequest extends FormRequest
             ],
         ];
 
+        if ($this->has('anchor')) {
+            $anchor = $this->input('anchor');
+            if ($anchor !== null && $anchor !== '' && $pageId !== null) {
+                $baseRules['anchor'][] = Rule::unique('page_sections', 'anchor')
+                    ->ignore($section?->id)
+                    ->where(function ($query) use ($pageId, $locale): void {
+                        $query->where('page_id', $pageId);
+
+                        if ($locale === null || $locale === '') {
+                            $query->whereNull('locale');
+                        } else {
+                            $query->where('locale', $locale);
+                        }
+                    });
+            }
+        }
+
+        if ($this->has('navigation_label')) {
+            $navigationLabel = $this->input('navigation_label');
+            if ($navigationLabel !== null && $navigationLabel !== '' && $pageId !== null) {
+                $baseRules['navigation_label'][] = Rule::unique('page_sections', 'navigation_label')
+                    ->ignore($section?->id)
+                    ->where(function ($query) use ($pageId, $locale): void {
+                        $query->where('page_id', $pageId);
+
+                        if ($locale === null || $locale === '') {
+                            $query->whereNull('locale');
+                        } else {
+                            $query->where('locale', $locale);
+                        }
+                    });
+            }
+        }
+
         $templateRules = $this->buildTemplateDataRules($section);
 
         return array_merge(
@@ -83,9 +127,11 @@ final class UpdatePageSectionRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        $this->merge([
-            'is_active' => $this->boolean('is_active'),
-        ]);
+        if ($this->has('is_active')) {
+            $this->merge([
+                'is_active' => $this->boolean('is_active'),
+            ]);
+        }
     }
 
     /**

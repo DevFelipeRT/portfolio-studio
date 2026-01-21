@@ -496,6 +496,7 @@ final class PageSectionService
             'slot',
             'position',
             'anchor',
+            'navigation_label',
             'data',
             'is_active',
             'visible_from',

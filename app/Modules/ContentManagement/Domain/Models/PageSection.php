@@ -27,6 +27,7 @@ use Carbon\CarbonInterface;
  * @property string|null $slot
  * @property int $position
  * @property string|null $anchor
+ * @property string|null $navigation_label
  * @property array|null $data
  * @property bool $is_active
  * @property \Illuminate\Support\Carbon|null $visible_from
@@ -52,6 +53,7 @@ class PageSection extends Model
         'slot',
         'position',
         'anchor',
+        'navigation_label',
         'data',
         'is_active',
         'visible_from',
