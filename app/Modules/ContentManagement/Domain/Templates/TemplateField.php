@@ -22,6 +22,11 @@ final class TemplateField
     private string $label;
 
     /**
+     * Translation key for the field label.
+     */
+    private ?string $labelKey;
+
+    /**
      * Logical data type identifier (for example "string", "text", "boolean", "collection", "image").
      */
     private string $type;
@@ -37,6 +42,11 @@ final class TemplateField
      * @var mixed
      */
     private mixed $defaultValue;
+
+    /**
+     * Translation key for the default value.
+     */
+    private ?string $defaultKey;
 
     /**
      * Validation rules applied to the field payload.
@@ -70,14 +80,18 @@ final class TemplateField
         mixed $defaultValue = null,
         array $validationRules = [],
         array $itemFields = [],
+        ?string $labelKey = null,
+        ?string $defaultKey = null,
     ) {
         $this->name = $name;
         $this->label = $label;
+        $this->labelKey = $labelKey;
         $this->type = $type;
         $this->required = $required;
         $this->defaultValue = $defaultValue;
         $this->validationRules = $validationRules;
         $this->itemFields = $itemFields;
+        $this->defaultKey = $defaultKey;
     }
 
     /**
@@ -94,6 +108,14 @@ final class TemplateField
     public function label(): string
     {
         return $this->label;
+    }
+
+    /**
+     * Returns the label translation key.
+     */
+    public function labelKey(): ?string
+    {
+        return $this->labelKey;
     }
 
     /**
@@ -120,6 +142,14 @@ final class TemplateField
     public function defaultValue(): mixed
     {
         return $this->defaultValue;
+    }
+
+    /**
+     * Returns the default value translation key.
+     */
+    public function defaultKey(): ?string
+    {
+        return $this->defaultKey;
     }
 
     /**
