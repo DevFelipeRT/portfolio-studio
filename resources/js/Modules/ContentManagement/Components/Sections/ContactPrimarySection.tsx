@@ -2,6 +2,7 @@ import { SocialLinksBar } from '@/Components/SocialLinksBar';
 import { Button } from '@/Components/Ui/button';
 import { Input } from '@/Components/Ui/input';
 import { Label } from '@/Components/Ui/label';
+import { LinkedInProfileBadge } from '@/Components/Ui/linkedin-badge';
 import { Textarea } from '@/Components/Ui/textarea';
 import { SectionHeader } from '@/Layouts/Partials/SectionHeader';
 import type { SectionComponentProps } from '@/Modules/ContentManagement/config/sectionComponents';
@@ -263,6 +264,9 @@ export function ContactPrimarySection({
                         />
 
                         <SocialLinksBar items={socialLinks} />
+
+                        <LinkedInProfileBadge vanity="felipe-ruiz-terrazas" size="medium" type="HORIZONTAL" className="w-full max-w-sm" skeletonClassName="rounded-xl" />
+
                     </section>
                 )}
             </div>
