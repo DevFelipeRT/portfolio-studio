@@ -118,9 +118,11 @@ final class PageSectionService
         $this->fillSection($section, $attributes);
 
         $data = is_array($section->data) ? $section->data : [];
+        $locale = $page->locale ?: (string) config('content_management.locales.default', '');
         $normalizedData = $this->templateValidation->normalizeDataForTemplateKey(
             $templateKey,
             $data,
+            $locale !== '' ? $locale : null,
         );
 
         $section->data = $normalizedData;
@@ -149,9 +151,13 @@ final class PageSectionService
         $this->fillSection($section, $attributes);
 
         $data = is_array($section->data) ? $section->data : [];
+        $pageLocale = $section->page?->locale;
+        $fallbackLocale = (string) config('content_management.locales.default', '');
+        $locale = $pageLocale ?: $fallbackLocale;
         $normalizedData = $this->templateValidation->normalizeDataForTemplateKey(
             $templateKey,
             $data,
+            $locale !== '' ? $locale : null,
         );
 
         $section->data = $normalizedData;
