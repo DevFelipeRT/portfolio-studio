@@ -63,6 +63,7 @@ export function PageSectionCreateDialog({
     navigationGroups = [],
     onSubmit,
 }: PageSectionCreateDialogProps) {
+    const dialogContentRef = React.useRef<HTMLDivElement | null>(null);
     const [selectedTemplateKey, setSelectedTemplateKey] =
         React.useState<string>('');
     const [step, setStep] = React.useState<'select' | 'configure'>('select');
@@ -245,6 +246,7 @@ export function PageSectionCreateDialog({
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent
+                ref={dialogContentRef}
                 className={cn(
                     'h-[90vh] max-h-[90vh] min-h-0 max-w-2xl gap-y-0 p-0 flex flex-col',
                 )}
@@ -514,6 +516,7 @@ export function PageSectionCreateDialog({
                                             }),
                                         )}
                                         emptyLabel="No groups yet"
+                                        portalContainer={dialogContentRef}
                                     />
                                 </div>
                             </div>

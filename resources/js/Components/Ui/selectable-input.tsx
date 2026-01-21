@@ -23,6 +23,9 @@ type SelectableInputProps = {
     placeholder?: string;
     emptyLabel?: string;
     disabled?: boolean;
+    portalContainer?: React.ComponentProps<
+        typeof ComboboxContent
+    >['portalContainer'];
 };
 
 export function SelectableInput({
@@ -33,6 +36,7 @@ export function SelectableInput({
     placeholder,
     emptyLabel = 'No options',
     disabled = false,
+    portalContainer,
 }: SelectableInputProps) {
     const items = React.useMemo(
         () => options.map((option) => option.value),
@@ -52,13 +56,24 @@ export function SelectableInput({
         [items, value],
     );
 
+    const handleInputValueChange = React.useCallback(
+        (nextValue: string, eventDetails: { reason?: string }) => {
+            if (eventDetails?.reason === 'item-press') {
+                return;
+            }
+
+            onChange(nextValue);
+        },
+        [onChange],
+    );
+
     return (
         <Combobox
             items={items}
             itemToStringLabel={(item) => labelByValue.get(item) ?? String(item)}
             itemToStringValue={(item) => String(item)}
             inputValue={value}
-            onInputValueChange={(nextValue) => onChange(nextValue)}
+            onInputValueChange={handleInputValueChange}
             value={matchedValue}
             onValueChange={(nextValue) => {
                 if (typeof nextValue === 'string') {
@@ -75,7 +90,7 @@ export function SelectableInput({
                 showClear
                 showTrigger
             />
-            <ComboboxContent>
+            <ComboboxContent portalContainer={portalContainer}>
                 <ComboboxEmpty>{emptyLabel}</ComboboxEmpty>
                 <ComboboxList>
                     <ComboboxCollection>

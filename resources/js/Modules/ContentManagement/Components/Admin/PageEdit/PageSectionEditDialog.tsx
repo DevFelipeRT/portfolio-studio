@@ -61,6 +61,7 @@ export function PageSectionEditDialog({
     allowTemplateChange = true,
     onSubmit,
 }: PageSectionEditDialogProps) {
+    const dialogContentRef = React.useRef<HTMLDivElement | null>(null);
     const [templateKey, setTemplateKey] = React.useState<string>('');
     const [slot, setSlot] = React.useState<string>('');
     const [anchor, setAnchor] = React.useState<string>('');
@@ -170,6 +171,7 @@ export function PageSectionEditDialog({
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent
+                ref={dialogContentRef}
                 className={cn(
                     'max-h-10/12 min-h-0 max-w-2xl gap-y-0 p-0',
                     section ? 'h-10/12' : 'h-auto',
@@ -293,6 +295,7 @@ export function PageSectionEditDialog({
                                             }),
                                         )}
                                         emptyLabel="No groups yet"
+                                        portalContainer={dialogContentRef}
                                     />
                                 </div>
                             </div>
