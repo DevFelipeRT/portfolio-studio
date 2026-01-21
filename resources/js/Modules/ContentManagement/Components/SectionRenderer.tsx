@@ -177,6 +177,11 @@ function renderGenericTemplateSection(
                         {template.label}
                     </h2>
                 )}
+                {template.description && (
+                    <p className="text-muted-foreground mb-6 text-sm">
+                        {template.description}
+                    </p>
+                )}
                 {renderedFields}
             </div>
         </section>

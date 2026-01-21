@@ -127,6 +127,8 @@ export interface TemplateDefinitionDto {
     description: string | null;
     allowed_slots: string[];
     fields: TemplateFieldDto[];
+    origin: string;
+    template_name: string;
 }
 
 /**
