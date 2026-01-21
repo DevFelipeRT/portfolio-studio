@@ -7,6 +7,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/Components/Ui/dialog';
+import { Checkbox } from '@/Components/Ui/checkbox';
 import { Input } from '@/Components/Ui/input';
 import { Label } from '@/Components/Ui/label';
 import {
@@ -26,11 +27,14 @@ import type {
 } from '@/Modules/ContentManagement/types';
 import { ScrollArea } from '@/Components/Ui/scroll-area';
 import React from 'react';
+import { SelectableInput } from '@/Components/Ui/selectable-input';
 
 export interface EditSectionPayload {
     templateKey: string;
     slot: string | null;
     anchor: string | null;
+    navigation_label: string | null;
+    is_active: boolean;
     locale: string | null;
     data: SectionData;
 }
@@ -40,6 +44,7 @@ interface PageSectionEditDialogProps {
     onOpenChange: (open: boolean) => void;
     section: PageSectionDto | null;
     templates: TemplateDefinitionDto[];
+    navigationGroups?: string[];
     allowTemplateChange?: boolean;
     onSubmit: (payload: EditSectionPayload) => void;
 }
@@ -52,12 +57,15 @@ export function PageSectionEditDialog({
     onOpenChange,
     section,
     templates,
+    navigationGroups = [],
     allowTemplateChange = true,
     onSubmit,
 }: PageSectionEditDialogProps) {
     const [templateKey, setTemplateKey] = React.useState<string>('');
     const [slot, setSlot] = React.useState<string>('');
     const [anchor, setAnchor] = React.useState<string>('');
+    const [navigationLabel, setNavigationLabel] = React.useState<string>('');
+    const [isActive, setIsActive] = React.useState<boolean>(true);
     const [data, setData] = React.useState<SectionData>({});
 
     const selectedTemplate = React.useMemo(
@@ -66,6 +74,9 @@ export function PageSectionEditDialog({
     );
     const allowedSlots = selectedTemplate?.allowed_slots ?? [];
     const hasSlotOptions = allowedSlots.length > 0;
+    const navigationGroup =
+        typeof data.navigation_group === 'string' ? data.navigation_group : '';
+    const locale = section?.locale ?? null;
 
     React.useEffect(() => {
         if (!open || !section) {
@@ -75,6 +86,8 @@ export function PageSectionEditDialog({
         setTemplateKey(section.template_key);
         setSlot(section.slot ?? '');
         setAnchor(section.anchor ?? '');
+        setNavigationLabel(section.navigation_label ?? '');
+        setIsActive(section.is_active);
         setData(section.data ?? {});
     }, [open, section]);
 
@@ -93,6 +106,10 @@ export function PageSectionEditDialog({
         }
 
         const initial: SectionData = {};
+        const previousNavigationGroup =
+            typeof data.navigation_group === 'string'
+                ? data.navigation_group
+                : '';
 
         for (const field of template.fields) {
             if (
@@ -119,6 +136,10 @@ export function PageSectionEditDialog({
             }
         }
 
+        if (previousNavigationGroup.trim()) {
+            initial.navigation_group = previousNavigationGroup;
+        }
+
         setData(initial);
     };
 
@@ -135,7 +156,9 @@ export function PageSectionEditDialog({
             templateKey,
             slot: slot || null,
             anchor: anchor || null,
-            locale: locale || null,
+            navigation_label: navigationLabel || null,
+            is_active: isActive,
+            locale,
             data,
         });
 
@@ -230,6 +253,65 @@ export function PageSectionEditDialog({
                                             setAnchor(event.target.value)
                                         }
                                     />
+                                </div>
+                            </div>
+
+                            <div className="grid gap-4 md:grid-cols-2">
+                                <div className="space-y-1.5">
+                                    <Label htmlFor="edit-section-navigation-label">
+                                        Navigation label
+                                    </Label>
+                                    <Input
+                                        id="edit-section-navigation-label"
+                                        value={navigationLabel}
+                                        onChange={(event) =>
+                                            setNavigationLabel(
+                                                event.target.value,
+                                            )
+                                        }
+                                        placeholder="Highlights"
+                                    />
+                                </div>
+
+                                <div className="space-y-1.5">
+                                    <Label htmlFor="edit-section-navigation-group">
+                                        Navigation group
+                                    </Label>
+                                    <SelectableInput
+                                        id="edit-section-navigation-group"
+                                        value={navigationGroup}
+                                        onChange={(value) =>
+                                            setData((previous) => ({
+                                                ...previous,
+                                                navigation_group: value,
+                                            }))
+                                        }
+                                        placeholder="About"
+                                        options={navigationGroups.map(
+                                            (group) => ({
+                                                value: group,
+                                            }),
+                                        )}
+                                        emptyLabel="No groups yet"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="bg-muted/40 flex items-start gap-2 rounded-md border px-3 py-2">
+                                <Checkbox
+                                    id="edit-section-is-active"
+                                    checked={isActive}
+                                    onCheckedChange={(checked) =>
+                                        setIsActive(Boolean(checked))
+                                    }
+                                />
+                                <div className="space-y-0.5">
+                                    <Label htmlFor="edit-section-is-active">
+                                        Active
+                                    </Label>
+                                    <p className="text-muted-foreground text-xs">
+                                        When disabled, the section stays hidden.
+                                    </p>
                                 </div>
                             </div>
 

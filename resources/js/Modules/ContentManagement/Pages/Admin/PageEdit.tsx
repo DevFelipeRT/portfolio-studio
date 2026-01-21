@@ -21,6 +21,8 @@ import type {
     PageEditViewModelProps,
     PageSectionDto,
 } from '@/Modules/ContentManagement/types';
+import { getSectionNavigationGroup } from '@/Modules/ContentManagement/utils/sectionNavigation';
+import { sortSectionsByPosition } from '@/Modules/ContentManagement/utils/sectionSort';
 
 export default function PageEdit({
     page,
@@ -44,6 +46,22 @@ export default function PageEdit({
     const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
     const [selectedSection, setSelectedSection] =
         React.useState<PageSectionDto | null>(null);
+    const sortedSections = React.useMemo(
+        () => sortSectionsByPosition(sections),
+        [sections],
+    );
+    const navigationGroups = React.useMemo(() => {
+        const unique = new Set<string>();
+
+        sections.forEach((section) => {
+            const group = getSectionNavigationGroup(section);
+            if (group) {
+                unique.add(group);
+            }
+        });
+
+        return Array.from(unique).sort((a, b) => a.localeCompare(b));
+    }, [sections]);
 
     const handleChange = (field: keyof PageFormData, value: unknown): void => {
         setData(field, value as never);
@@ -81,6 +99,8 @@ export default function PageEdit({
                 template_key: payload.template_key,
                 slot: payload.slot,
                 anchor: payload.anchor,
+                navigation_label: payload.navigation_label,
+                is_active: payload.is_active,
                 locale: payload.locale,
                 data: payload.data,
             },
@@ -118,6 +138,8 @@ export default function PageEdit({
                 template_key: payload.templateKey,
                 slot: payload.slot,
                 anchor: payload.anchor,
+                navigation_label: payload.navigation_label,
+                is_active: payload.is_active,
                 locale: payload.locale,
                 data: payload.data,
             },
@@ -165,9 +187,9 @@ export default function PageEdit({
         section: PageSectionDto,
         direction: 'up' | 'down',
     ): void => {
-        const sorted = [...sections].sort((a, b) => a.position - b.position);
-
-        const index = sorted.findIndex((item) => item.id === section.id);
+        const index = sortedSections.findIndex(
+            (item) => item.id === section.id,
+        );
 
         if (index === -1) {
             return;
@@ -175,11 +197,11 @@ export default function PageEdit({
 
         const targetIndex = direction === 'up' ? index - 1 : index + 1;
 
-        if (targetIndex < 0 || targetIndex >= sorted.length) {
+        if (targetIndex < 0 || targetIndex >= sortedSections.length) {
             return;
         }
 
-        const swapped = [...sorted];
+        const swapped = [...sortedSections];
         const temp = swapped[index];
         swapped[index] = swapped[targetIndex];
         swapped[targetIndex] = temp;
@@ -238,7 +260,7 @@ export default function PageEdit({
                 />
 
                 <PageSectionsList
-                    sections={sections}
+                    sections={sortedSections}
                     templates={availableTemplates}
                     onCreateSection={handleCreateSection}
                     onEditSection={handleEditSection}
@@ -253,6 +275,7 @@ export default function PageEdit({
                 onOpenChange={setIsCreateDialogOpen}
                 templates={availableTemplates}
                 defaultLocale={page.locale}
+                navigationGroups={navigationGroups}
                 onSubmit={handleCreateSectionSubmit}
             />
 
@@ -261,6 +284,7 @@ export default function PageEdit({
                 onOpenChange={handleEditDialogOpenChange}
                 section={selectedSection}
                 templates={availableTemplates}
+                navigationGroups={navigationGroups}
                 allowTemplateChange
                 onSubmit={handleEditSectionSubmit}
             />

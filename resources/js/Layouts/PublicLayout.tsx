@@ -18,6 +18,10 @@ type SharedProps = {
     };
 };
 
+type PublicLayoutProps = PropsWithChildren<{
+    navigationItems?: NavigationItem[];
+}>;
+
 function mapConfigToNavigationItems(
     items: NavigationConfigNode[],
     translate: (key: string, fallback: string) => string,
@@ -77,14 +81,19 @@ function mapConfigToNavigationItems(
     });
 }
 
-export default function PublicLayout({ children }: PropsWithChildren) {
+export default function PublicLayout({
+    children,
+    navigationItems,
+}: PublicLayoutProps) {
     const { auth } = usePage().props as SharedProps;
     const { translate } = useTranslation('layout');
 
-    const navItems: NavigationItem[] = mapConfigToNavigationItems(
-        publicNavigationConfig,
-        (key, fallback) => translate(key, fallback),
-    );
+    const navItems: NavigationItem[] =
+        navigationItems ??
+        mapConfigToNavigationItems(
+            publicNavigationConfig,
+            (key, fallback) => translate(key, fallback),
+        );
 
     return (
         <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
@@ -94,7 +103,7 @@ export default function PublicLayout({ children }: PropsWithChildren) {
                 </Header>
 
                 <main className="w-full grow">
-                    <div className="mx-auto max-w-7xl grow px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
+                    <div className="mx-auto max-w-7xl grow px-4 sm:px-6 lg:px-8">
                         {children}
                     </div>
                 </main>

@@ -68,8 +68,9 @@ export interface PageSectionDto extends HasTimestamps {
     template_key: string;
     slot: string | null;
 
-    position: number;
+    position: number | null;
     anchor: string | null;
+    navigation_label: string | null;
 
     data: SectionData;
 

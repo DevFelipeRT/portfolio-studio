@@ -7,7 +7,9 @@ import type {
     TemplateDefinitionDto,
 } from '@/Modules/ContentManagement/types';
 import type { SectionEnvironment } from '@/Modules/ContentManagement/types/sectionEnvironment';
+import { buildNavigationItemsFromSections } from '@/Modules/ContentManagement/utils/sectionNavigation';
 import { sectionSlotLayoutManager } from '@/Modules/ContentManagement/utils/sectionSlotLayout';
+import { sortSectionsByPosition } from '@/Modules/ContentManagement/utils/sectionSort';
 import { defaultSocialLinks } from '@/config/socials';
 import { Head } from '@inertiajs/react';
 import { JSX } from 'react';
@@ -25,13 +27,13 @@ export default function RenderedPage({
         ? extra.templates
         : [];
 
-    const sortedSections: PageSectionDto[] = [...sections].sort(
-        (a, b) => a.position - b.position,
-    );
+    const sortedSections: PageSectionDto[] = sortSectionsByPosition(sections);
 
     const visibleSections = sortedSections.filter(
         (section) => section.is_active,
     );
+
+    const navigationItems = buildNavigationItemsFromSections(visibleSections);
 
     const headTitle: string = page.meta_title || page.title;
     const headDescription: string | undefined =
@@ -43,7 +45,7 @@ export default function RenderedPage({
     };
 
     return (
-        <PublicLayout>
+        <PublicLayout navigationItems={navigationItems}>
             <SectionEnvironmentProvider value={environment}>
                 <Head title={headTitle}>
                     {headDescription && (

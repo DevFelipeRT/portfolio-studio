@@ -1,4 +1,8 @@
 import type { PageSectionDto } from '@/Modules/ContentManagement/types';
+import {
+    getSectionNavigationGroup,
+    getSectionNavigationLabel,
+} from '@/Modules/ContentManagement/utils/sectionNavigation';
 import { PageSectionReorderControl } from './PageSectionReorderControl';
 import { PageSectionToolbar } from './PageSectionToolbar';
 import { PageSectionVisibilityBadge } from './PageSectionVisibilityBadge';
@@ -45,6 +49,8 @@ export function PageSectionItem({
 
     const canMoveUp = index > 0;
     const canMoveDown = index < totalCount - 1;
+    const navigationLabel = getSectionNavigationLabel(section);
+    const navigationGroup = getSectionNavigationGroup(section);
 
     return (
         <li className="bg-muted/40 flex items-stretch gap-2 rounded-md border px-3 py-2">
@@ -71,11 +77,25 @@ export function PageSectionItem({
                         </span>
                     )}
 
+                    {navigationLabel && (
+                        <span className="bg-muted text-muted-foreground rounded px-2 py-0.5 text-xs">
+                            Nav: {navigationLabel}
+                        </span>
+                    )}
+
+                    {navigationGroup && (
+                        <span className="bg-muted text-muted-foreground rounded px-2 py-0.5 text-xs">
+                            Group: {navigationGroup}
+                        </span>
+                    )}
+
                     <PageSectionVisibilityBadge section={section} />
                 </div>
 
                 <div className="text-muted-foreground flex flex-wrap items-center gap-2 text-xs">
-                    <span>Position {section.position}</span>
+                    <span>
+                        Position {section.position ?? '-'}
+                    </span>
                     {section.locale && (
                         <span className="tracking-wide uppercase">
                             {section.locale}
