@@ -25,12 +25,21 @@ export default function Index({ initiatives }: InitiativesIndexProps) {
 
     const hasItems = items.length > 0;
 
+    const getStartTimestamp = (value: string | null): number | null => {
+        if (!value) {
+            return null;
+        }
+
+        const timestamp = new Date(value).getTime();
+        return Number.isNaN(timestamp) ? null : timestamp;
+    };
+
     const orderedItems = useMemo(() => {
         return [...items].sort((a, b) => {
-            const aStart = new Date(a.start_date).getTime();
-            const bStart = new Date(b.start_date).getTime();
+            const aStart = getStartTimestamp(a.start_date);
+            const bStart = getStartTimestamp(b.start_date);
 
-            if (Number.isNaN(aStart) || Number.isNaN(bStart)) {
+            if (aStart === null || bStart === null) {
                 return b.id - a.id;
             }
 
