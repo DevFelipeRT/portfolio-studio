@@ -4,7 +4,7 @@ import { Briefcase } from 'lucide-react';
 import { JSX } from 'react';
 import { TimelineItem } from '../../../Components/TimelineItem';
 import { SectionHeader } from '../../../Layouts/Partials/SectionHeader';
-import { Experience } from '../../types';
+import type { Experience } from '@/Modules/Experiences/core/types';
 
 type ExperienceSectionProps = {
     experiences: Experience[];
