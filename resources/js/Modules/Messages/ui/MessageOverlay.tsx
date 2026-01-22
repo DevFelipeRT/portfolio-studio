@@ -9,17 +9,7 @@ import {
     DialogTitle,
 } from '@/Components/Ui/dialog';
 import { Separator } from '@/Components/Ui/separator';
-
-export interface Message {
-    id: number;
-    name: string;
-    email: string;
-    message: string;
-    important: boolean;
-    seen: boolean;
-    created_at: string;
-    updated_at?: string | null;
-}
+import type { Message } from '@/Modules/Messages/core/types';
 
 interface MessageOverlayProps {
     open: boolean;

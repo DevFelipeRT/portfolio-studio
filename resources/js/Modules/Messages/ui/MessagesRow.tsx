@@ -1,6 +1,6 @@
 // resources/js/Pages/Messages/Partials/MessagesRow.tsx
 
-import { Message } from './MessageOverlay';
+import type { Message } from '@/Modules/Messages/core/types';
 
 import { Badge } from '@/Components/Ui/badge';
 import { Button } from '@/Components/Ui/button';

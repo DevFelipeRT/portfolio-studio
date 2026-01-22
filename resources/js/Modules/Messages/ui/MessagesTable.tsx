@@ -1,6 +1,6 @@
 // resources/js/Pages/Messages/Partials/MessagesTable.tsx
 
-import { Message } from './MessageOverlay';
+import type { Message } from '@/Modules/Messages/core/types';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/Ui/card';
 import { Separator } from '@/Components/Ui/separator';
