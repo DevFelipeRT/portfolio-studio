@@ -1,7 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
 import React from 'react';
-import type { Skill } from '../types';
+import type { Skill } from '@/Modules/Skills/core/types';
 import { ProjectForm } from './Partials/ProjectForm';
 
 interface CreateProjectProps {

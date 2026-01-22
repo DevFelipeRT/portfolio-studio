@@ -1,5 +1,5 @@
 // resources/js/Pages/Home/Sections/TechStackSection.tsx
-import { SkillGroup } from '@/Pages/types';
+import type { SkillGroup } from '@/Modules/Skills/core/types';
 import { useTranslation } from '@/i18n';
 import { SectionHeader } from '../../../Layouts/Partials/SectionHeader';
 import { SkillBadge } from '../Partials/SkillBadge';
