@@ -1,5 +1,6 @@
 import type { NavigationItem, NavigationSectionItem } from '@/Navigation';
-import type { PageSectionDto } from '@/Modules/ContentManagement/types';
+import type { StringNormalizer } from '@/Modules/ContentManagement/core/ports/stringNormalizer';
+import type { PageSectionDto } from '@/Modules/ContentManagement/core/types';
 
 type SectionNavigationMetadata = {
     label: string | null;
@@ -7,39 +8,32 @@ type SectionNavigationMetadata = {
     targetId: string | null;
 };
 
-function normalizeString(value: unknown): string | null {
-    if (typeof value !== 'string') {
-        return null;
-    }
-
-    const trimmed = value.trim();
-
-    return trimmed.length > 0 ? trimmed : null;
-}
-
 function resolveSectionNavigationMetadata(
     section: PageSectionDto,
+    normalizer: StringNormalizer,
 ): SectionNavigationMetadata {
     const data = section.data ?? {};
-    const label = normalizeString(section.navigation_label);
+    const label = normalizer.normalize(section.navigation_label);
 
     return {
-        label: label ?? normalizeString(data.navigation_label),
-        group: normalizeString(data.navigation_group),
-        targetId: normalizeString(section.anchor),
+        label: label ?? normalizer.normalize(data.navigation_label),
+        group: normalizer.normalize(data.navigation_group),
+        targetId: normalizer.normalize(section.anchor),
     };
 }
 
 export function getSectionNavigationLabel(
     section: PageSectionDto,
+    normalizer: StringNormalizer,
 ): string | null {
-    return resolveSectionNavigationMetadata(section).label;
+    return resolveSectionNavigationMetadata(section, normalizer).label;
 }
 
 export function getSectionNavigationGroup(
     section: PageSectionDto,
+    normalizer: StringNormalizer,
 ): string | null {
-    return resolveSectionNavigationMetadata(section).group;
+    return resolveSectionNavigationMetadata(section, normalizer).group;
 }
 
 function buildGroupId(label: string): string {
@@ -54,13 +48,14 @@ function buildGroupId(label: string): string {
 
 export function buildNavigationItemsFromSections(
     sections: PageSectionDto[],
+    normalizer: StringNormalizer,
 ): NavigationItem[] {
     const items: NavigationItem[] = [];
     const groups = new Map<string, NavigationItem>();
 
     sections.forEach((section) => {
         const { label, group, targetId } =
-            resolveSectionNavigationMetadata(section);
+            resolveSectionNavigationMetadata(section, normalizer);
 
         if (!label || !targetId) {
             return;
