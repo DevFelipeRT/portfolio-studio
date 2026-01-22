@@ -1,4 +1,4 @@
-type ExperienceFormData = {
+export type ExperienceFormData = {
     position: string;
     company: string;
     short_description: string;
