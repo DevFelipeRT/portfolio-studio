@@ -1,7 +1,6 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import CourseForm, {
-    CourseEntryData,
-} from '@/Pages/Courses/Partials/CourseForm';
+import CourseForm from '@/Modules/Courses/ui/CourseForm';
+import type { CourseFormData } from '@/Modules/Courses/core/forms';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { ChevronLeft } from 'lucide-react';
 import React from 'react';
@@ -18,14 +17,14 @@ interface CreateCourseProps {
  */
 export default function Create({ course_categories }: CreateCourseProps) {
     const { data, setData, post, processing, errors } =
-        useForm<CourseEntryData>({
+        useForm<CourseFormData>({
             name: '',
             institution: '',
             category: '',
             summary: '',
             description: '',
-            started_at: '',
-            completed_at: '',
+            started_at: null,
+            completed_at: null,
             display: false,
         });
 

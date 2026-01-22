@@ -1,11 +1,10 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import CourseForm, {
-    CourseEntryData,
-} from '@/Pages/Courses/Partials/CourseForm';
+import CourseForm from '@/Modules/Courses/ui/CourseForm';
+import type { CourseFormData } from '@/Modules/Courses/core/forms';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { ChevronLeft } from 'lucide-react';
 import React from 'react';
-import { Course } from '../types';
+import type { Course } from '@/Modules/Courses/core/types';
 
 /**
  * Defines the props received from the backend controller.
@@ -20,7 +19,8 @@ interface EditCourseProps {
  * Initializes the form state with the provided course data.
  */
 export default function Edit({ course, course_categories }: EditCourseProps) {
-    const { data, setData, put, processing, errors } = useForm<CourseEntryData>(
+    const { data, setData, put, processing, errors } =
+        useForm<CourseFormData>(
         {
             name: course.name,
             institution: course.institution,
@@ -28,7 +28,7 @@ export default function Edit({ course, course_categories }: EditCourseProps) {
             summary: course.summary,
             description: course.description,
             started_at: course.started_at,
-            completed_at: course.completed_at ?? '',
+            completed_at: course.completed_at ?? null,
             display: Boolean(course.display),
         },
     );

@@ -1,11 +1,11 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { CourseOverlay } from '@/Pages/Courses/Partials/CourseOverlay';
-import { CoursesEmptyState } from '@/Pages/Courses/Partials/CoursesEmptyState';
-import { CoursesHeader } from '@/Pages/Courses/Partials/CoursesHeader';
-import { CoursesTable } from '@/Pages/Courses/Partials/CoursesTable';
+import { CourseOverlay } from '@/Modules/Courses/ui/CourseOverlay';
+import { CoursesEmptyState } from '@/Modules/Courses/ui/CoursesEmptyState';
+import { CoursesHeader } from '@/Modules/Courses/ui/CoursesHeader';
+import { CoursesTable } from '@/Modules/Courses/ui/CoursesTable';
 import { Head } from '@inertiajs/react';
 import React from 'react';
-import { Course } from '../types';
+import type { Course } from '@/Modules/Courses/core/types';
 
 interface CoursesIndexProps {
     courses: {
