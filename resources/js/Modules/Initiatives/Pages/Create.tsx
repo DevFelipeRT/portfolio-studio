@@ -1,6 +1,6 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link } from '@inertiajs/react';
-import { InitiativeForm } from './Partials/InitiativeForm';
+import { InitiativeForm } from '@/Modules/Initiatives/ui/InitiativeForm';
 
 export default function Create() {
     return (

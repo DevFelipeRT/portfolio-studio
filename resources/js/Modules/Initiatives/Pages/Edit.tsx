@@ -1,26 +1,10 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link } from '@inertiajs/react';
-import { InitiativeForm } from './Partials/InitiativeForm';
-
-type InitiativeImageResource = {
-    id: number;
-    src: string;
-    alt: string | null;
-};
-
-type InitiativeResource = {
-    id: number;
-    name: string;
-    short_description: string;
-    long_description: string;
-    display: boolean;
-    start_date: string;
-    end_date: string | null;
-    images: InitiativeImageResource[];
-};
+import type { Initiative } from '@/Modules/Initiatives/core/types';
+import { InitiativeForm } from '@/Modules/Initiatives/ui/InitiativeForm';
 
 interface EditInitiativeProps {
-    initiative: InitiativeResource;
+    initiative: Initiative;
 }
 
 export default function Edit({ initiative }: EditInitiativeProps) {
@@ -49,9 +33,9 @@ export default function Edit({ initiative }: EditInitiativeProps) {
                             long_description: initiative.long_description,
                             display: initiative.display,
                             start_date: initiative.start_date,
-                            end_date: initiative.end_date ?? '',
+                            end_date: initiative.end_date ?? null,
                         }}
-                        existingImages={initiative.images}
+                        existingImages={initiative.images ?? []}
                     />
                 </div>
             </div>
