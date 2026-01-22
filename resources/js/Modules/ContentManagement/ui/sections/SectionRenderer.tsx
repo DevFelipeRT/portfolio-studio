@@ -3,7 +3,7 @@
 import {
     SECTION_COMPONENT_REGISTRY,
     type SectionComponentProps,
-} from '@/Modules/ContentManagement/ui/sections/sectionRegistry';
+} from '@/Modules/ContentManagement/core/sections/sectionRegistry';
 import { SectionFieldResolverProvider } from '@/Modules/ContentManagement/hooks/useSectionFieldResolver';
 import type {
     PageSectionDto,
