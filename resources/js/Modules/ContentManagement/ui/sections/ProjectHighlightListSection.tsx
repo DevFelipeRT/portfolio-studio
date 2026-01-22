@@ -2,7 +2,7 @@ import { SectionHeader } from '@/Layouts/Partials/SectionHeader';
 import type { SectionComponentProps } from '@/Modules/ContentManagement/ui/sections/sectionRegistry';
 import { useSectionFieldResolver } from '@/Modules/ContentManagement/hooks/useSectionFieldResolver';
 import type { SectionDataValue } from '@/Modules/ContentManagement/core/types';
-import { ProjectCarousel } from '@/Pages/Home/Partials/ProjectCarousel';
+import { ProjectCarousel } from '@/Modules/Projects/ui/ProjectCarousel';
 import type { Project } from '@/Modules/Projects/core/types';
 import { JSX } from 'react';
 
