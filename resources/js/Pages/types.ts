@@ -9,6 +9,7 @@ import type {
     InitiativeImage,
 } from '@/Modules/Initiatives/core/types';
 import type { Experience } from '@/Modules/Experiences/core/types';
+import type { Course } from '@/Modules/Courses/core/types';
 
 export interface HasTimestamps {
     created_at: string | null;
@@ -24,18 +25,6 @@ export type {
     Initiative,
     InitiativeImage,
     Experience,
+    Course,
 };
 
-
-export interface Course extends HasTimestamps {
-    id: number;
-    name: string;
-    institution: string;
-    category: string;
-    status: string;
-    summary: string;
-    description: string;
-    started_at: string;
-    completed_at: string | null;
-    display: boolean;
-}

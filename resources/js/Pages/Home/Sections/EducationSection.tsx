@@ -5,7 +5,7 @@ import { useTranslation } from '@/i18n';
 import { GraduationCap } from 'lucide-react';
 import { JSX } from 'react';
 import { SectionHeader } from '../../../Layouts/Partials/SectionHeader';
-import { Course } from '../../types';
+import type { Course } from '@/Modules/Courses/core/types';
 
 type EducationSectionProps = {
     courses: Course[];
