@@ -1,36 +1,8 @@
 // resources/js/config/navigation.ts
 
-export type NavigationConfigKind = 'link' | 'section' | 'group';
+import type { NavigationConfigNode } from '@/Navigation/configTypes';
 
-export type NavigationConfigBaseNode = {
-    id: string;
-    kind: NavigationConfigKind;
-    translationKey: string;
-    fallbackLabel: string;
-    children?: NavigationConfigNode[];
-};
-
-export type NavigationConfigLinkNode = NavigationConfigBaseNode & {
-    kind: 'link';
-    routeName: string;
-};
-
-export type NavigationConfigSectionNode = NavigationConfigBaseNode & {
-    kind: 'section';
-    targetId?: string;
-    scrollToTop?: boolean;
-};
-
-export type NavigationConfigGroupNode = NavigationConfigBaseNode & {
-    kind: 'group';
-};
-
-export type NavigationConfigNode =
-    | NavigationConfigLinkNode
-    | NavigationConfigSectionNode
-    | NavigationConfigGroupNode;
-
-export const navigationConfig: NavigationConfigNode[] = [
+export const navigationConfig = [
     {
         id: 'home',
         kind: 'link',
@@ -116,71 +88,4 @@ export const navigationConfig: NavigationConfigNode[] = [
             },
         ],
     },
-];
-
-export const publicNavigationConfig: NavigationConfigNode[] = [
-    {
-        id: 'home',
-        kind: 'section',
-        translationKey: 'header.navigation.home',
-        fallbackLabel: 'Home',
-        scrollToTop: true,
-    },
-    {
-        id: 'highlights',
-        kind: 'section',
-        translationKey: 'header.navigation.highlights',
-        fallbackLabel: 'Highlights',
-        targetId: 'highlights',
-    },
-    {
-        id: 'projects',
-        kind: 'section',
-        translationKey: 'header.navigation.projects',
-        fallbackLabel: 'Projects',
-        targetId: 'projects',
-    },
-    {
-        id: 'initiatives',
-        kind: 'section',
-        translationKey: 'header.navigation.initiatives',
-        fallbackLabel: 'Initiatives',
-        targetId: 'initiatives',
-    },
-    {
-        id: 'about',
-        kind: 'section',
-        translationKey: 'header.navigation.about',
-        fallbackLabel: 'About me',
-        children: [
-            {
-                id: 'tech-stack',
-                kind: 'section',
-                translationKey: 'header.navigation.stack',
-                fallbackLabel: 'Stack',
-                targetId: 'tech-stack',
-            },
-            {
-                id: 'experience',
-                kind: 'section',
-                translationKey: 'header.navigation.experience',
-                fallbackLabel: 'Career',
-                targetId: 'experience',
-            },
-            {
-                id: 'education',
-                kind: 'section',
-                translationKey: 'header.navigation.education',
-                fallbackLabel: 'Education',
-                targetId: 'education',
-            },
-        ],
-    },
-    {
-        id: 'contact',
-        kind: 'section',
-        translationKey: 'header.navigation.contact',
-        fallbackLabel: 'Contact',
-        targetId: 'contact',
-    },
-];
+] satisfies NavigationConfigNode[];
