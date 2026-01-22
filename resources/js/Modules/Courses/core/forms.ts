@@ -4,7 +4,7 @@ export type CourseFormData = {
     category: string;
     summary: string;
     description: string;
-    started_at: string;
-    completed_at: string;
+    started_at: string | null;
+    completed_at: string | null;
     display: boolean;
 };
