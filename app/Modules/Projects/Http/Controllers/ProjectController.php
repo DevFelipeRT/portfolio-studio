@@ -33,7 +33,7 @@ class ProjectController extends Controller
     {
         $projects = $this->projectService->all();
 
-        return Inertia::render('Projects/Index', [
+        return Inertia::render('Projects/Pages/Index', [
             'projects' => $projects,
         ]);
     }
@@ -45,7 +45,7 @@ class ProjectController extends Controller
     {
         $skills = $this->skillService->all();
 
-        return Inertia::render('Projects/Create', [
+        return Inertia::render('Projects/Pages/Create', [
             'skills' => $skills,
         ]);
     }
@@ -89,7 +89,7 @@ class ProjectController extends Controller
 
         $skills = $this->skillService->all();
 
-        return Inertia::render('Projects/Edit', [
+        return Inertia::render('Projects/Pages/Edit', [
             'project' => $project,
             'skills' => $skills,
         ]);
