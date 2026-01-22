@@ -1,8 +1,7 @@
-import PrimaryButton from '@/Components/Button/PrimaryButton';
-import InputError from '@/Components/Input/InputError';
-import InputLabel from '@/Components/Input/InputLabel';
-import TextInput from '@/Components/Input/TextInput';
+import { Button } from '@/Components/Ui/button';
 import { Checkbox } from '@/Components/Ui/checkbox';
+import { Input } from '@/Components/Ui/input';
+import { Label } from '@/Components/Ui/label';
 import GuestLayout from '@/Layouts/GuestLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
@@ -40,66 +39,73 @@ export default function Login({
 
             <form onSubmit={submit}>
                 <div>
-                    <InputLabel htmlFor="email" value="Email" />
+                    <Label htmlFor="email">Email</Label>
 
-                    <TextInput
+                    <Input
                         id="email"
                         type="email"
                         name="email"
                         value={data.email}
-                        className="mt-1 block w-full"
+                        className="mt-1"
                         autoComplete="username"
-                        isFocused={true}
+                        autoFocus
                         onChange={(e) => setData('email', e.target.value)}
                     />
 
-                    <InputError message={errors.email} className="mt-2" />
+                    {errors.email && (
+                        <p className="text-destructive mt-2 text-sm">
+                            {errors.email}
+                        </p>
+                    )}
                 </div>
 
                 <div className="mt-4">
-                    <InputLabel htmlFor="password" value="Password" />
+                    <Label htmlFor="password">Password</Label>
 
-                    <TextInput
+                    <Input
                         id="password"
                         type="password"
                         name="password"
                         value={data.password}
-                        className="mt-1 block w-full"
+                        className="mt-1"
                         autoComplete="current-password"
                         onChange={(e) => setData('password', e.target.value)}
                     />
 
-                    <InputError message={errors.password} className="mt-2" />
+                    {errors.password && (
+                        <p className="text-destructive mt-2 text-sm">
+                            {errors.password}
+                        </p>
+                    )}
                 </div>
 
                 <div className="mt-4 block">
-                    <label className="flex items-center">
+                    <label className="flex items-center" htmlFor="remember">
                         <Checkbox
+                            id="remember"
                             name="remember"
                             checked={data.remember}
                             onCheckedChange={(checked) =>
                                 setData('remember', checked === true)
                             }
                         />
-                        <span className="ms-2 text-sm text-gray-600 dark:text-gray-400">
+                        <span className="text-muted-foreground ms-2 text-sm">
                             Remember me
                         </span>
                     </label>
                 </div>
 
-                <div className="mt-4 flex items-center justify-end">
+                <div className="mt-4 flex items-center justify-end gap-3">
                     {canResetPassword && (
                         <Link
                             href={route('password.request')}
-                            className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none dark:text-gray-400 dark:hover:text-gray-100 dark:focus:ring-offset-gray-800"
+                            className="text-muted-foreground text-sm underline hover:text-foreground"
                         >
                             Forgot your password?
                         </Link>
                     )}
 
-                    <PrimaryButton className="ms-4" disabled={processing}>
-                        Log in
-                    </PrimaryButton>
+                    <Button disabled={processing}>Log in</Button>
                 </div>
             </form>
         </GuestLayout>

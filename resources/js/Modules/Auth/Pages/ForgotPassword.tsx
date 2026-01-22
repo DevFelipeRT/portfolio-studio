@@ -1,6 +1,5 @@
-import PrimaryButton from '@/Components/Button/PrimaryButton';
-import InputError from '@/Components/Input/InputError';
-import TextInput from '@/Components/Input/TextInput';
+import { Button } from '@/Components/Ui/button';
+import { Input } from '@/Components/Ui/input';
 import GuestLayout from '@/Layouts/GuestLayout';
 import { Head, useForm } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
@@ -33,22 +32,26 @@ export default function ForgotPassword({ status }: { status?: string }) {
             )}
 
             <form onSubmit={submit}>
-                <TextInput
+                <Input
                     id="email"
                     type="email"
                     name="email"
                     value={data.email}
-                    className="mt-1 block w-full"
-                    isFocused={true}
+                    className="mt-1"
+                    autoFocus
                     onChange={(e) => setData('email', e.target.value)}
                 />
 
-                <InputError message={errors.email} className="mt-2" />
+                {errors.email && (
+                    <p className="text-destructive mt-2 text-sm">
+                        {errors.email}
+                    </p>
+                )}
 
                 <div className="mt-4 flex items-center justify-end">
-                    <PrimaryButton className="ms-4" disabled={processing}>
+                    <Button disabled={processing}>
                         Email Password Reset Link
-                    </PrimaryButton>
+                    </Button>
                 </div>
             </form>
         </GuestLayout>

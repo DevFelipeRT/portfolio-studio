@@ -1,7 +1,6 @@
-import PrimaryButton from '@/Components/Button/PrimaryButton';
-import InputError from '@/Components/Input/InputError';
-import InputLabel from '@/Components/Input/InputLabel';
-import TextInput from '@/Components/Input/TextInput';
+import { Button } from '@/Components/Ui/button';
+import { Input } from '@/Components/Ui/input';
+import { Label } from '@/Components/Ui/label';
 import GuestLayout from '@/Layouts/GuestLayout';
 import { Head, useForm } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
@@ -30,25 +29,27 @@ export default function ConfirmPassword() {
 
             <form onSubmit={submit}>
                 <div className="mt-4">
-                    <InputLabel htmlFor="password" value="Password" />
+                    <Label htmlFor="password">Password</Label>
 
-                    <TextInput
+                    <Input
                         id="password"
                         type="password"
                         name="password"
                         value={data.password}
-                        className="mt-1 block w-full"
-                        isFocused={true}
+                        className="mt-1"
+                        autoFocus
                         onChange={(e) => setData('password', e.target.value)}
                     />
 
-                    <InputError message={errors.password} className="mt-2" />
+                    {errors.password && (
+                        <p className="text-destructive mt-2 text-sm">
+                            {errors.password}
+                        </p>
+                    )}
                 </div>
 
                 <div className="mt-4 flex items-center justify-end">
-                    <PrimaryButton className="ms-4" disabled={processing}>
-                        Confirm
-                    </PrimaryButton>
+                    <Button disabled={processing}>Confirm</Button>
                 </div>
             </form>
         </GuestLayout>
