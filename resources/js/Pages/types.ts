@@ -1,26 +1,28 @@
-import type { Image } from '@/Modules/Images/core/types';
 import type {
     Skill,
     SkillCategory,
     SkillGroup,
 } from '@/Modules/Skills/core/types';
 import type { Project, ProjectImage } from '@/Modules/Projects/core/types';
+import type {
+    Initiative,
+    InitiativeImage,
+} from '@/Modules/Initiatives/core/types';
 
 export interface HasTimestamps {
     created_at: string | null;
     updated_at: string | null;
 }
 
-export type { Skill, SkillCategory, SkillGroup, Project, ProjectImage };
-
-/**
- * Image as used in the initiative domain, including relation metadata.
- */
-export interface InitiativeImage extends Image {
-    position: number;
-    is_cover: boolean;
-    caption: string | null;
-}
+export type {
+    Skill,
+    SkillCategory,
+    SkillGroup,
+    Project,
+    ProjectImage,
+    Initiative,
+    InitiativeImage,
+};
 
 export interface Experience extends HasTimestamps {
     id: number;
@@ -44,15 +46,4 @@ export interface Course extends HasTimestamps {
     started_at: string;
     completed_at: string | null;
     display: boolean;
-}
-
-export interface Initiative extends HasTimestamps {
-    id: number;
-    name: string;
-    short_description: string;
-    long_description: string;
-    display: boolean;
-    start_date: string | null;
-    end_date: string | null;
-    images?: InitiativeImage[];
 }

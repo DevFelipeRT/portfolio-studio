@@ -2,9 +2,10 @@ import PublicLayout from '@/Layouts/PublicLayout';
 import { defaultSocialLinks } from '@/config/socials';
 import { useTranslation } from '@/i18n';
 import { Head } from '@inertiajs/react';
+import type { Initiative } from '@/Modules/Initiatives/core/types';
 import type { Project } from '@/Modules/Projects/core/types';
 import type { SkillGroup } from '@/Modules/Skills/core/types';
-import { Course, Experience, Initiative } from '../types';
+import { Course, Experience } from '../types';
 import {
     ContactSection,
     ExperienceSection,

@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/Ui/card';
 import { DateDisplay } from '@/Components/Ui/date-display';
 import { useTranslation } from '@/i18n';
-import type { Initiative } from '@/Pages/types';
+import type { Initiative } from '@/Modules/Initiatives/core/types';
 import type { JSX } from 'react';
 
 type InitiativeCardProps = {
@@ -63,9 +63,13 @@ export function InitiativeCard({ initiative }: InitiativeCardProps) {
     const { locale } = useTranslation('home');
 
     const coverImage = initiative.images?.[0] ?? null;
-    const coverUrl = coverImage?.url ?? null;
+    const coverUrl = coverImage?.url ?? coverImage?.src ?? null;
     const coverAlt =
-        coverImage?.alt_text || coverImage?.image_title || initiative.name;
+        coverImage?.alt_text ||
+        coverImage?.alt ||
+        coverImage?.image_title ||
+        coverImage?.title ||
+        initiative.name;
 
     const periodLabel = (
         <InitiativePeriodDisplay initiative={initiative} locale={locale} />

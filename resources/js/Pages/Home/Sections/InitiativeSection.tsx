@@ -1,6 +1,6 @@
 // resources/js/Pages/Home/Sections/InitiativeSection.tsx
 
-import { Initiative } from '@/Pages/types';
+import type { Initiative } from '@/Modules/Initiatives/core/types';
 import { useTranslation } from '@/i18n';
 import { SectionHeader } from '../../../Layouts/Partials/SectionHeader';
 import { InitiativeCard } from '../Partials/InitiativeCard';
