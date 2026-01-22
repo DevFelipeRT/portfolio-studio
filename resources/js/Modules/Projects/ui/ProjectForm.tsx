@@ -4,8 +4,9 @@ import { Input } from '@/Components/Ui/input';
 import { Label } from '@/Components/Ui/label';
 import { Textarea } from '@/Components/Ui/textarea';
 import { Link } from '@inertiajs/react';
+import type { ProjectImage } from '@/Modules/Projects/core/types';
 import type { Skill } from '@/Modules/Skills/core/types';
-import type { ProjectImage } from '../../types';
+import type { ProjectFormData } from '@/Modules/Projects/core/forms';
 
 interface ProjectFormProps {
     skills: Skill[];
