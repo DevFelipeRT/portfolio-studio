@@ -29,7 +29,7 @@ class SkillCategoryController extends Controller
     {
         $categories = $this->skillCategoryService->all();
 
-        return Inertia::render('SkillCategories/Index', [
+        return Inertia::render('Skills/Pages/SkillCategories/Index', [
             'categories' => $categories,
         ]);
     }
@@ -39,7 +39,7 @@ class SkillCategoryController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('SkillCategories/Create');
+        return Inertia::render('Skills/Pages/SkillCategories/Create');
     }
 
     /**
@@ -64,7 +64,7 @@ class SkillCategoryController extends Controller
      */
     public function edit(SkillCategory $skillCategory): Response
     {
-        return Inertia::render('SkillCategories/Edit', [
+        return Inertia::render('Skills/Pages/SkillCategories/Edit', [
             'category' => $skillCategory,
         ]);
     }
