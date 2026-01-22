@@ -1,7 +1,7 @@
 import { SectionHeader } from '@/Layouts/Partials/SectionHeader';
 import type { SectionComponentProps } from '@/Modules/ContentManagement/ui/sections/sectionRegistry';
 import { useSectionFieldResolver } from '@/Modules/ContentManagement/hooks/useSectionFieldResolver';
-import { SkillBadge } from '@/Pages/Home/Partials/SkillBadge';
+import { SkillBadge } from '@/Modules/Skills/ui/SkillBadge';
 import type { JSX } from 'react';
 
 type CapabilitySkill = {
