@@ -1,6 +1,6 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link } from '@inertiajs/react';
-import { Experience } from '../types';
+import type { Experience } from '@/Modules/Experiences/core/types';
 
 interface ExperiencesIndexProps {
     experiences: Experience[];

@@ -6,27 +6,23 @@ import { Textarea } from '@/Components/Ui/textarea';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
 import React from 'react';
-import { Experience } from '../types';
+import type { ExperienceFormData } from '@/Modules/Experiences/core/forms';
 
-interface EditExperienceProps {
-    experience: Experience;
-}
-
-export default function Edit({ experience }: EditExperienceProps) {
-    const { data, setData, put, processing, errors } =
+export default function Create() {
+    const { data, setData, post, processing, errors } =
         useForm<ExperienceFormData>({
-            position: experience.position,
-            company: experience.company,
-            short_description: experience.short_description,
-            long_description: experience.long_description,
-            start_date: experience.start_date,
-            end_date: experience.end_date ?? '',
-            display: experience.display,
+            position: '',
+            company: '',
+            short_description: '',
+            long_description: '',
+            start_date: '',
+            end_date: '',
+            display: false,
         });
 
     const submit = (event: React.FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
-        put(route('experiences.update', experience.id));
+        post(route('experiences.store'));
     };
 
     const normalizeError = (
@@ -45,22 +41,17 @@ export default function Edit({ experience }: EditExperienceProps) {
 
     return (
         <AuthenticatedLayout>
-            <Head title="Edit experience" />
+            <Head title="New experience" />
 
             <div className="overflow-hidden">
                 <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
-                    <div className="mb-4 flex items-center justify-between gap-3">
+                    <div className="mb-4">
                         <Link
                             href={route('experiences.index')}
                             className="text-muted-foreground hover:text-foreground text-sm"
                         >
                             Back to experiences
                         </Link>
-
-                        <span className="text-muted-foreground text-xs">
-                            Editing: {experience.position} at{' '}
-                            {experience.company}
-                        </span>
                     </div>
 
                     <form
@@ -234,7 +225,7 @@ export default function Edit({ experience }: EditExperienceProps) {
                             </Link>
 
                             <Button type="submit" disabled={processing}>
-                                Save changes
+                                Save experience
                             </Button>
                         </div>
                     </form>
