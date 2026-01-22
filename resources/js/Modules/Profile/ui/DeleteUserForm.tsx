@@ -1,8 +1,6 @@
-import DangerButton from '@/Components/Button/DangerButton';
-import SecondaryButton from '@/Components/Button/SecondaryButton';
-import InputError from '@/Components/Input/InputError';
-import InputLabel from '@/Components/Input/InputLabel';
-import TextInput from '@/Components/Input/TextInput';
+import { Button } from '@/Components/Ui/button';
+import { Input } from '@/Components/Ui/input';
+import { Label } from '@/Components/Ui/label';
 import Modal from '@/Components/Ui/modal';
 import { useForm } from '@inertiajs/react';
 import { FormEventHandler, useRef, useState } from 'react';
@@ -64,9 +62,9 @@ export default function DeleteUserForm({
                 </p>
             </header>
 
-            <DangerButton onClick={confirmUserDeletion}>
+            <Button variant="destructive" onClick={confirmUserDeletion}>
                 Delete Account
-            </DangerButton>
+            </Button>
 
             <Modal show={confirmingUserDeletion} onClose={closeModal}>
                 <form onSubmit={deleteUser} className="p-6">
@@ -82,13 +80,11 @@ export default function DeleteUserForm({
                     </p>
 
                     <div className="mt-6">
-                        <InputLabel
-                            htmlFor="password"
-                            value="Password"
-                            className="sr-only"
-                        />
+                        <Label htmlFor="password" className="sr-only">
+                            Password
+                        </Label>
 
-                        <TextInput
+                        <Input
                             id="password"
                             type="password"
                             name="password"
@@ -97,25 +93,34 @@ export default function DeleteUserForm({
                             onChange={(e) =>
                                 setData('password', e.target.value)
                             }
-                            className="mt-1 block w-3/4"
-                            isFocused
+                            className="mt-1 w-3/4"
+                            autoFocus
                             placeholder="Password"
                         />
 
-                        <InputError
-                            message={errors.password}
-                            className="mt-2"
-                        />
+                        {errors.password && (
+                            <p className="text-destructive mt-2 text-sm">
+                                {errors.password}
+                            </p>
+                        )}
                     </div>
 
                     <div className="mt-6 flex justify-end">
-                        <SecondaryButton onClick={closeModal}>
+                        <Button
+                            type="button"
+                            variant="secondary"
+                            onClick={closeModal}
+                        >
                             Cancel
-                        </SecondaryButton>
+                        </Button>
 
-                        <DangerButton className="ms-3" disabled={processing}>
+                        <Button
+                            variant="destructive"
+                            className="ms-3"
+                            disabled={processing}
+                        >
                             Delete Account
-                        </DangerButton>
+                        </Button>
                     </div>
                 </form>
             </Modal>
