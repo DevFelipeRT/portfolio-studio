@@ -1,6 +1,6 @@
 // resources/js/Layouts/PublicLayout.tsx
 
-import { ThemeProvider } from '@/Components/Theme/ThemeProvider';
+import { ThemeProvider } from '@/Layouts/Partials/Theme/ThemeProvider';
 import { Navigation, type AuthUser, type NavigationItem } from '@/Navigation';
 import { usePage } from '@inertiajs/react';
 import { PropsWithChildren } from 'react';

@@ -1,9 +1,9 @@
 'use client';
 
-import ApplicationLogo from '@/Layouts/ApplicationLogo/ApplicationLogo';
-import { LanguageSwitcher } from '@/Components/LanguageSwitcher';
-import { ModeToggle } from '@/Components/Theme/ModeToggle';
-import { NavUser } from '@/Layouts/Partials/NavUser';
+import ApplicationLogo from '@/Layouts/Partials/ApplicationLogo/ApplicationLogo';
+import { LanguageSelector } from '@/Layouts/Partials/LanguageSelector';
+import { ModeToggle } from '@/Layouts/Partials/Theme/ModeToggle';
+import { UserMenu } from '@/Layouts/Partials/UserMenu';
 import { useTranslation } from '@/i18n';
 import { Link, usePage } from '@inertiajs/react';
 import { PropsWithChildren } from 'react';
@@ -72,10 +72,10 @@ export default function Header({ children }: PropsWithChildren) {
                 {/* Mode toggle + user menu (desktop) */}
                 <div className="order-2 flex flex-1 items-center justify-end gap-3 md:order-3">
                     <ModeToggle />
-                    <LanguageSwitcher />
+                    <LanguageSelector />
                     {user && (
                         <div className="hidden md:flex">
-                            <NavUser user={user} variant="icon" />
+                            <UserMenu user={user} variant="icon" />
                         </div>
                     )}
                 </div>

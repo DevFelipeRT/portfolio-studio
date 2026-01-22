@@ -9,7 +9,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/Components/Ui/sheet";
-import { NavUser } from "@/Layouts/Partials/NavUser";
+import { UserMenu } from "@/Layouts/Partials/UserMenu";
 import { Link } from "@inertiajs/react";
 import { Menu } from "lucide-react";
 import type { MouseEvent } from "react";
@@ -404,7 +404,7 @@ export function NavigationMobileSheet({
 
           {user && (
             <div className="border-border mt-auto w-[var(--radix-dropdown-menu-trigger-width)] border-t p-2 md:hidden">
-              <NavUser user={user} variant="full" />
+              <UserMenu user={user} variant="full" />
             </div>
           )}
         </SheetContent>

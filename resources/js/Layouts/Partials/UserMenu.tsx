@@ -18,7 +18,7 @@ import {
 import { NAMESPACES } from '@/i18n/config/namespaces';
 import { useTranslation } from '@/i18n/react/hooks/useTranslation';
 
-type NavUserProps = {
+type UserMenuProps = {
     user: {
         name: string;
         email: string;
@@ -60,7 +60,7 @@ function resetBodyPointerEvents(): void {
  * or route changes, which is important when used inside
  * modal-like components such as Sheet or Sidebar.
  */
-export function NavUser({ user, variant = 'full' }: NavUserProps) {
+export function UserMenu({ user, variant = 'full' }: UserMenuProps) {
     const { url } = usePage();
     const [isOpen, setIsOpen] = useState(false);
 

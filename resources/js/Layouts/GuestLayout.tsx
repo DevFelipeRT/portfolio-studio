@@ -1,5 +1,5 @@
-import ApplicationLogo from '@/Layouts/ApplicationLogo/ApplicationLogo';
-import { ThemeProvider } from '@/Components/Theme/ThemeProvider';
+import ApplicationLogo from '@/Layouts/Partials/ApplicationLogo/ApplicationLogo';
+import { ThemeProvider } from '@/Layouts/Partials/Theme/ThemeProvider';
 import { Link } from '@inertiajs/react';
 import { PropsWithChildren } from 'react';
 

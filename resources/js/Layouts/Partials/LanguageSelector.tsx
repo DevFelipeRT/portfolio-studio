@@ -27,20 +27,20 @@ type SharedProps = {
     localization?: LocalizationProps;
 };
 
-type LanguageSwitcherProps = {
+type LanguageSelectorProps = {
     cookieName?: string;
     maxAgeDays?: number;
 };
 
 /**
- * LanguageSwitcher renders a language selector that updates
+ * LanguageSelector renders a language selector that updates
  * the active locale using the i18n context and persists the preference in a cookie.
  * When i18n is not fully configured yet, it falls back to English labels.
  */
-export function LanguageSwitcher({
+export function LanguageSelector({
     cookieName = 'locale',
     maxAgeDays = 30,
-}: LanguageSwitcherProps) {
+}: LanguageSelectorProps) {
     const { translate, locale: activeLocale } = useTranslation(
         NAMESPACES.common,
     );

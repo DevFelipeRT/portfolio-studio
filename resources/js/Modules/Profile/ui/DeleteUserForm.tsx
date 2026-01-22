@@ -3,7 +3,7 @@ import SecondaryButton from '@/Components/Button/SecondaryButton';
 import InputError from '@/Components/Input/InputError';
 import InputLabel from '@/Components/Input/InputLabel';
 import TextInput from '@/Components/Input/TextInput';
-import Modal from '@/Components/Modal';
+import Modal from '@/Components/Ui/modal';
 import { useForm } from '@inertiajs/react';
 import { FormEventHandler, useRef, useState } from 'react';
 

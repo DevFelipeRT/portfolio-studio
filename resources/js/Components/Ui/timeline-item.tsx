@@ -1,4 +1,4 @@
-import { ExpandableCard } from '@/Components/ExpandableCard';
+import { ExpandableCard } from '@/Components/Ui/expandable-card';
 import { ReactNode } from 'react';
 
 interface TimelineItemProps {

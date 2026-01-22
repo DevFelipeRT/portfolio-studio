@@ -2,7 +2,7 @@
 
 import { Moon, Sun } from 'lucide-react';
 
-import { useTheme } from '@/Components/Theme/ThemeProvider';
+import { useTheme } from '@/Layouts/Partials/Theme/ThemeProvider';
 import { Button } from '@/Components/Ui/button';
 import {
     DropdownMenu,

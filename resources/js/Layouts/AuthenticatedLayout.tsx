@@ -1,6 +1,6 @@
 // resources/js/Layouts/AuthenticatedLayout.tsx
 
-import { ThemeProvider } from '@/Components/Theme/ThemeProvider';
+import { ThemeProvider } from '@/Layouts/Partials/Theme/ThemeProvider';
 import { Alert, AlertDescription, AlertTitle } from '@/Components/Ui/alert';
 import { Toaster } from '@/Components/Ui/sonner';
 import { navigationConfig } from '@/config/navigation';
