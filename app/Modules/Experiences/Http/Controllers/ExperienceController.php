@@ -39,7 +39,7 @@ class ExperienceController extends Controller
     {
         $experiences = $this->experienceService->all();
 
-        return Inertia::render('Experiences/Index', [
+        return Inertia::render('Experiences/Pages/Index', [
             'experiences' => $experiences,
         ]);
     }
@@ -49,7 +49,7 @@ class ExperienceController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('Experiences/Create');
+        return Inertia::render('Experiences/Pages/Create');
     }
 
     /**
@@ -71,7 +71,7 @@ class ExperienceController extends Controller
      */
     public function edit(Experience $experience): Response
     {
-        return Inertia::render('Experiences/Edit', [
+        return Inertia::render('Experiences/Pages/Edit', [
             'experience' => $experience,
         ]);
     }
