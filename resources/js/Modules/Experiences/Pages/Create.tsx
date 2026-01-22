@@ -2,19 +2,19 @@ import { Button } from '@/Components/Ui/button';
 import { Checkbox } from '@/Components/Ui/checkbox';
 import { Input } from '@/Components/Ui/input';
 import { Label } from '@/Components/Ui/label';
-import { Textarea } from '@/Components/Ui/textarea';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
 import React from 'react';
 import type { ExperienceFormData } from '@/Modules/Experiences/core/forms';
+import { RichTextEditor } from '@/Common/RichText/RichTextEditor';
 
 export default function Create() {
     const { data, setData, post, processing, errors } =
         useForm<ExperienceFormData>({
             position: '',
             company: '',
-            short_description: '',
-            long_description: '',
+            summary: '',
+            description: '',
             start_date: '',
             end_date: '',
             display: false,
@@ -104,48 +104,38 @@ export default function Create() {
                             </div>
 
                             <div className="space-y-1.5">
-                                <Label htmlFor="short_description">
-                                    Short description
-                                </Label>
+                                <Label htmlFor="summary">Summary</Label>
                                 <Input
-                                    id="short_description"
-                                    value={data.short_description}
+                                    id="summary"
+                                    value={data.summary}
                                     onChange={(event) =>
                                         setData(
-                                            'short_description',
+                                            'summary',
                                             event.target.value,
                                         )
                                     }
                                 />
-                                {errors.short_description && (
+                                {errors.summary && (
                                     <p className="text-destructive text-sm">
-                                        {normalizeError(
-                                            errors.short_description,
-                                        )}
+                                        {normalizeError(errors.summary)}
                                     </p>
                                 )}
                             </div>
 
                             <div className="space-y-1.5">
-                                <Label htmlFor="long_description">
-                                    Long description
+                                <Label htmlFor="description">
+                                    Description
                                 </Label>
-                                <Textarea
-                                    id="long_description"
-                                    value={data.long_description}
-                                    onChange={(event) =>
-                                        setData(
-                                            'long_description',
-                                            event.target.value,
-                                        )
+                                <RichTextEditor
+                                    id="description"
+                                    value={data.description}
+                                    onChange={(value) =>
+                                        setData('description', value)
                                     }
-                                    rows={6}
                                 />
-                                {errors.long_description && (
+                                {errors.description && (
                                     <p className="text-destructive text-sm">
-                                        {normalizeError(
-                                            errors.long_description,
-                                        )}
+                                        {normalizeError(errors.description)}
                                     </p>
                                 )}
                             </div>
