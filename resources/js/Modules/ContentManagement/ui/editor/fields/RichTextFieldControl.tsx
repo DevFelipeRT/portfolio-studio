@@ -1,5 +1,5 @@
+import { RichTextEditor } from '@/Common/RichText/RichTextEditor';
 import { Label } from '@/Components/Ui/label';
-import { Textarea } from '@/Components/Ui/textarea';
 
 interface RichTextFieldControlProps {
     name: string;
@@ -16,21 +16,17 @@ export function RichTextFieldControl({
     value,
     onChange,
 }: RichTextFieldControlProps) {
+    const editorId = `${name}-rich-text`;
+
     return (
-        <div className="space-y-1.5">
-            <Label htmlFor={name}>
+        <div className="space-y-2">
+            <Label htmlFor={editorId}>
                 {label}
                 {required && <span className="text-destructive ml-1">*</span>}
             </Label>
-            <Textarea
-                id={name}
-                name={name}
-                value={value}
-                onChange={(event) => onChange(event.target.value)}
-                rows={6}
-            />
+            <RichTextEditor id={editorId} value={value} onChange={onChange} />
             <p className="text-muted-foreground text-xs">
-                Rich text content. Formatting support can be enhanced later.
+                Rich text content stored as JSON.
             </p>
         </div>
     );

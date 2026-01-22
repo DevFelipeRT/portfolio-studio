@@ -2,6 +2,7 @@ import { SectionHeader } from '@/Modules/ContentManagement/ui/sections/SectionHe
 import type { SectionComponentProps } from '@/Modules/ContentManagement/core/sections/sectionRegistry';
 import { useSectionFieldResolver } from '@/Modules/ContentManagement/hooks/useSectionFieldResolver';
 import { JSX } from 'react';
+import { RichTextRenderer } from '@/Common/RichText/RichTextRenderer';
 
 /**
  * Renders a rich text content section for a content-managed page.
@@ -55,11 +56,7 @@ export function RichTextSection({
                         level={2}
                     />
 
-                    {content && (
-                        <div className="text-muted-foreground text-base leading-relaxed whitespace-pre-line">
-                            {content}
-                        </div>
-                    )}
+                    {content && <RichTextRenderer value={content} />}
                 </div>
             </div>
         </section>
