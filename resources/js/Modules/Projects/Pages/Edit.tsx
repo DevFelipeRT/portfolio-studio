@@ -1,9 +1,10 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
 import React from 'react';
+import type { ImageInput, ProjectFormData } from '@/Modules/Projects/core/forms';
+import type { Project, ProjectImage } from '@/Modules/Projects/core/types';
+import { ProjectForm } from '@/Modules/Projects/ui/ProjectForm';
 import type { Skill } from '@/Modules/Skills/core/types';
-import type { Project, ProjectImage } from '../types';
-import { ProjectForm } from './Partials/ProjectForm';
 
 interface EditProjectProps {
     project: Project;

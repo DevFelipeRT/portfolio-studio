@@ -1,7 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link } from '@inertiajs/react';
+import type { Project } from '@/Modules/Projects/core/types';
 import type { Skill } from '@/Modules/Skills/core/types';
-import { Project } from '../types';
 
 interface ProjectsIndexProps {
     projects: Project[];
