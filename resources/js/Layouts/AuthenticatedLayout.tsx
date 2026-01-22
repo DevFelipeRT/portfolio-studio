@@ -1,13 +1,11 @@
 // resources/js/Layouts/AuthenticatedLayout.tsx
 
-import { ThemeProvider } from '@/Components/Theme/ThemeProvider';
+import { ThemeProvider } from '@/Layouts/Partials/Theme/ThemeProvider';
 import { Alert, AlertDescription, AlertTitle } from '@/Components/Ui/alert';
 import { Toaster } from '@/Components/Ui/sonner';
-import {
-    navigationConfig,
-    type NavigationConfigNode,
-} from '@/config/navigation';
+import { navigationConfig } from '@/config/navigation';
 import { useTranslation } from '@/i18n';
+import type { NavigationConfigNode } from '@/Navigation/configTypes';
 import { Navigation, type AuthUser, type NavigationItem } from '@/Navigation';
 import { usePage } from '@inertiajs/react';
 import { PropsWithChildren, ReactNode, useEffect } from 'react';

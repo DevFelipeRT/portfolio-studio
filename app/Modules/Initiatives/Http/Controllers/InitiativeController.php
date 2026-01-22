@@ -31,7 +31,7 @@ class InitiativeController extends Controller
     {
         $initiatives = $this->initiativeService->listAll();
 
-        return Inertia::render('Initiatives/Index', [
+        return Inertia::render('Initiatives/Pages/Index', [
             'initiatives' => $initiatives,
         ]);
     }
@@ -41,7 +41,7 @@ class InitiativeController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('Initiatives/Create');
+        return Inertia::render('Initiatives/Pages/Create');
     }
 
     /**
@@ -68,7 +68,7 @@ class InitiativeController extends Controller
     {
         $initiative->load('images');
 
-        return Inertia::render('Initiatives/Edit', [
+        return Inertia::render('Initiatives/Pages/Edit', [
             'initiative' => $initiative,
         ]);
     }

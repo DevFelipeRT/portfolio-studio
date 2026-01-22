@@ -32,7 +32,7 @@ class SkillController extends Controller
     {
         $skills = $this->skillService->all();
 
-        return Inertia::render('Skills/Index', [
+        return Inertia::render('Skills/Pages/Index', [
             'skills' => $skills,
         ]);
     }
@@ -42,7 +42,7 @@ class SkillController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('Skills/Create', [
+        return Inertia::render('Skills/Pages/Create', [
             'categories' => $this->skillCategoryService->all(),
         ]);
     }
@@ -69,7 +69,7 @@ class SkillController extends Controller
      */
     public function edit(Skill $skill): Response
     {
-        return Inertia::render('Skills/Edit', [
+        return Inertia::render('Skills/Pages/Edit', [
             'skill' => $skill,
             'categories' => $this->skillCategoryService->all(),
         ]);
