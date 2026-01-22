@@ -22,7 +22,7 @@ Route::post('/contact/messages', [MessageController::class, 'store'])
  */
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
+        return Inertia::render('Dashboard/Pages/Dashboard');
     })->name('dashboard');
 });
 
