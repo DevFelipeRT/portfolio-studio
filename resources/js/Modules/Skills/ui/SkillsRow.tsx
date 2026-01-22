@@ -1,6 +1,6 @@
 // resources/js/Pages/Skills/Partials/SkillsRow.tsx
 
-import { Skill } from '../../types';
+import type { Skill } from '@/Modules/Skills/core/types';
 
 import { Badge } from '@/Components/Ui/badge';
 import { Button } from '@/Components/Ui/button';

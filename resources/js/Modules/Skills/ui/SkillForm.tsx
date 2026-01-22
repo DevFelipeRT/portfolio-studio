@@ -10,25 +10,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/Components/Ui/select';
-import { SkillCategory } from '@/Pages/types';
+import type { SkillCategory } from '@/Modules/Skills/core/types';
+import type { SkillFormData } from '@/Modules/Skills/core/forms';
 import { Link } from '@inertiajs/react';
 import React, { JSX } from 'react';
-
-type SkillFormValues = {
-  name: string;
-  skill_category_id: number | '';
-};
 
 type SkillFormErrors = Record<string, string | string[] | undefined>;
 
 type SkillFormAlignment = 'right' | 'split';
 
 interface SkillFormProps {
-  data: SkillFormValues;
+  data: SkillFormData;
   errors: SkillFormErrors;
   categories: SkillCategory[];
   processing: boolean;
-  onChange(field: keyof SkillFormValues, value: string | number | ''): void;
+  onChange(field: keyof SkillFormData, value: string | number | ''): void;
   onSubmit(event: React.FormEvent<HTMLFormElement>): void;
   cancelHref: string;
   submitLabel: string;

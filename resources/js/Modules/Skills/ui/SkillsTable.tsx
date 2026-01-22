@@ -1,6 +1,6 @@
 // resources/js/Pages/Skills/Partials/SkillsTable.tsx
 
-import { Skill } from '../../types';
+import type { Skill } from '@/Modules/Skills/core/types';
 import { SkillsRow } from './SkillsRow';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/Ui/card';

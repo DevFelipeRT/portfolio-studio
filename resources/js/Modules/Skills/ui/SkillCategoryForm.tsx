@@ -1,6 +1,7 @@
 import { Button } from '@/Components/Ui/button';
 import { Input } from '@/Components/Ui/input';
 import { Label } from '@/Components/Ui/label';
+import type { SkillCategoryFormData } from '@/Modules/Skills/core/forms';
 import { Link } from '@inertiajs/react';
 import React, { JSX } from 'react';
 
