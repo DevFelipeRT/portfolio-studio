@@ -5,7 +5,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/Components/Ui/dialog';
-import type { ProjectImage } from '@/Pages/types';
+import type { ProjectImage } from '@/Modules/Projects/core/types';
 import { ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react';
 import { useState } from 'react';
 

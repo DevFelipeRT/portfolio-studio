@@ -1,5 +1,5 @@
 // resources/js/Pages/Home/Sections/ProjectSection.tsx
-import { Project } from '@/Pages/types';
+import type { Project } from '@/Modules/Projects/core/types';
 import { useTranslation } from '@/i18n';
 import { SectionHeader } from '../../../Layouts/Partials/SectionHeader';
 import { ProjectCarousel } from '../Partials/ProjectCarousel';

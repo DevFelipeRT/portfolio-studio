@@ -3,7 +3,7 @@ import type { SectionComponentProps } from '@/Modules/ContentManagement/ui/secti
 import { useSectionFieldResolver } from '@/Modules/ContentManagement/hooks/useSectionFieldResolver';
 import type { SectionDataValue } from '@/Modules/ContentManagement/core/types';
 import { ProjectCarousel } from '@/Pages/Home/Partials/ProjectCarousel';
-import type { Project } from '@/Pages/types';
+import type { Project } from '@/Modules/Projects/core/types';
 import { JSX } from 'react';
 
 type CapabilityProject = {

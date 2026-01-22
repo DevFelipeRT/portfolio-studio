@@ -16,7 +16,7 @@ import {
 import { Separator } from '@/Components/Ui/separator';
 import { ChevronDown, ExternalLink, Github } from 'lucide-react';
 import { useState } from 'react';
-import { Project } from '../../types';
+import type { Project } from '@/Modules/Projects/core/types';
 import { ProjectImageCarousel } from './ProjectImageCarousel';
 
 /**

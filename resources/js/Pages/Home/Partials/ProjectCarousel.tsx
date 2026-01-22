@@ -1,6 +1,6 @@
 import { Button } from '@/Components/Ui/button';
 import { ScrollArea, ScrollBar } from '@/Components/Ui/scroll-area';
-import { Project } from '@/Pages/types';
+import type { Project } from '@/Modules/Projects/core/types';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { ProjectCard } from './ProjectCard';
