@@ -1,31 +1,29 @@
-// resources/js/Pages/Skills/Edit.tsx
-
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Skill, SkillCategory } from '@/Pages/types';
+import type { SkillCategory } from '@/Modules/Skills/core/types';
 import { Head, Link, useForm } from '@inertiajs/react';
 import React from 'react';
-import { SkillForm } from './Partials/SkillForm';
+import type { SkillCategoryFormData } from '@/Modules/Skills/core/forms';
+import { SkillCategoryForm } from '@/Modules/Skills/ui/SkillCategoryForm';
 
-interface EditSkillProps {
-    skill: Skill;
-    categories: SkillCategory[];
+interface EditSkillCategoryProps {
+    category: SkillCategory;
 }
 
-export default function Edit({ skill, categories }: EditSkillProps) {
+export default function Edit({ category }: EditSkillCategoryProps) {
     const { data, setData, put, processing, errors } =
-        useForm<SkillFormData>({
-            name: skill.name,
-            skill_category_id: skill.skill_category_id ?? '',
+        useForm<SkillCategoryFormData>({
+            name: category.name,
+            slug: category.slug ?? '',
         });
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
-        put(route('skills.update', skill.id));
+        put(route('skill-categories.update', category.id));
     };
 
     const handleChange = (
-        field: keyof SkillFormData,
-        value: number | '',
+        field: keyof SkillCategoryFormData,
+        value: string,
     ): void => {
         setData(field, value);
     };
@@ -34,35 +32,34 @@ export default function Edit({ skill, categories }: EditSkillProps) {
         <AuthenticatedLayout
             header={
                 <h1 className="text-xl leading-tight font-semibold">
-                    Edit skill
+                    Edit skill category
                 </h1>
             }
         >
-            <Head title={`Edit skill: ${skill.name}`} />
+            <Head title={`Edit skill category: ${category.name}`} />
 
             <div className="overflow-hidden">
                 <div className="mx-auto max-w-xl px-4 py-8 sm:px-6 lg:px-8">
                     <div className="mb-4">
                         <Link
-                            href={route('skills.index')}
+                            href={route('skill-categories.index')}
                             className="text-muted-foreground hover:text-foreground text-sm"
                         >
-                            Back to skills
+                            Back to categories
                         </Link>
                     </div>
 
-                    <SkillForm
+                    <SkillCategoryForm
                         data={data}
                         errors={errors}
-                        categories={categories}
                         processing={processing}
                         onChange={handleChange}
                         onSubmit={handleSubmit}
-                        cancelHref={route('skills.index')}
+                        cancelHref={route('skill-categories.index')}
                         submitLabel="Save changes"
                         deleteHref={route(
-                            'skills.destroy',
-                            skill.id,
+                            'skill-categories.destroy',
+                            category.id,
                         )}
                         deleteLabel="Delete"
                         alignActions="split"

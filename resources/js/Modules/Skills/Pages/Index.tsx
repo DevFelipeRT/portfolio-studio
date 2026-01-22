@@ -1,8 +1,8 @@
 import { Button } from '@/Components/Ui/button';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, router } from '@inertiajs/react';
-import { Skill } from '../types';
-import { SkillsTable } from './Partials/SkillsTable';
+import type { Skill } from '@/Modules/Skills/core/types';
+import { SkillsTable } from '@/Modules/Skills/ui/SkillsTable';
 
 interface SkillsIndexProps {
     skills: Skill[];

@@ -1,23 +1,31 @@
+// resources/js/Pages/Skills/Create.tsx
+
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import type { SkillCategory } from '@/Modules/Skills/core/types';
 import { Head, Link, useForm } from '@inertiajs/react';
 import React from 'react';
-import { SkillCategoryForm } from './Partials/SkillCategoryForm';
+import type { SkillFormData } from '@/Modules/Skills/core/forms';
+import { SkillForm } from '@/Modules/Skills/ui/SkillForm';
 
-export default function Create() {
+interface CreateSkillProps {
+    categories: SkillCategory[];
+}
+
+export default function Create({ categories }: CreateSkillProps) {
     const { data, setData, post, processing, errors } =
-        useForm<SkillCategoryFormData>({
+        useForm<SkillFormData>({
             name: '',
-            slug: '',
+            skill_category_id: '',
         });
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
-        post(route('skill-categories.store'));
+        post(route('skills.store'));
     };
 
     const handleChange = (
-        field: keyof SkillCategoryFormData,
-        value: string,
+        field: keyof SkillFormData,
+        value: number | '',
     ): void => {
         setData(field, value);
     };
@@ -26,30 +34,31 @@ export default function Create() {
         <AuthenticatedLayout
             header={
                 <h1 className="text-xl leading-tight font-semibold">
-                    New skill category
+                    New skill
                 </h1>
             }
         >
-            <Head title="New skill category" />
+            <Head title="New skill" />
 
             <div className="overflow-hidden">
                 <div className="mx-auto max-w-xl px-4 py-8 sm:px-6 lg:px-8">
                     <div className="mb-4">
                         <Link
-                            href={route('skill-categories.index')}
+                            href={route('skills.index')}
                             className="text-muted-foreground hover:text-foreground text-sm"
                         >
-                            Back to categories
+                            Back to skills
                         </Link>
                     </div>
 
-                    <SkillCategoryForm
+                    <SkillForm
                         data={data}
                         errors={errors}
+                        categories={categories}
                         processing={processing}
                         onChange={handleChange}
                         onSubmit={handleSubmit}
-                        cancelHref={route('skill-categories.index')}
+                        cancelHref={route('skills.index')}
                         submitLabel="Save"
                         alignActions="right"
                     />

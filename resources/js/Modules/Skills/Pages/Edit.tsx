@@ -1,25 +1,27 @@
-// resources/js/Pages/Skills/Create.tsx
+// resources/js/Pages/Skills/Edit.tsx
 
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { SkillCategory } from '@/Pages/types';
+import type { Skill, SkillCategory } from '@/Modules/Skills/core/types';
 import { Head, Link, useForm } from '@inertiajs/react';
 import React from 'react';
-import { SkillForm } from './Partials/SkillForm';
+import type { SkillFormData } from '@/Modules/Skills/core/forms';
+import { SkillForm } from '@/Modules/Skills/ui/SkillForm';
 
-interface CreateSkillProps {
+interface EditSkillProps {
+    skill: Skill;
     categories: SkillCategory[];
 }
 
-export default function Create({ categories }: CreateSkillProps) {
-    const { data, setData, post, processing, errors } =
+export default function Edit({ skill, categories }: EditSkillProps) {
+    const { data, setData, put, processing, errors } =
         useForm<SkillFormData>({
-            name: '',
-            skill_category_id: '',
+            name: skill.name,
+            skill_category_id: skill.skill_category_id ?? '',
         });
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
-        post(route('skills.store'));
+        put(route('skills.update', skill.id));
     };
 
     const handleChange = (
@@ -33,11 +35,11 @@ export default function Create({ categories }: CreateSkillProps) {
         <AuthenticatedLayout
             header={
                 <h1 className="text-xl leading-tight font-semibold">
-                    New skill
+                    Edit skill
                 </h1>
             }
         >
-            <Head title="New skill" />
+            <Head title={`Edit skill: ${skill.name}`} />
 
             <div className="overflow-hidden">
                 <div className="mx-auto max-w-xl px-4 py-8 sm:px-6 lg:px-8">
@@ -58,8 +60,13 @@ export default function Create({ categories }: CreateSkillProps) {
                         onChange={handleChange}
                         onSubmit={handleSubmit}
                         cancelHref={route('skills.index')}
-                        submitLabel="Save"
-                        alignActions="right"
+                        submitLabel="Save changes"
+                        deleteHref={route(
+                            'skills.destroy',
+                            skill.id,
+                        )}
+                        deleteLabel="Delete"
+                        alignActions="split"
                     />
                 </div>
             </div>

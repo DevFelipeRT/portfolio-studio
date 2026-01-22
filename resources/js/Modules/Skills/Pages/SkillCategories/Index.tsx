@@ -1,6 +1,6 @@
 import { Button } from '@/Components/Ui/button';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { SkillCategory } from '@/Pages/types';
+import type { SkillCategory } from '@/Modules/Skills/core/types';
 import { Head, Link, router } from '@inertiajs/react';
 import React from 'react';
 

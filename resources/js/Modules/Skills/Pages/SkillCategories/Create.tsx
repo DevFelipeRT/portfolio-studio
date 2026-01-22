@@ -1,23 +1,19 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { SkillCategory } from '@/Pages/types';
 import { Head, Link, useForm } from '@inertiajs/react';
 import React from 'react';
-import { SkillCategoryForm } from './Partials/SkillCategoryForm';
+import type { SkillCategoryFormData } from '@/Modules/Skills/core/forms';
+import { SkillCategoryForm } from '@/Modules/Skills/ui/SkillCategoryForm';
 
-interface EditSkillCategoryProps {
-    category: SkillCategory;
-}
-
-export default function Edit({ category }: EditSkillCategoryProps) {
-    const { data, setData, put, processing, errors } =
+export default function Create() {
+    const { data, setData, post, processing, errors } =
         useForm<SkillCategoryFormData>({
-            name: category.name,
-            slug: category.slug ?? '',
+            name: '',
+            slug: '',
         });
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
-        put(route('skill-categories.update', category.id));
+        post(route('skill-categories.store'));
     };
 
     const handleChange = (
@@ -31,11 +27,11 @@ export default function Edit({ category }: EditSkillCategoryProps) {
         <AuthenticatedLayout
             header={
                 <h1 className="text-xl leading-tight font-semibold">
-                    Edit skill category
+                    New skill category
                 </h1>
             }
         >
-            <Head title={`Edit skill category: ${category.name}`} />
+            <Head title="New skill category" />
 
             <div className="overflow-hidden">
                 <div className="mx-auto max-w-xl px-4 py-8 sm:px-6 lg:px-8">
@@ -55,13 +51,8 @@ export default function Edit({ category }: EditSkillCategoryProps) {
                         onChange={handleChange}
                         onSubmit={handleSubmit}
                         cancelHref={route('skill-categories.index')}
-                        submitLabel="Save changes"
-                        deleteHref={route(
-                            'skill-categories.destroy',
-                            category.id,
-                        )}
-                        deleteLabel="Delete"
-                        alignActions="split"
+                        submitLabel="Save"
+                        alignActions="right"
                     />
                 </div>
             </div>
