@@ -4,7 +4,7 @@ import { Label } from '@/Components/Ui/label';
 import { Textarea } from '@/Components/Ui/textarea';
 import { Link, useForm } from '@inertiajs/react';
 import React from 'react';
-import type { Image } from '../../types';
+import type { Image } from '@/Modules/Images/core/types';
 
 type ImageFormMode = 'create' | 'edit';
 

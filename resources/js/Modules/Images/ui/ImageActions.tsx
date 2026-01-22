@@ -1,5 +1,5 @@
 import * as React from 'react';
-import type { Image } from '../../types';
+import type { Image } from '@/Modules/Images/core/types';
 
 import { Button } from '@/Components/Ui/button';
 import {

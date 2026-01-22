@@ -7,7 +7,7 @@ import {
     DialogTitle,
 } from '@/Components/Ui/dialog';
 import { Separator } from '@/Components/Ui/separator';
-import type { Image } from '../../types';
+import type { Image } from '@/Modules/Images/core/types';
 
 interface ImagePreviewDialogProps {
     open: boolean;
