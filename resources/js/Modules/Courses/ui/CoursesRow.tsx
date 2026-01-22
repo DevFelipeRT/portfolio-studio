@@ -2,7 +2,7 @@ import { DateDisplay } from '@/Components/Ui/date-display';
 import { TableCell, TableRow } from '@/Components/Ui/table';
 import { useTranslation } from '@/i18n';
 import { CalendarDays, ChevronRight } from 'lucide-react';
-import { Course } from '../../types';
+import type { Course } from '@/Modules/Courses/core/types';
 import { CourseStatus, CourseStatusBadge } from './CourseStatusBadge';
 import { CourseVisibilityBadge } from './CourseVisibilityBadge';
 import { CoursesRowActions } from './CoursesRowActions';

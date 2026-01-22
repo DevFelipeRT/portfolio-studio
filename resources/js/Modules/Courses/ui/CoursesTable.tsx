@@ -1,4 +1,4 @@
-import { Course } from '../../types';
+import type { Course } from '@/Modules/Courses/core/types';
 import { CoursesRow } from './CoursesRow';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/Ui/card';

@@ -14,6 +14,7 @@ import {
 } from '@/Components/Ui/select';
 import { Textarea } from '@/Components/Ui/textarea';
 import { useSupportedLocales, useTranslation } from '@/i18n';
+import type { CourseFormData } from '@/Modules/Courses/core/forms';
 import { Loader2 } from 'lucide-react';
 import React, { HTMLAttributes } from 'react';
 
@@ -45,27 +46,16 @@ export function InputError({
  * Course form data shape.
  * started_at and completed_at are persisted as ISO date strings (yyyy-MM-dd) or null.
  */
-export type CourseEntryData = {
-    name: string;
-    institution: string;
-    category: string;
-    summary: string;
-    description: string;
-    started_at: string | null;
-    completed_at: string | null;
-    display: boolean;
-};
-
 /**
  * Component props for CourseForm.
  */
 interface CourseFormProps {
-    data: CourseEntryData;
+    data: CourseFormData;
     setData: (
-        key: keyof CourseEntryData,
+        key: keyof CourseFormData,
         value: string | null | boolean,
     ) => void;
-    errors: Partial<Record<keyof CourseEntryData, string | string[]>>;
+    errors: Partial<Record<keyof CourseFormData, string | string[]>>;
     processing: boolean;
     categories: Record<string, string>;
     onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
