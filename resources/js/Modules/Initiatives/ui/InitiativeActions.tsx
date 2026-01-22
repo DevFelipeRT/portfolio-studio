@@ -1,4 +1,4 @@
-import { Initiative } from './InitiativeOverlay';
+import type { Initiative } from '@/Modules/Initiatives/core/types';
 
 import { Button } from '@/Components/Ui/button';
 import {

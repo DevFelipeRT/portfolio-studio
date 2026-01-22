@@ -6,35 +6,19 @@ import { DatePicker } from '@/Components/Ui/date-picker';
 import { Input } from '@/Components/Ui/input';
 import { Label } from '@/Components/Ui/label';
 import { Textarea } from '@/Components/Ui/textarea';
+import type {
+    InitiativeFormData,
+    InitiativeImageInput,
+} from '@/Modules/Initiatives/core/forms';
+import type { InitiativeImage } from '@/Modules/Initiatives/core/types';
 import { Link, useForm } from '@inertiajs/react';
 import React from 'react';
-
-type ImageInput = {
-    file: File | null;
-    alt?: string | null;
-};
-
-type InitiativeFormData = {
-    name: string;
-    short_description: string;
-    long_description: string;
-    display: boolean;
-    start_date: string | null;
-    end_date: string | null;
-    images: ImageInput[];
-};
-
-type ExistingImage = {
-    id: number;
-    src: string;
-    alt: string | null;
-};
 
 type InitiativeFormProps = {
     mode: 'create' | 'edit';
     submitRoute: string;
     backRoute: string;
-    existingImages?: ExistingImage[];
+    existingImages?: InitiativeImage[];
     initialValues?: Partial<Omit<InitiativeFormData, 'images'>>;
 };
 
@@ -90,7 +74,8 @@ export function InitiativeForm({
     const updateImageAlt = (index: number, value: string): void => {
         setData((current: InitiativeFormData) => ({
             ...current,
-            images: current.images.map((image: ImageInput, i: number) =>
+            images: current.images.map(
+                (image: InitiativeImageInput, i: number) =>
                 i === index ? { ...image, alt: value } : image,
             ),
         }));
@@ -104,7 +89,8 @@ export function InitiativeForm({
 
         setData((current: InitiativeFormData) => ({
             ...current,
-            images: current.images.map((image: ImageInput, i: number) =>
+            images: current.images.map(
+                (image: InitiativeImageInput, i: number) =>
                 i === index ? { ...image, file } : image,
             ),
         }));
@@ -279,8 +265,14 @@ export function InitiativeForm({
                                 className="bg-muted/40 overflow-hidden rounded-md border"
                             >
                                 <img
-                                    src={image.src}
-                                    alt={image.alt ?? ''}
+                                    src={image.url ?? image.src ?? ''}
+                                    alt={
+                                        image.alt_text ??
+                                        image.alt ??
+                                        image.image_title ??
+                                        image.title ??
+                                        ''
+                                    }
                                     className="h-32 w-full object-cover sm:h-36 md:h-40"
                                 />
                             </figure>

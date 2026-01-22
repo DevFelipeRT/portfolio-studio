@@ -1,4 +1,4 @@
-import { Initiative } from './InitiativeOverlay';
+import type { Initiative } from '@/Modules/Initiatives/core/types';
 
 import { Badge } from '@/Components/Ui/badge';
 import { Button } from '@/Components/Ui/button';
@@ -40,7 +40,8 @@ export function InitiativesRow({
         initiative.start_date,
         initiative.end_date,
     );
-    const hasImages = initiative.images.length > 0;
+    const imageCount = initiative.images?.length ?? 0;
+    const hasImages = imageCount > 0;
 
     function handleRowClick(): void {
         onRowClick(initiative);
@@ -130,7 +131,7 @@ export function InitiativesRow({
                 <div className="flex items-center gap-1">
                     <ImageIcon className="h-3.5 w-3.5" />
                     <span className="text-xs whitespace-nowrap">
-                        {hasImages ? initiative.images.length : 0}
+                        {hasImages ? imageCount : 0}
                     </span>
                 </div>
             </TableCell>
@@ -160,7 +161,10 @@ type PeriodDisplay =
           toLabel: string;
       };
 
-function buildPeriodDisplay(start: string, end: string | null): PeriodDisplay {
+function buildPeriodDisplay(
+    start: string | null,
+    end: string | null,
+): PeriodDisplay {
     if (!start) {
         return {
             isPeriod: false,

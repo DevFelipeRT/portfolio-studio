@@ -7,25 +7,7 @@ import {
     DialogTitle,
 } from '@/Components/Ui/dialog';
 import { Separator } from '@/Components/Ui/separator';
-
-export type InitiativeImage = {
-    id: number;
-    src: string;
-    alt: string | null;
-};
-
-export interface Initiative {
-    id: number;
-    name: string;
-    short_description: string;
-    long_description: string;
-    display: boolean;
-    start_date: string;
-    end_date: string | null;
-    images: InitiativeImage[];
-    created_at?: string;
-    updated_at?: string | null;
-}
+import type { Initiative } from '@/Modules/Initiatives/core/types';
 
 interface InitiativeOverlayProps {
     open: boolean;
@@ -46,6 +28,8 @@ export function InitiativeOverlay({
     }
 
     const { periodLabel, dateLabel, timeLabel } = buildDateMetadata(initiative);
+
+    const images = initiative.images ?? [];
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -91,21 +75,27 @@ export function InitiativeOverlay({
                         </p>
                     </section>
 
-                    {initiative.images.length > 0 && (
+                    {images.length > 0 && (
                         <section>
                             <p className="text-muted-foreground mb-2 text-xs font-medium tracking-wide uppercase">
                                 Images
                             </p>
 
                             <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
-                                {initiative.images.map((image) => (
+                                {images.map((image) => (
                                     <figure
                                         key={image.id}
                                         className="bg-muted/40 overflow-hidden rounded-md border"
                                     >
                                         <img
-                                            src={image.src}
-                                            alt={image.alt ?? ''}
+                                            src={image.url ?? image.src ?? ''}
+                                            alt={
+                                                image.alt_text ??
+                                                image.alt ??
+                                                image.image_title ??
+                                                image.title ??
+                                                ''
+                                            }
                                             className="h-32 w-full object-cover sm:h-36 md:h-40"
                                         />
                                     </figure>
@@ -161,7 +151,10 @@ function buildDateMetadata(initiative: Initiative): {
     return { periodLabel, dateLabel, timeLabel };
 }
 
-function formatPeriod(start: string, end: string | null): string | null {
+function formatPeriod(
+    start: string | null,
+    end: string | null,
+): string | null {
     if (!start) {
         return null;
     }

@@ -1,6 +1,6 @@
 // resources/js/Pages/Initiatives/Partials/InitiativesTable.tsx
 
-import { Initiative } from './InitiativeOverlay';
+import type { Initiative } from '@/Modules/Initiatives/core/types';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/Ui/card';
 import { Separator } from '@/Components/Ui/separator';
