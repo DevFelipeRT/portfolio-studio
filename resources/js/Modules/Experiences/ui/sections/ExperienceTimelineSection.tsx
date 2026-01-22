@@ -7,13 +7,14 @@ import type { SectionDataValue } from '@/Modules/ContentManagement/core/types';
 import { useGetLocale } from '@/i18n';
 import { Briefcase } from 'lucide-react';
 import { JSX } from 'react';
+import { RichTextRenderer } from '@/Common/RichText/RichTextRenderer';
 
 type CapabilityExperience = {
     id: number;
     position: string;
     company?: string | null;
-    short_description?: string | null;
-    long_description?: string | null;
+    summary?: string | null;
+    description?: string | null;
     start_date: string;
     end_date?: string | null;
 };
@@ -169,16 +170,18 @@ export function ExperienceTimelineSection({
                             }
                             title={experience.position}
                             subtitle={experience.company ?? undefined}
-                            short_description={
-                                experience.short_description ?? undefined
-                            }
-                            long_description={
-                                experience.long_description ?? undefined
-                            }
+                            summary={experience.summary ?? undefined}
+                            description={experience.description ?? undefined}
                             tags={[]}
                             icon={<Briefcase className="h-4 w-4" />}
                             isLast={index === visibleExperiences.length - 1}
-                        />
+                        >
+                            {experience.description && (
+                                <RichTextRenderer
+                                    value={experience.description}
+                                />
+                            )}
+                        </TimelineItem>
                     ))}
                 </div>
             )}

@@ -11,15 +11,17 @@ interface TimelineItemProps {
     /** The subtitle (e.g., Company, Institution). */
     subtitle?: string;
     /** A brief summary visible by default. */
-    short_description?: string;
+    summary?: string;
     /** A detailed description revealed on expansion. */
-    long_description?: string;
+    description?: string;
     /** Optional tags or categories. */
     tags?: string[];
     /** An optional icon to display. */
     icon?: ReactNode;
     /** Flag to indicate if this is the last item in the timeline (affects the vertical line). */
     isLast?: boolean;
+    /** Optional custom expandable content. */
+    children?: ReactNode;
 }
 
 /**
@@ -29,14 +31,16 @@ export function TimelineItem({
     period,
     title,
     subtitle,
-    short_description,
-    long_description,
+    summary,
+    description,
     tags,
     icon,
     isLast = false,
+    children,
 }: TimelineItemProps) {
-    const hasLongDescription =
-        typeof long_description === 'string' && long_description.trim() !== '';
+    const hasDescription =
+        !!children ||
+        (typeof description === 'string' && description.trim() !== '');
 
     return (
         <div className="relative pb-2 pl-8 sm:pl-10">
@@ -55,15 +59,14 @@ export function TimelineItem({
             <ExpandableCard
                 title={title}
                 subtitle={subtitle}
-                description={short_description}
+                description={summary}
                 icon={icon}
                 meta={period}
                 tags={tags}
-                disabled={!hasLongDescription}
+                disabled={!hasDescription}
             >
-                {hasLongDescription && (
-                    <p className="mt-1">{long_description}</p>
-                )}
+                {children}
+                {!children && description && <p className="mt-1">{description}</p>}
             </ExpandableCard>
         </div>
     );
