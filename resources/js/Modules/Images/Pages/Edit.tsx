@@ -2,8 +2,8 @@
 
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link } from '@inertiajs/react';
-import { ImageForm } from './Partials/ImageForm';
-import { Image } from '../types';
+import { ImageForm } from '@/Modules/Images/ui/ImageForm';
+import type { Image } from '@/Modules/Images/core/types';
 
 interface EditImagePageProps {
   image: Image;

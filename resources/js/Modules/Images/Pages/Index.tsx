@@ -4,12 +4,12 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
 
-import type { Image } from '../types';
-import { ImageFilters, type ImageFiltersValues } from './Partials/ImageFilters';
-import { ImageHeader } from './Partials/ImageHeader';
-import { ImageList } from './Partials/ImageList';
-import { ImagePreviewDialog } from './Partials/ImagePreviewDialog';
-import { ImagesEmptyState } from './Partials/ImagesEmptyState';
+import type { Image } from '@/Modules/Images/core/types';
+import { ImageFilters, type ImageFiltersValues } from '@/Modules/Images/ui/ImageFilters';
+import { ImageHeader } from '@/Modules/Images/ui/ImageHeader';
+import { ImageList } from '@/Modules/Images/ui/ImageList';
+import { ImagePreviewDialog } from '@/Modules/Images/ui/ImagePreviewDialog';
+import { ImagesEmptyState } from '@/Modules/Images/ui/ImagesEmptyState';
 
 interface ImagesIndexFilters {
     search: string | null;

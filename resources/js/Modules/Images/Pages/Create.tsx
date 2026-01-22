@@ -2,7 +2,7 @@
 
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link } from '@inertiajs/react';
-import { ImageForm } from './Partials/ImageForm';
+import { ImageForm } from '@/Modules/Images/ui/ImageForm';
 
 /**
  * Page for creating a new image (upload + metadata).
