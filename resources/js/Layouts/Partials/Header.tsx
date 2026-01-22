@@ -1,6 +1,6 @@
 'use client';
 
-import ApplicationLogo from '@/Components/ApplicationLogo/ApplicationLogo';
+import ApplicationLogo from '@/Layouts/ApplicationLogo/ApplicationLogo';
 import { LanguageSwitcher } from '@/Components/LanguageSwitcher';
 import { ModeToggle } from '@/Components/Theme/ModeToggle';
 import { NavUser } from '@/Layouts/Partials/NavUser';

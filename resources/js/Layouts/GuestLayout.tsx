@@ -1,4 +1,4 @@
-import ApplicationLogo from '@/Components/ApplicationLogo/ApplicationLogo';
+import ApplicationLogo from '@/Layouts/ApplicationLogo/ApplicationLogo';
 import { ThemeProvider } from '@/Components/Theme/ThemeProvider';
 import { Link } from '@inertiajs/react';
 import { PropsWithChildren } from 'react';
