@@ -93,7 +93,7 @@ export default function Index({ experiences }: ExperiencesIndexProps) {
                                             </div>
                                             <div className="text-muted-foreground mt-0.5 text-xs">
                                                 {truncate(
-                                                    experience.short_description,
+                                                    experience.summary ?? '',
                                                     80,
                                                 )}
                                             </div>
