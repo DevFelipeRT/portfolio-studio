@@ -36,7 +36,12 @@ class IdentityAccessServiceProvider extends ServiceProvider
      */
     private function registerRoutes(): void
     {
-        Route::middleware(['auth',])
+        Route::middleware(['web'])
+            ->group(function (): void {
+                $this->loadRoutesFrom(__DIR__ . '/../../Routes/auth.php');
+            });
+
+        Route::middleware(['web', 'auth'])
             ->group(function (): void {
                 $this->loadRoutesFrom(__DIR__ . '/../../Routes/profile.php');
             });

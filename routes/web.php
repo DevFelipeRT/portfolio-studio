@@ -25,5 +25,3 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('Dashboard/Pages/Dashboard');
     })->name('dashboard');
 });
-
-require __DIR__ . '/auth.php';
