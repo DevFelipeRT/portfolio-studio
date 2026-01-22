@@ -5,15 +5,16 @@ import type {
     PageRenderViewModelProps,
     PageSectionDto,
     TemplateDefinitionDto,
-} from '@/Modules/ContentManagement/types';
-import type { SectionEnvironment } from '@/Modules/ContentManagement/types/sectionEnvironment';
-import { buildNavigationItemsFromSections } from '@/Modules/ContentManagement/utils/sectionNavigation';
-import { sectionSlotLayoutManager } from '@/Modules/ContentManagement/utils/sectionSlotLayout';
-import { sortSectionsByPosition } from '@/Modules/ContentManagement/utils/sectionSort';
+} from '@/Modules/ContentManagement/core/types';
+import type { SectionEnvironment } from '@/Modules/ContentManagement/core/types/sectionEnvironment';
+import { buildNavigationItemsFromSections } from '@/Modules/ContentManagement/core/sections/sectionNavigation';
+import { sectionSlotLayoutManager } from '@/Modules/ContentManagement/ui/layout/SectionSlotLayout';
+import { sortSectionsByPosition } from '@/Modules/ContentManagement/core/sections/sectionSort';
+import { defaultStringNormalizer } from '@/Modules/ContentManagement/utils/strings';
+import { SectionEnvironmentProvider } from '@/Modules/ContentManagement/hooks/useSectionEnvironment';
 import { defaultSocialLinks } from '@/config/socials';
 import { Head } from '@inertiajs/react';
 import { JSX } from 'react';
-import { SectionEnvironmentProvider } from '../../context/SectionEnvironmentContext';
 
 /**
  * Public screen that renders a content-managed page using the SectionRenderer.
@@ -33,7 +34,10 @@ export default function RenderedPage({
         (section) => section.is_active,
     );
 
-    const navigationItems = buildNavigationItemsFromSections(visibleSections);
+    const navigationItems = buildNavigationItemsFromSections(
+        visibleSections,
+        defaultStringNormalizer,
+    );
 
     const headTitle: string = page.meta_title || page.title;
     const headDescription: string | undefined =

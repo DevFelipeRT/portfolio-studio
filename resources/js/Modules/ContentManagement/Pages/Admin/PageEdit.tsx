@@ -6,30 +6,34 @@ import { toast } from 'sonner';
 import { Button } from '@/Components/Ui/button';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import {
-    PageSectionCreateDialog,
+    CreateSectionDialog,
     type CreateSectionPayload,
-} from '@/Modules/ContentManagement/Components/Admin/PageEdit/PageSectionCreateDialog';
+} from '@/Modules/ContentManagement/ui/admin/PageEdit/CreateSectionDialog';
 import {
-    PageSectionEditDialog,
+    EditSectionDialog,
     type EditSectionPayload,
-} from '@/Modules/ContentManagement/Components/Admin/PageEdit/PageSectionEditDialog';
-import { PageSectionsList } from '@/Modules/ContentManagement/Components/Admin/PageEdit/PageSectionsList';
+} from '@/Modules/ContentManagement/ui/admin/PageEdit/EditSectionDialog';
+import { SectionsList } from '@/Modules/ContentManagement/ui/admin/PageEdit/SectionsList';
 import {
     PageForm,
     type PageFormData,
-} from '@/Modules/ContentManagement/Components/Admin/PageForm';
+} from '@/Modules/ContentManagement/ui/admin/PageForm';
 import type {
     PageEditViewModelProps,
     PageSectionDto,
-} from '@/Modules/ContentManagement/types';
-import { getSectionNavigationGroup } from '@/Modules/ContentManagement/utils/sectionNavigation';
-import { sortSectionsByPosition } from '@/Modules/ContentManagement/utils/sectionSort';
+} from '@/Modules/ContentManagement/core/types';
+import { getSectionNavigationGroup } from '@/Modules/ContentManagement/core/sections/sectionNavigation';
+import { sortSectionsByPosition } from '@/Modules/ContentManagement/core/sections/sectionSort';
+import {
+    defaultStringNormalizer,
+    normalizeSlotKey,
+} from '@/Modules/ContentManagement/utils/strings';
 
 export default function PageEdit({
     page,
     sections,
     availableTemplates,
-    extra,
+    extra: _extra,
 }: PageEditViewModelProps) {
     const { data, setData, put, processing, errors } = useForm<PageFormData>({
         slug: page.slug,
@@ -55,7 +59,10 @@ export default function PageEdit({
         const unique = new Set<string>();
 
         sections.forEach((section) => {
-            const group = getSectionNavigationGroup(section);
+            const group = getSectionNavigationGroup(
+                section,
+                defaultStringNormalizer,
+            );
             if (group) {
                 unique.add(group);
             }
@@ -70,8 +77,7 @@ export default function PageEdit({
         let seenNonHero = false;
 
         for (const section of orderedSections) {
-            const slot = section.slot ?? '';
-            const isHero = slot.trim().toLowerCase() === 'hero';
+            const isHero = normalizeSlotKey(section.slot) === 'hero';
 
             if (!isHero) {
                 seenNonHero = true;
@@ -303,7 +309,7 @@ export default function PageEdit({
                     onSubmit={handleSubmit}
                 />
 
-                <PageSectionsList
+                <SectionsList
                     sections={sortedSections}
                     templates={availableTemplates}
                     onCreateSection={handleCreateSection}
@@ -316,7 +322,7 @@ export default function PageEdit({
                 />
             </div>
 
-            <PageSectionCreateDialog
+            <CreateSectionDialog
                 open={isCreateDialogOpen}
                 onOpenChange={setIsCreateDialogOpen}
                 templates={availableTemplates}
@@ -325,7 +331,7 @@ export default function PageEdit({
                 onSubmit={handleCreateSectionSubmit}
             />
 
-            <PageSectionEditDialog
+            <EditSectionDialog
                 open={isEditDialogOpen}
                 onOpenChange={handleEditDialogOpenChange}
                 section={selectedSection}
