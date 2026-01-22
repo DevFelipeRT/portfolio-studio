@@ -9,7 +9,7 @@ import {
     CardTitle,
 } from '@/Components/Ui/card';
 import { SectionHeader } from '@/Layouts/Partials/SectionHeader';
-import type { SectionComponentProps } from '@/Modules/ContentManagement/ui/sections/sectionRegistry';
+import type { SectionComponentProps } from '@/Modules/ContentManagement/core/sections/sectionRegistry';
 import { useSectionFieldResolver } from '@/Modules/ContentManagement/hooks/useSectionFieldResolver';
 import type {
     SectionDataCollectionItem,

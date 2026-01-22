@@ -5,7 +5,7 @@ import { Label } from '@/Components/Ui/label';
 import { LinkedInProfileBadge } from '@/Components/Ui/linkedin-badge';
 import { Textarea } from '@/Components/Ui/textarea';
 import { SectionHeader } from '@/Layouts/Partials/SectionHeader';
-import type { SectionComponentProps } from '@/Modules/ContentManagement/ui/sections/sectionRegistry';
+import type { SectionComponentProps } from '@/Modules/ContentManagement/core/sections/sectionRegistry';
 import { useSectionEnvironment } from '@/Modules/ContentManagement/hooks/useSectionEnvironment';
 import { useSectionFieldResolver } from '@/Modules/ContentManagement/hooks/useSectionFieldResolver';
 import { useForm } from '@inertiajs/react';

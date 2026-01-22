@@ -1,6 +1,6 @@
 import { Button } from '@/Components/Ui/button';
 import { SectionHeader } from '@/Layouts/Partials/SectionHeader';
-import type { SectionComponentProps } from '@/Modules/ContentManagement/ui/sections/sectionRegistry';
+import type { SectionComponentProps } from '@/Modules/ContentManagement/core/sections/sectionRegistry';
 import { useSectionFieldResolver } from '@/Modules/ContentManagement/hooks/useSectionFieldResolver';
 import type {
     SectionDataValue,

@@ -1,7 +1,7 @@
 import { TimelineItem } from '@/Components/TimelineItem';
 import { DateDisplay } from '@/Components/Ui/date-display';
 import { SectionHeader } from '@/Layouts/Partials/SectionHeader';
-import type { SectionComponentProps } from '@/Modules/ContentManagement/ui/sections/sectionRegistry';
+import type { SectionComponentProps } from '@/Modules/ContentManagement/core/sections/sectionRegistry';
 import { useSectionFieldResolver } from '@/Modules/ContentManagement/hooks/useSectionFieldResolver';
 import type { SectionDataValue } from '@/Modules/ContentManagement/core/types';
 import { useGetLocale } from '@/i18n';
