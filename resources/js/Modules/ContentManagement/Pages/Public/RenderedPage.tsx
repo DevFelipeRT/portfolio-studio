@@ -12,7 +12,6 @@ import { sectionSlotLayoutManager } from '@/Modules/ContentManagement/ui/layout/
 import { sortSectionsByPosition } from '@/Modules/ContentManagement/core/sections/sectionSort';
 import { defaultStringNormalizer } from '@/Modules/ContentManagement/utils/strings';
 import { SectionEnvironmentProvider } from '@/Modules/ContentManagement/hooks/useSectionEnvironment';
-import { defaultSocialLinks } from '@/config/socials';
 import { Head } from '@inertiajs/react';
 import { JSX } from 'react';
 
@@ -44,9 +43,7 @@ export default function RenderedPage({
         page.meta_description || undefined;
     const headImageUrl: string | undefined = page.meta_image_url || undefined;
 
-    const environment: SectionEnvironment = {
-        socialLinks: defaultSocialLinks,
-    };
+    const environment: SectionEnvironment = {};
 
     return (
         <PublicLayout navigationItems={navigationItems}>

@@ -334,7 +334,7 @@ function channelTypeTranslationKey(channelType?: string): string | undefined {
     return undefined;
   }
 
-  return `contact.socials.${channelType}.label`;
+  return `socials.${channelType}.label`;
 }
 
 function channelTypeLabel(channelType?: string): string {
