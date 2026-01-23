@@ -1,5 +1,5 @@
 // resources/js/Modules/ContactChannels/ui/SocialLinksBar.tsx
-import { useTranslation } from '@/Common/i18n';
+import { NAMESPACES, useTranslation } from '@/Common/i18n';
 import { Button } from '@/Components/Ui/button';
 import {
   Tooltip,
@@ -26,7 +26,7 @@ interface SocialLinksBarProps {
  * SocialLinksBar renders a horizontal row of icon buttons for social or external profiles.
  */
 export function SocialLinksBar({ items, dense }: SocialLinksBarProps) {
-  const { translate } = useTranslation('common');
+  const { translate } = useTranslation(NAMESPACES.contactChannels);
 
   const size = dense ? 'sm' : 'default';
   const iconSize = dense ? 'h-4 w-4' : 'h-5 w-5';
