@@ -1,0 +1,76 @@
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { Head, Link, useForm } from '@inertiajs/react';
+import React from 'react';
+import type { ContactChannelFormData } from '@/Modules/ContactChannels/core/forms';
+import type {
+    ContactChannel,
+    ContactChannelTypeOption,
+} from '@/Modules/ContactChannels/core/types';
+import { ContactChannelForm } from '@/Modules/ContactChannels/ui/ContactChannelForm';
+
+interface EditContactChannelProps {
+    channel: ContactChannel;
+    channelTypes: ContactChannelTypeOption[];
+}
+
+export default function Edit({ channel, channelTypes }: EditContactChannelProps) {
+    const { data, setData, put, processing, errors } =
+        useForm<ContactChannelFormData>({
+            channel_type: channel.channel_type,
+            label: channel.label ?? '',
+            value: channel.value,
+            is_active: channel.is_active,
+            sort_order: channel.sort_order,
+        });
+
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
+        event.preventDefault();
+        put(route('contact-channels.update', channel.id));
+    };
+
+    const handleChange = (
+        field: keyof ContactChannelFormData,
+        value: string | number | boolean | '',
+    ): void => {
+        setData(field, value as never);
+    };
+
+    return (
+        <AuthenticatedLayout
+            header={
+                <h1 className="text-xl leading-tight font-semibold">
+                    Edit contact channel
+                </h1>
+            }
+        >
+            <Head title={`Edit contact channel`} />
+
+            <div className="overflow-hidden">
+                <div className="mx-auto max-w-xl px-4 py-8 sm:px-6 lg:px-8">
+                    <div className="mb-4">
+                        <Link
+                            href={route('contact-channels.index')}
+                            className="text-muted-foreground hover:text-foreground text-sm"
+                        >
+                            Back to contact channels
+                        </Link>
+                    </div>
+
+                    <ContactChannelForm
+                        data={data}
+                        errors={errors}
+                        channelTypes={channelTypes}
+                        processing={processing}
+                        onChange={handleChange}
+                        onSubmit={handleSubmit}
+                        cancelHref={route('contact-channels.index')}
+                        submitLabel="Save changes"
+                        deleteHref={route('contact-channels.destroy', channel.id)}
+                        deleteLabel="Delete"
+                        alignActions="split"
+                    />
+                </div>
+            </div>
+        </AuthenticatedLayout>
+    );
+}

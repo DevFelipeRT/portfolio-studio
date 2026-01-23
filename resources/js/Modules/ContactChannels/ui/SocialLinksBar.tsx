@@ -1,4 +1,4 @@
-// resources/js/Components/SocialLinksBar.tsx
+// resources/js/Modules/ContactChannels/ui/SocialLinksBar.tsx
 import { useTranslation } from '@/Common/i18n';
 import { Button } from '@/Components/Ui/button';
 import {
