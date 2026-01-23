@@ -10,7 +10,7 @@ export const NAMESPACES = {
     experience: 'experience' as Namespace,
     projects: 'projects' as Namespace,
     courses: 'courses' as Namespace,
-    contact: 'contact' as Namespace,
+    contactChannels: 'contactChannels' as Namespace,
 } as const;
 
 export type KnownNamespace = (typeof NAMESPACES)[keyof typeof NAMESPACES];

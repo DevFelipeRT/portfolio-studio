@@ -19,9 +19,10 @@ const KNOWN_NAMESPACES = new Set<string>(namespaceValues);
  * Eagerly loads all translation modules.
  * Assumes a structure of: ./locales/{locale}/{namespace}.ts
  */
-const translationModules = import.meta.glob('./locales/*/*.ts', {
-    eager: true,
-}) as Record<string, { default: TranslationTree }>;
+const translationModules = {
+    ...import.meta.glob('./locales/*/*.ts', { eager: true }),
+    ...import.meta.glob('../../Modules/**/locales/*/*.ts', { eager: true }),
+} as Record<string, { default: TranslationTree }>;
 
 /**
  * Parses file paths to construct the translation catalog.
