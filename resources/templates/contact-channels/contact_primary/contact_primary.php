@@ -190,4 +190,11 @@ return [
             'validation' => ['max:300'],
         ],
     ],
+
+    'data_source' => [
+        'type' => 'capability',
+        'capability_key' => 'contact-channels.visible.v1',
+        'parameter_mapping' => [],
+        'target_field' => 'contact_channels',
+    ],
 ];
