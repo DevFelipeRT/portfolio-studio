@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Modules\Capabilities\Infrastructure\Providers\CapabilitiesServiceProvider;
 use App\Modules\ContentManagement\Infrastructure\Providers\ContentManagementServiceProvider;
+use App\Modules\ContactChannels\Infrastructure\Providers\ContactChannelsServiceProvider;
 use App\Modules\Courses\Infrastructure\Providers\CoursesServiceProvider;
 use App\Modules\Experiences\Infrastructure\Providers\ExperiencesServiceProvider;
 use App\Modules\IdentityAccess\Infrastructure\Providers\IdentityAccessServiceProvider;
@@ -27,6 +28,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->register(CapabilitiesServiceProvider::class);
 
         $this->app->register(ContentManagementServiceProvider::class);
+
+        $this->app->register(ContactChannelsServiceProvider::class);
 
         $this->app->register(CoursesServiceProvider::class);
 
