@@ -102,39 +102,6 @@ const home: TranslationTree = {
             other: 'Outro',
         },
     },
-    contact: {
-        sectionLabel: 'Contato e colaboração',
-        header: {
-            eyebrow: 'Contato',
-            title: 'Vamos falar sobre oportunidades, projetos e colaboração.',
-            description:
-                'Se você busca um desenvolvedor para fortalecer sua equipe, apoiar um projeto específico ou iniciar uma colaboração técnica, utilize o formulário ou um dos canais abaixo para entrar em contato.',
-        },
-        form: {
-            name: {
-                label: 'Nome',
-                placeholder: 'Seu nome',
-            },
-            email: {
-                label: 'E-mail',
-                placeholder: 'voce@exemplo.com',
-            },
-            message: {
-                label: 'Mensagem',
-                placeholder:
-                    'Compartilhe o que você tem em mente e como posso ajudar.',
-            },
-            submit: {
-                default: 'Enviar mensagem',
-                processing: 'Enviando…',
-            },
-        },
-        sidebar: {
-            heading: 'Outros canais de contato',
-            description:
-                'Você também pode falar comigo pelo canal de sua preferência, utilizando os links abaixo para acessar meus perfis e conhecer melhor meu trabalho.',
-        },
-    },
 };
 
 export default home;

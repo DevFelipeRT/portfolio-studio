@@ -162,25 +162,6 @@ const common: TranslationTree = {
         cancelAction: 'Cancelar',
     },
 
-    contact: {
-        socials: {
-            email: {
-                label: 'E-mail',
-            },
-            github: {
-                label: 'GitHub',
-            },
-            linkedin: {
-                label: 'LinkedIn',
-            },
-            whatsapp: {
-                label: 'WhatsApp',
-            },
-            phone: {
-                label: 'Celular',
-            },
-        },
-    },
 };
 
 export default common;

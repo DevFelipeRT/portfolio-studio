@@ -102,38 +102,6 @@ const home: TranslationTree = {
             other: 'Other',
         },
     },
-    contact: {
-        sectionLabel: 'Contact and collaboration',
-        header: {
-            eyebrow: 'Contact',
-            title: 'Let us talk about opportunities, projects, or collaboration.',
-            description:
-                'If you are looking for a developer to strengthen your team, support a specific project, or start a technical collaboration, use the form or the channels below to get in touch.',
-        },
-        form: {
-            name: {
-                label: 'Name',
-                placeholder: 'Your name',
-            },
-            email: {
-                label: 'Email',
-                placeholder: 'you@example.com',
-            },
-            message: {
-                label: 'Message',
-                placeholder: 'Share what you have in mind and how I can help.',
-            },
-            submit: {
-                default: 'Send message',
-                processing: 'Sending…',
-            },
-        },
-        sidebar: {
-            heading: 'Other contact channels',
-            description:
-                'You can also contact me through your preferred channel using the links below to access my profiles and learn more about my work.',
-        },
-    },
 };
 
 export default home;
