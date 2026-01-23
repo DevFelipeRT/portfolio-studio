@@ -1,23 +1,23 @@
 'use client';
 
+import { useTranslation } from '@/Common/i18n';
 import ApplicationLogo from '@/Layouts/Partials/ApplicationLogo/ApplicationLogo';
 import { LanguageSelector } from '@/Layouts/Partials/LanguageSelector';
 import { ModeToggle } from '@/Layouts/Partials/Theme/ModeToggle';
 import { UserMenu } from '@/Layouts/Partials/UserMenu';
-import { useTranslation } from '@/i18n';
 import { Link, usePage } from '@inertiajs/react';
 import { PropsWithChildren } from 'react';
 
 type AuthUser = {
-    name: string;
-    email: string;
-    avatar?: string | null;
+  name: string;
+  email: string;
+  avatar?: string | null;
 };
 
 type SharedProps = {
-    auth: {
-        user: AuthUser | null;
-    };
+  auth: {
+    user: AuthUser | null;
+  };
 };
 
 /**
@@ -30,56 +30,56 @@ type SharedProps = {
  * The header is sticky at the top to remain persistent while scrolling.
  */
 export default function Header({ children }: PropsWithChildren) {
-    const { auth } = usePage().props as SharedProps;
-    const user = auth.user;
+  const { auth } = usePage().props as SharedProps;
+  const user = auth.user;
 
-    const { translate } = useTranslation('layout');
+  const { translate } = useTranslation('layout');
 
-    const headerLabel = translate('header.landmarkLabel', 'Application header');
+  const headerLabel = translate('header.landmarkLabel', 'Application header');
 
-    const homeLabel = translate('header.brand.homeLabel', 'Go to home page');
+  const homeLabel = translate('header.brand.homeLabel', 'Go to home page');
 
-    return (
-        <header
-            id="app-header"
-            className="border-border bg-popover/80 supports-[backdrop-filter]:bg-popover/60 sticky top-0 z-40 border-b backdrop-blur"
-            aria-label={headerLabel}
+  return (
+    <header
+      id="app-header"
+      className="border-border bg-popover/80 supports-[backdrop-filter]:bg-popover/60 sticky top-0 z-40 border-b backdrop-blur"
+      aria-label={headerLabel}
+    >
+      <div className="3xl:h-20 mx-auto flex h-14 max-w-7xl items-center gap-3 px-4 sm:h-16 sm:px-6 lg:px-8">
+        {/* Brand area */}
+        <div className="order-1 flex flex-1 items-center gap-3">
+          <Link
+            href="/"
+            className="flex items-center gap-3"
+            aria-label={homeLabel}
+          >
+            <ApplicationLogo className="fill-current" />
+          </Link>
+        </div>
+
+        {/* Navigation */}
+        <div
+          className="order-3 flex items-center justify-center gap-4 md:order-2 md:flex-[2]"
+          role="navigation"
+          aria-label={translate(
+            'header.navigation.primaryLabel',
+            'Primary navigation',
+          )}
         >
-            <div className="3xl:h-20 mx-auto flex h-14 max-w-7xl items-center gap-3 px-4 sm:h-16 sm:px-6 lg:px-8">
-                {/* Brand area */}
-                <div className="order-1 flex flex-1 items-center gap-3">
-                    <Link
-                        href="/"
-                        className="flex items-center gap-3"
-                        aria-label={homeLabel}
-                    >
-                        <ApplicationLogo className="fill-current" />
-                    </Link>
-                </div>
+          {children}
+        </div>
 
-                {/* Navigation */}
-                <div
-                    className="order-3 flex items-center justify-center gap-4 md:order-2 md:flex-[2]"
-                    role="navigation"
-                    aria-label={translate(
-                        'header.navigation.primaryLabel',
-                        'Primary navigation',
-                    )}
-                >
-                    {children}
-                </div>
-
-                {/* Mode toggle + user menu (desktop) */}
-                <div className="order-2 flex flex-1 items-center justify-end gap-3 md:order-3">
-                    <ModeToggle />
-                    <LanguageSelector />
-                    {user && (
-                        <div className="hidden md:flex">
-                            <UserMenu user={user} variant="icon" />
-                        </div>
-                    )}
-                </div>
+        {/* Mode toggle + user menu (desktop) */}
+        <div className="order-2 flex flex-1 items-center justify-end gap-3 md:order-3">
+          <ModeToggle />
+          <LanguageSelector />
+          {user && (
+            <div className="hidden md:flex">
+              <UserMenu user={user} variant="icon" />
             </div>
-        </header>
-    );
+          )}
+        </div>
+      </div>
+    </header>
+  );
 }
