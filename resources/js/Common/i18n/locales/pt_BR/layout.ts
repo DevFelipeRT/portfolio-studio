@@ -21,6 +21,7 @@ const layout: TranslationTree = {
             portfolio: 'Portfólio',
             portfolioProjects: 'Projetos',
             portfolioImages: 'Imagens',
+            portfolioContactChannels: 'Canais de contato',
             portfolioExperiences: 'Experiências',
             portfolioCourses: 'Cursos',
             portfolioTechnologies: 'Habilidades',

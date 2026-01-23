@@ -38,6 +38,13 @@ export const navigationConfig = [
                 fallbackLabel: 'Pages',
             },
             {
+                id: 'contact-channels',
+                kind: 'link',
+                routeName: 'contact-channels.index',
+                translationKey: 'header.navigation.portfolioContactChannels',
+                fallbackLabel: 'Contact channels',
+            },
+            {
                 id: 'images',
                 kind: 'link',
                 routeName: 'images.index',
