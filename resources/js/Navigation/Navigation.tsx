@@ -11,8 +11,9 @@ import { useRenderableSectionTargets } from './hooks/useRenderableSectionTargets
 import { useSectionNavigation } from './hooks/useSectionNavigation';
 import { useSectionPositions } from './hooks/useSectionPositions';
 import type { NavigationProps, NavigationSectionItem } from './types';
-import { NavigationDesktopMenu } from './ui/NavigationDesktopMenu';
-import { NavigationMobileSheet } from './ui/NavigationMobileSheet';
+import { MobileSidebar } from '@/Layouts/Partials/MobileSidebar';
+import { DesktopNavigationMenu } from './ui/DesktopNavigationMenu';
+import { MobileNavigationMenu } from './ui/MobileNavigationMenu';
 import {
   shouldRenderSectionChild,
   shouldRenderSectionNode,
@@ -92,7 +93,7 @@ export default function Navigation({ items, user }: NavigationProps) {
       className="flex grow items-center justify-center gap-3"
       aria-label={primaryNavigationLabel}
     >
-      <NavigationDesktopMenu
+      <DesktopNavigationMenu
         items={safeItems}
         hasSections={hasSections}
         sectionTargets={sectionTargets}
@@ -102,19 +103,23 @@ export default function Navigation({ items, user }: NavigationProps) {
         onSectionNavigate={handleSectionNavigate}
       />
 
-      <NavigationMobileSheet
-        items={safeItems}
-        user={user}
-        isSheetOpen={isSheetOpen}
-        setIsSheetOpen={setIsSheetOpen}
+      <MobileSidebar
+        isOpen={isSheetOpen}
+        setIsOpen={setIsSheetOpen}
         openNavigationLabel={openNavigationLabel}
         mobileNavigationTitle={mobileNavigationTitle}
-        hasSections={hasSections}
-        isSectionIdentityActive={isSectionIdentityActive}
-        shouldRenderSectionNode={shouldRenderSectionNodeBound}
-        shouldRenderSectionChild={shouldRenderSectionChildBound}
-        onSectionNavigate={handleSectionNavigate}
-      />
+        user={user}
+      >
+        <MobileNavigationMenu
+          items={safeItems}
+          hasSections={hasSections}
+          isSectionIdentityActive={isSectionIdentityActive}
+          shouldRenderSectionNode={shouldRenderSectionNodeBound}
+          shouldRenderSectionChild={shouldRenderSectionChildBound}
+          onSectionNavigate={handleSectionNavigate}
+          onClose={() => setIsSheetOpen(false)}
+        />
+      </MobileSidebar>
     </nav>
   );
 }

@@ -1,5 +1,5 @@
-// resources/js/Navigation/ui/NavigationDesktopMenu.tsx
-"use client";
+// resources/js/Navigation/ui/DesktopNavigationMenu.tsx
+'use client';
 
 import {
   NavigationMenu,
@@ -8,23 +8,23 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-} from "@/Components/Ui/navigation-menu";
-import { Link } from "@inertiajs/react";
-import type { MouseEvent } from "react";
-import {
-  desktopItemClass,
-  desktopTriggerClass,
-  submenuLinkClass,
-} from "./styles";
+} from '@/Components/Ui/navigation-menu';
+import { Link } from '@inertiajs/react';
+import type { MouseEvent } from 'react';
 import type {
   NavigationItem,
   NavigationSectionItem,
   SectionTargetNode,
-} from "../types";
-import { isGroupItem, isLinkItem, isSectionItem } from "../utils/guards";
-import { buildSectionIdentity } from "../utils/identity";
+} from '../types';
+import { isGroupItem, isLinkItem, isSectionItem } from '../utils/guards';
+import { buildSectionIdentity } from '../utils/identity';
+import {
+  desktopItemClass,
+  desktopTriggerClass,
+  submenuLinkClass,
+} from './styles';
 
-export type NavigationDesktopMenuProps = {
+export type DesktopNavigationMenuProps = {
   items: NavigationItem[];
   hasSections: boolean;
   sectionTargets: SectionTargetNode[];
@@ -57,14 +57,14 @@ function hasActiveSectionDescendant(
   });
 }
 
-export function NavigationDesktopMenu({
+export function DesktopNavigationMenu({
   items,
   hasSections,
   isSectionIdentityActive,
   shouldRenderSectionNode,
   shouldRenderSectionChild,
   onSectionNavigate,
-}: NavigationDesktopMenuProps) {
+}: DesktopNavigationMenuProps) {
   return (
     <div className="hidden items-center md:flex">
       <NavigationMenu viewport={false}>
@@ -117,7 +117,7 @@ export function NavigationDesktopMenu({
                     {item.label}
                   </NavigationMenuTrigger>
 
-                  <NavigationMenuContent className="bg-popover rounded-md border p-2 shadow-lg rounded-tl-none mt-0.5">
+                  <NavigationMenuContent className="bg-popover mt-0.5 rounded-md rounded-tl-none border p-2 shadow-lg">
                     <ul className="grid gap-2">
                       <li key={`${item.id}.__self`}>
                         <NavigationMenuLink
@@ -211,7 +211,7 @@ export function NavigationDesktopMenu({
                     {item.label}
                   </NavigationMenuTrigger>
 
-                  <NavigationMenuContent className="bg-popover rounded-md border p-2 shadow-lg rounded-tl-none mt-0.5">
+                  <NavigationMenuContent className="bg-popover mt-0.5 rounded-md rounded-tl-none border p-2 shadow-lg">
                     <ul className="grid gap-2">
                       {item.children!.map((child) => {
                         if (isLinkItem(child)) {
@@ -300,7 +300,7 @@ export function NavigationDesktopMenu({
                       {item.label}
                     </NavigationMenuTrigger>
 
-                    <NavigationMenuContent className="bg-popover rounded-md rounded-tl-none border p-2 shadow-lg mt-0.5">
+                    <NavigationMenuContent className="bg-popover mt-0.5 rounded-md rounded-tl-none border p-2 shadow-lg">
                       <ul className="grid gap-2">
                         {item.scrollToTop || item.targetId ? (
                           <li key={`${item.id}.__self`}>
