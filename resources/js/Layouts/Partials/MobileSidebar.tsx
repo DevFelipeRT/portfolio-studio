@@ -11,6 +11,8 @@ import {
 } from '@/Components/Ui/sheet';
 import { UserMenu } from '@/Layouts/Partials/UserMenu';
 import { Menu } from 'lucide-react';
+import { useEffect } from 'react';
+import { useIsMobile } from '@/hooks/use-mobile';
 import type { ReactNode } from 'react';
 
 type MobileSidebarProps = {
@@ -34,6 +36,14 @@ export function MobileSidebar({
   user,
   children,
 }: MobileSidebarProps) {
+  const isMobile = useIsMobile();
+
+  useEffect(() => {
+    if (!isMobile) {
+      setIsOpen(false);
+    }
+  }, [isMobile, setIsOpen]);
+
   return (
     <div className="flex items-center md:hidden">
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
