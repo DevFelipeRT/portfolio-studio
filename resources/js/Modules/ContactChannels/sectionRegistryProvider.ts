@@ -1,0 +1,10 @@
+import { ContactPrimarySection } from '@/Modules/ContactChannels/ui/sections/ContactPrimarySection';
+import type { SectionComponentRegistry } from '@/Modules/ContentManagement/core/sections/sectionRegistry';
+
+export const contactChannelsSectionRegistryProvider = {
+    getSectionRegistry(): SectionComponentRegistry {
+        return {
+            contact_primary: ContactPrimarySection,
+        };
+    },
+};
