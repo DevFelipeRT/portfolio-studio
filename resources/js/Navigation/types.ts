@@ -36,7 +36,7 @@ export type NavigationItem =
 
 export type NavigationProps = {
     items: NavigationItem[];
-    user?: AuthUser | null;
+    onClose?: () => void;
 };
 
 export type SectionPosition = {

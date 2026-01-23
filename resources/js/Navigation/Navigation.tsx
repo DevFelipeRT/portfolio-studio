@@ -3,15 +3,13 @@
 
 import { NAMESPACES } from '@/Common/i18n/config/namespaces';
 import { useTranslation } from '@/Common/i18n/react/hooks/useTranslation';
-import { usePage } from '@inertiajs/react';
 import { useMemo } from 'react';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { useActiveSectionTracking } from './hooks/useActiveSectionTracking';
-import { useNavigationSheet } from './hooks/useNavigationSheet';
 import { useRenderableSectionTargets } from './hooks/useRenderableSectionTargets';
 import { useSectionNavigation } from './hooks/useSectionNavigation';
 import { useSectionPositions } from './hooks/useSectionPositions';
 import type { NavigationProps, NavigationSectionItem } from './types';
-import { MobileSidebar } from '@/Layouts/Partials/MobileSidebar';
 import { DesktopNavigationMenu } from './ui/DesktopNavigationMenu';
 import { MobileNavigationMenu } from './ui/MobileNavigationMenu';
 import {
@@ -20,8 +18,8 @@ import {
 } from './utils/renderRules';
 import { collectSectionTargets } from './utils/sectionTargets';
 
-export default function Navigation({ items, user }: NavigationProps) {
-  const { url } = usePage();
+export default function Navigation({ items, onClose }: NavigationProps) {
+  const isMobile = useIsMobile();
 
   const safeItems = useMemo(() => items ?? [], [items]);
 
@@ -51,24 +49,11 @@ export default function Navigation({ items, user }: NavigationProps) {
 
   const { handleSectionNavigate } = useSectionNavigation(setActiveSectionId);
 
-  const { isSheetOpen, setIsSheetOpen } = useNavigationSheet(url);
-
   const { translate: translateFromLayout } = useTranslation(NAMESPACES.layout);
-  const { translate: translateFromCommon } = useTranslation(NAMESPACES.common);
 
   const primaryNavigationLabel = translateFromLayout(
     'header.navigation.primaryLabel',
     'Primary navigation',
-  );
-
-  const openNavigationLabel = translateFromCommon(
-    'navigation.openMenu',
-    'Open navigation menu',
-  );
-
-  const mobileNavigationTitle = translateFromLayout(
-    'header.navigation.mobileTitle',
-    'Navigation',
   );
 
   const isSectionIdentityActive = (identity: string): boolean => {
@@ -88,28 +73,16 @@ export default function Navigation({ items, user }: NavigationProps) {
     return null;
   }
 
+  const navigationClassName = isMobile
+    ? 'flex w-full flex-col'
+    : 'flex grow items-center justify-center gap-3';
+
   return (
     <nav
-      className="flex grow items-center justify-center gap-3"
+      className={navigationClassName}
       aria-label={primaryNavigationLabel}
     >
-      <DesktopNavigationMenu
-        items={safeItems}
-        hasSections={hasSections}
-        sectionTargets={sectionTargets}
-        isSectionIdentityActive={isSectionIdentityActive}
-        shouldRenderSectionNode={shouldRenderSectionNodeBound}
-        shouldRenderSectionChild={shouldRenderSectionChildBound}
-        onSectionNavigate={handleSectionNavigate}
-      />
-
-      <MobileSidebar
-        isOpen={isSheetOpen}
-        setIsOpen={setIsSheetOpen}
-        openNavigationLabel={openNavigationLabel}
-        mobileNavigationTitle={mobileNavigationTitle}
-        user={user}
-      >
+      {isMobile ? (
         <MobileNavigationMenu
           items={safeItems}
           hasSections={hasSections}
@@ -117,9 +90,19 @@ export default function Navigation({ items, user }: NavigationProps) {
           shouldRenderSectionNode={shouldRenderSectionNodeBound}
           shouldRenderSectionChild={shouldRenderSectionChildBound}
           onSectionNavigate={handleSectionNavigate}
-          onClose={() => setIsSheetOpen(false)}
+          onClose={onClose}
         />
-      </MobileSidebar>
+      ) : (
+        <DesktopNavigationMenu
+          items={safeItems}
+          hasSections={hasSections}
+          sectionTargets={sectionTargets}
+          isSectionIdentityActive={isSectionIdentityActive}
+          shouldRenderSectionNode={shouldRenderSectionNodeBound}
+          shouldRenderSectionChild={shouldRenderSectionChildBound}
+          onSectionNavigate={handleSectionNavigate}
+        />
+      )}
     </nav>
   );
 }

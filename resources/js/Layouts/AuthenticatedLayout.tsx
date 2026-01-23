@@ -1,12 +1,15 @@
 // resources/js/Layouts/AuthenticatedLayout.tsx
 
-import { useTranslation } from '@/Common/i18n';
+import { NAMESPACES, useTranslation } from '@/Common/i18n';
 import { Alert, AlertDescription, AlertTitle } from '@/Components/Ui/alert';
 import { Toaster } from '@/Components/Ui/sonner';
 import { navigationConfig } from '@/config/navigation';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { MobileSidebar } from '@/Layouts/Partials/MobileSidebar';
 import { ThemeProvider } from '@/Layouts/Partials/Theme/ThemeProvider';
 import { Navigation, type AuthUser, type NavigationItem } from '@/Navigation';
 import type { NavigationConfigNode } from '@/Navigation/configTypes';
+import { useNavigationSheet } from '@/Navigation/hooks/useNavigationSheet';
 import { usePage } from '@inertiajs/react';
 import { PropsWithChildren, ReactNode, useEffect } from 'react';
 import { toast } from 'sonner';
@@ -82,12 +85,17 @@ export default function Authenticated({
   header,
   children,
 }: PropsWithChildren<{ header?: ReactNode }>) {
-  const { auth, errors, status } = usePage().props as SharedProps;
-  const { translate } = useTranslation('layout');
+  const page = usePage();
+  const { auth, errors, status } = page.props as SharedProps;
+  const { url } = page;
+  const { translate: translateFromLayout } = useTranslation(NAMESPACES.layout);
+  const { translate: translateFromCommon } = useTranslation(NAMESPACES.common);
+  const isMobile = useIsMobile();
+  const { isSheetOpen, setIsSheetOpen } = useNavigationSheet(url);
 
   const navItems: NavigationItem[] = mapConfigToNavigationItems(
     navigationConfig,
-    (key, fallback) => translate(key, fallback),
+    (key, fallback) => translateFromLayout(key, fallback),
   );
 
   const hasErrors = !!errors && Object.keys(errors).length > 0;
@@ -102,16 +110,41 @@ export default function Authenticated({
     }
 
     const messageKey = `flash.${status}`;
-    const message = translate(messageKey, status);
+    const message = translateFromLayout(messageKey, status);
 
     toast.success(message);
-  }, [status, translate]);
+  }, [status, translateFromLayout]);
+
+  const openNavigationLabel = translateFromCommon(
+    'navigation.openMenu',
+    'Open navigation menu',
+  );
+
+  const mobileNavigationTitle = translateFromLayout(
+    'header.navigation.mobileTitle',
+    'Navigation',
+  );
 
   return (
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
       <div className="text-foreground flex min-h-dvh w-full flex-col">
         <Header>
-          <Navigation items={navItems} user={auth.user} />
+          {!isMobile ? (
+            <Navigation items={navItems} />
+          ) : (
+            <MobileSidebar
+              isOpen={isSheetOpen}
+              setIsOpen={setIsSheetOpen}
+              openNavigationLabel={openNavigationLabel}
+              mobileNavigationTitle={mobileNavigationTitle}
+              user={auth.user}
+            >
+              <Navigation
+                items={navItems}
+                onClose={() => setIsSheetOpen(false)}
+              />
+            </MobileSidebar>
+          )}
         </Header>
 
         <main className="w-full grow py-4 sm:py-6">
@@ -126,7 +159,7 @@ export default function Authenticated({
               <div className="mb-4">
                 <Alert variant="destructive">
                   <AlertTitle>
-                    {translate(
+                    {translateFromLayout(
                       'validation.title',
                       'There were some problems with your submission.',
                     )}
