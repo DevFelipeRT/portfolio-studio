@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Modules\ContentManagement\Http\Controllers\Admin\LocalesController;
 use App\Modules\ContentManagement\Http\Controllers\Admin\PageController;
 use App\Modules\ContentManagement\Http\Controllers\Admin\PageSectionController;
 use Illuminate\Support\Facades\Route;
@@ -15,6 +16,10 @@ Route::prefix('admin/content')
         // Home page setter
         Route::post('pages/{page}/set-home', [PageController::class, 'setHome'])
             ->name('pages.set-home');
+
+        // Locales
+        Route::get('locales', [LocalesController::class, 'index'])
+            ->name('locales.index');
 
         // Sections CRUD and auxiliary operations (admin.content.sections.*)
         Route::post('sections', [PageSectionController::class, 'store'])

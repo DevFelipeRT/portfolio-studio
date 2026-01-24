@@ -37,6 +37,13 @@ interface IPageRepository
     public function all(): Collection;
 
     /**
+     * Returns distinct locales used by pages.
+     *
+     * @return array<int,string>
+     */
+    public function listLocales(): array;
+
+    /**
      * Persists the given page instance.
      */
     public function save(Page $page): Page;

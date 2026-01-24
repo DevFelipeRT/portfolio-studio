@@ -1,15 +1,23 @@
 <?php
 
-use App\Modules\Locale\Http\Controllers\LocaleController;
+use App\Modules\SystemLocale\Http\Controllers\SystemLocaleController;
+use App\Modules\WebsiteSettings\Http\Controllers\PublicLocaleController;
 use App\Modules\Mail\Http\Controllers\MessageController;
 
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 /**
- * Public locale endpoint.
+ * Public website locale endpoint.
  */
-Route::post('/set-locale', [LocaleController::class, 'set']);
+Route::post('/set-locale', [PublicLocaleController::class, 'set']);
+
+/**
+ * System locale endpoint (authenticated).
+ */
+Route::middleware(['auth'])->group(function () {
+    Route::post('/system/locale', [SystemLocaleController::class, 'set']);
+});
 
 /**
  * Public contact form endpoint (landing page).

@@ -2,8 +2,13 @@
 
 namespace App\Modules\Inertia\Http\Middleware;
 
+use App\Modules\ContentManagement\Application\Services\PageService;
+use App\Modules\ContentManagement\Application\Services\PublicPageLocaleResolver;
+use App\Modules\SystemLocale\Application\Services\SystemLocaleService;
+use App\Modules\WebsiteSettings\Application\Services\WebsiteLocaleResolver;
 use App\Modules\WebsiteSettings\Application\Services\WebsiteSettingsService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Inertia\Middleware;
 use Tighten\Ziggy\Ziggy;
 
@@ -31,8 +36,39 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-        $settingsService = app(WebsiteSettingsService::class);
-        $settings = $settingsService->getSettings();
+        $websiteSettings = app(WebsiteSettingsService::class);
+        $systemLocale = app(SystemLocaleService::class);
+        $websiteLocaleResolver = app(WebsiteLocaleResolver::class);
+        $pageService = app(PageService::class);
+        $publicPageLocaleResolver = app(PublicPageLocaleResolver::class);
+        $settings = $websiteSettings->getSettings();
+
+        $isPublicContent = $this->isPublicContentRoute($request);
+        $currentLocale = app()->getLocale();
+        $supportedLocales = $systemLocale->getSupportedLocales();
+        $defaultLocale = $systemLocale->getDefaultLocale();
+        $fallbackLocale = $systemLocale->getFallbackLocale();
+        $cookieName = config('localization.system_cookie_name', 'system_locale');
+        $apiEndpoint = '/system/locale';
+        $persistClientCookie = false;
+
+        if ($isPublicContent) {
+            $currentLocale = $this->resolvePublicLocale(
+                $request,
+                $publicPageLocaleResolver,
+                $websiteLocaleResolver,
+            );
+            App::setLocale($currentLocale);
+            $supportedLocales = $pageService->listLocales();
+            $defaultLocale = $websiteSettings->getDefaultLocale();
+            $fallbackLocale = $websiteSettings->getFallbackLocale();
+            if ($defaultLocale === 'auto') {
+                $defaultLocale = $currentLocale;
+            }
+            $cookieName = config('localization.public_cookie_name', 'public_locale');
+            $apiEndpoint = '/set-locale';
+            $persistClientCookie = true;
+        }
 
         return [
             ...parent::share($request),
@@ -54,16 +90,68 @@ class HandleInertiaRequests extends Middleware
                 'location' => $request->url(),
             ],
 
-            // Current locale resolved by ResolveLocale middleware.
+            // Current locale resolved by SystemLocale (and refined for public content routes).
             'locale' => fn() => app()->getLocale(),
 
             // Localization metadata for the front-end.
             'localization' => fn() => [
                 'currentLocale' => app()->getLocale(),
-                'supportedLocales' => $settingsService->getSupportedLocales(),
-                'defaultLocale' => $settingsService->getDefaultLocale(),
-                'fallbackLocale' => $settingsService->getFallbackLocale(),
+                'supportedLocales' => $supportedLocales,
+                'defaultLocale' => $defaultLocale,
+                'fallbackLocale' => $fallbackLocale,
+                'cookieName' => $cookieName,
+                'apiEndpoint' => $apiEndpoint,
+                'persistClientCookie' => $persistClientCookie,
             ],
         ];
+    }
+
+    private function isPublicContentRoute(Request $request): bool
+    {
+        $route = $request->route();
+
+        if ($route === null) {
+            return false;
+        }
+
+        $name = $route->getName();
+
+        if (!is_string($name) || $name === '') {
+            return false;
+        }
+
+        return $name === 'home' || str_starts_with($name, 'content.');
+    }
+
+    private function resolvePublicLocale(
+        Request $request,
+        PublicPageLocaleResolver $publicPageLocaleResolver,
+        WebsiteLocaleResolver $websiteLocaleResolver,
+    ): string {
+        $route = $request->route();
+
+        if ($route === null) {
+            return $websiteLocaleResolver->resolveFromRequest($request);
+        }
+
+        $name = $route->getName();
+
+        if (!is_string($name) || $name === '') {
+            return $websiteLocaleResolver->resolveFromRequest($request);
+        }
+
+        if ($name === 'home') {
+            return $publicPageLocaleResolver->resolveForHome($request);
+        }
+
+        if (str_starts_with($name, 'content.')) {
+            $slug = $route->parameter('slug');
+
+            if (is_string($slug) && $slug !== '') {
+                return $publicPageLocaleResolver->resolveForSlug($request, $slug);
+            }
+        }
+
+        return $websiteLocaleResolver->resolveFromRequest($request);
     }
 }

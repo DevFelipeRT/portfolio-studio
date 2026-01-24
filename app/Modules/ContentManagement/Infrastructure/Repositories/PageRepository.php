@@ -51,6 +51,21 @@ final class PageRepository implements IPageRepository
             ->get();
     }
 
+    /**
+     * @return array<int,string>
+     */
+    public function listLocales(): array
+    {
+        return Page::query()
+            ->select('locale')
+            ->distinct()
+            ->orderBy('locale')
+            ->pluck('locale')
+            ->filter()
+            ->values()
+            ->all();
+    }
+
     public function save(Page $page): Page
     {
         $page->save();

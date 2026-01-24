@@ -89,6 +89,16 @@ final class PageService
     }
 
     /**
+     * Returns distinct locales registered in content-managed pages.
+     *
+     * @return array<int,string>
+     */
+    public function listLocales(): array
+    {
+        return $this->pages->listLocales();
+    }
+
+    /**
      * Creates a new page using the provided attributes and returns its DTO.
      *
      * @param array<string,mixed> $attributes
