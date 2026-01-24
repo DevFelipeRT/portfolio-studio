@@ -1,10 +1,9 @@
 import '../css/app.css';
 import './bootstrap';
 
-import { createInertiaApp, usePage } from '@inertiajs/react';
+import { createInertiaApp } from '@inertiajs/react';
 import { createRoot } from 'react-dom/client';
 import { I18nProvider, createI18nEnvironment } from './Common/i18n';
-import { useMemo } from 'react';
 
 let currentTitleTemplate: string | null = null;
 let currentSiteName: Record<string, string> | null = null;
@@ -165,24 +164,25 @@ createInertiaApp({
 
     const PageComponent = pageModule.default;
 
-    const WrappedPage = (props: Record<string, unknown>) => {
-      const page = usePage().props as InertiaPageProps;
-      const currentLocale = resolveInitialLocale(page) ?? null;
-      const localizationConfig = page.localization || {};
+    const WrappedPage = (props: Record<string, unknown>) => (
+      <PageComponent {...props} />
+    );
 
-      const { localeResolver, translationResolver } = useMemo(
-        () =>
-          createI18nEnvironment({
-            supportedLocales: localizationConfig.supportedLocales,
-            defaultLocale: currentLocale,
-            fallbackLocale: localizationConfig.fallbackLocale,
-          }),
-        [
-          currentLocale,
-          localizationConfig.supportedLocales,
-          localizationConfig.fallbackLocale,
-        ],
-      );
+    WrappedPage.displayName = `I18n(${PageComponent.displayName ?? PageComponent.name ?? 'Page'})`;
+    WrappedPage.layout = (page: any) => {
+      const props = (page?.props ?? {}) as InertiaPageProps;
+      const currentLocale = resolveInitialLocale(props) ?? null;
+      const localizationConfig = props.localization || {};
+
+      const { localeResolver, translationResolver } = createI18nEnvironment({
+        supportedLocales: localizationConfig.supportedLocales,
+        defaultLocale: currentLocale,
+        fallbackLocale: localizationConfig.fallbackLocale,
+      });
+
+      const content = PageComponent.layout
+        ? PageComponent.layout(page)
+        : page;
 
       return (
         <I18nProvider
@@ -190,13 +190,10 @@ createInertiaApp({
           localeResolver={localeResolver}
           translationResolver={translationResolver}
         >
-          <PageComponent {...props} />
+          {content}
         </I18nProvider>
       );
     };
-
-    WrappedPage.displayName = `I18n(${PageComponent.displayName ?? PageComponent.name ?? 'Page'})`;
-    WrappedPage.layout = PageComponent.layout;
 
     return WrappedPage;
   },
