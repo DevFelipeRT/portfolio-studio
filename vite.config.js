@@ -64,7 +64,7 @@ export default defineConfig(({ mode, command }) => {
               }
             }
 
-            if (id.includes('resources/js/i18n')) {
+            if (id.includes('resources/js/Common/i18n')) {
               return 'app-i18n';
             }
 
