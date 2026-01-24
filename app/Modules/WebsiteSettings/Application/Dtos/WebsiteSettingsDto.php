@@ -11,7 +11,6 @@ final class WebsiteSettingsDto
     /**
      * @param array<string,string>|null $siteName
      * @param array<string,string>|null $siteDescription
-     * @param array<int,string>|null $supportedLocales
      * @param array<string,string>|null $defaultMetaTitle
      * @param array<string,string>|null $defaultMetaDescription
      * @param array<string,mixed>|null $robots
@@ -23,7 +22,6 @@ final class WebsiteSettingsDto
         public readonly ?array $siteName,
         public readonly ?array $siteDescription,
         public readonly ?string $ownerName,
-        public readonly ?array $supportedLocales,
         public readonly ?string $defaultLocale,
         public readonly ?string $fallbackLocale,
         public readonly ?string $canonicalBaseUrl,
@@ -48,7 +46,6 @@ final class WebsiteSettingsDto
             siteName: $settings->site_name,
             siteDescription: $settings->site_description,
             ownerName: $settings->owner_name,
-            supportedLocales: $settings->supported_locales,
             defaultLocale: $settings->default_locale,
             fallbackLocale: $settings->fallback_locale,
             canonicalBaseUrl: $settings->canonical_base_url,
@@ -76,7 +73,6 @@ final class WebsiteSettingsDto
             'site_name' => $this->siteName,
             'site_description' => $this->siteDescription,
             'owner_name' => $this->ownerName,
-            'supported_locales' => $this->supportedLocales,
             'default_locale' => $this->defaultLocale,
             'fallback_locale' => $this->fallbackLocale,
             'canonical_base_url' => $this->canonicalBaseUrl,

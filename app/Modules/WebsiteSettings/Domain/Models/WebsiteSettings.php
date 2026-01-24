@@ -16,7 +16,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property array<string,string>|null $site_name
  * @property array<string,string>|null $site_description
  * @property string|null $owner_name
- * @property array<int,string>|null $supported_locales
  * @property string|null $default_locale
  * @property string|null $fallback_locale
  * @property string|null $canonical_base_url
@@ -54,7 +53,6 @@ class WebsiteSettings extends Model
         'site_name',
         'site_description',
         'owner_name',
-        'supported_locales',
         'default_locale',
         'fallback_locale',
         'canonical_base_url',
@@ -77,7 +75,6 @@ class WebsiteSettings extends Model
     protected $casts = [
         'site_name' => 'array',
         'site_description' => 'array',
-        'supported_locales' => 'array',
         'default_meta_title' => 'array',
         'default_meta_description' => 'array',
         'robots' => 'array',

@@ -10,7 +10,6 @@ export type WebsiteSettingsFormData = {
     site_name: WebsiteSettingsLocaleMap;
     site_description: WebsiteSettingsLocaleMap;
     owner_name: string;
-    supported_locales: string[];
     default_locale: string;
     fallback_locale: string;
     canonical_base_url: string;
@@ -59,32 +58,87 @@ const ensureLocaleMap = (
     return next;
 };
 
+type LocaleSource = Pick<
+    WebsiteSettings,
+    | 'site_name'
+    | 'site_description'
+    | 'default_meta_title'
+    | 'default_meta_description'
+    | 'default_locale'
+    | 'fallback_locale'
+>;
+
+const buildLocaleList = (
+    settings: LocaleSource,
+    locales: string[],
+): string[] => {
+    const collected = new Set<string>();
+
+    locales.forEach((locale) => {
+        if (locale && locale !== 'auto') {
+            collected.add(locale);
+        }
+    });
+
+    if (settings.default_locale && settings.default_locale !== 'auto') {
+        collected.add(settings.default_locale);
+    }
+
+    if (settings.fallback_locale && settings.fallback_locale !== 'auto') {
+        collected.add(settings.fallback_locale);
+    }
+
+    const maps = [
+        settings.site_name,
+        settings.site_description,
+        settings.default_meta_title,
+        settings.default_meta_description,
+    ];
+
+    maps.forEach((map) => {
+        if (!map) {
+            return;
+        }
+
+        Object.keys(map).forEach((locale) => {
+            if (locale && locale !== 'auto') {
+                collected.add(locale);
+            }
+        });
+    });
+
+    return Array.from(collected);
+};
+
 export const buildWebsiteSettingsFormData = (
     settings: WebsiteSettings,
+    locales: string[],
 ): WebsiteSettingsFormData => {
-    const supportedLocales = Array.isArray(settings.supported_locales)
-        ? settings.supported_locales
-        : [];
+    const localeList = buildLocaleList(settings, locales);
 
     return {
-        site_name: ensureLocaleMap(settings.site_name, supportedLocales),
+        site_name: ensureLocaleMap(settings.site_name, localeList),
         site_description: ensureLocaleMap(
             settings.site_description,
-            supportedLocales,
+            localeList,
         ),
         owner_name: settings.owner_name ?? '',
-        supported_locales: supportedLocales,
         default_locale: settings.default_locale ?? '',
-        fallback_locale: settings.fallback_locale ?? '',
+        fallback_locale:
+            settings.fallback_locale && settings.fallback_locale !== 'auto'
+                ? settings.fallback_locale
+                : settings.default_locale && settings.default_locale !== 'auto'
+                  ? settings.default_locale
+                  : localeList[0] ?? '',
         canonical_base_url: settings.canonical_base_url ?? '',
         meta_title_template: settings.meta_title_template ?? '',
         default_meta_title: ensureLocaleMap(
             settings.default_meta_title,
-            supportedLocales,
+            localeList,
         ),
         default_meta_description: ensureLocaleMap(
             settings.default_meta_description,
-            supportedLocales,
+            localeList,
         ),
         default_meta_image_id: settings.default_meta_image_id ?? '',
         default_og_image_id: settings.default_og_image_id ?? '',
@@ -113,14 +167,26 @@ export const syncLocaleMaps = (
     data: WebsiteSettingsFormData,
     locales: string[],
 ): WebsiteSettingsFormData => {
+    const localeList = buildLocaleList(
+        {
+            site_name: data.site_name,
+            site_description: data.site_description,
+            default_meta_title: data.default_meta_title,
+            default_meta_description: data.default_meta_description,
+            default_locale: data.default_locale,
+            fallback_locale: data.fallback_locale,
+        },
+        locales,
+    );
+
     return {
         ...data,
-        site_name: ensureLocaleMap(data.site_name, locales),
-        site_description: ensureLocaleMap(data.site_description, locales),
-        default_meta_title: ensureLocaleMap(data.default_meta_title, locales),
+        site_name: ensureLocaleMap(data.site_name, localeList),
+        site_description: ensureLocaleMap(data.site_description, localeList),
+        default_meta_title: ensureLocaleMap(data.default_meta_title, localeList),
         default_meta_description: ensureLocaleMap(
             data.default_meta_description,
-            locales,
+            localeList,
         ),
     };
 };

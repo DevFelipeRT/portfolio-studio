@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Modules\WebsiteSettings\Http\Requests\WebsiteSettings;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Validator;
 
 final class UpdateWebsiteSettingsRequest extends FormRequest
 {
@@ -25,8 +24,6 @@ final class UpdateWebsiteSettingsRequest extends FormRequest
             'site_description' => ['sometimes', 'array'],
             'site_description.*' => ['nullable', 'string', 'max:500'],
             'owner_name' => ['nullable', 'string', 'max:255'],
-            'supported_locales' => ['sometimes', 'array', 'min:1'],
-            'supported_locales.*' => ['string', 'max:20', 'distinct'],
             'default_locale' => ['sometimes', 'string', 'max:20'],
             'fallback_locale' => ['sometimes', 'string', 'max:20'],
             'canonical_base_url' => ['nullable', 'string', 'max:255', 'url'],
@@ -54,30 +51,4 @@ final class UpdateWebsiteSettingsRequest extends FormRequest
         ];
     }
 
-    public function withValidator(Validator $validator): void
-    {
-        $validator->after(function (Validator $validator): void {
-            $this->validateLocaleConsistency($validator);
-        });
-    }
-
-    private function validateLocaleConsistency(Validator $validator): void
-    {
-        $supported = $this->input('supported_locales');
-
-        if (!is_array($supported) || $supported === []) {
-            return;
-        }
-
-        $default = $this->input('default_locale');
-        $fallback = $this->input('fallback_locale');
-
-        if (is_string($default) && $default !== '' && !in_array($default, $supported, true)) {
-            $validator->errors()->add('default_locale', 'Default locale must be one of the supported locales.');
-        }
-
-        if (is_string($fallback) && $fallback !== '' && !in_array($fallback, $supported, true)) {
-            $validator->errors()->add('fallback_locale', 'Fallback locale must be one of the supported locales.');
-        }
-    }
 }

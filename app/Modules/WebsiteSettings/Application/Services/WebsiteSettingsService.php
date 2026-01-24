@@ -31,25 +31,6 @@ final class WebsiteSettingsService
         Cache::forget(self::CACHE_KEY);
     }
 
-    /**
-     * @return array<int,string>
-     */
-    public function getSupportedLocales(): array
-    {
-        $settings = $this->getSettings();
-        $supported = $settings->supported_locales ?? [];
-
-        if (!is_array($supported) || $supported === []) {
-            $supported = config('localization.supported_locales', []);
-        }
-
-        if (!is_array($supported) || $supported === []) {
-            $supported = [(string) config('app.locale', 'en')];
-        }
-
-        return array_values(array_filter(array_map('trim', $supported)));
-    }
-
     public function getDefaultLocale(): string
     {
         $settings = $this->getSettings();
@@ -57,12 +38,6 @@ final class WebsiteSettingsService
 
         if (!is_string($default) || $default === '') {
             $default = (string) config('app.locale', 'en');
-        }
-
-        $supported = $this->getSupportedLocales();
-
-        if ($supported !== [] && !in_array($default, $supported, true)) {
-            $default = $supported[0];
         }
 
         return $default;
@@ -77,10 +52,8 @@ final class WebsiteSettingsService
             $fallback = (string) config('app.fallback_locale', $this->getDefaultLocale());
         }
 
-        $supported = $this->getSupportedLocales();
-
-        if ($supported !== [] && !in_array($fallback, $supported, true)) {
-            $fallback = $supported[0];
+        if ($fallback === 'auto') {
+            $fallback = (string) config('app.locale', 'en');
         }
 
         return $fallback;

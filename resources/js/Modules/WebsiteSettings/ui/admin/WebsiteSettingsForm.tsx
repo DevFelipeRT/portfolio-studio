@@ -110,6 +110,7 @@ interface WebsiteSettingsFormProps {
     onChange(field: keyof WebsiteSettingsFormData, value: unknown): void;
     onSubmit(event: React.FormEvent<HTMLFormElement>): void;
     cancelHref: string;
+    locales: string[];
 }
 
 export function WebsiteSettingsForm({
@@ -119,6 +120,7 @@ export function WebsiteSettingsForm({
     onChange,
     onSubmit,
     cancelHref,
+    locales,
 }: WebsiteSettingsFormProps) {
     const normalizeError = (message: string | string[] | undefined): string | null => {
         if (!message) {
@@ -143,22 +145,38 @@ export function WebsiteSettingsForm({
         });
     };
 
-    const handleSupportedLocaleChange = (index: number, value: string) => {
-        const next = [...data.supported_locales];
-        next[index] = value;
-        onChange('supported_locales', next);
-    };
+    const localeCandidates = React.useMemo(() => {
+        const set = new Set<string>();
 
-    const handleAddLocale = () => {
-        onChange('supported_locales', [...data.supported_locales, '']);
-    };
+        locales.forEach((locale) => {
+            if (locale && locale !== 'auto') {
+                set.add(locale);
+            }
+        });
 
-    const handleRemoveLocale = (index: number) => {
-        onChange(
-            'supported_locales',
-            data.supported_locales.filter((_, idx) => idx !== index),
-        );
-    };
+        if (data.default_locale && data.default_locale !== 'auto') {
+            set.add(data.default_locale);
+        }
+
+        if (data.fallback_locale && data.fallback_locale !== 'auto') {
+            set.add(data.fallback_locale);
+        }
+
+        Object.keys(data.site_name).forEach((locale) => set.add(locale));
+        Object.keys(data.site_description).forEach((locale) => set.add(locale));
+        Object.keys(data.default_meta_title).forEach((locale) => set.add(locale));
+        Object.keys(data.default_meta_description).forEach((locale) => set.add(locale));
+
+        return Array.from(set).filter(Boolean);
+    }, [
+        locales,
+        data.default_locale,
+        data.fallback_locale,
+        data.site_name,
+        data.site_description,
+        data.default_meta_title,
+        data.default_meta_description,
+    ]);
 
     const handleLinkChange = (
         index: number,
@@ -186,12 +204,12 @@ export function WebsiteSettingsForm({
         );
     };
 
-    const supportedLocales =
-        data.supported_locales.length > 0
-            ? data.supported_locales
-            : data.default_locale
+    const localizedFieldLocales =
+        localeCandidates.length > 0
+            ? localeCandidates
+            : data.default_locale && data.default_locale !== 'auto'
               ? [data.default_locale]
-              : ['pt_BR'];
+              : [];
 
     const robotsPublicError = normalizeError(errors['robots.public.index']);
     const robotsPrivateError = normalizeError(errors['robots.private.index']);
@@ -209,10 +227,17 @@ export function WebsiteSettingsForm({
                     </p>
                 </div>
 
+                {localizedFieldLocales.length === 0 && (
+                    <p className="text-muted-foreground text-sm">
+                        Nenhum locale encontrado no CMS. Crie uma página pública
+                        para habilitar campos localizados.
+                    </p>
+                )}
+
                 <LocalizedField
                     id="site_name"
                     label="Nome do site"
-                    locales={supportedLocales}
+                    locales={localizedFieldLocales}
                     values={data.site_name}
                     onChange={(locale, value) =>
                         handleLocaleMapChange('site_name', locale, value)
@@ -224,7 +249,7 @@ export function WebsiteSettingsForm({
                 <LocalizedField
                     id="site_description"
                     label="Descrição do site"
-                    locales={supportedLocales}
+                    locales={localizedFieldLocales}
                     values={data.site_description}
                     onChange={(locale, value) =>
                         handleLocaleMapChange('site_description', locale, value)
@@ -256,46 +281,9 @@ export function WebsiteSettingsForm({
                 <div>
                     <h2 className="text-lg font-semibold">Locales</h2>
                     <p className="text-muted-foreground text-sm">
-                        Fonte única de locais suportados e fallback.
+                        Define o locale padrão (fixo ou automático) e o fallback
+                        usado quando não há conteúdo.
                     </p>
-                </div>
-
-                <div className="space-y-2">
-                    <Label>Locales suportados</Label>
-                    <div className="space-y-2">
-                        {data.supported_locales.map((locale, index) => (
-                            <div
-                                key={`locale-${index}`}
-                                className="flex items-center gap-3"
-                            >
-                                <Input
-                                    value={locale}
-                                    onChange={(event) =>
-                                        handleSupportedLocaleChange(
-                                            index,
-                                            event.target.value,
-                                        )
-                                    }
-                                    placeholder="pt_BR"
-                                />
-                                <Button
-                                    type="button"
-                                    variant="ghost"
-                                    onClick={() => handleRemoveLocale(index)}
-                                >
-                                    Remover
-                                </Button>
-                            </div>
-                        ))}
-                    </div>
-                    {errors.supported_locales && (
-                        <p className="text-destructive text-xs">
-                            {normalizeError(errors.supported_locales)}
-                        </p>
-                    )}
-                    <Button type="button" variant="outline" onClick={handleAddLocale}>
-                        Adicionar locale
-                    </Button>
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-2">
@@ -311,7 +299,8 @@ export function WebsiteSettingsForm({
                                 <SelectValue placeholder="Selecione" />
                             </SelectTrigger>
                             <SelectContent>
-                                {data.supported_locales.map((locale) => (
+                                <SelectItem value="auto">Automático</SelectItem>
+                                {localeCandidates.map((locale) => (
                                     <SelectItem key={locale} value={locale}>
                                         {locale}
                                     </SelectItem>
@@ -337,7 +326,7 @@ export function WebsiteSettingsForm({
                                 <SelectValue placeholder="Selecione" />
                             </SelectTrigger>
                             <SelectContent>
-                                {data.supported_locales.map((locale) => (
+                                {localeCandidates.map((locale) => (
                                     <SelectItem key={locale} value={locale}>
                                         {locale}
                                     </SelectItem>
@@ -402,7 +391,7 @@ export function WebsiteSettingsForm({
                 <LocalizedField
                     id="default_meta_title"
                     label="Meta title padrão"
-                    locales={supportedLocales}
+                    locales={localizedFieldLocales}
                     values={data.default_meta_title}
                     onChange={(locale, value) =>
                         handleLocaleMapChange('default_meta_title', locale, value)
@@ -414,7 +403,7 @@ export function WebsiteSettingsForm({
                 <LocalizedField
                     id="default_meta_description"
                     label="Meta description padrão"
-                    locales={supportedLocales}
+                    locales={localizedFieldLocales}
                     values={data.default_meta_description}
                     onChange={(locale, value) =>
                         handleLocaleMapChange(

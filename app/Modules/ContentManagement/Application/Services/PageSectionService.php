@@ -124,7 +124,9 @@ final class PageSectionService
         $this->fillSection($section, $attributes);
 
         $data = is_array($section->data) ? $section->data : [];
-        $locale = $page->locale ?: $this->settingsService->getDefaultLocale();
+        $defaultLocale = $this->settingsService->getDefaultLocale();
+        $fallbackLocale = $this->settingsService->getFallbackLocale();
+        $locale = $page->locale ?: ($defaultLocale === 'auto' ? $fallbackLocale : $defaultLocale);
         $normalizedData = $this->templateValidation->normalizeDataForTemplateKey(
             $templateKey,
             $data,

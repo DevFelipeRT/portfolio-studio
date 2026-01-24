@@ -11,30 +11,24 @@ import {
     WebsiteSettingsForm,
 } from '@/Modules/WebsiteSettings/ui/admin/WebsiteSettingsForm';
 
-export default function Edit({ settings }: WebsiteSettingsPageProps) {
+export default function Edit({ settings, locales }: WebsiteSettingsPageProps) {
     const initialData = React.useMemo(
-        () => buildWebsiteSettingsFormData(settings),
-        [settings],
+        () => buildWebsiteSettingsFormData(settings, locales),
+        [settings, locales],
     );
 
     const { data, setData, put, processing, errors } =
         useForm<WebsiteSettingsFormData>(initialData);
 
     const handleChange = (field: keyof WebsiteSettingsFormData, value: unknown): void => {
-        if (field === 'supported_locales') {
-            const locales = Array.isArray(value) ? value : [];
-            const next = syncLocaleMaps(
-                {
-                    ...(data as WebsiteSettingsFormData),
-                    supported_locales: locales,
-                },
-                locales,
-            );
-            setData(next);
-            return;
-        }
-
-        setData(field, value as never);
+        const next = syncLocaleMaps(
+            {
+                ...(data as WebsiteSettingsFormData),
+                [field]: value as never,
+            },
+            locales,
+        );
+        setData(next);
     };
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
@@ -61,6 +55,7 @@ export default function Edit({ settings }: WebsiteSettingsPageProps) {
                         onChange={handleChange}
                         onSubmit={handleSubmit}
                         cancelHref={route('dashboard')}
+                        locales={locales}
                     />
                 </div>
             </div>

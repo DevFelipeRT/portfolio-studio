@@ -38,9 +38,11 @@ final class WebsiteSettingsRepository implements IWebsiteSettingsRepository
     {
         $defaults = (array) config('website_settings.defaults', []);
 
-        $supportedLocales = $this->resolveSupportedLocales($defaults);
-        $defaultLocale = $this->resolveDefaultLocale($defaults, $supportedLocales);
-        $fallbackLocale = $this->resolveFallbackLocale($defaults, $supportedLocales, $defaultLocale);
+        $defaultLocale = $this->resolveDefaultLocale($defaults);
+        $fallbackLocale = $this->resolveFallbackLocale($defaults, $defaultLocale);
+        $contentLocale = $defaultLocale === 'auto'
+            ? (string) config('app.locale', 'en')
+            : $defaultLocale;
 
         $siteName = $defaults['site_name'] ?? [];
         $siteDescription = $defaults['site_description'] ?? [];
@@ -50,29 +52,19 @@ final class WebsiteSettingsRepository implements IWebsiteSettingsRepository
         if ($siteName === [] || $defaultMetaTitle === []) {
             $appName = (string) config('app.name', 'Website');
 
-            foreach ($supportedLocales as $locale) {
-                if (!isset($siteName[$locale])) {
-                    $siteName[$locale] = $appName;
-                }
-
-                if (!isset($defaultMetaTitle[$locale])) {
-                    $defaultMetaTitle[$locale] = $appName;
-                }
-            }
+            $siteName[$contentLocale] = $siteName[$contentLocale] ?? $appName;
+            $defaultMetaTitle[$contentLocale] = $defaultMetaTitle[$contentLocale] ?? $appName;
         }
 
         if ($siteDescription === [] || $defaultMetaDescription === []) {
-            foreach ($supportedLocales as $locale) {
-                $siteDescription[$locale] ??= '';
-                $defaultMetaDescription[$locale] ??= '';
-            }
+            $siteDescription[$contentLocale] ??= '';
+            $defaultMetaDescription[$contentLocale] ??= '';
         }
 
         return [
             'site_name' => $siteName,
             'site_description' => $siteDescription,
             'owner_name' => $defaults['owner_name'] ?? null,
-            'supported_locales' => $supportedLocales,
             'default_locale' => $defaultLocale,
             'fallback_locale' => $fallbackLocale,
             'canonical_base_url' => $defaults['canonical_base_url'] ?? null,
@@ -89,28 +81,8 @@ final class WebsiteSettingsRepository implements IWebsiteSettingsRepository
 
     /**
      * @param array<string,mixed> $defaults
-     * @return array<int,string>
      */
-    private function resolveSupportedLocales(array $defaults): array
-    {
-        $supported = $defaults['supported_locales'] ?? [];
-
-        if (!is_array($supported) || $supported === []) {
-            $supported = config('localization.supported_locales', []);
-        }
-
-        if (!is_array($supported) || $supported === []) {
-            $supported = [(string) config('app.locale', 'en')];
-        }
-
-        return array_values(array_filter(array_map('trim', $supported)));
-    }
-
-    /**
-     * @param array<string,mixed> $defaults
-     * @param array<int,string> $supportedLocales
-     */
-    private function resolveDefaultLocale(array $defaults, array $supportedLocales): string
+    private function resolveDefaultLocale(array $defaults): string
     {
         $defaultLocale = $defaults['default_locale'] ?? null;
 
@@ -118,30 +90,20 @@ final class WebsiteSettingsRepository implements IWebsiteSettingsRepository
             $defaultLocale = (string) config('app.locale', 'en');
         }
 
-        if (!in_array($defaultLocale, $supportedLocales, true) && $supportedLocales !== []) {
-            $defaultLocale = $supportedLocales[0];
-        }
-
         return $defaultLocale;
     }
 
     /**
      * @param array<string,mixed> $defaults
-     * @param array<int,string> $supportedLocales
      */
     private function resolveFallbackLocale(
         array $defaults,
-        array $supportedLocales,
         string $defaultLocale,
     ): string {
         $fallbackLocale = $defaults['fallback_locale'] ?? null;
 
         if (!is_string($fallbackLocale) || $fallbackLocale === '') {
             $fallbackLocale = (string) config('app.fallback_locale', $defaultLocale);
-        }
-
-        if (!in_array($fallbackLocale, $supportedLocales, true) && $supportedLocales !== []) {
-            $fallbackLocale = $supportedLocales[0];
         }
 
         return $fallbackLocale;

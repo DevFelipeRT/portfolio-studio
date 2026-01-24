@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\WebsiteSettings\Http\Controllers\Admin;
 
 use App\Modules\Shared\Abstractions\Http\Controller;
+use App\Modules\ContentManagement\Application\Services\PageService;
 use App\Modules\WebsiteSettings\Application\UseCases\GetWebsiteSettings\GetWebsiteSettings;
 use App\Modules\WebsiteSettings\Application\UseCases\UpdateWebsiteSettings\UpdateWebsiteSettings;
 use App\Modules\WebsiteSettings\Http\Mappers\WebsiteSettingsInputMapper;
@@ -19,6 +20,7 @@ final class WebsiteSettingsController extends Controller
     public function __construct(
         private readonly GetWebsiteSettings $getWebsiteSettings,
         private readonly UpdateWebsiteSettings $updateWebsiteSettings,
+        private readonly PageService $pageService,
     ) {
     }
 
@@ -28,6 +30,7 @@ final class WebsiteSettingsController extends Controller
 
         return Inertia::render('WebsiteSettings/Pages/Edit', [
             'settings' => WebsiteSettingsMapper::map($settings),
+            'locales' => $this->pageService->listLocales(),
         ]);
     }
 

@@ -26,7 +26,6 @@ export interface WebsiteSettings {
     site_name?: WebsiteSettingsLocaleMap | null;
     site_description?: WebsiteSettingsLocaleMap | null;
     owner_name?: string | null;
-    supported_locales?: string[] | null;
     default_locale?: string | null;
     fallback_locale?: string | null;
     canonical_base_url?: string | null;
@@ -45,4 +44,5 @@ export interface WebsiteSettings {
 
 export type WebsiteSettingsPageProps = {
     settings: WebsiteSettings;
+    locales: string[];
 };
