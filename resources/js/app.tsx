@@ -5,9 +5,11 @@ import { createInertiaApp } from '@inertiajs/react';
 import { createRoot } from 'react-dom/client';
 import { I18nProvider, createI18nEnvironment } from './Common/i18n';
 
-const defaultAppName = import.meta.env.VITE_APP_NAME || 'Laravel';
-
-let currentAppOwner: string | null = null;
+let currentTitleTemplate: string | null = null;
+let currentSiteName: Record<string, string> | null = null;
+let currentDefaultMetaTitle: Record<string, string> | null = null;
+let currentOwnerName: string | null = null;
+let propsCache: InertiaPageProps = {};
 
 /**
  * Base shape for the initial Inertia page props.
@@ -20,7 +22,12 @@ interface InertiaPageProps extends Record<string, unknown> {
     defaultLocale?: string;
     fallbackLocale?: string;
   };
-  appOwner?: string;
+  websiteSettings?: {
+    siteName?: Record<string, string> | null;
+    ownerName?: string | null;
+    metaTitleTemplate?: string | null;
+    defaultMetaTitle?: Record<string, string> | null;
+  };
 }
 
 /**
@@ -36,6 +43,26 @@ function resolveInitialLocale(props: InertiaPageProps): string | undefined {
   }
 
   return props.localization?.defaultLocale;
+}
+
+function resolveLocalizedValue(
+  map: Record<string, string> | null,
+  locale: string,
+): string | null {
+  if (!map) {
+    return null;
+  }
+
+  if (locale && map[locale]) {
+    return map[locale];
+  }
+
+  const fallbackLocale = propsCache.localization?.fallbackLocale ?? '';
+  if (fallbackLocale && map[fallbackLocale]) {
+    return map[fallbackLocale];
+  }
+
+  return Object.values(map)[0] ?? null;
 }
 
 // Application-level pages: resources/js/Pages/**/*.tsx
@@ -82,9 +109,30 @@ registerPages(modulePageFiles, './Modules/');
 
 createInertiaApp({
   title: (title) => {
-    const baseName = currentAppOwner?.trim() ? currentAppOwner : defaultAppName;
+    const locale = resolveInitialLocale(propsCache) ?? '';
+    const pageTitle = typeof title === 'string' ? title.trim() : '';
+    const template = currentTitleTemplate?.trim() || '{page_title}';
+    const siteName = resolveLocalizedValue(currentSiteName, locale);
+    const defaultMetaTitle = resolveLocalizedValue(
+      currentDefaultMetaTitle,
+      locale,
+    );
 
-    return title ? `${title} | ${baseName}` : baseName;
+    const effectivePageTitle = pageTitle || defaultMetaTitle || siteName || '';
+
+    const rendered = template
+      .replaceAll('{page_title}', effectivePageTitle)
+      .replaceAll('{owner}', currentOwnerName ?? '')
+      .replaceAll('{site}', siteName ?? '')
+      .replaceAll('{locale}', locale);
+
+    const cleaned = rendered
+      .split('|')
+      .map((part) => part.trim())
+      .filter(Boolean)
+      .join(' | ');
+
+    return cleaned || effectivePageTitle;
   },
 
   /**
@@ -116,9 +164,19 @@ createInertiaApp({
 
   setup({ el, App, props }) {
     const initialProps = props.initialPage.props as InertiaPageProps;
+    propsCache = initialProps;
 
-    if (initialProps.appOwner) {
-      currentAppOwner = initialProps.appOwner;
+    if (initialProps.websiteSettings?.metaTitleTemplate) {
+      currentTitleTemplate = initialProps.websiteSettings.metaTitleTemplate;
+    }
+    if (initialProps.websiteSettings?.siteName) {
+      currentSiteName = initialProps.websiteSettings.siteName;
+    }
+    if (initialProps.websiteSettings?.defaultMetaTitle) {
+      currentDefaultMetaTitle = initialProps.websiteSettings.defaultMetaTitle;
+    }
+    if (initialProps.websiteSettings?.ownerName) {
+      currentOwnerName = initialProps.websiteSettings.ownerName;
     }
 
     const currentLocale = resolveInitialLocale(initialProps) ?? null;

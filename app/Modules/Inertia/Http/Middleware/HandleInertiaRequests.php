@@ -2,6 +2,7 @@
 
 namespace App\Modules\Inertia\Http\Middleware;
 
+use App\Modules\WebsiteSettings\Application\Services\WebsiteSettingsService;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Tighten\Ziggy\Ziggy;
@@ -30,11 +31,19 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $settingsService = app(WebsiteSettingsService::class);
+        $settings = $settingsService->getSettings();
+
         return [
             ...parent::share($request),
 
             'appName' => fn() => config('app.name'),
-            'appOwner' => fn() => config('app.owner'),
+            'websiteSettings' => fn() => [
+                'siteName' => $settings->site_name,
+                'ownerName' => $settings->owner_name,
+                'metaTitleTemplate' => $settings->meta_title_template,
+                'defaultMetaTitle' => $settings->default_meta_title,
+            ],
 
             'auth' => [
                 'user' => $request->user(),
@@ -51,9 +60,9 @@ class HandleInertiaRequests extends Middleware
             // Localization metadata for the front-end.
             'localization' => fn() => [
                 'currentLocale' => app()->getLocale(),
-                'supportedLocales' => config('localization.supported_locales', []),
-                'defaultLocale' => config('app.locale'),
-                'fallbackLocale' => config('app.fallback_locale'),
+                'supportedLocales' => $settingsService->getSupportedLocales(),
+                'defaultLocale' => $settingsService->getDefaultLocale(),
+                'fallbackLocale' => $settingsService->getFallbackLocale(),
             ],
         ];
     }

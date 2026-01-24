@@ -19,6 +19,8 @@ use App\Modules\ContentManagement\Domain\Templates\TemplateRegistry;
 use App\Modules\ContentManagement\Presentation\ViewModels\Public\PageRenderViewModel;
 use App\Modules\Images\Domain\Models\Image;
 use App\Modules\Shared\Support\Data\DataTransformer;
+use App\Modules\WebsiteSettings\Application\Services\SeoSettingsResolver;
+use App\Modules\WebsiteSettings\Application\Services\WebsiteSettingsService;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
 
@@ -69,6 +71,8 @@ final class PagePresenter
         private readonly SectionCapabilitiesDataFetcher $sectionCapabilitiesDataFetcher,
         private readonly ContentSettingsService $contentSettings,
         private readonly TemplateTranslationService $templateTranslations,
+        private readonly WebsiteSettingsService $websiteSettings,
+        private readonly SeoSettingsResolver $seoResolver,
     ) {
     }
 
@@ -172,8 +176,13 @@ final class PagePresenter
 
         $templates = $this->buildTemplatesData($sections, $pageDto->locale);
 
+        $seo = $this->buildSeoPayload($pageDto);
+
         $payload = array_merge(
-            [self::PAYLOAD_TEMPLATES_KEY => $templates],
+            [
+                self::PAYLOAD_TEMPLATES_KEY => $templates,
+                'seo' => $seo,
+            ],
             $extraPayload,
         );
 
@@ -225,6 +234,48 @@ final class PagePresenter
         }
 
         return $result;
+    }
+
+    /**
+     * @return array<string,mixed>
+     */
+    private function buildSeoPayload(PageDto $pageDto): array
+    {
+        $locale = $pageDto->locale;
+        $settings = $this->websiteSettings->getSettings();
+
+        $title = $this->seoResolver->resolveMetaTitle(
+            $pageDto->title,
+            $pageDto->metaTitle,
+            $locale,
+        );
+
+        $description = $this->seoResolver->resolveMetaDescription(
+            $pageDto->metaDescription,
+            $locale,
+        );
+
+        $imageUrl = $this->seoResolver->resolveMetaImageUrl($pageDto->metaImageUrl);
+
+        $robots = $this->seoResolver->resolveRobots('public', $pageDto->isIndexable);
+
+        $canonical = null;
+        $baseUrl = $settings->canonical_base_url;
+
+        if (is_string($baseUrl) && $baseUrl !== '') {
+            $baseUrl = rtrim($baseUrl, '/');
+            $homeSlug = $this->contentSettings->getHomeSlug();
+            $path = $pageDto->slug === $homeSlug ? '/' : '/content/' . $pageDto->slug;
+            $canonical = $baseUrl . $path;
+        }
+
+        return [
+            'title' => $title,
+            'description' => $description,
+            'image_url' => $imageUrl,
+            'robots' => $this->seoResolver->renderRobotsMeta($robots),
+            'canonical' => $canonical,
+        ];
     }
 
     private function toSnakeCaseArray(mixed $input): array
