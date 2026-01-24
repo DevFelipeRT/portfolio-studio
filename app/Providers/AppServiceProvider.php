@@ -13,6 +13,7 @@ use App\Modules\Initiatives\Infrastructure\Providers\InitiativesServiceProvider;
 use App\Modules\Mail\Infrastructure\Providers\MailServiceProvider;
 use App\Modules\Projects\Infrastructure\Providers\ProjectsServiceProvider;
 use App\Modules\Skills\Infrastructure\Providers\SkillsServiceProvider;
+use App\Modules\WebsiteSettings\Infrastructure\Providers\WebsiteSettingsServiceProvider;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Vite;
@@ -46,6 +47,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->register(ProjectsServiceProvider::class);
 
         $this->app->register(SkillsServiceProvider::class);
+
+        $this->app->register(WebsiteSettingsServiceProvider::class);
     }
 
     /**
