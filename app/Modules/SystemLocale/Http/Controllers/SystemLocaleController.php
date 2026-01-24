@@ -1,29 +1,29 @@
 <?php
 
-namespace App\Modules\Locale\Http\Controllers;
+namespace App\Modules\SystemLocale\Http\Controllers;
 
-use App\Modules\WebsiteSettings\Application\Services\WebsiteSettingsService;
+use App\Modules\SystemLocale\Application\Services\SystemLocaleService;
 use App\Modules\Shared\Abstractions\Http\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
-class LocaleController extends Controller
+class SystemLocaleController extends Controller
 {
     /**
-     * Persists the user's selected locale in a secure cookie.
+     * Persists the user's selected system locale in a secure cookie.
      */
     public function set(Request $request): JsonResponse
     {
-        $settingsService = app(WebsiteSettingsService::class);
-        $supported = $settingsService->getSupportedLocales();
-        $default = $settingsService->getDefaultLocale();
+        $systemLocale = app(SystemLocaleService::class);
+        $supported = $systemLocale->getSupportedLocales();
+        $default = $systemLocale->getDefaultLocale();
         $locale = $request->input('locale', $default);
 
         if (!is_string($locale) || !in_array($locale, $supported, true)) {
             $locale = $default;
         }
 
-        $cookieName = config('localization.cookie_name', 'locale');
+        $cookieName = config('localization.system_cookie_name', 'system_locale');
         $minutes = 60 * 24 * 30;
 
         return response()->json(['locale' => $locale])

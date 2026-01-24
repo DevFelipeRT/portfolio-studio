@@ -1,18 +1,18 @@
 <?php
 
-namespace App\Modules\Locale\Http\Middleware;
+namespace App\Modules\SystemLocale\Http\Middleware;
 
 use Closure;
-use App\Modules\WebsiteSettings\Application\Services\WebsiteSettingsService;
+use App\Modules\SystemLocale\Application\Services\SystemLocaleService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Cookie;
 use Symfony\Component\HttpFoundation\Response;
 
-class ResolveLocale
+class ResolveSystemLocale
 {
-    public function __construct(private readonly WebsiteSettingsService $settingsService)
+    public function __construct(private readonly SystemLocaleService $systemLocale)
     {
     }
 
@@ -21,9 +21,9 @@ class ResolveLocale
      */
     public function handle(Request $request, Closure $next): Response
     {
-        Config::set('app.locale', $this->settingsService->getDefaultLocale());
-        Config::set('app.fallback_locale', $this->settingsService->getFallbackLocale());
-        App::setFallbackLocale($this->settingsService->getFallbackLocale());
+        Config::set('app.locale', $this->systemLocale->getDefaultLocale());
+        Config::set('app.fallback_locale', $this->systemLocale->getFallbackLocale());
+        App::setFallbackLocale($this->systemLocale->getFallbackLocale());
 
         $resolvedLocale = $this->resolveLocale($request);
 
@@ -111,6 +111,10 @@ class ResolveLocale
      */
     private function localeFromCookie(Request $request): ?string
     {
+        if ($request->user() === null) {
+            return null;
+        }
+
         $cookieName = $this->cookieName();
 
         $value = $request->cookie($cookieName);
@@ -145,6 +149,10 @@ class ResolveLocale
      */
     private function persistLocaleCookie(Request $request, Response $response, string $locale): void
     {
+        if ($request->user() === null) {
+            return;
+        }
+
         $cookieName = $this->cookieName();
 
         $currentCookie = $request->cookie($cookieName);
@@ -156,7 +164,11 @@ class ResolveLocale
         $cookie = Cookie::make(
             $cookieName,
             $locale,
-            60 * 24 * 30
+            60 * 24 * 30,
+            '/',
+            null,
+            config('app.env') === 'production',
+            true
         );
 
         $response->headers->setCookie($cookie);
@@ -168,7 +180,7 @@ class ResolveLocale
      */
     private function supportedLocales(): array
     {
-        return $this->settingsService->getSupportedLocales();
+        return $this->systemLocale->getSupportedLocales();
     }
 
     /**
@@ -176,7 +188,7 @@ class ResolveLocale
      */
     private function defaultLocale(): string
     {
-        return $this->settingsService->getDefaultLocale();
+        return $this->systemLocale->getDefaultLocale();
     }
 
     /**
@@ -184,10 +196,10 @@ class ResolveLocale
      */
     private function cookieName(): string
     {
-        $name = Config::get('localization.cookie_name', 'locale');
+        $name = Config::get('localization.system_cookie_name', 'system_locale');
 
         if (!is_string($name) || $name === '') {
-            return 'locale';
+            return 'system_locale';
         }
 
         return $name;
