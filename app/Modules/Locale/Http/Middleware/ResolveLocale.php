@@ -3,6 +3,7 @@
 namespace App\Modules\Locale\Http\Middleware;
 
 use Closure;
+use App\Modules\WebsiteSettings\Application\Services\WebsiteSettingsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
@@ -11,11 +12,19 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ResolveLocale
 {
+    public function __construct(private readonly WebsiteSettingsService $settingsService)
+    {
+    }
+
     /**
      * Handles the incoming request and configures the application locale.
      */
     public function handle(Request $request, Closure $next): Response
     {
+        Config::set('app.locale', $this->settingsService->getDefaultLocale());
+        Config::set('app.fallback_locale', $this->settingsService->getFallbackLocale());
+        App::setFallbackLocale($this->settingsService->getFallbackLocale());
+
         $resolvedLocale = $this->resolveLocale($request);
 
         App::setLocale($resolvedLocale);
@@ -159,29 +168,7 @@ class ResolveLocale
      */
     private function supportedLocales(): array
     {
-        $locales = Config::get('localization.supported_locales');
-
-        if (!is_array($locales)) {
-            $locales = [];
-        }
-
-        $filtered = array_values(
-            array_filter($locales, static function ($value): bool {
-                return is_string($value) && $value !== '';
-            })
-        );
-
-        if ($filtered !== []) {
-            return $filtered;
-        }
-
-        $default = Config::get('app.locale', 'en');
-
-        if (!is_string($default) || $default === '') {
-            return ['en'];
-        }
-
-        return [$default];
+        return $this->settingsService->getSupportedLocales();
     }
 
     /**
@@ -189,13 +176,7 @@ class ResolveLocale
      */
     private function defaultLocale(): string
     {
-        $default = Config::get('app.locale', 'en');
-
-        if (!is_string($default) || $default === '') {
-            return 'en';
-        }
-
-        return $default;
+        return $this->settingsService->getDefaultLocale();
     }
 
     /**

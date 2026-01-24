@@ -2,6 +2,7 @@
 
 namespace App\Modules\Locale\Http\Controllers;
 
+use App\Modules\WebsiteSettings\Application\Services\WebsiteSettingsService;
 use App\Modules\Shared\Abstractions\Http\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -13,8 +14,9 @@ class LocaleController extends Controller
      */
     public function set(Request $request): JsonResponse
     {
-        $supported = config('localization.supported_locales', [config('app.locale')]);
-        $default = config('app.locale', 'en');
+        $settingsService = app(WebsiteSettingsService::class);
+        $supported = $settingsService->getSupportedLocales();
+        $default = $settingsService->getDefaultLocale();
         $locale = $request->input('locale', $default);
 
         if (!is_string($locale) || !in_array($locale, $supported, true)) {

@@ -12,8 +12,7 @@ return [
     */
 
     'supported_locales' => [
-        'pt_BR',
-        'en',
+        // Managed by WebsiteSettings; keep empty to avoid diverging sources of truth.
     ],
 
     /*

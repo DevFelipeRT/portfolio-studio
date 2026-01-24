@@ -13,6 +13,7 @@ use App\Modules\ContentManagement\Domain\Models\PageSection;
 use App\Modules\ContentManagement\Domain\Repositories\IPageSectionRepository;
 use App\Modules\ContentManagement\Domain\Services\SectionVisibilityResolver;
 use App\Modules\ContentManagement\Domain\ValueObjects\TemplateKey;
+use App\Modules\WebsiteSettings\Application\Services\WebsiteSettingsService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
 use Carbon\CarbonInterface;
@@ -36,6 +37,7 @@ final class PageSectionService
         private readonly TemplateValidationService $templateValidation,
         private readonly SectionVisibilityResolver $visibilityResolver,
         private readonly PageSectionImageService $sectionImageService,
+        private readonly WebsiteSettingsService $settingsService,
     ) {
     }
 
@@ -122,7 +124,7 @@ final class PageSectionService
         $this->fillSection($section, $attributes);
 
         $data = is_array($section->data) ? $section->data : [];
-        $locale = $page->locale ?: (string) config('content_management.locales.default', '');
+        $locale = $page->locale ?: $this->settingsService->getDefaultLocale();
         $normalizedData = $this->templateValidation->normalizeDataForTemplateKey(
             $templateKey,
             $data,
@@ -160,7 +162,7 @@ final class PageSectionService
 
         $data = is_array($section->data) ? $section->data : [];
         $pageLocale = $section->page?->locale;
-        $fallbackLocale = (string) config('content_management.locales.default', '');
+        $fallbackLocale = $this->settingsService->getFallbackLocale();
         $locale = $pageLocale ?: $fallbackLocale;
         $normalizedData = $this->templateValidation->normalizeDataForTemplateKey(
             $templateKey,

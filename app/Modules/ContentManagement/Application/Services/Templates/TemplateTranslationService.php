@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\ContentManagement\Application\Services\Templates;
 
 use App\Modules\ContentManagement\Domain\Templates\TemplateDefinition;
+use App\Modules\WebsiteSettings\Application\Services\WebsiteSettingsService;
 use Illuminate\Support\Arr;
 
 /**
@@ -16,6 +17,10 @@ final class TemplateTranslationService
      * @var array<string,array<string,mixed>>
      */
     private array $cache = [];
+
+    public function __construct(private readonly WebsiteSettingsService $settingsService)
+    {
+    }
 
     public function translate(
         TemplateDefinition $definition,
@@ -34,7 +39,7 @@ final class TemplateTranslationService
             return $value;
         }
 
-        $fallbackLocale = (string) config('content_management.locales.default', '');
+        $fallbackLocale = $this->settingsService->getFallbackLocale();
 
         if ($fallbackLocale !== '' && $fallbackLocale !== $locale) {
             $fallbackCatalog = $this->loadCatalog($definition, $fallbackLocale);
