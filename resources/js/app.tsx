@@ -3,7 +3,7 @@ import './bootstrap';
 
 import { createInertiaApp } from '@inertiajs/react';
 import { createRoot } from 'react-dom/client';
-import { I18nProvider, createI18nEnvironment } from './Common/i18n';
+import { I18nProvider, createI18nEnvironment } from '@/Common/i18n';
 
 let currentTitleTemplate: string | null = null;
 let currentSiteName: Record<string, string> | null = null;
