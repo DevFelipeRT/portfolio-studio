@@ -45,6 +45,13 @@ export const navigationConfig = [
                 fallbackLabel: 'Contact channels',
             },
             {
+                id: 'website-settings',
+                kind: 'link',
+                routeName: 'website-settings.edit',
+                translationKey: 'header.navigation.portfolioWebsiteSettings',
+                fallbackLabel: 'Website settings',
+            },
+            {
                 id: 'images',
                 kind: 'link',
                 routeName: 'images.index',
