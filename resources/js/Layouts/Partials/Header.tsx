@@ -2,7 +2,7 @@
 
 import { useTranslation } from '@/Common/i18n';
 import ApplicationLogo from '@/Layouts/Partials/ApplicationLogo/ApplicationLogo';
-import { LanguageSelector } from '@/Layouts/Partials/LanguageSelector';
+import { SystemLanguageSelectorContainer } from '@/Common/i18n';
 import { ModeToggle } from '@/Layouts/Partials/Theme/ModeToggle';
 import { UserMenu } from '@/Layouts/Partials/UserMenu';
 import { Link, usePage } from '@inertiajs/react';
@@ -72,7 +72,7 @@ export default function Header({ children }: PropsWithChildren) {
         {/* Mode toggle + user menu (desktop) */}
         <div className="order-2 flex flex-1 items-center justify-end gap-3 md:order-3">
           <ModeToggle />
-          <LanguageSelector />
+          <SystemLanguageSelectorContainer />
           {user && (
             <div className="hidden md:flex">
               <UserMenu user={user} variant="icon" />

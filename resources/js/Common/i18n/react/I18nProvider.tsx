@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode, useCallback, useMemo, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import type { LocaleResolver } from '../core/locale-resolver';
 import type { TranslationResolver } from '../core/translation-resolver';
 import type { Locale, Namespace, TranslationParams } from '../core/types';
@@ -28,6 +28,16 @@ export function I18nProvider({
     );
 
     const [activeLocale, setActiveLocale] = useState<Locale>(resolvedInitial);
+
+    useEffect(() => {
+        const resolved = localeResolver.resolve(
+            initialLocale ?? localeResolver.defaultLocale,
+        );
+
+        if (resolved !== activeLocale) {
+            setActiveLocale(resolved);
+        }
+    }, [activeLocale, initialLocale, localeResolver]);
 
     const setLocale = useCallback(
         (nextLocale: string): Locale => {

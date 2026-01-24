@@ -1,9 +1,10 @@
 import '../css/app.css';
 import './bootstrap';
 
-import { createInertiaApp } from '@inertiajs/react';
+import { createInertiaApp, usePage } from '@inertiajs/react';
 import { createRoot } from 'react-dom/client';
 import { I18nProvider, createI18nEnvironment } from './Common/i18n';
+import { useMemo } from 'react';
 
 let currentTitleTemplate: string | null = null;
 let currentSiteName: Record<string, string> | null = null;
@@ -21,6 +22,9 @@ interface InertiaPageProps extends Record<string, unknown> {
     supportedLocales?: string[];
     defaultLocale?: string;
     fallbackLocale?: string;
+    cookieName?: string;
+    apiEndpoint?: string;
+    persistClientCookie?: boolean;
   };
   websiteSettings?: {
     siteName?: Record<string, string> | null;
@@ -159,7 +163,42 @@ createInertiaApp({
       );
     }
 
-    return pageModule.default;
+    const PageComponent = pageModule.default;
+
+    const WrappedPage = (props: Record<string, unknown>) => {
+      const page = usePage().props as InertiaPageProps;
+      const currentLocale = resolveInitialLocale(page) ?? null;
+      const localizationConfig = page.localization || {};
+
+      const { localeResolver, translationResolver } = useMemo(
+        () =>
+          createI18nEnvironment({
+            supportedLocales: localizationConfig.supportedLocales,
+            defaultLocale: currentLocale,
+            fallbackLocale: localizationConfig.fallbackLocale,
+          }),
+        [
+          currentLocale,
+          localizationConfig.supportedLocales,
+          localizationConfig.fallbackLocale,
+        ],
+      );
+
+      return (
+        <I18nProvider
+          initialLocale={currentLocale}
+          localeResolver={localeResolver}
+          translationResolver={translationResolver}
+        >
+          <PageComponent {...props} />
+        </I18nProvider>
+      );
+    };
+
+    WrappedPage.displayName = `I18n(${PageComponent.displayName ?? PageComponent.name ?? 'Page'})`;
+    WrappedPage.layout = PageComponent.layout;
+
+    return WrappedPage;
   },
 
   setup({ el, App, props }) {
@@ -179,25 +218,10 @@ createInertiaApp({
       currentOwnerName = initialProps.websiteSettings.ownerName;
     }
 
-    const currentLocale = resolveInitialLocale(initialProps) ?? null;
-    const localizationConfig = initialProps.localization || {};
-
-    const { localeResolver, translationResolver } = createI18nEnvironment({
-      supportedLocales: localizationConfig.supportedLocales,
-      defaultLocale: currentLocale,
-      fallbackLocale: localizationConfig.fallbackLocale,
-    });
-
     const root = createRoot(el);
 
     root.render(
-      <I18nProvider
-        initialLocale={currentLocale}
-        localeResolver={localeResolver}
-        translationResolver={translationResolver}
-      >
-        <App {...props} />
-      </I18nProvider>,
+      <App {...props} />,
     );
   },
 

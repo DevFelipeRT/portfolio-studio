@@ -1,8 +1,4 @@
-'use client';
-
-import { NAMESPACES } from '@/Common/i18n/config/namespaces';
-import { useSetLocale } from '@/Common/i18n/react/hooks/useSetLocale';
-import { useTranslation } from '@/Common/i18n/react/hooks/useTranslation';
+import { MouseEvent } from 'react';
 import { Button } from '@/Components/Ui/button';
 import {
   DropdownMenu,
@@ -12,24 +8,16 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from '@/Components/Ui/dropdown-menu';
-import { usePage } from '@inertiajs/react';
 import { Languages } from 'lucide-react';
-import { MouseEvent } from 'react';
-
-type LocalizationProps = {
-  currentLocale?: string;
-  supportedLocales?: string[];
-  defaultLocale?: string;
-  fallbackLocale?: string;
-};
-
-type SharedProps = {
-  localization?: LocalizationProps;
-};
 
 type LanguageSelectorProps = {
-  cookieName?: string;
-  maxAgeDays?: number;
+  activeLocale: string;
+  locales: string[];
+  ariaLabel: string;
+  menuLabel: string;
+  onSelect(locale: string): void;
+  formatLabel(code: string): string;
+  formatShortLabel(code: string): string;
 };
 
 /**
@@ -38,35 +26,21 @@ type LanguageSelectorProps = {
  * When i18n is not fully configured yet, it falls back to English labels.
  */
 export function LanguageSelector({
-  cookieName = 'locale',
-  maxAgeDays = 30,
+  activeLocale,
+  locales,
+  ariaLabel,
+  menuLabel,
+  onSelect,
+  formatLabel,
+  formatShortLabel,
 }: LanguageSelectorProps) {
-  const { translate, locale: activeLocale } = useTranslation(NAMESPACES.common);
-  const page = usePage().props as SharedProps;
-
-  const localization = page.localization ?? {};
-  const supportedLocales = localization.supportedLocales ?? [];
-
-  const setLocaleAndPersist = useSetLocale({
-    cookieName,
-    maxAgeDays,
-  });
-
   const handleTriggerClick = (event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
   };
 
-  if (!supportedLocales.length) {
+  if (!locales.length) {
     return null;
   }
-
-  const ariaLabel = translate(
-    'languageSwitcher.ariaLabel',
-    `Change language (current: ${activeLocale})`,
-    { locale: activeLocale },
-  );
-
-  const menuLabel = translate('languageSwitcher.label', 'Language');
 
   return (
     <DropdownMenu>
@@ -80,19 +54,16 @@ export function LanguageSelector({
         >
           <Languages className="h-4 w-4" />
           <span className="text-muted-foreground text-xs">
-            {formatLocaleShortLabel(activeLocale)}
+            {formatShortLabel(activeLocale)}
           </span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>{menuLabel}</DropdownMenuLabel>
-        <DropdownMenuRadioGroup
-          value={activeLocale}
-          onValueChange={setLocaleAndPersist}
-        >
-          {supportedLocales.map((code) => (
+        <DropdownMenuRadioGroup value={activeLocale} onValueChange={onSelect}>
+          {locales.map((code) => (
             <DropdownMenuRadioItem key={code} value={code}>
-              {formatLocaleLabel(code)}
+              {formatLabel(code)}
             </DropdownMenuRadioItem>
           ))}
         </DropdownMenuRadioGroup>

@@ -7,12 +7,13 @@ return [
     | Supported Locales
     |--------------------------------------------------------------------------
     |
-    | List of locale codes that the application explicitly supports.
+    | List of locale codes that the system (admin + internal flows) supports.
     |
     */
 
     'supported_locales' => [
-        // Managed by WebsiteSettings; keep empty to avoid diverging sources of truth.
+        'pt_BR',
+        'en',
     ],
 
     /*
@@ -20,11 +21,13 @@ return [
     | Locale Persistence
     |--------------------------------------------------------------------------
     |
-    | Configuration for how the effective locale is persisted and read.
+    | Configuration for how locales are persisted and read.
     |
     */
 
-    'cookie_name' => env('APP_LOCALE_COOKIE', 'locale'),
+    'system_cookie_name' => env('APP_SYSTEM_LOCALE_COOKIE', 'system_locale'),
+
+    'public_cookie_name' => env('APP_PUBLIC_LOCALE_COOKIE', 'public_locale'),
 
     'route_parameter' => 'locale',
 ];

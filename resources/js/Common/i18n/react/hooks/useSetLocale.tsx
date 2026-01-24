@@ -8,6 +8,7 @@ export type UseSetLocaleOptions = {
     cookieName?: string;
     maxAgeDays?: number;
     apiEndpoint?: string;
+    persistClientCookie?: boolean;
 };
 
 export type SetLocaleHandler = (nextLocale: string) => Promise<string>;
@@ -28,12 +29,15 @@ export function useSetLocale(options?: UseSetLocaleOptions): SetLocaleHandler {
     const cookieName = options?.cookieName ?? 'locale';
     const maxAgeDays = options?.maxAgeDays ?? 30;
     const apiEndpoint = options?.apiEndpoint ?? '/set-locale';
+    const persistClientCookie = options?.persistClientCookie ?? true;
 
     const handler: SetLocaleHandler = useCallback(
         async (nextLocale: string) => {
             const resolved = setLocale(nextLocale);
 
-            persistLocaleCookie(cookieName, resolved, maxAgeDays);
+            if (persistClientCookie) {
+                persistLocaleCookie(cookieName, resolved, maxAgeDays);
+            }
 
             try {
                 await fetch(apiEndpoint, {
@@ -59,7 +63,7 @@ export function useSetLocale(options?: UseSetLocaleOptions): SetLocaleHandler {
 
             return resolved;
         },
-        [setLocale, cookieName, maxAgeDays, apiEndpoint],
+        [setLocale, cookieName, maxAgeDays, apiEndpoint, persistClientCookie],
     );
 
     return handler;
