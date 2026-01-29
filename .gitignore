@@ -11,6 +11,7 @@
 /.phpunit.cache
 /.vscode
 /.zed
+/.npm
 /auth.json
 /bootstrap/ssr
 /node_modules
