@@ -1,14 +1,16 @@
 import { Button } from '@/Components/Ui/button';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, router } from '@inertiajs/react';
-import type { Skill } from '@/Modules/Skills/core/types';
+import type { Skill, SkillCategory } from '@/Modules/Skills/core/types';
 import { SkillsTable } from '@/Modules/Skills/ui/SkillsTable';
+import { SkillCategoriesSection } from '@/Modules/Skills/ui/sections/SkillCategoriesSection';
 
 interface SkillsIndexProps {
     skills: Skill[];
+    categories: SkillCategory[];
 }
 
-export default function Index({ skills }: SkillsIndexProps) {
+export default function Index({ skills, categories }: SkillsIndexProps) {
     const hasSkills = skills.length > 0;
 
     const handleEdit = (skill: Skill): void => {
@@ -38,7 +40,7 @@ export default function Index({ skills }: SkillsIndexProps) {
         >
             <Head title="Skills" />
 
-            <div className="overflow-hidden">
+            <div className="overflow-hidden space-y-10">
                 <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <p className="text-muted-foreground mt-1 text-sm">
@@ -65,6 +67,8 @@ export default function Index({ skills }: SkillsIndexProps) {
                         onDelete={handleDelete}
                     />
                 )}
+
+                <SkillCategoriesSection categories={categories} />
             </div>
         </AuthenticatedLayout>
     );

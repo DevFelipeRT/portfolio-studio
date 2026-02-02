@@ -37,10 +37,10 @@ export default function Create() {
                 <div className="mx-auto max-w-xl px-4 py-8 sm:px-6 lg:px-8">
                     <div className="mb-4">
                         <Link
-                            href={route('skill-categories.index')}
+                            href={route('skills.index')}
                             className="text-muted-foreground hover:text-foreground text-sm"
                         >
-                            Back to categories
+                            Back to skills
                         </Link>
                     </div>
 
@@ -50,7 +50,7 @@ export default function Create() {
                         processing={processing}
                         onChange={handleChange}
                         onSubmit={handleSubmit}
-                        cancelHref={route('skill-categories.index')}
+                        cancelHref={route('skills.index')}
                         submitLabel="Save"
                         alignActions="right"
                     />

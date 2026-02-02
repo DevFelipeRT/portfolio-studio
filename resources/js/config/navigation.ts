@@ -73,13 +73,6 @@ export const navigationConfig = [
         fallbackLabel: 'Skills',
       },
       {
-        id: 'skill-categories',
-        kind: 'link',
-        routeName: 'skill-categories.index',
-        translationKey: 'header.navigation.portfolioSkillCategories',
-        fallbackLabel: 'Skill categories',
-      },
-      {
         id: 'initiatives',
         kind: 'link',
         routeName: 'initiatives.index',
