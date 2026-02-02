@@ -47,4 +47,14 @@ class SkillCategory extends Model
     {
         return $this->hasMany(Skill::class, 'skill_category_id');
     }
+
+    /**
+     * Localized category names.
+     *
+     * @return HasMany<SkillCategoryTranslation>
+     */
+    public function translations(): HasMany
+    {
+        return $this->hasMany(SkillCategoryTranslation::class, 'skill_category_id');
+    }
 }

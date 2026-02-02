@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Represents a reusable skill in the portfolio.
@@ -48,6 +49,16 @@ class Skill extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(SkillCategory::class, 'skill_category_id');
+    }
+
+    /**
+     * Localized skill names.
+     *
+     * @return HasMany<SkillTranslation>
+     */
+    public function translations(): HasMany
+    {
+        return $this->hasMany(SkillTranslation::class, 'skill_id');
     }
 
     /**

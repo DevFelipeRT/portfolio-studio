@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\Skills\Application\Capabilities\Dtos;
 
-use App\Modules\Skills\Domain\Models\Skill;
-
 /**
  * Data transfer object for a public visible skill item.
  */
@@ -17,11 +15,11 @@ final class VisibleSkillItem
     ) {
     }
 
-    public static function fromModel(Skill $skill): self
+    public static function fromName(int $id, string $name): self
     {
         return new self(
-            $skill->id,
-            $skill->name,
+            $id,
+            $name,
         );
     }
 

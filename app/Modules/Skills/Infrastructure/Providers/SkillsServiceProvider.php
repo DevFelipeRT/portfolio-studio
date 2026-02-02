@@ -2,7 +2,16 @@
 
 namespace App\Modules\Skills\Infrastructure\Providers;
 
+use App\Modules\Skills\Application\Capabilities\Providers\SkillList;
 use App\Modules\Skills\Application\Capabilities\Providers\SkillsByCategory;
+use App\Modules\Skills\Domain\Repositories\ISkillCategoryRepository;
+use App\Modules\Skills\Domain\Repositories\ISkillCategoryTranslationRepository;
+use App\Modules\Skills\Domain\Repositories\ISkillRepository;
+use App\Modules\Skills\Domain\Repositories\ISkillTranslationRepository;
+use App\Modules\Skills\Infrastructure\Repositories\SkillCategoryRepository;
+use App\Modules\Skills\Infrastructure\Repositories\SkillCategoryTranslationRepository;
+use App\Modules\Skills\Infrastructure\Repositories\SkillRepository;
+use App\Modules\Skills\Infrastructure\Repositories\SkillTranslationRepository;
 
 use App\Modules\Shared\Support\Capabilities\Traits\RegisterCapabilitiesTrait;
 use Illuminate\Support\ServiceProvider;
@@ -19,6 +28,7 @@ class SkillsServiceProvider extends ServiceProvider
     {
         $this->registerBindings();
         $this->registerCapabilitiesIfAvailable([
+            SkillList::class,
             SkillsByCategory::class,
         ]);
     }
@@ -36,7 +46,10 @@ class SkillsServiceProvider extends ServiceProvider
      */
     private function registerBindings(): void
     {
-
+        $this->app->bind(ISkillRepository::class, SkillRepository::class);
+        $this->app->bind(ISkillCategoryRepository::class, SkillCategoryRepository::class);
+        $this->app->bind(ISkillTranslationRepository::class, SkillTranslationRepository::class);
+        $this->app->bind(ISkillCategoryTranslationRepository::class, SkillCategoryTranslationRepository::class);
     }
 
     /**

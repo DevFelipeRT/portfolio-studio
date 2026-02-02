@@ -8,17 +8,14 @@ use App\Modules\Shared\Contracts\Capabilities\ICapabilitiesFactory;
 use App\Modules\Shared\Contracts\Capabilities\ICapabilityContext;
 use App\Modules\Shared\Contracts\Capabilities\ICapabilityDefinition;
 use App\Modules\Shared\Contracts\Capabilities\ICapabilityProvider;
-use App\Modules\Skills\Application\UseCases\ListSkillsGroupedByCategory\ListSkillsGroupedByCategory;
+use App\Modules\Skills\Application\UseCases\ListSkills\ListSkills;
 
-/**
- * Capability provider that exposes public skills grouped by category.
- */
-final class SkillsByCategory implements ICapabilityProvider
+final class SkillList implements ICapabilityProvider
 {
     private ?ICapabilityDefinition $definition = null;
 
     public function __construct(
-        private readonly ListSkillsGroupedByCategory $listSkillsGroupedByCategory,
+        private readonly ListSkills $listSkills,
         private readonly ICapabilitiesFactory $capabilitiesFactory,
     ) {
     }
@@ -30,10 +27,10 @@ final class SkillsByCategory implements ICapabilityProvider
         }
 
         $this->definition = $this->capabilitiesFactory->createPublicDefinition(
-            'skills.grouped_by_category.v1',
-            'Returns portfolio skills grouped by category.',
+            'skills.list.v1',
+            'Returns skills for admin consumption.',
             [],
-            'array<VisibleSkillGroup>',
+            'array<SkillDto>',
         );
 
         return $this->definition;
@@ -41,16 +38,14 @@ final class SkillsByCategory implements ICapabilityProvider
 
     /**
      * @param array<string, mixed> $parameters
-     * @return array<int, array{
-     *     id: string,
-     *     title: string,
-     *     skills: array<int, array{id: int, name: string}>
-     * }>
+     * @return array<int, array<string,mixed>>
      */
     public function execute(
         array $parameters,
         ?ICapabilityContext $context = null,
     ): array {
-        return $this->listSkillsGroupedByCategory->handle();
+        $skills = $this->listSkills->handle();
+
+        return array_map(static fn($dto): array => $dto->toArray(), $skills);
     }
 }

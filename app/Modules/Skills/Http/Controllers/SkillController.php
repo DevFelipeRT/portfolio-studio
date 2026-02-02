@@ -5,11 +5,20 @@ declare(strict_types=1);
 namespace App\Modules\Skills\Http\Controllers;
 
 use App\Modules\Shared\Abstractions\Http\Controller;
+use App\Modules\Skills\Application\Dtos\SkillCategoryDto;
+use App\Modules\Skills\Application\Dtos\SkillDto;
+use App\Modules\Skills\Application\Services\SkillTranslationResolver;
+use App\Modules\Skills\Application\UseCases\CreateSkill\CreateSkill;
+use App\Modules\Skills\Application\UseCases\DeleteSkill\DeleteSkill;
+use App\Modules\Skills\Application\UseCases\ListSkillCategories\ListSkillCategories;
+use App\Modules\Skills\Application\UseCases\ListSkills\ListSkills;
+use App\Modules\Skills\Application\UseCases\UpdateSkill\UpdateSkill;
 use App\Modules\Skills\Domain\Models\Skill;
-use App\Modules\Skills\Application\Services\SkillService;
-use App\Modules\Skills\Application\Services\SkillCategoryService;
+use App\Modules\Skills\Http\Mappers\SkillInputMapper;
 use App\Modules\Skills\Http\Requests\Skill\StoreSkillRequest;
 use App\Modules\Skills\Http\Requests\Skill\UpdateSkillRequest;
+use App\Modules\Skills\Presentation\Mappers\SkillCategoryMapper;
+use App\Modules\Skills\Presentation\Mappers\SkillMapper;
 
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
@@ -21,8 +30,12 @@ use Inertia\Response;
 class SkillController extends Controller
 {
     public function __construct(
-        private readonly SkillService $skillService,
-        private readonly SkillCategoryService $skillCategoryService,
+        private readonly ListSkills $listSkills,
+        private readonly ListSkillCategories $listSkillCategories,
+        private readonly CreateSkill $createSkill,
+        private readonly UpdateSkill $updateSkill,
+        private readonly DeleteSkill $deleteSkill,
+        private readonly SkillTranslationResolver $translationResolver,
     ) {}
 
     /**
@@ -30,10 +43,12 @@ class SkillController extends Controller
      */
     public function index(): Response
     {
-        $skills = $this->skillService->all();
+        $skills = $this->listSkills->handle();
+        $categories = $this->listSkillCategories->handle();
 
         return Inertia::render('Skills/Pages/Index', [
-            'skills' => $skills,
+            'skills' => SkillMapper::collection($skills),
+            'categories' => SkillCategoryMapper::collection($categories),
         ]);
     }
 
@@ -42,8 +57,10 @@ class SkillController extends Controller
      */
     public function create(): Response
     {
+        $categories = $this->listSkillCategories->handle();
+
         return Inertia::render('Skills/Pages/Create', [
-            'categories' => $this->skillCategoryService->all(),
+            'categories' => SkillCategoryMapper::collection($categories),
         ]);
     }
 
@@ -52,12 +69,9 @@ class SkillController extends Controller
      */
     public function store(StoreSkillRequest $request): RedirectResponse
     {
-        $data = $request->validated();
+        $input = SkillInputMapper::fromStoreRequest($request);
 
-        $this->skillService->create(
-            $data['name'],
-            $data['skill_category_id'] ?? null,
-        );
+        $this->createSkill->handle($input);
 
         return redirect()
             ->route('skills.index')
@@ -69,9 +83,33 @@ class SkillController extends Controller
      */
     public function edit(Skill $skill): Response
     {
+        $skill->loadMissing('category', 'translations', 'category.translations');
+        $categories = $this->listSkillCategories->handle();
+
+        $locale = app()->getLocale();
+        $fallbackLocale = app()->getFallbackLocale();
+
+        $categoryDto = null;
+        if ($skill->category !== null) {
+            $categoryName = $this->translationResolver->resolveCategoryName(
+                $skill->category,
+                $locale,
+                $fallbackLocale,
+            );
+            $categoryDto = SkillCategoryDto::fromModel($skill->category, $categoryName);
+        }
+
+        $skillName = $this->translationResolver->resolveSkillName(
+            $skill,
+            $locale,
+            $fallbackLocale,
+        );
+
+        $skillDto = SkillDto::fromModel($skill, $skillName, $categoryDto);
+
         return Inertia::render('Skills/Pages/Edit', [
-            'skill' => $skill,
-            'categories' => $this->skillCategoryService->all(),
+            'skill' => SkillMapper::map($skillDto),
+            'categories' => SkillCategoryMapper::collection($categories),
         ]);
     }
 
@@ -82,13 +120,9 @@ class SkillController extends Controller
         UpdateSkillRequest $request,
         Skill $skill,
     ): RedirectResponse {
-        $data = $request->validated();
+        $input = SkillInputMapper::fromUpdateRequest($request, $skill);
 
-        $this->skillService->rename(
-            $skill,
-            $data['name'],
-            $data['skill_category_id'] ?? null,
-        );
+        $this->updateSkill->handle($skill, $input);
 
         return redirect()
             ->route('skills.index', $skill)
@@ -100,7 +134,7 @@ class SkillController extends Controller
      */
     public function destroy(Skill $skill): RedirectResponse
     {
-        $this->skillService->delete($skill);
+        $this->deleteSkill->handle($skill);
 
         return redirect()
             ->route('skills.index')
