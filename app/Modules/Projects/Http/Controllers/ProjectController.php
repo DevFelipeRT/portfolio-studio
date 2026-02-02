@@ -7,9 +7,9 @@ namespace App\Modules\Projects\Http\Controllers;
 use App\Modules\Shared\Abstractions\Http\Controller;
 use App\Modules\Projects\Domain\Models\Project;
 use App\Modules\Projects\Application\Services\ProjectService;
+use App\Modules\Projects\Application\Capabilities\CapabilitiesGateway;
 use App\Modules\Projects\Http\Requests\Project\StoreProjectRequest;
 use App\Modules\Projects\Http\Requests\Project\UpdateProjectRequest;
-use App\Modules\Skills\Application\Services\SkillService;
 
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
@@ -22,7 +22,7 @@ class ProjectController extends Controller
 {
     public function __construct(
         private readonly ProjectService $projectService,
-        private readonly SkillService $skillService,
+        private readonly CapabilitiesGateway $capabilitiesGateway,
     ) {
     }
 
@@ -43,10 +43,10 @@ class ProjectController extends Controller
      */
     public function create(): Response
     {
-        $skills = $this->skillService->all();
+        $skills = $this->capabilitiesGateway->resolve('skills.list.v1');
 
         return Inertia::render('Projects/Pages/Create', [
-            'skills' => $skills,
+            'skills' => is_array($skills) ? $skills : [],
         ]);
     }
 
@@ -87,11 +87,11 @@ class ProjectController extends Controller
     {
         $project->load(['images', 'skills.category']);
 
-        $skills = $this->skillService->all();
+        $skills = $this->capabilitiesGateway->resolve('skills.list.v1');
 
         return Inertia::render('Projects/Pages/Edit', [
             'project' => $project,
-            'skills' => $skills,
+            'skills' => is_array($skills) ? $skills : [],
         ]);
     }
 

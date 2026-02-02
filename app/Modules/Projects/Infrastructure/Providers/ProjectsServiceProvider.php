@@ -2,7 +2,10 @@
 
 namespace App\Modules\Projects\Infrastructure\Providers;
 
+use App\Modules\Projects\Application\Capabilities\CapabilitiesGateway;
 use App\Modules\Projects\Application\Capabilities\Providers\VisibleProjects;
+use App\Modules\Shared\Contracts\Capabilities\ICapabilitiesFactory;
+use App\Modules\Shared\Contracts\Capabilities\ICapabilityDataResolver;
 use App\Modules\Shared\Support\Capabilities\Traits\RegisterCapabilitiesTrait;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
@@ -35,7 +38,12 @@ class ProjectsServiceProvider extends ServiceProvider
      */
     private function registerBindings(): void
     {
-
+        $this->app->singleton(CapabilitiesGateway::class, static function ($app): CapabilitiesGateway {
+            return new CapabilitiesGateway(
+                $app->make(ICapabilitiesFactory::class),
+                $app->make(ICapabilityDataResolver::class),
+            );
+        });
     }
 
     /**
