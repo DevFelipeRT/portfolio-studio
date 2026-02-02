@@ -12,6 +12,7 @@
 /.vscode
 /.zed
 /.npm
+/.cache
 /auth.json
 /bootstrap/ssr
 /node_modules
