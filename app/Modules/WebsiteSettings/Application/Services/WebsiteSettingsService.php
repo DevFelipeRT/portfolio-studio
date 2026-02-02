@@ -59,6 +59,49 @@ final class WebsiteSettingsService
         return $fallback;
     }
 
+    /**
+     * @return array<int,string>
+     */
+    public function getSupportedLocales(): array
+    {
+        $settings = $this->getSettings();
+        $locales = [];
+
+        $maps = [
+            $settings->site_name,
+            $settings->site_description,
+            $settings->default_meta_title,
+            $settings->default_meta_description,
+        ];
+
+        foreach ($maps as $map) {
+            if (!is_array($map)) {
+                continue;
+            }
+
+            foreach (array_keys($map) as $locale) {
+                $locales[] = $locale;
+            }
+        }
+
+        $defaultLocale = $settings->default_locale;
+        if (!is_string($defaultLocale) || $defaultLocale === '') {
+            $defaultLocale = (string) config('app.locale', 'en');
+        }
+
+        if ($defaultLocale === 'auto') {
+            $defaultLocale = (string) config('app.locale', 'en');
+        }
+
+        $locales[] = $defaultLocale;
+        $locales[] = $this->getFallbackLocale();
+
+        $values = array_values(array_filter(array_map('trim', $locales)));
+        $values = array_values(array_unique($values));
+
+        return $values !== [] ? $values : [(string) config('app.locale', 'en')];
+    }
+
     public function getLocalizedValue(?array $map, string $locale, ?string $fallbackLocale = null): ?string
     {
         if ($map === null || $map === []) {

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\WebsiteSettings\Infrastructure\Providers;
 
+use App\Modules\Shared\Support\Capabilities\Traits\RegisterCapabilitiesTrait;
+use App\Modules\WebsiteSettings\Application\Capabilities\Providers\SupportedLocales;
 use App\Modules\WebsiteSettings\Domain\Repositories\IWebsiteSettingsRepository;
 use App\Modules\WebsiteSettings\Infrastructure\Repositories\WebsiteSettingsRepository;
 use Illuminate\Support\Facades\Route;
@@ -11,10 +13,15 @@ use Illuminate\Support\ServiceProvider;
 
 final class WebsiteSettingsServiceProvider extends ServiceProvider
 {
+    use RegisterCapabilitiesTrait;
+
     public function register(): void
     {
         $this->registerConfig();
         $this->app->bind(IWebsiteSettingsRepository::class, WebsiteSettingsRepository::class);
+        $this->registerCapabilitiesIfAvailable([
+            SupportedLocales::class,
+        ]);
     }
 
     public function boot(): void
