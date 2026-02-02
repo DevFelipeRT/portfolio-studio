@@ -10,6 +10,9 @@ Route::prefix('admin')
         Route::get('website-settings', [WebsiteSettingsController::class, 'edit'])
             ->name('website-settings.edit');
 
+        Route::get('website-settings/locales', [WebsiteSettingsController::class, 'locales'])
+            ->name('website-settings.locales');
+
         Route::put('website-settings', [WebsiteSettingsController::class, 'update'])
             ->name('website-settings.update');
     });
