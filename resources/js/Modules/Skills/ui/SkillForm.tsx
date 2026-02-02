@@ -10,8 +10,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/Components/Ui/select';
-import type { SkillCategory } from '@/Modules/Skills/core/types';
 import type { SkillFormData } from '@/Modules/Skills/core/forms';
+import type { SkillCategory } from '@/Modules/Skills/core/types';
 import { Link } from '@inertiajs/react';
 import React, { JSX } from 'react';
 
@@ -134,7 +134,10 @@ export function SkillForm({
             data.skill_category_id === '' ? '' : String(data.skill_category_id)
           }
           onValueChange={(value) =>
-            onChange('skill_category_id', value === '' ? '' : Number(value))
+            onChange(
+              'skill_category_id',
+              value === '__none__' ? '' : Number(value),
+            )
           }
         >
           <SelectTrigger id="category">
@@ -142,7 +145,7 @@ export function SkillForm({
           </SelectTrigger>
 
           <SelectContent>
-            <SelectItem value="">Uncategorized</SelectItem>
+            <SelectItem value="__none__">Uncategorized</SelectItem>
             {categories.map((category) => (
               <SelectItem key={category.id} value={String(category.id)}>
                 {category.name}
