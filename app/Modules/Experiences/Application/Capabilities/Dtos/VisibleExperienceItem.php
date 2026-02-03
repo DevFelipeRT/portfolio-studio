@@ -14,7 +14,7 @@ final class VisibleExperienceItem
     public function __construct(
         private readonly int $id,
         private readonly string $position,
-        private readonly string $company,
+        private readonly ?string $company,
         private readonly ?string $summary,
         private readonly ?string $description,
         private readonly ?string $startDate,
@@ -28,9 +28,28 @@ final class VisibleExperienceItem
         return new self(
             $experience->id,
             (string) $experience->position,
-            (string) $experience->company,
+            $experience->company,
             $experience->summary,
             $experience->description,
+            $experience->start_date?->format('Y-m-d'),
+            $experience->end_date?->format('Y-m-d'),
+            (bool) $experience->display,
+        );
+    }
+
+    public static function fromModelWithTranslations(
+        Experience $experience,
+        string $position,
+        ?string $company,
+        ?string $summary,
+        ?string $description,
+    ): self {
+        return new self(
+            $experience->id,
+            $position,
+            $company,
+            $summary,
+            $description,
             $experience->start_date?->format('Y-m-d'),
             $experience->end_date?->format('Y-m-d'),
             (bool) $experience->display,

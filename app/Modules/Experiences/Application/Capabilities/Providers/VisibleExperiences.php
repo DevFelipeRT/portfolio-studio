@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\Experiences\Application\Capabilities\Providers;
 
 use App\Modules\Experiences\Application\Capabilities\Dtos\VisibleExperienceItem;
-use App\Modules\Experiences\Application\Services\ExperienceService;
+use App\Modules\Experiences\Application\Services\ExperienceTranslationResolver;
+use App\Modules\Experiences\Application\UseCases\ListVisibleExperiences\ListVisibleExperiences;
 use App\Modules\Experiences\Domain\Models\Experience;
 use App\Modules\Shared\Contracts\Capabilities\ICapabilitiesFactory;
 use App\Modules\Shared\Contracts\Capabilities\ICapabilityContext;
@@ -21,7 +22,8 @@ final class VisibleExperiences implements ICapabilityProvider
     private ?ICapabilityDefinition $definition = null;
 
     public function __construct(
-        private readonly ExperienceService $experienceService,
+        private readonly ListVisibleExperiences $listVisibleExperiences,
+        private readonly ExperienceTranslationResolver $translationResolver,
         private readonly ICapabilitiesFactory $capabilitiesFactory,
     ) {
     }
@@ -45,17 +47,47 @@ final class VisibleExperiences implements ICapabilityProvider
         $limit = $parameters['limit'] ?? null;
 
         /** @var Collection<int, Experience> $experiences */
-        $experiences = $this->experienceService->visible();
+        $experiences = $this->listVisibleExperiences->handle();
 
         if (\is_int($limit) && $limit > 0) {
             $experiences = $experiences->take($limit);
         }
 
+        $locale = app()->getLocale();
+        $fallbackLocale = app()->getFallbackLocale();
+
         return $experiences
             ->map(
-                static fn(Experience $experience): array => VisibleExperienceItem::fromModel(
-                    $experience
-                )->toArray()
+                function (Experience $experience) use ($locale, $fallbackLocale): array {
+                    $position = $this->translationResolver->resolvePosition(
+                        $experience,
+                        $locale,
+                        $fallbackLocale,
+                    );
+                    $company = $this->translationResolver->resolveCompany(
+                        $experience,
+                        $locale,
+                        $fallbackLocale,
+                    );
+                    $summary = $this->translationResolver->resolveSummary(
+                        $experience,
+                        $locale,
+                        $fallbackLocale,
+                    );
+                    $description = $this->translationResolver->resolveDescription(
+                        $experience,
+                        $locale,
+                        $fallbackLocale,
+                    );
+
+                    return VisibleExperienceItem::fromModelWithTranslations(
+                        $experience,
+                        $position,
+                        $company,
+                        $summary,
+                        $description,
+                    )->toArray();
+                }
             )
             ->values()
             ->all();

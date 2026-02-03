@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace App\Modules\Experiences\Infrastructure\Providers;
 
 use App\Modules\Experiences\Application\Capabilities\Providers\VisibleExperiences;
+use App\Modules\Experiences\Domain\Repositories\IExperienceRepository;
+use App\Modules\Experiences\Domain\Repositories\IExperienceTranslationRepository;
+use App\Modules\Experiences\Infrastructure\Repositories\ExperienceRepository;
+use App\Modules\Experiences\Infrastructure\Repositories\ExperienceTranslationRepository;
 use App\Modules\Shared\Support\Capabilities\Traits\RegisterCapabilitiesTrait;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
@@ -41,7 +45,11 @@ final class ExperiencesServiceProvider extends ServiceProvider
      */
     private function registerBindings(): void
     {
-        // No explicit bindings required for this module at the moment.
+        $this->app->bind(IExperienceRepository::class, ExperienceRepository::class);
+        $this->app->bind(
+            IExperienceTranslationRepository::class,
+            ExperienceTranslationRepository::class,
+        );
     }
 
     /**

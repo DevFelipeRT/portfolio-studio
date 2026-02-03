@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\Experiences\Http\Requests\Experience;
 
+use App\Modules\Experiences\Application\Services\SupportedLocalesResolver;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 /**
  * Form request for updating an existing experience.
@@ -26,7 +28,10 @@ class UpdateExperienceRequest extends FormRequest
      */
     public function rules(): array
     {
+        $supported = app(SupportedLocalesResolver::class)->resolve();
+
         return [
+            'locale' => ['required', 'string', 'max:20', Rule::in($supported)],
             'position' => ['required', 'string', 'max:255'],
             'company' => ['required', 'string', 'max:255'],
             'summary' => ['nullable', 'string', 'max:255'],

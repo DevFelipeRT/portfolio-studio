@@ -6,9 +6,14 @@ namespace App\Modules\Experiences\Http\Controllers;
 
 use App\Modules\Shared\Abstractions\Http\Controller;
 use App\Modules\Experiences\Domain\Models\Experience;
-use App\Modules\Experiences\Application\Services\ExperienceService;
+use App\Modules\Experiences\Application\UseCases\CreateExperience\CreateExperience;
+use App\Modules\Experiences\Application\UseCases\DeleteExperience\DeleteExperience;
+use App\Modules\Experiences\Application\UseCases\ListExperiences\ListExperiences;
+use App\Modules\Experiences\Application\UseCases\UpdateExperience\UpdateExperience;
 use App\Modules\Experiences\Http\Requests\Experience\StoreExperienceRequest;
 use App\Modules\Experiences\Http\Requests\Experience\UpdateExperienceRequest;
+use App\Modules\Experiences\Http\Mappers\ExperienceInputMapper;
+use App\Modules\Experiences\Presentation\Mappers\ExperienceMapper;
 
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
@@ -19,17 +24,12 @@ use Inertia\Response;
  */
 class ExperienceController extends Controller
 {
-    /**
-     * Experience application service.
-     */
-    private ExperienceService $experienceService;
-
-    /**
-     * Create a new controller instance.
-     */
-    public function __construct(ExperienceService $experienceService)
-    {
-        $this->experienceService = $experienceService;
+    public function __construct(
+        private readonly ListExperiences $listExperiences,
+        private readonly CreateExperience $createExperience,
+        private readonly UpdateExperience $updateExperience,
+        private readonly DeleteExperience $deleteExperience,
+    ) {
     }
 
     /**
@@ -37,10 +37,10 @@ class ExperienceController extends Controller
      */
     public function index(): Response
     {
-        $experiences = $this->experienceService->all();
+        $experiences = $this->listExperiences->handle();
 
         return Inertia::render('Experiences/Pages/Index', [
-            'experiences' => $experiences,
+            'experiences' => ExperienceMapper::collection($experiences),
         ]);
     }
 
@@ -57,9 +57,8 @@ class ExperienceController extends Controller
      */
     public function store(StoreExperienceRequest $request): RedirectResponse
     {
-        $data = $request->validated();
-
-        $this->experienceService->create($data);
+        $input = ExperienceInputMapper::fromStoreRequest($request);
+        $this->createExperience->handle($input);
 
         return redirect()
             ->route('experiences.index')
@@ -71,8 +70,10 @@ class ExperienceController extends Controller
      */
     public function edit(Experience $experience): Response
     {
+        $experience->loadMissing('translations');
+
         return Inertia::render('Experiences/Pages/Edit', [
-            'experience' => $experience,
+            'experience' => ExperienceMapper::toArray($experience),
         ]);
     }
 
@@ -83,9 +84,8 @@ class ExperienceController extends Controller
         UpdateExperienceRequest $request,
         Experience $experience
     ): RedirectResponse {
-        $data = $request->validated();
-
-        $this->experienceService->update($experience, $data);
+        $input = ExperienceInputMapper::fromUpdateRequest($request, $experience);
+        $this->updateExperience->handle($experience, $input);
 
         return redirect()
             ->route('experiences.index')
@@ -97,7 +97,7 @@ class ExperienceController extends Controller
      */
     public function destroy(Experience $experience): RedirectResponse
     {
-        $this->experienceService->delete($experience);
+        $this->deleteExperience->handle($experience);
 
         return redirect()
             ->route('experiences.index')
