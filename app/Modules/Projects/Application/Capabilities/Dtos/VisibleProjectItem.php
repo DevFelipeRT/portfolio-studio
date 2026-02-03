@@ -26,8 +26,8 @@ final class VisibleProjectItem
     public function __construct(
         private readonly int $id,
         private readonly string $name,
-        private readonly ?string $shortDescription,
-        private readonly ?string $longDescription,
+        private readonly ?string $summary,
+        private readonly ?string $description,
         private readonly ?string $repositoryUrl,
         private readonly ?string $liveUrl,
         private readonly bool $display,
@@ -69,10 +69,59 @@ final class VisibleProjectItem
         return new self(
             $project->id,
             $project->name,
-            $project->short_description,
-            $project->long_description,
+            $project->summary,
+            $project->description,
             $project->repository_url,
             $project->live_url,
+            (bool) $project->display,
+            $imageDtos,
+            $skillDtos,
+        );
+    }
+
+    public static function fromModelWithTranslations(
+        Project $project,
+        string $name,
+        ?string $summary,
+        ?string $description,
+        ?string $repositoryUrl,
+        ?string $liveUrl,
+    ): self {
+        /** @var Collection<int,Image> $images */
+        $images = $project->images instanceof Collection
+            ? $project->images
+            : collect();
+
+        $imageDtos = $images
+            ->map(
+                static function (Image $image): VisibleProjectImageItem {
+                    return VisibleProjectImageItem::fromModel($image);
+                }
+            )
+            ->values()
+            ->all();
+
+        $skillDtos = $project->skills
+            ->map(
+                static function (Skill $skill): array {
+                    return [
+                        'id' => $skill->id,
+                        'name' => $skill->name,
+                        'category' => $skill->category,
+                        'skill_category_id' => $skill->skill_category_id,
+                    ];
+                }
+            )
+            ->values()
+            ->all();
+
+        return new self(
+            $project->id,
+            $name,
+            $summary,
+            $description,
+            $repositoryUrl,
+            $liveUrl,
             (bool) $project->display,
             $imageDtos,
             $skillDtos,
@@ -83,8 +132,8 @@ final class VisibleProjectItem
      * @return array{
      *     id: int,
      *     name: string,
-     *     short_description: ?string,
-     *     long_description: ?string,
+     *     summary: ?string,
+     *     description: ?string,
      *     repository_url: ?string,
      *     live_url: ?string,
      *     display: bool,
@@ -111,8 +160,8 @@ final class VisibleProjectItem
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'short_description' => $this->shortDescription,
-            'long_description' => $this->longDescription,
+            'summary' => $this->summary,
+            'description' => $this->description,
             'repository_url' => $this->repositoryUrl,
             'live_url' => $this->liveUrl,
             'display' => $this->display,

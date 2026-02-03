@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\Projects\Application\Capabilities\Providers;
 
 use App\Modules\Projects\Application\Capabilities\Dtos\VisibleProjectItem;
-use App\Modules\Projects\Application\Services\ProjectService;
+use App\Modules\Projects\Application\Services\ProjectTranslationResolver;
+use App\Modules\Projects\Application\UseCases\ListVisibleProjects\ListVisibleProjects;
 use App\Modules\Projects\Domain\Models\Project;
 use App\Modules\Shared\Contracts\Capabilities\ICapabilitiesFactory;
 use App\Modules\Shared\Contracts\Capabilities\ICapabilityContext;
@@ -21,7 +22,8 @@ final class VisibleProjects implements ICapabilityProvider
     private ?ICapabilityDefinition $definition = null;
 
     public function __construct(
-        private readonly ProjectService $projectService,
+        private readonly ListVisibleProjects $listVisibleProjects,
+        private readonly ProjectTranslationResolver $translationResolver,
         private readonly ICapabilitiesFactory $capabilitiesFactory,
     ) {
     }
@@ -53,8 +55,8 @@ final class VisibleProjects implements ICapabilityProvider
      * @return array<int, array{
      *     id: int,
      *     name: string,
-     *     short_description: ?string,
-     *     long_description: ?string,
+     *     summary: ?string,
+     *     description: ?string,
      *     repository_url: ?string,
      *     live_url: ?string,
      *     display: bool,
@@ -82,13 +84,16 @@ final class VisibleProjects implements ICapabilityProvider
     ): array {
         $limit = $this->extractLimit($parameters);
 
-        $projects = $this->projectService->visible();
+        $projects = $this->listVisibleProjects->handle();
 
         if ($limit !== null) {
             $projects = $projects->take($limit);
         }
 
-        return $this->mapProjects($projects);
+        $locale = app()->getLocale();
+        $fallbackLocale = app()->getFallbackLocale();
+
+        return $this->mapProjects($projects, $locale, $fallbackLocale);
     }
 
     /**
@@ -124,8 +129,8 @@ final class VisibleProjects implements ICapabilityProvider
      * @return array<int, array{
      *     id: int,
      *     name: string,
-     *     short_description: ?string,
-     *     long_description: ?string,
+     *     summary: ?string,
+     *     description: ?string,
      *     repository_url: ?string,
      *     live_url: ?string,
      *     display: bool,
@@ -147,12 +152,49 @@ final class VisibleProjects implements ICapabilityProvider
      *     }>
      * }>
      */
-    private function mapProjects(Collection $projects): array
+    private function mapProjects(
+        Collection $projects,
+        string $locale,
+        ?string $fallbackLocale,
+    ): array
     {
         return $projects
             ->map(
-                static function (Project $project): array {
-                    return VisibleProjectItem::fromModel($project)->toArray();
+                function (Project $project) use ($locale, $fallbackLocale): array {
+                    $name = $this->translationResolver->resolveName(
+                        $project,
+                        $locale,
+                        $fallbackLocale,
+                    );
+                    $summary = $this->translationResolver->resolveSummary(
+                        $project,
+                        $locale,
+                        $fallbackLocale,
+                    );
+                    $description = $this->translationResolver->resolveDescription(
+                        $project,
+                        $locale,
+                        $fallbackLocale,
+                    );
+                    $repositoryUrl = $this->translationResolver->resolveRepositoryUrl(
+                        $project,
+                        $locale,
+                        $fallbackLocale,
+                    );
+                    $liveUrl = $this->translationResolver->resolveLiveUrl(
+                        $project,
+                        $locale,
+                        $fallbackLocale,
+                    );
+
+                    return VisibleProjectItem::fromModelWithTranslations(
+                        $project,
+                        $name,
+                        $summary,
+                        $description,
+                        $repositoryUrl,
+                        $liveUrl,
+                    )->toArray();
                 }
             )
             ->values()
