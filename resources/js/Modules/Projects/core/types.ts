@@ -17,13 +17,25 @@ export interface ProjectImage extends Image {
 
 export interface Project extends HasTimestamps {
     id: number;
+    locale: string;
     name: string;
-    short_description: string;
-    long_description: string;
+    summary: string;
+    description: string;
     status: string;
     repository_url: string | null;
     live_url: string | null;
     images: ProjectImage[] | null;
     skills: Skill[];
     display: boolean;
+}
+
+export interface ProjectTranslationItem extends HasTimestamps {
+    id: number;
+    project_id: number;
+    locale: string;
+    name: string | null;
+    summary: string | null;
+    description: string | null;
+    repository_url: string | null;
+    live_url: string | null;
 }

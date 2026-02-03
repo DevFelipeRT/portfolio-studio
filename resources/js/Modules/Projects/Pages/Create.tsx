@@ -4,17 +4,20 @@ import React from 'react';
 import type { ImageInput, ProjectFormData } from '@/Modules/Projects/core/forms';
 import { ProjectForm } from '@/Modules/Projects/ui/ProjectForm';
 import type { Skill } from '@/Modules/Skills/core/types';
+import { useSupportedLocales } from '@/Common/i18n';
 
 interface CreateProjectProps {
     skills: Skill[];
 }
 
 export default function Create({ skills }: CreateProjectProps) {
+    const supportedLocales = useSupportedLocales();
     const { data, setData, post, processing, errors } =
         useForm<ProjectFormData>({
+            locale: '',
             name: '',
-            short_description: '',
-            long_description: '',
+            summary: '',
+            description: '',
             status: '',
             repository_url: '',
             live_url: '',
@@ -143,6 +146,7 @@ export default function Create({ skills }: CreateProjectProps) {
                         errors={errors}
                         processing={processing}
                         submitLabel="Save project"
+                        supportedLocales={supportedLocales}
                         onSubmit={submit}
                         onChangeField={changeField}
                         onToggleSkill={toggleSkill}

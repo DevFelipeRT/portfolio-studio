@@ -90,7 +90,7 @@ export default function Index({ projects }: ProjectsIndexProps) {
                                             </div>
                                             <div className="text-muted-foreground mt-0.5 text-xs">
                                                 {truncate(
-                                                    project.short_description,
+                                                    project.summary,
                                                     80,
                                                 )}
                                             </div>

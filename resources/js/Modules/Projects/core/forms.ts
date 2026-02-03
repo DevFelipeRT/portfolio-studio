@@ -4,9 +4,10 @@ export type ImageInput = {
 };
 
 export type ProjectFormData = {
+    locale: string;
     name: string;
-    short_description: string;
-    long_description: string;
+    summary: string;
+    description: string;
     status: string;
     repository_url: string;
     live_url: string;

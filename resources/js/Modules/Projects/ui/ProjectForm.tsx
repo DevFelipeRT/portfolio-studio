@@ -2,11 +2,19 @@ import { Button } from '@/Components/Ui/button';
 import { Checkbox } from '@/Components/Ui/checkbox';
 import { Input } from '@/Components/Ui/input';
 import { Label } from '@/Components/Ui/label';
-import { Textarea } from '@/Components/Ui/textarea';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/Components/Ui/select';
 import { Link } from '@inertiajs/react';
 import type { ProjectImage } from '@/Modules/Projects/core/types';
 import type { Skill } from '@/Modules/Skills/core/types';
 import type { ProjectFormData } from '@/Modules/Projects/core/forms';
+import { useTranslation } from '@/Common/i18n';
+import { RichTextEditor } from '@/Common/RichText/RichTextEditor';
 
 interface ProjectFormProps {
     skills: Skill[];
@@ -15,12 +23,15 @@ interface ProjectFormProps {
     errors: Record<string, string | string[]>;
     processing: boolean;
     submitLabel: string;
+    supportedLocales: readonly string[];
+    localeDisabled?: boolean;
     projectId?: number;
     onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
     onChangeField: <K extends keyof ProjectFormData>(
         key: K,
         value: ProjectFormData[K],
     ) => void;
+    onChangeLocale?: (locale: string) => void;
     onToggleSkill: (id: number) => void;
     onAddImageRow: () => void;
     onRemoveImageRow: (index: number) => void;
@@ -42,9 +53,12 @@ export function ProjectForm({
     errors,
     processing,
     submitLabel,
+    supportedLocales,
+    localeDisabled = false,
     projectId,
     onSubmit,
     onChangeField,
+    onChangeLocale,
     onToggleSkill,
     onAddImageRow,
     onRemoveImageRow,
@@ -52,8 +66,18 @@ export function ProjectForm({
     onUpdateImageFile,
     normalizeError,
 }: ProjectFormProps) {
+    const { translate: t } = useTranslation('projects');
     const hasExistingImages = existingImages.length > 0;
     const hasNewImages = data.images.length > 0;
+
+    const handleLocaleChange = (value: string): void => {
+        if (onChangeLocale) {
+            onChangeLocale(value);
+            return;
+        }
+
+        onChangeField('locale', value);
+    };
 
     return (
         <form
@@ -62,6 +86,33 @@ export function ProjectForm({
         >
             <section className="space-y-4">
                 <h2 className="text-lg font-medium">Basic information</h2>
+
+                <div className="space-y-1.5">
+                    <Label htmlFor="locale">{t('fields.locale.label')}</Label>
+                    <Select
+                        value={data.locale}
+                        onValueChange={handleLocaleChange}
+                        disabled={processing || localeDisabled}
+                    >
+                        <SelectTrigger id="locale">
+                            <SelectValue
+                                placeholder={t('fields.locale.placeholder')}
+                            />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {supportedLocales.map((locale) => (
+                                <SelectItem key={locale} value={locale}>
+                                    {locale}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    {errors.locale && (
+                        <p className="text-destructive text-sm">
+                            {normalizeError(errors.locale)}
+                        </p>
+                    )}
+                </div>
 
                 <div className="grid gap-4 md:grid-cols-2">
                     <div className="space-y-1.5">
@@ -99,40 +150,36 @@ export function ProjectForm({
                 </div>
 
                 <div className="space-y-1.5">
-                    <Label htmlFor="short_description">Short description</Label>
+                    <Label htmlFor="summary">Summary</Label>
                     <Input
-                        id="short_description"
-                        value={data.short_description}
+                        id="summary"
+                        value={data.summary}
                         onChange={(event) =>
                             onChangeField(
-                                'short_description',
+                                'summary',
                                 event.target.value,
                             )
                         }
                     />
-                    {errors.short_description && (
+                    {errors.summary && (
                         <p className="text-destructive text-sm">
-                            {normalizeError(errors.short_description)}
+                            {normalizeError(errors.summary)}
                         </p>
                     )}
                 </div>
 
                 <div className="space-y-1.5">
-                    <Label htmlFor="long_description">Long description</Label>
-                    <Textarea
-                        id="long_description"
-                        value={data.long_description}
-                        onChange={(event) =>
-                            onChangeField(
-                                'long_description',
-                                event.target.value,
-                            )
+                    <Label htmlFor="description">Description</Label>
+                    <RichTextEditor
+                        id="description"
+                        value={data.description}
+                        onChange={(value) =>
+                            onChangeField('description', value)
                         }
-                        rows={6}
                     />
-                    {errors.long_description && (
+                    {errors.description && (
                         <p className="text-destructive text-sm">
-                            {normalizeError(errors.long_description)}
+                            {normalizeError(errors.description)}
                         </p>
                     )}
                 </div>
