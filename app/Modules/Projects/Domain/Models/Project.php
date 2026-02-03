@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Eloquent model representing a portfolio project.
@@ -24,9 +25,10 @@ class Project extends Model
      * @var array<int,string>
      */
     protected $fillable = [
+        'locale',
         'name',
-        'short_description',
-        'long_description',
+        'summary',
+        'description',
         'status',
         'repository_url',
         'live_url',
@@ -86,5 +88,15 @@ class Project extends Model
                 'skill_id',
             )
             ->withTimestamps();
+    }
+
+    /**
+     * Localized project content.
+     *
+     * @return HasMany<ProjectTranslation>
+     */
+    public function translations(): HasMany
+    {
+        return $this->hasMany(ProjectTranslation::class, 'project_id');
     }
 }
