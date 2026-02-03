@@ -13,26 +13,17 @@ final class UpdateCourse
     {
     }
 
-    /**
-     * @param array<string,mixed> $data
-     */
-    public function handle(Course $course, array $data): Course
+    public function handle(Course $course, UpdateCourseInput $input): Course
     {
-        $payload = $this->normalizePayload($data);
-
-        return $this->courses->update($course, $payload);
-    }
-
-    /**
-     * @param array<string,mixed> $data
-     * @return array<string,mixed>
-     */
-    private function normalizePayload(array $data): array
-    {
-        if (!array_key_exists('display', $data)) {
-            $data['display'] = false;
-        }
-
-        return $data;
+        return $this->courses->update($course, [
+            'name' => $input->name,
+            'institution' => $input->institution,
+            'category' => $input->category,
+            'summary' => $input->summary,
+            'description' => $input->description,
+            'started_at' => $input->startedAt,
+            'completed_at' => $input->completedAt,
+            'display' => $input->display,
+        ]);
     }
 }

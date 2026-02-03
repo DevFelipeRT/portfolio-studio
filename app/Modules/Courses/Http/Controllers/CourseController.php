@@ -13,6 +13,7 @@ use App\Modules\Courses\Application\UseCases\ListCourses\ListCourses;
 use App\Modules\Courses\Application\UseCases\UpdateCourse\UpdateCourse;
 use App\Modules\Courses\Http\Requests\Course\StoreCourseRequest;
 use App\Modules\Courses\Http\Requests\Course\UpdateCourseRequest;
+use App\Modules\Courses\Http\Mappers\CourseInputMapper;
 use App\Modules\Courses\Presentation\Mappers\CourseMapper;
 
 use Illuminate\Auth\Access\AuthorizationException;
@@ -73,7 +74,8 @@ class CourseController extends Controller
     public function store(StoreCourseRequest $request): RedirectResponse
     {
         try {
-            $course = $this->createCourse->handle($request->validated());
+            $input = CourseInputMapper::fromStoreRequest($request);
+            $course = $this->createCourse->handle($input);
 
             // 303 See Other is recommended for Inertia POST requests to ensure a GET follow-up
             return redirect()
@@ -126,7 +128,8 @@ class CourseController extends Controller
     public function update(UpdateCourseRequest $request, Course $course): RedirectResponse
     {
         try {
-            $this->updateCourse->handle($course, $request->validated());
+            $input = CourseInputMapper::fromUpdateRequest($request, $course);
+            $this->updateCourse->handle($course, $input);
 
             // 303 See Other is strictly recommended for Inertia PUT/PATCH requests
             return redirect()

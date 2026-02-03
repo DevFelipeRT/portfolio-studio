@@ -13,26 +13,17 @@ final class CreateCourse
     {
     }
 
-    /**
-     * @param array<string,mixed> $data
-     */
-    public function handle(array $data): Course
+    public function handle(CreateCourseInput $input): Course
     {
-        $payload = $this->normalizePayload($data);
-
-        return $this->courses->create($payload);
-    }
-
-    /**
-     * @param array<string,mixed> $data
-     * @return array<string,mixed>
-     */
-    private function normalizePayload(array $data): array
-    {
-        if (!array_key_exists('display', $data)) {
-            $data['display'] = false;
-        }
-
-        return $data;
+        return $this->courses->create([
+            'name' => $input->name,
+            'institution' => $input->institution,
+            'category' => $input->category,
+            'summary' => $input->summary,
+            'description' => $input->description,
+            'started_at' => $input->startedAt,
+            'completed_at' => $input->completedAt,
+            'display' => $input->display,
+        ]);
     }
 }
