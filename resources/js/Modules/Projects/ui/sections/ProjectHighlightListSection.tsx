@@ -9,8 +9,8 @@ import { JSX } from 'react';
 type CapabilityProject = {
     id: number;
     name: string;
-    short_description?: string | null;
-    long_description?: string | null;
+    summary?: string | null;
+    description?: string | null;
     repository_url?: string | null;
     live_url?: string | null;
     images?: unknown;

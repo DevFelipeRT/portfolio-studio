@@ -18,14 +18,15 @@ import { ChevronDown, ExternalLink, Github } from 'lucide-react';
 import { useState } from 'react';
 import type { Project } from '@/Modules/Projects/core/types';
 import { ProjectImageCarousel } from './ProjectImageCarousel';
+import { RichTextRenderer } from '@/Common/RichText/RichTextRenderer';
 
 /**
  * ProjectCard renders a project card with image carousel, links and expandable details.
  */
 export function ProjectCard({
     name,
-    short_description,
-    long_description,
+    summary,
+    description,
     skills,
     status,
     images,
@@ -43,18 +44,16 @@ export function ProjectCard({
             : 'Untitled project';
 
     const displayShortDescription =
-        typeof short_description === 'string' &&
-        short_description.trim().length > 0
-            ? short_description
-            : 'No short description available.';
+        typeof summary === 'string' && summary.trim().length > 0
+            ? summary
+            : 'No summary available.';
 
     const effectiveTechStack = hasTech
         ? skills.map((skill) => skill.name)
         : ['No skills listed yet.'];
 
     const shouldRenderLongDescription =
-        typeof long_description === 'string' &&
-        long_description.trim().length > 0;
+        typeof description === 'string' && description.trim().length > 0;
 
     return (
         <Card className="flex h-full flex-col overflow-hidden">
@@ -137,7 +136,9 @@ export function ProjectCard({
                     {shouldRenderLongDescription && (
                         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
                             <CollapsibleContent className="text-muted-foreground data-[state=open]:animate-collapsible-down data-[state=closed]:animate-collapsible-up mt-3 overflow-hidden text-xs leading-relaxed sm:text-sm">
-                                <p className="mb-3">{long_description}</p>
+                                <div className="mb-3">
+                                    <RichTextRenderer value={description} />
+                                </div>
                             </CollapsibleContent>
 
                             <div className="flex justify-center">
