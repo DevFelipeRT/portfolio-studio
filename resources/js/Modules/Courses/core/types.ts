@@ -15,3 +15,13 @@ export interface Course extends HasTimestamps {
     completed_at: string | null;
     display: boolean;
 }
+
+export interface CourseTranslationItem extends HasTimestamps {
+    id: number;
+    course_id: number;
+    locale: string;
+    name: string | null;
+    institution: string | null;
+    summary: string | null;
+    description: string | null;
+}

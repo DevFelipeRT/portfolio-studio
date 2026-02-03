@@ -1,10 +1,13 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import CourseForm from '@/Modules/Courses/ui/CourseForm';
+import { TranslationModal } from '@/Modules/Courses/ui/TranslationModal';
 import type { CourseFormData } from '@/Modules/Courses/core/forms';
+import { Button } from '@/Components/Ui/button';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { ChevronLeft } from 'lucide-react';
 import React from 'react';
 import type { Course } from '@/Modules/Courses/core/types';
+import { useTranslation } from '@/Common/i18n';
 
 /**
  * Defines the props received from the backend controller.
@@ -19,6 +22,7 @@ interface EditCourseProps {
  * Initializes the form state with the provided course data.
  */
 export default function Edit({ course, course_categories }: EditCourseProps) {
+    const { translate: t } = useTranslation('courses');
     const { data, setData, put, processing, errors } =
         useForm<CourseFormData>(
         {
@@ -48,6 +52,8 @@ export default function Edit({ course, course_categories }: EditCourseProps) {
         router.visit(route('courses.index'));
     };
 
+    const [translationOpen, setTranslationOpen] = React.useState(false);
+
     return (
         <AuthenticatedLayout
             header={
@@ -60,7 +66,7 @@ export default function Edit({ course, course_categories }: EditCourseProps) {
 
             <div className="overflow-hidden">
                 <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
-                    <div className="mb-4">
+                    <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
                         <Link
                             href={route('courses.index')}
                             className="text-muted-foreground hover:text-foreground inline-flex items-center text-sm transition-colors"
@@ -68,6 +74,14 @@ export default function Edit({ course, course_categories }: EditCourseProps) {
                             <ChevronLeft className="mr-1 h-4 w-4" />
                             Back to courses
                         </Link>
+
+                        <Button
+                            type="button"
+                            variant="secondary"
+                            onClick={() => setTranslationOpen(true)}
+                        >
+                            {t('translations.manage')}
+                        </Button>
                     </div>
 
                     <CourseForm
@@ -81,6 +95,13 @@ export default function Edit({ course, course_categories }: EditCourseProps) {
                     />
                 </div>
             </div>
+
+            <TranslationModal
+                open={translationOpen}
+                onClose={() => setTranslationOpen(false)}
+                courseId={course.id}
+                courseLabel={course.name}
+            />
         </AuthenticatedLayout>
     );
 }
