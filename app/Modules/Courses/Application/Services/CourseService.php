@@ -7,6 +7,7 @@ namespace App\Modules\Courses\Application\Services;
 use App\Modules\Courses\Domain\Models\Course;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Builder;
 
 /**
  * Service responsible for managing courses.
@@ -18,7 +19,14 @@ class CourseService
      */
     public function paginate(int $perPage = 15): LengthAwarePaginator
     {
-        return Course::query()
+        $locale = app()->getLocale();
+        $fallbackLocale = app()->getFallbackLocale();
+
+        return $this->withTranslations(
+            Course::query(),
+            $locale,
+            $fallbackLocale,
+        )
             ->orderByDesc('started_at')
             ->orderBy('name')
             ->paginate($perPage);
@@ -62,7 +70,14 @@ class CourseService
      */
     public function visible(): Collection
     {
-        return Course::query()
+        $locale = app()->getLocale();
+        $fallbackLocale = app()->getFallbackLocale();
+
+        return $this->withTranslations(
+            Course::query(),
+            $locale,
+            $fallbackLocale,
+        )
             ->where('display', true)
             ->orderByDesc('started_at')
             ->orderByDesc('id')
@@ -79,5 +94,34 @@ class CourseService
         }
 
         return $data;
+    }
+
+    private function withTranslations(
+        Builder $query,
+        ?string $locale,
+        ?string $fallbackLocale = null,
+    ): Builder {
+        $locales = $this->normalizeLocales($locale, $fallbackLocale);
+
+        if ($locales !== []) {
+            $query->with([
+                'translations' => static fn($relation) => $relation->whereIn('locale', $locales),
+            ]);
+        }
+
+        return $query;
+    }
+
+    /**
+     * @return array<int,string>
+     */
+    private function normalizeLocales(?string $locale, ?string $fallbackLocale): array
+    {
+        $values = array_filter([
+            $locale !== null ? trim($locale) : null,
+            $fallbackLocale !== null ? trim($fallbackLocale) : null,
+        ]);
+
+        return array_values(array_unique($values));
     }
 }

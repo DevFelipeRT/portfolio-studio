@@ -10,6 +10,7 @@ use Carbon\CarbonImmutable;
 use InvalidArgumentException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Course model.
@@ -176,6 +177,16 @@ class Course extends Model
                 return $status;
             }
         );
+    }
+
+    /**
+     * Localized course content.
+     *
+     * @return HasMany<CourseTranslation>
+     */
+    public function translations(): HasMany
+    {
+        return $this->hasMany(CourseTranslation::class, 'course_id');
     }
 
     /**

@@ -43,6 +43,28 @@ final class VisibleCourseItem
         );
     }
 
+    public static function fromModelWithTranslations(
+        Course $course,
+        string $name,
+        ?string $institution,
+        ?string $summary,
+        ?string $description,
+    ): self {
+        return new self(
+            $course->id,
+            $name,
+            $institution,
+            $course->category->value,
+            $course->status->value,
+            $summary,
+            $description,
+            $course->started_at !== null ? (string) $course->started_at : null,
+            $course->completed_at !== null ? (string) $course->completed_at : null,
+            (bool) $course->display,
+            $course->updated_at !== null ? (string) $course->updated_at : null,
+        );
+    }
+
     /**
      * @return array<string, mixed>
      */

@@ -3,6 +3,10 @@
 namespace App\Modules\Courses\Infrastructure\Providers;
 
 use App\Modules\Courses\Application\Capabilities\Providers\VisibleCourses;
+use App\Modules\Courses\Domain\Repositories\ICourseRepository;
+use App\Modules\Courses\Domain\Repositories\ICourseTranslationRepository;
+use App\Modules\Courses\Infrastructure\Repositories\CourseRepository;
+use App\Modules\Courses\Infrastructure\Repositories\CourseTranslationRepository;
 
 use App\Modules\Shared\Support\Capabilities\Traits\RegisterCapabilitiesTrait;
 use Illuminate\Support\ServiceProvider;
@@ -36,7 +40,8 @@ class CoursesServiceProvider extends ServiceProvider
      */
     private function registerBindings(): void
     {
-
+        $this->app->bind(ICourseRepository::class, CourseRepository::class);
+        $this->app->bind(ICourseTranslationRepository::class, CourseTranslationRepository::class);
     }
 
     /**

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Courses\Application\Capabilities\Providers;
 
 use App\Modules\Courses\Application\Capabilities\Dtos\VisibleCourseItem;
+use App\Modules\Courses\Application\Services\CourseTranslationResolver;
 use App\Modules\Courses\Application\Services\CourseService;
 use App\Modules\Courses\Domain\Models\Course;
 use App\Modules\Shared\Contracts\Capabilities\ICapabilitiesFactory;
@@ -22,6 +23,7 @@ final class VisibleCourses implements ICapabilityProvider
 
     public function __construct(
         private readonly CourseService $courseService,
+        private readonly CourseTranslationResolver $translationResolver,
         private readonly ICapabilitiesFactory $capabilitiesFactory,
     ) {
     }
@@ -97,10 +99,40 @@ final class VisibleCourses implements ICapabilityProvider
      */
     private function mapCourses(Collection $courses): array
     {
+        $locale = app()->getLocale();
+        $fallbackLocale = app()->getFallbackLocale();
+
         return $courses
             ->map(
-                static function (Course $course): array {
-                    return VisibleCourseItem::fromModel($course)->toArray();
+                function (Course $course) use ($locale, $fallbackLocale): array {
+                    $name = $this->translationResolver->resolveName(
+                        $course,
+                        $locale,
+                        $fallbackLocale,
+                    );
+                    $institution = $this->translationResolver->resolveInstitution(
+                        $course,
+                        $locale,
+                        $fallbackLocale,
+                    );
+                    $summary = $this->translationResolver->resolveSummary(
+                        $course,
+                        $locale,
+                        $fallbackLocale,
+                    );
+                    $description = $this->translationResolver->resolveDescription(
+                        $course,
+                        $locale,
+                        $fallbackLocale,
+                    );
+
+                    return VisibleCourseItem::fromModelWithTranslations(
+                        $course,
+                        $name,
+                        $institution,
+                        $summary,
+                        $description,
+                    )->toArray();
                 }
             )
             ->values()
