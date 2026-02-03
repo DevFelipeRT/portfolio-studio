@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\Projects\Http\Requests\Project;
 
+use App\Modules\Projects\Application\Services\SupportedLocalesResolver;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 /**
  * Request payload validation for updating an existing project.
@@ -26,10 +28,13 @@ class UpdateProjectRequest extends FormRequest
      */
     public function rules(): array
     {
+        $supported = app(SupportedLocalesResolver::class)->resolve();
+
         return [
+            'locale' => ['required', 'string', 'max:20', Rule::in($supported)],
             'name' => ['required', 'string', 'max:255'],
-            'short_description' => ['required', 'string', 'max:255'],
-            'long_description' => ['required', 'string'],
+            'summary' => ['required', 'string', 'max:255'],
+            'description' => ['required', 'string'],
             'status' => ['required', 'string', 'max:50'],
             'repository_url' => ['nullable', 'string', 'max:2048', 'url'],
             'live_url' => ['nullable', 'string', 'max:2048', 'url'],

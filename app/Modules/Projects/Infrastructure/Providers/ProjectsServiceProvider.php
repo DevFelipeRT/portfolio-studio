@@ -4,6 +4,10 @@ namespace App\Modules\Projects\Infrastructure\Providers;
 
 use App\Modules\Projects\Application\Capabilities\CapabilitiesGateway;
 use App\Modules\Projects\Application\Capabilities\Providers\VisibleProjects;
+use App\Modules\Projects\Domain\Repositories\IProjectRepository;
+use App\Modules\Projects\Domain\Repositories\IProjectTranslationRepository;
+use App\Modules\Projects\Infrastructure\Repositories\ProjectRepository;
+use App\Modules\Projects\Infrastructure\Repositories\ProjectTranslationRepository;
 use App\Modules\Shared\Contracts\Capabilities\ICapabilitiesFactory;
 use App\Modules\Shared\Contracts\Capabilities\ICapabilityDataResolver;
 use App\Modules\Shared\Support\Capabilities\Traits\RegisterCapabilitiesTrait;
@@ -38,6 +42,9 @@ class ProjectsServiceProvider extends ServiceProvider
      */
     private function registerBindings(): void
     {
+        $this->app->bind(IProjectRepository::class, ProjectRepository::class);
+        $this->app->bind(IProjectTranslationRepository::class, ProjectTranslationRepository::class);
+
         $this->app->singleton(CapabilitiesGateway::class, static function ($app): CapabilitiesGateway {
             return new CapabilitiesGateway(
                 $app->make(ICapabilitiesFactory::class),

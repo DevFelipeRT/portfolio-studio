@@ -6,10 +6,15 @@ namespace App\Modules\Projects\Http\Controllers;
 
 use App\Modules\Shared\Abstractions\Http\Controller;
 use App\Modules\Projects\Domain\Models\Project;
-use App\Modules\Projects\Application\Services\ProjectService;
+use App\Modules\Projects\Application\UseCases\CreateProject\CreateProject;
+use App\Modules\Projects\Application\UseCases\DeleteProject\DeleteProject;
+use App\Modules\Projects\Application\UseCases\ListProjects\ListProjects;
+use App\Modules\Projects\Application\UseCases\UpdateProject\UpdateProject;
 use App\Modules\Projects\Application\Capabilities\CapabilitiesGateway;
 use App\Modules\Projects\Http\Requests\Project\StoreProjectRequest;
 use App\Modules\Projects\Http\Requests\Project\UpdateProjectRequest;
+use App\Modules\Projects\Http\Mappers\ProjectInputMapper;
+use App\Modules\Projects\Presentation\Mappers\ProjectMapper;
 
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
@@ -21,7 +26,10 @@ use Inertia\Response;
 class ProjectController extends Controller
 {
     public function __construct(
-        private readonly ProjectService $projectService,
+        private readonly ListProjects $listProjects,
+        private readonly CreateProject $createProject,
+        private readonly UpdateProject $updateProject,
+        private readonly DeleteProject $deleteProject,
         private readonly CapabilitiesGateway $capabilitiesGateway,
     ) {
     }
@@ -31,10 +39,10 @@ class ProjectController extends Controller
      */
     public function index(): Response
     {
-        $projects = $this->projectService->all();
+        $projects = $this->listProjects->handle();
 
         return Inertia::render('Projects/Pages/Index', [
-            'projects' => $projects,
+            'projects' => ProjectMapper::collection($projects),
         ]);
     }
 
@@ -55,25 +63,8 @@ class ProjectController extends Controller
      */
     public function store(StoreProjectRequest $request): RedirectResponse
     {
-        $data = $request->validated();
-
-        $attributes = [
-            'name' => $data['name'],
-            'short_description' => $data['short_description'],
-            'long_description' => $data['long_description'],
-            'status' => $data['status'],
-            'repository_url' => $data['repository_url'] ?? null,
-            'live_url' => $data['live_url'] ?? null,
-        ];
-
-        $skillIds = $data['skill_ids'] ?? [];
-        $images = $data['images'] ?? [];
-
-        $project = $this->projectService->create(
-            $attributes,
-            $skillIds,
-            $images,
-        );
+        $input = ProjectInputMapper::fromStoreRequest($request);
+        $project = $this->createProject->handle($input);
 
         return redirect()
             ->route('projects.index', $project)
@@ -85,12 +76,12 @@ class ProjectController extends Controller
      */
     public function edit(Project $project): Response
     {
-        $project->load(['images', 'skills.category']);
+        $project->load(['images', 'skills.category', 'translations']);
 
         $skills = $this->capabilitiesGateway->resolve('skills.list.v1');
 
         return Inertia::render('Projects/Pages/Edit', [
-            'project' => $project,
+            'project' => ProjectMapper::toArray($project),
             'skills' => is_array($skills) ? $skills : [],
         ]);
     }
@@ -100,27 +91,8 @@ class ProjectController extends Controller
      */
     public function update(UpdateProjectRequest $request, Project $project): RedirectResponse
     {
-        $data = $request->validated();
-
-        $attributes = [
-            'name' => $data['name'],
-            'short_description' => $data['short_description'],
-            'long_description' => $data['long_description'],
-            'status' => $data['status'],
-            'repository_url' => $data['repository_url'] ?? null,
-            'live_url' => $data['live_url'] ?? null,
-            'display' => $data['display'] ?? null,
-        ];
-
-        $skillIds = $data['skill_ids'] ?? [];
-        $images = $data['images'] ?? [];
-
-        $this->projectService->update(
-            $project,
-            $attributes,
-            $skillIds,
-            $images,
-        );
+        $input = ProjectInputMapper::fromUpdateRequest($request, $project);
+        $this->updateProject->handle($project, $input);
 
         return redirect()
             ->route('projects.index', $project)
@@ -132,7 +104,7 @@ class ProjectController extends Controller
      */
     public function destroy(Project $project): RedirectResponse
     {
-        $this->projectService->delete($project);
+        $this->deleteProject->handle($project);
 
         return redirect()
             ->route('projects.index')

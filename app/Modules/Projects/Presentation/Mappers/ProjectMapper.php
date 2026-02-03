@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Projects\Presentation\Mappers;
 
 use App\Modules\Shared\Abstractions\Mapping\Mapper;
+use App\Modules\Projects\Application\Services\ProjectTranslationResolver;
 use App\Modules\Projects\Domain\Models\Project;
 use App\Modules\Images\Domain\Models\Image;
 use App\Modules\Skills\Domain\Models\Skill;
@@ -25,6 +26,15 @@ final class ProjectMapper extends Mapper
     {
         /** @var Project $project */
         $project = $model;
+        $resolver = app(ProjectTranslationResolver::class);
+        $locale = app()->getLocale();
+        $fallbackLocale = app()->getFallbackLocale();
+
+        $name = $resolver->resolveName($project, $locale, $fallbackLocale);
+        $summary = $resolver->resolveSummary($project, $locale, $fallbackLocale);
+        $description = $resolver->resolveDescription($project, $locale, $fallbackLocale);
+        $repositoryUrl = $resolver->resolveRepositoryUrl($project, $locale, $fallbackLocale);
+        $liveUrl = $resolver->resolveLiveUrl($project, $locale, $fallbackLocale);
 
         /** @var Collection<int,Image> $images */
         $images = $project->images instanceof Collection
@@ -33,12 +43,16 @@ final class ProjectMapper extends Mapper
 
         return [
             'id' => $project->id,
-            'name' => $project->name,
-            'short_description' => $project->short_description,
-            'long_description' => $project->long_description,
-            'repository_url' => $project->repository_url,
-            'live_url' => $project->live_url,
+            'locale' => $project->locale,
+            'name' => $name,
+            'summary' => $summary,
+            'description' => $description,
+            'status' => $project->status,
+            'repository_url' => $repositoryUrl,
+            'live_url' => $liveUrl,
             'display' => $project->display,
+            'created_at' => self::formatDate($project->created_at),
+            'updated_at' => self::formatDate($project->updated_at),
 
             'images' => self::mapRelatedWithPivot(
                 $images,
