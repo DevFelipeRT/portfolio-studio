@@ -7,10 +7,21 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import React from 'react';
 import type { ExperienceFormData } from '@/Modules/Experiences/core/forms';
 import { RichTextEditor } from '@/Common/RichText/RichTextEditor';
+import { useSupportedLocales, useTranslation } from '@/Common/i18n';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/Components/Ui/select';
 
 export default function Create() {
+    const { translate: t } = useTranslation('experience');
+    const supportedLocales = useSupportedLocales();
     const { data, setData, post, processing, errors } =
         useForm<ExperienceFormData>({
+            locale: '',
             position: '',
             company: '',
             summary: '',
@@ -62,6 +73,42 @@ export default function Create() {
                             <h2 className="text-lg font-medium">
                                 Experience details
                             </h2>
+
+                            <div className="space-y-1.5">
+                                <Label htmlFor="locale">
+                                    {t('fields.locale.label')}
+                                </Label>
+                                <Select
+                                    value={data.locale}
+                                    onValueChange={(value) =>
+                                        setData('locale', value)
+                                    }
+                                    disabled={processing}
+                                >
+                                    <SelectTrigger id="locale">
+                                        <SelectValue
+                                            placeholder={t(
+                                                'fields.locale.placeholder',
+                                            )}
+                                        />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {supportedLocales.map((locale) => (
+                                            <SelectItem
+                                                key={locale}
+                                                value={locale}
+                                            >
+                                                {locale}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                {errors.locale && (
+                                    <p className="text-destructive text-sm">
+                                        {normalizeError(errors.locale)}
+                                    </p>
+                                )}
+                            </div>
 
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div className="space-y-1.5">

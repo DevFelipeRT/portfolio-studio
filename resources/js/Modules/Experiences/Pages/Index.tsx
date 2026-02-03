@@ -100,7 +100,7 @@ export default function Index({ experiences }: ExperiencesIndexProps) {
                                         </td>
 
                                         <td className="text-muted-foreground px-4 py-3 align-top text-sm">
-                                            {experience.company}
+                                            {experience.company ?? '—'}
                                         </td>
 
                                         <td className="text-muted-foreground px-4 py-3 align-top text-xs whitespace-nowrap">

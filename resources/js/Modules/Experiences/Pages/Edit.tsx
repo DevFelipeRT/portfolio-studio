@@ -8,16 +8,29 @@ import React from 'react';
 import type { ExperienceFormData } from '@/Modules/Experiences/core/forms';
 import type { Experience } from '@/Modules/Experiences/core/types';
 import { RichTextEditor } from '@/Common/RichText/RichTextEditor';
+import { TranslationModal } from '@/Modules/Experiences/ui/TranslationModal';
+import { useSupportedLocales, useTranslation } from '@/Common/i18n';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/Components/Ui/select';
+import { listExperienceTranslations } from '@/Modules/Experiences/core/api/translations';
 
 interface EditExperienceProps {
     experience: Experience;
 }
 
 export default function Edit({ experience }: EditExperienceProps) {
+    const { translate: t } = useTranslation('experience');
+    const supportedLocales = useSupportedLocales();
     const { data, setData, put, processing, errors } =
         useForm<ExperienceFormData>({
+            locale: experience.locale,
             position: experience.position,
-            company: experience.company,
+            company: experience.company ?? '',
             summary: experience.summary ?? '',
             description: experience.description,
             start_date: experience.start_date,
@@ -44,6 +57,66 @@ export default function Edit({ experience }: EditExperienceProps) {
         return message;
     };
 
+    const [translationOpen, setTranslationOpen] = React.useState(false);
+    const [translationLocales, setTranslationLocales] = React.useState<string[]>(
+        [],
+    );
+    const [loadingTranslations, setLoadingTranslations] = React.useState(false);
+    const [localesLoadError, setLocalesLoadError] = React.useState<string | null>(
+        null,
+    );
+
+    React.useEffect(() => {
+        let mounted = true;
+
+        const loadTranslations = async (): Promise<void> => {
+            setLoadingTranslations(true);
+            setLocalesLoadError(null);
+            try {
+                const items = await listExperienceTranslations(experience.id);
+                if (mounted) {
+                    setTranslationLocales(
+                        items.map((item) => item.locale).filter(Boolean),
+                    );
+                }
+            } catch (err) {
+                if (mounted) {
+                    setLocalesLoadError(
+                        'Unable to load translations for locale conflict checks.',
+                    );
+                }
+            } finally {
+                if (mounted) {
+                    setLoadingTranslations(false);
+                }
+            }
+        };
+
+        void loadTranslations();
+
+        return () => {
+            mounted = false;
+        };
+    }, [experience.id]);
+
+    const handleLocaleChange = (nextLocale: string): void => {
+        if (
+            nextLocale !== data.locale &&
+            translationLocales.includes(nextLocale)
+        ) {
+            const confirmed = window.confirm(
+                t('translations.confirmBaseLocaleSwitch', {
+                    locale: nextLocale,
+                }),
+            );
+            if (!confirmed) {
+                return;
+            }
+        }
+
+        setData('locale', nextLocale);
+    };
+
     return (
         <AuthenticatedLayout>
             <Head title="Edit experience" />
@@ -58,9 +131,17 @@ export default function Edit({ experience }: EditExperienceProps) {
                             Back to experiences
                         </Link>
 
+                        <Button
+                            type="button"
+                            variant="secondary"
+                            onClick={() => setTranslationOpen(true)}
+                        >
+                            {t('translations.manage')}
+                        </Button>
+
                         <span className="text-muted-foreground text-xs">
                             Editing: {experience.position} at{' '}
-                            {experience.company}
+                            {experience.company ?? '—'}
                         </span>
                     </div>
 
@@ -72,6 +153,49 @@ export default function Edit({ experience }: EditExperienceProps) {
                             <h2 className="text-lg font-medium">
                                 Experience details
                             </h2>
+
+                            <div className="space-y-1.5">
+                                <Label htmlFor="locale">
+                                    {t('fields.locale.label')}
+                                </Label>
+                                <Select
+                                    value={data.locale}
+                                    onValueChange={handleLocaleChange}
+                                    disabled={
+                                        processing ||
+                                        loadingTranslations ||
+                                        Boolean(localesLoadError)
+                                    }
+                                >
+                                    <SelectTrigger id="locale">
+                                        <SelectValue
+                                            placeholder={t(
+                                                'fields.locale.placeholder',
+                                            )}
+                                        />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {supportedLocales.map((locale) => (
+                                            <SelectItem
+                                                key={locale}
+                                                value={locale}
+                                            >
+                                                {locale}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                {errors.locale && (
+                                    <p className="text-destructive text-sm">
+                                        {normalizeError(errors.locale)}
+                                    </p>
+                                )}
+                                {localesLoadError && (
+                                    <p className="text-muted-foreground text-xs">
+                                        {localesLoadError}
+                                    </p>
+                                )}
+                            </div>
 
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div className="space-y-1.5">
@@ -231,6 +355,14 @@ export default function Edit({ experience }: EditExperienceProps) {
                     </form>
                 </div>
             </div>
+
+            <TranslationModal
+                open={translationOpen}
+                onClose={() => setTranslationOpen(false)}
+                experienceId={experience.id}
+                experienceLabel={experience.position}
+                baseLocale={data.locale}
+            />
         </AuthenticatedLayout>
     );
 }

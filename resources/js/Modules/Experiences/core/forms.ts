@@ -1,4 +1,5 @@
 export type ExperienceFormData = {
+    locale: string;
     position: string;
     company: string;
     summary: string;
