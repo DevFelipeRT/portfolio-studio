@@ -13,6 +13,7 @@
 /.zed
 /.npm
 /.cache
+/.composer
 /auth.json
 /bootstrap/ssr
 /node_modules
