@@ -6,7 +6,7 @@ namespace App\Modules\Courses\Application\Capabilities\Providers;
 
 use App\Modules\Courses\Application\Capabilities\Dtos\VisibleCourseItem;
 use App\Modules\Courses\Application\Services\CourseTranslationResolver;
-use App\Modules\Courses\Application\Services\CourseService;
+use App\Modules\Courses\Application\UseCases\ListVisibleCourses\ListVisibleCourses;
 use App\Modules\Courses\Domain\Models\Course;
 use App\Modules\Shared\Contracts\Capabilities\ICapabilitiesFactory;
 use App\Modules\Shared\Contracts\Capabilities\ICapabilityContext;
@@ -22,7 +22,7 @@ final class VisibleCourses implements ICapabilityProvider
     private ?ICapabilityDefinition $definition = null;
 
     public function __construct(
-        private readonly CourseService $courseService,
+        private readonly ListVisibleCourses $listVisibleCourses,
         private readonly CourseTranslationResolver $translationResolver,
         private readonly ICapabilitiesFactory $capabilitiesFactory,
     ) {
@@ -57,7 +57,7 @@ final class VisibleCourses implements ICapabilityProvider
     {
         $limit = $this->extractLimit($parameters);
 
-        $courses = $this->courseService->visible();
+        $courses = $this->listVisibleCourses->handle();
 
         if ($limit !== null) {
             $courses = $courses->take($limit);

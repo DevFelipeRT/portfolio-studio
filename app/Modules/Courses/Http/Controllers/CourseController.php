@@ -7,7 +7,10 @@ namespace App\Modules\Courses\Http\Controllers;
 use App\Modules\Shared\Abstractions\Http\Controller;
 use App\Modules\Courses\Domain\Enums\CourseCategories;
 use App\Modules\Courses\Domain\Models\Course;
-use App\Modules\Courses\Application\Services\CourseService;
+use App\Modules\Courses\Application\UseCases\CreateCourse\CreateCourse;
+use App\Modules\Courses\Application\UseCases\DeleteCourse\DeleteCourse;
+use App\Modules\Courses\Application\UseCases\ListCourses\ListCourses;
+use App\Modules\Courses\Application\UseCases\UpdateCourse\UpdateCourse;
 use App\Modules\Courses\Http\Requests\Course\StoreCourseRequest;
 use App\Modules\Courses\Http\Requests\Course\UpdateCourseRequest;
 use App\Modules\Courses\Presentation\Mappers\CourseMapper;
@@ -30,7 +33,10 @@ use Throwable;
 class CourseController extends Controller
 {
     public function __construct(
-        private readonly CourseService $courseService,
+        private readonly ListCourses $listCourses,
+        private readonly CreateCourse $createCourse,
+        private readonly UpdateCourse $updateCourse,
+        private readonly DeleteCourse $deleteCourse,
     ) {
     }
 
@@ -41,7 +47,7 @@ class CourseController extends Controller
     {
         $perPage = (int) $request->query(key: 'per_page', default: '15');
 
-        $paginatedCourses = $this->courseService->paginate($perPage);
+        $paginatedCourses = $this->listCourses->handle($perPage);
 
         $mapped = $this->mapPaginatedResource($paginatedCourses, CourseMapper::class);
 
@@ -67,7 +73,7 @@ class CourseController extends Controller
     public function store(StoreCourseRequest $request): RedirectResponse
     {
         try {
-            $course = $this->courseService->create($request->validated());
+            $course = $this->createCourse->handle($request->validated());
 
             // 303 See Other is recommended for Inertia POST requests to ensure a GET follow-up
             return redirect()
@@ -120,7 +126,7 @@ class CourseController extends Controller
     public function update(UpdateCourseRequest $request, Course $course): RedirectResponse
     {
         try {
-            $this->courseService->update($course, $request->validated());
+            $this->updateCourse->handle($course, $request->validated());
 
             // 303 See Other is strictly recommended for Inertia PUT/PATCH requests
             return redirect()
@@ -147,7 +153,7 @@ class CourseController extends Controller
     public function destroy(Course $course): RedirectResponse
     {
         try {
-            $this->courseService->delete($course);
+            $this->deleteCourse->handle($course);
 
             // 303 See Other is strictly recommended for Inertia DELETE requests
             return redirect()
