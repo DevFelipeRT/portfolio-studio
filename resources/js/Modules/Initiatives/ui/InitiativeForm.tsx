@@ -5,153 +5,106 @@ import { Checkbox } from '@/Components/Ui/checkbox';
 import { DatePicker } from '@/Components/Ui/date-picker';
 import { Input } from '@/Components/Ui/input';
 import { Label } from '@/Components/Ui/label';
-import { Textarea } from '@/Components/Ui/textarea';
-import type {
-    InitiativeFormData,
-    InitiativeImageInput,
-} from '@/Modules/Initiatives/core/forms';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/Components/Ui/select';
+import type { InitiativeFormData } from '@/Modules/Initiatives/core/forms';
 import type { InitiativeImage } from '@/Modules/Initiatives/core/types';
-import { Link, useForm } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
 import React from 'react';
+import { RichTextEditor } from '@/Common/RichText/RichTextEditor';
 
 type InitiativeFormProps = {
-    mode: 'create' | 'edit';
-    submitRoute: string;
+    submitLabel: string;
     backRoute: string;
-    existingImages?: InitiativeImage[];
-    initialValues?: Partial<Omit<InitiativeFormData, 'images'>>;
+    existingImages: InitiativeImage[];
+    data: InitiativeFormData;
+    errors: Record<string, string | string[]>;
+    processing: boolean;
+    supportedLocales: readonly string[];
+    localeDisabled?: boolean;
+    onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+    onChangeField: <K extends keyof InitiativeFormData>(
+        key: K,
+        value: InitiativeFormData[K],
+    ) => void;
+    onChangeLocale?: (locale: string) => void;
+    onAddImageRow: () => void;
+    onRemoveImageRow: (index: number) => void;
+    onUpdateImageAlt: (index: number, value: string) => void;
+    onUpdateImageFile: (
+        index: number,
+        event: React.ChangeEvent<HTMLInputElement>,
+    ) => void;
+    normalizeError: (message: string | string[] | undefined) => string | null;
 };
 
 /**
  * Shared form for creating and editing initiatives.
  */
 export function InitiativeForm({
-    mode,
-    submitRoute,
+    submitLabel,
     backRoute,
     existingImages,
-    initialValues,
+    data,
+    errors,
+    processing,
+    supportedLocales,
+    localeDisabled = false,
+    onSubmit,
+    onChangeField,
+    onChangeLocale,
+    onAddImageRow,
+    onRemoveImageRow,
+    onUpdateImageAlt,
+    onUpdateImageFile,
+    normalizeError,
 }: InitiativeFormProps) {
-    const defaultValues: InitiativeFormData = {
-        name: '',
-        short_description: '',
-        long_description: '',
-        display: false,
-        start_date: null,
-        end_date: null,
-        images: [],
-    };
-
-    const initial: InitiativeFormData = {
-        ...defaultValues,
-        ...initialValues,
-        images: [],
-    };
-
-    const { data, setData, post, put, processing, errors, transform } =
-        useForm<InitiativeFormData>(initial);
-
-    const addImageRow = (): void => {
-        setData((current: InitiativeFormData) => ({
-            ...current,
-            images: [
-                ...current.images,
-                {
-                    file: null,
-                    alt: '',
-                },
-            ],
-        }));
-    };
-
-    const removeImageRow = (index: number): void => {
-        setData((current: InitiativeFormData) => ({
-            ...current,
-            images: current.images.filter((_, i: number) => i !== index),
-        }));
-    };
-
-    const updateImageAlt = (index: number, value: string): void => {
-        setData((current: InitiativeFormData) => ({
-            ...current,
-            images: current.images.map(
-                (image: InitiativeImageInput, i: number) =>
-                i === index ? { ...image, alt: value } : image,
-            ),
-        }));
-    };
-
-    const updateImageFile = (
-        index: number,
-        event: React.ChangeEvent<HTMLInputElement>,
-    ): void => {
-        const file = event.target.files?.[0] ?? null;
-
-        setData((current: InitiativeFormData) => ({
-            ...current,
-            images: current.images.map(
-                (image: InitiativeImageInput, i: number) =>
-                i === index ? { ...image, file } : image,
-            ),
-        }));
-    };
-
-    const normalizeError = (
-        message: string | string[] | undefined,
-    ): string | null => {
-        if (!message) {
-            return null;
-        }
-
-        if (Array.isArray(message)) {
-            return message.join(' ');
-        }
-
-        return message;
-    };
-
-    const submit = (event: React.FormEvent<HTMLFormElement>): void => {
-        event.preventDefault();
-
-        transform((current: InitiativeFormData) => {
-            const validImages =
-                current.images?.filter((image) => image.file instanceof File) ??
-                [];
-
-            if (validImages.length === 0) {
-                const { images, ...rest } = current;
-                return rest as unknown as InitiativeFormData;
-            }
-
-            return {
-                ...current,
-                images: validImages,
-            };
-        });
-
-        if (mode === 'create') {
-            post(submitRoute, {
-                forceFormData: true,
-                preserveScroll: true,
-            });
-        } else {
-            put(submitRoute, {
-                forceFormData: true,
-                preserveScroll: true,
-            });
-        }
-    };
-
-    const submitLabel =
-        mode === 'create' ? 'Save initiative' : 'Update initiative';
+    const hasExistingImages = existingImages.length > 0;
 
     return (
         <form
-            onSubmit={submit}
+            onSubmit={onSubmit}
             className="bg-card space-y-8 rounded-lg border p-6 shadow-sm"
         >
             <section className="space-y-4">
                 <h2 className="text-lg font-medium">Basic information</h2>
+
+                <div className="space-y-1.5">
+                    <Label htmlFor="locale">Locale</Label>
+                    <Select
+                        value={data.locale}
+                        onValueChange={(value) => {
+                            if (onChangeLocale) {
+                                onChangeLocale(value);
+                                return;
+                            }
+
+                            onChangeField('locale', value);
+                        }}
+                        disabled={processing || localeDisabled}
+                    >
+                        <SelectTrigger id="locale">
+                            <SelectValue placeholder="Select a locale" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {supportedLocales.map((locale) => (
+                                <SelectItem key={locale} value={locale}>
+                                    {locale}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    {errors.locale && (
+                        <p className="text-destructive text-sm">
+                            {normalizeError(errors.locale)}
+                        </p>
+                    )}
+                </div>
 
                 <div className="grid gap-4 md:grid-cols-2">
                     <div className="space-y-1.5">
@@ -160,7 +113,7 @@ export function InitiativeForm({
                             id="name"
                             value={data.name}
                             onChange={(event) =>
-                                setData('name', event.target.value)
+                                onChangeField('name', event.target.value)
                             }
                         />
                         {errors.name && (
@@ -182,19 +135,17 @@ export function InitiativeForm({
 
                 <div className="grid gap-4 md:grid-cols-2">
                     <div className="space-y-1.5">
-                        <Label htmlFor="short_description">
-                            Short description
-                        </Label>
+                        <Label htmlFor="summary">Summary</Label>
                         <Input
-                            id="short_description"
-                            value={data.short_description}
+                            id="summary"
+                            value={data.summary}
                             onChange={(event) =>
-                                setData('short_description', event.target.value)
+                                onChangeField('summary', event.target.value)
                             }
                         />
-                        {errors.short_description && (
+                        {errors.summary && (
                             <p className="text-destructive text-sm">
-                                {normalizeError(errors.short_description)}
+                                {normalizeError(errors.summary)}
                             </p>
                         )}
                     </div>
@@ -221,18 +172,17 @@ export function InitiativeForm({
                 )}
 
                 <div className="space-y-1.5">
-                    <Label htmlFor="long_description">Long description</Label>
-                    <Textarea
-                        id="long_description"
-                        value={data.long_description}
-                        onChange={(event) =>
-                            setData('long_description', event.target.value)
+                    <Label htmlFor="description">Description</Label>
+                    <RichTextEditor
+                        id="description"
+                        value={data.description}
+                        onChange={(value) =>
+                            onChangeField('description', value)
                         }
-                        rows={6}
                     />
-                    {errors.long_description && (
+                    {errors.description && (
                         <p className="text-destructive text-sm">
-                            {normalizeError(errors.long_description)}
+                            {normalizeError(errors.description)}
                         </p>
                     )}
                 </div>
@@ -242,7 +192,7 @@ export function InitiativeForm({
                         id="display"
                         checked={data.display}
                         onCheckedChange={(checked) => {
-                            setData('display', !!checked);
+                            onChangeField('display', !!checked);
                         }}
                     />
                     <label
@@ -254,7 +204,7 @@ export function InitiativeForm({
                 </div>
             </section>
 
-            {mode === 'edit' && existingImages && existingImages.length > 0 && (
+            {hasExistingImages && (
                 <section className="space-y-4">
                     <h2 className="text-lg font-medium">Current images</h2>
 
@@ -305,7 +255,7 @@ export function InitiativeForm({
                                     type="file"
                                     accept="image/*"
                                     onChange={(event) =>
-                                        updateImageFile(index, event)
+                                        onUpdateImageFile(index, event)
                                     }
                                 />
                             </div>
@@ -318,7 +268,7 @@ export function InitiativeForm({
                                     id={`image-alt-${index}`}
                                     value={image.alt ?? ''}
                                     onChange={(event) =>
-                                        updateImageAlt(
+                                        onUpdateImageAlt(
                                             index,
                                             event.target.value,
                                         )
@@ -331,7 +281,7 @@ export function InitiativeForm({
                                     type="button"
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => removeImageRow(index)}
+                                    onClick={() => onRemoveImageRow(index)}
                                 >
                                     Remove
                                 </Button>
@@ -343,7 +293,7 @@ export function InitiativeForm({
                         type="button"
                         variant="outline"
                         size="sm"
-                        onClick={addImageRow}
+                        onClick={onAddImageRow}
                     >
                         Add image
                     </Button>
