@@ -3,6 +3,10 @@
 namespace App\Modules\Initiatives\Infrastructure\Providers;
 
 use App\Modules\Initiatives\Application\Capabilities\Providers\VisibleInitiatives;
+use App\Modules\Initiatives\Domain\Repositories\IInitiativeRepository;
+use App\Modules\Initiatives\Domain\Repositories\IInitiativeTranslationRepository;
+use App\Modules\Initiatives\Infrastructure\Repositories\InitiativeRepository;
+use App\Modules\Initiatives\Infrastructure\Repositories\InitiativeTranslationRepository;
 
 use App\Modules\Shared\Support\Capabilities\Traits\RegisterCapabilitiesTrait;
 use Illuminate\Support\ServiceProvider;
@@ -36,7 +40,8 @@ class InitiativesServiceProvider extends ServiceProvider
      */
     private function registerBindings(): void
     {
-
+        $this->app->bind(IInitiativeRepository::class, InitiativeRepository::class);
+        $this->app->bind(IInitiativeTranslationRepository::class, InitiativeTranslationRepository::class);
     }
 
     /**
