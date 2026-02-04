@@ -141,9 +141,10 @@ class InitiativeService
     private function extractInitiativeAttributes(array $attributes): array
     {
         $allowed = [
+            'locale',
             'name',
-            'short_description',
-            'long_description',
+            'summary',
+            'description',
             'display',
             'start_date',
             'end_date',

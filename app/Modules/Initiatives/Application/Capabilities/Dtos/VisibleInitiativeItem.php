@@ -19,8 +19,8 @@ final class VisibleInitiativeItem
     public function __construct(
         private readonly int $id,
         private readonly string $name,
-        private readonly ?string $shortDescription,
-        private readonly ?string $longDescription,
+        private readonly ?string $summary,
+        private readonly ?string $description,
         private readonly bool $display,
         private readonly ?string $startDate,
         private readonly ?string $endDate,
@@ -29,6 +29,21 @@ final class VisibleInitiativeItem
     }
 
     public static function fromModel(Initiative $initiative): self
+    {
+        return self::fromModelWithTranslations(
+            $initiative,
+            $initiative->name,
+            $initiative->summary,
+            $initiative->description,
+        );
+    }
+
+    public static function fromModelWithTranslations(
+        Initiative $initiative,
+        string $name,
+        ?string $summary,
+        ?string $description,
+    ): self
     {
         /** @var Collection<int,Image> $images */
         $images = $initiative->images ?? collect();
@@ -52,9 +67,9 @@ final class VisibleInitiativeItem
 
         return new self(
             $initiative->id,
-            $initiative->name,
-            $initiative->short_description,
-            $initiative->long_description,
+            $name,
+            $summary,
+            $description,
             (bool) $initiative->display,
             $initiative->start_date !== null ? (string) $initiative->start_date : null,
             $initiative->end_date !== null ? (string) $initiative->end_date : null,
@@ -66,8 +81,8 @@ final class VisibleInitiativeItem
      * @return array{
      *     id: int,
      *     name: string,
-     *     short_description: ?string,
-     *     long_description: ?string,
+     *     summary: ?string,
+     *     description: ?string,
      *     display: bool,
      *     start_date: ?string,
      *     end_date: ?string,
@@ -88,8 +103,8 @@ final class VisibleInitiativeItem
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'short_description' => $this->shortDescription,
-            'long_description' => $this->longDescription,
+            'summary' => $this->summary,
+            'description' => $this->description,
             'display' => $this->display,
             'start_date' => $this->startDate,
             'end_date' => $this->endDate,

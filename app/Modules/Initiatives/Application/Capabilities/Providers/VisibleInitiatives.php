@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\Initiatives\Application\Capabilities\Providers;
 
 use App\Modules\Initiatives\Application\Capabilities\Dtos\VisibleInitiativeItem;
-use App\Modules\Initiatives\Application\Services\InitiativeService;
+use App\Modules\Initiatives\Application\Services\InitiativeTranslationResolver;
+use App\Modules\Initiatives\Application\UseCases\ListVisibleInitiatives\ListVisibleInitiatives;
 use App\Modules\Initiatives\Domain\Models\Initiative;
 use App\Modules\Shared\Contracts\Capabilities\ICapabilitiesFactory;
 use App\Modules\Shared\Contracts\Capabilities\ICapabilityContext;
@@ -21,7 +22,8 @@ final class VisibleInitiatives implements ICapabilityProvider
     private ?ICapabilityDefinition $definition = null;
 
     public function __construct(
-        private readonly InitiativeService $initiativeService,
+        private readonly ListVisibleInitiatives $listVisibleInitiatives,
+        private readonly InitiativeTranslationResolver $translationResolver,
         private readonly ICapabilitiesFactory $capabilitiesFactory,
     ) {
     }
@@ -53,8 +55,8 @@ final class VisibleInitiatives implements ICapabilityProvider
      * @return array<int, array{
      *     id: int,
      *     name: string,
-     *     short_description: ?string,
-     *     long_description: ?string,
+     *     summary: ?string,
+     *     description: ?string,
      *     display: bool,
      *     start_date: ?string,
      *     end_date: ?string,
@@ -76,13 +78,15 @@ final class VisibleInitiatives implements ICapabilityProvider
     ): array {
         $limit = $this->extractLimit($parameters);
 
-        $initiatives = $this->initiativeService->visible();
+        $locale = app()->getLocale();
+        $fallbackLocale = app()->getFallbackLocale();
+        $initiatives = $this->listVisibleInitiatives->handle($locale, $fallbackLocale);
 
         if ($limit !== null) {
             $initiatives = $initiatives->take($limit);
         }
 
-        return $this->mapInitiatives($initiatives);
+        return $this->mapInitiatives($initiatives, $locale, $fallbackLocale);
     }
 
     /**
@@ -118,8 +122,8 @@ final class VisibleInitiatives implements ICapabilityProvider
      * @return array<int, array{
      *     id: int,
      *     name: string,
-     *     short_description: ?string,
-     *     long_description: ?string,
+     *     summary: ?string,
+     *     description: ?string,
      *     display: bool,
      *     start_date: ?string,
      *     end_date: ?string,
@@ -135,12 +139,37 @@ final class VisibleInitiatives implements ICapabilityProvider
      *     }>
      * }>
      */
-    private function mapInitiatives(Collection $initiatives): array
+    private function mapInitiatives(
+        Collection $initiatives,
+        string $locale,
+        ?string $fallbackLocale,
+    ): array
     {
         return $initiatives
             ->map(
-                static function (Initiative $initiative): array {
-                    return VisibleInitiativeItem::fromModel($initiative)->toArray();
+                function (Initiative $initiative) use ($locale, $fallbackLocale): array {
+                    $name = $this->translationResolver->resolveName(
+                        $initiative,
+                        $locale,
+                        $fallbackLocale,
+                    );
+                    $summary = $this->translationResolver->resolveSummary(
+                        $initiative,
+                        $locale,
+                        $fallbackLocale,
+                    );
+                    $description = $this->translationResolver->resolveDescription(
+                        $initiative,
+                        $locale,
+                        $fallbackLocale,
+                    );
+
+                    return VisibleInitiativeItem::fromModelWithTranslations(
+                        $initiative,
+                        $name,
+                        $summary,
+                        $description,
+                    )->toArray();
                 }
             )
             ->values()
