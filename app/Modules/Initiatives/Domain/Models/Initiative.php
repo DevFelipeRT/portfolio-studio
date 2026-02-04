@@ -8,6 +8,7 @@ use App\Modules\Images\Domain\Models\Image;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Represents a portfolio initiative.
@@ -25,9 +26,10 @@ class Initiative extends Model
      * @var array<int,string>
      */
     protected $fillable = [
+        'locale',
         'name',
-        'short_description',
-        'long_description',
+        'summary',
+        'description',
         'display',
         'start_date',
         'end_date',
@@ -69,5 +71,15 @@ class Initiative extends Model
                 'caption',
             ])
             ->withTimestamps();
+    }
+
+    /**
+     * Localized initiative content.
+     *
+     * @return HasMany<InitiativeTranslation>
+     */
+    public function translations(): HasMany
+    {
+        return $this->hasMany(InitiativeTranslation::class, 'initiative_id');
     }
 }
