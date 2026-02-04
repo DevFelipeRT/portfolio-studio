@@ -7,8 +7,8 @@ import { JSX } from 'react';
 type CapabilityInitiative = {
     id: number;
     name: string;
-    short_description?: string | null;
-    long_description?: string | null;
+    summary?: string | null;
+    description?: string | null;
     display?: boolean;
     start_date?: string | null;
     end_date?: string | null;
@@ -105,8 +105,8 @@ export function InitiativeHighlightListSection({
                     {limitedInitiatives.map((initiative) => {
                         const name = initiative.name;
                         const shortDescription =
-                            initiative.short_description ??
-                            initiative.long_description ??
+                            initiative.summary ??
+                            initiative.description ??
                             null;
                         const startDate = initiative.start_date ?? null;
                         const endDate = initiative.end_date ?? null;

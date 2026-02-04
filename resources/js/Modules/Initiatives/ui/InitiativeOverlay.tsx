@@ -8,6 +8,7 @@ import {
 } from '@/Components/Ui/dialog';
 import { Separator } from '@/Components/Ui/separator';
 import type { Initiative } from '@/Modules/Initiatives/core/types';
+import { RichTextRenderer } from '@/Common/RichText/RichTextRenderer';
 
 interface InitiativeOverlayProps {
     open: boolean;
@@ -59,10 +60,10 @@ export function InitiativeOverlay({
                 <div className="space-y-6">
                     <section>
                         <p className="text-muted-foreground mb-2 text-xs font-medium tracking-wide uppercase">
-                            Short description
+                            Summary
                         </p>
                         <p className="text-foreground text-sm">
-                            {initiative.short_description}
+                            {initiative.summary ?? ''}
                         </p>
                     </section>
 
@@ -70,9 +71,7 @@ export function InitiativeOverlay({
                         <p className="text-muted-foreground mb-2 text-xs font-medium tracking-wide uppercase">
                             Details
                         </p>
-                        <p className="text-foreground text-sm leading-relaxed whitespace-pre-line">
-                            {initiative.long_description}
-                        </p>
+                        <RichTextRenderer value={initiative.description ?? ''} />
                     </section>
 
                     {images.length > 0 && (

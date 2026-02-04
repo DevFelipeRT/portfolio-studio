@@ -70,7 +70,7 @@ export function InitiativesRow({
                         {initiative.name}
                     </p>
                     <p className="text-muted-foreground line-clamp-1 min-w-0 truncate text-xs text-pretty hyphens-auto">
-                        {initiative.short_description}
+                        {initiative.summary ?? ''}
                     </p>
                 </div>
             </TableCell>
