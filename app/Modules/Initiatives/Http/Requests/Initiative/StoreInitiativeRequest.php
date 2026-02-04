@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\Initiatives\Http\Requests\Initiative;
 
+use App\Modules\Initiatives\Application\Services\SupportedLocalesResolver;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 /**
  * Request for creating initiatives.
@@ -26,10 +28,13 @@ class StoreInitiativeRequest extends FormRequest
      */
     public function rules(): array
     {
+        $supported = app(SupportedLocalesResolver::class)->resolve();
+
         return [
+            'locale' => ['required', 'string', 'max:20', Rule::in($supported)],
             'name' => ['required', 'string', 'max:255'],
-            'short_description' => ['required', 'string', 'max:255'],
-            'long_description' => ['required', 'string'],
+            'summary' => ['required', 'string', 'max:255'],
+            'description' => ['required', 'string'],
             'display' => ['sometimes', 'boolean'],
             'start_date' => ['required', 'date'],
             'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],

@@ -6,9 +6,14 @@ namespace App\Modules\Initiatives\Http\Controllers;
 
 use App\Modules\Shared\Abstractions\Http\Controller;
 use App\Modules\Initiatives\Domain\Models\Initiative;
-use App\Modules\Initiatives\Application\Services\InitiativeService;
+use App\Modules\Initiatives\Application\UseCases\CreateInitiative\CreateInitiative;
+use App\Modules\Initiatives\Application\UseCases\DeleteInitiative\DeleteInitiative;
+use App\Modules\Initiatives\Application\UseCases\ListInitiatives\ListInitiatives;
+use App\Modules\Initiatives\Application\UseCases\UpdateInitiative\UpdateInitiative;
+use App\Modules\Initiatives\Http\Mappers\InitiativeInputMapper;
 use App\Modules\Initiatives\Http\Requests\Initiative\StoreInitiativeRequest;
 use App\Modules\Initiatives\Http\Requests\Initiative\UpdateInitiativeRequest;
+use App\Modules\Initiatives\Presentation\Mappers\InitiativeMapper;
 
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
@@ -20,7 +25,10 @@ use Inertia\Response;
 class InitiativeController extends Controller
 {
     public function __construct(
-        private readonly InitiativeService $initiativeService,
+        private readonly ListInitiatives $listInitiatives,
+        private readonly CreateInitiative $createInitiative,
+        private readonly UpdateInitiative $updateInitiative,
+        private readonly DeleteInitiative $deleteInitiative,
     ) {
     }
 
@@ -29,10 +37,12 @@ class InitiativeController extends Controller
      */
     public function index(): Response
     {
-        $initiatives = $this->initiativeService->listAll();
+        $locale = app()->getLocale();
+        $fallbackLocale = app()->getFallbackLocale();
+        $initiatives = $this->listInitiatives->handle($locale, $fallbackLocale);
 
         return Inertia::render('Initiatives/Pages/Index', [
-            'initiatives' => $initiatives,
+            'initiatives' => InitiativeMapper::collection($initiatives),
         ]);
     }
 
@@ -49,12 +59,8 @@ class InitiativeController extends Controller
      */
     public function store(StoreInitiativeRequest $request): RedirectResponse
     {
-        $data = $request->validated();
-        $images = $data['images'] ?? [];
-
-        unset($data['images']);
-
-        $this->initiativeService->create($data, $images);
+        $input = InitiativeInputMapper::fromStoreRequest($request);
+        $this->createInitiative->handle($input);
 
         return redirect()
             ->route('initiatives.index')
@@ -66,10 +72,10 @@ class InitiativeController extends Controller
      */
     public function edit(Initiative $initiative): Response
     {
-        $initiative->load('images');
+        $initiative->load(['images', 'translations']);
 
         return Inertia::render('Initiatives/Pages/Edit', [
-            'initiative' => $initiative,
+            'initiative' => InitiativeMapper::toArray($initiative),
         ]);
     }
 
@@ -80,15 +86,8 @@ class InitiativeController extends Controller
         UpdateInitiativeRequest $request,
         Initiative $initiative
     ): RedirectResponse {
-        $data = $request->validated();
-
-        $images = $request->has('images')
-            ? (array) ($data['images'] ?? [])
-            : null;
-
-        unset($data['images']);
-
-        $this->initiativeService->update($initiative, $data, $images);
+        $input = InitiativeInputMapper::fromUpdateRequest($request, $initiative);
+        $this->updateInitiative->handle($initiative, $input);
 
         return redirect()
             ->route('initiatives.index')
@@ -100,7 +99,7 @@ class InitiativeController extends Controller
      */
     public function destroy(Initiative $initiative): RedirectResponse
     {
-        $this->initiativeService->delete($initiative);
+        $this->deleteInitiative->handle($initiative);
 
         return redirect()
             ->route('initiatives.index')
@@ -112,7 +111,8 @@ class InitiativeController extends Controller
      */
     public function toggleDisplay(Initiative $initiative): RedirectResponse
     {
-        $this->initiativeService->toggleDisplay($initiative);
+        $initiative->display = !$initiative->display;
+        $initiative->save();
 
         return redirect()
             ->back()
