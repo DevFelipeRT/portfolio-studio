@@ -4,9 +4,10 @@ export type InitiativeImageInput = {
 };
 
 export type InitiativeFormData = {
+    locale: string;
     name: string;
-    short_description: string;
-    long_description: string;
+    summary: string;
+    description: string;
     display: boolean;
     start_date: string | null;
     end_date: string | null;

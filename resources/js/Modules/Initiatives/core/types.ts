@@ -19,11 +19,21 @@ export interface InitiativeImage extends Image {
 
 export interface Initiative extends HasTimestamps {
     id: number;
+    locale: string;
     name: string;
-    short_description: string;
-    long_description: string;
+    summary: string | null;
+    description: string | null;
     display: boolean;
     start_date: string | null;
     end_date: string | null;
     images?: InitiativeImage[];
+}
+
+export interface InitiativeTranslationItem extends HasTimestamps {
+    id: number;
+    initiative_id: number;
+    locale: string;
+    name: string | null;
+    summary: string | null;
+    description: string | null;
 }
