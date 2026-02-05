@@ -10,8 +10,8 @@ use Illuminate\Support\Facades\Cache;
 
 final class WebsiteSettingsService
 {
-    private const string CACHE_KEY = 'website_settings.current';
-    private const int CACHE_SECONDS = 60;
+    private const CACHE_KEY = 'website_settings.current';
+    private const CACHE_SECONDS = 60;
 
     public function __construct(private readonly IWebsiteSettingsRepository $repository)
     {
