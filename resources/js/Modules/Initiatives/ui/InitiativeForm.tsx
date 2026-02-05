@@ -127,7 +127,7 @@ export function InitiativeForm({
                         id="start_date"
                         label="Date or start date"
                         value={data.start_date}
-                        onChange={(value) => setData('start_date', value)}
+                        onChange={(value) => onChangeField('start_date', value)}
                         placeholder="Select a date"
                         required
                     />
@@ -154,7 +154,7 @@ export function InitiativeForm({
                         id="end_date"
                         label="End date (optional)"
                         value={data.end_date}
-                        onChange={(value) => setData('end_date', value)}
+                        onChange={(value) => onChangeField('end_date', value)}
                         placeholder="Select an end date"
                     />
                 </div>
