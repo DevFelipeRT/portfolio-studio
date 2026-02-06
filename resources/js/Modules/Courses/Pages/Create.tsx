@@ -18,6 +18,7 @@ interface CreateCourseProps {
 export default function Create({ course_categories }: CreateCourseProps) {
     const { data, setData, post, processing, errors } =
         useForm<CourseFormData>({
+            locale: '',
             name: '',
             institution: '',
             category: '',

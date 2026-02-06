@@ -1,5 +1,6 @@
 'use client';
 
+import { RichTextEditor } from '@/Common/RichText/RichTextEditor';
 import { useSupportedLocales, useTranslation } from '@/Common/i18n';
 import { Button } from '@/Components/Ui/button';
 import { Checkbox } from '@/Components/Ui/checkbox';
@@ -13,7 +14,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/Components/Ui/select';
-import { Textarea } from '@/Components/Ui/textarea';
 import type { CourseFormData } from '@/Modules/Courses/core/forms';
 import { Loader2 } from 'lucide-react';
 import React, { HTMLAttributes } from 'react';
@@ -87,6 +87,27 @@ export default function CourseForm({
       <section className="space-y-4">
         <h2 className="text-lg font-medium">{t('sections.details')}</h2>
 
+        <div className="space-y-1.5">
+          <Label htmlFor="locale">{t('fields.locale.label')}</Label>
+          <Select
+            value={data.locale}
+            onValueChange={(value) => setData('locale', value)}
+            disabled={processing}
+          >
+            <SelectTrigger id="locale">
+              <SelectValue placeholder={t('fields.locale.placeholder')} />
+            </SelectTrigger>
+            <SelectContent>
+              {supportedLocales.map((locale) => (
+                <SelectItem key={locale} value={locale}>
+                  {locale}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <InputError message={normalizeError(errors.locale)} />
+        </div>
+
         <div className="grid gap-4 md:grid-cols-2">
           <div className="space-y-1.5">
             <Label htmlFor="name">{t('fields.name.label')}</Label>
@@ -150,13 +171,10 @@ export default function CourseForm({
 
         <div className="space-y-1.5">
           <Label htmlFor="description">{t('fields.description.label')}</Label>
-          <Textarea
+          <RichTextEditor
             id="description"
             value={data.description}
-            onChange={(e) => setData('description', e.target.value)}
-            rows={6}
-            placeholder={t('fields.description.placeholder')}
-            disabled={processing}
+            onChange={(value) => setData('description', value)}
           />
           <InputError message={normalizeError(errors.description)} />
         </div>

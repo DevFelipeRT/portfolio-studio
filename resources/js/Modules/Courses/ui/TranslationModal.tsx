@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/Components/Ui/select';
-import { Textarea } from '@/Components/Ui/textarea';
+import { RichTextEditor } from '@/Common/RichText/RichTextEditor';
 import {
   createCourseTranslation,
   deleteCourseTranslation,
@@ -30,6 +30,7 @@ type TranslationModalProps = {
   onClose: () => void;
   courseId: number;
   courseLabel: string;
+  baseLocale?: string;
 };
 
 type EditableTranslation = CourseTranslationItem & {
@@ -56,6 +57,7 @@ export function TranslationModal({
   onClose,
   courseId,
   courseLabel,
+  baseLocale,
 }: TranslationModalProps) {
   const { translate: t } = useTranslation('courses');
   const [supportedLocales, setSupportedLocales] = React.useState<string[]>([]);
@@ -107,7 +109,7 @@ export function TranslationModal({
 
   const usedLocales = new Set(translations.map((item) => item.locale));
   const availableLocales = supportedLocales.filter(
-    (locale) => !usedLocales.has(locale),
+    (locale) => !usedLocales.has(locale) && locale !== baseLocale,
   );
   const activeTranslation = React.useMemo(
     () => translations.find((item) => item.locale === activeLocale) ?? null,
@@ -421,11 +423,11 @@ export function TranslationModal({
                 />
               </div>
 
-              <Textarea
+              <RichTextEditor
+                id="course-translation-new"
                 value={newDescription}
-                onChange={(event) => setNewDescription(event.target.value)}
+                onChange={setNewDescription}
                 placeholder={t('translations.placeholders.description')}
-                rows={4}
               />
 
               <div className="flex flex-wrap items-center gap-2">
@@ -508,18 +510,19 @@ export function TranslationModal({
 
               <div className="space-y-1.5">
                 <Label>{t('translations.fields.description')}</Label>
-                <Textarea
+                <RichTextEditor
+                  id={`course-translation-${activeTranslation.locale}`}
                   value={activeTranslation.draftDescription ?? ''}
-                  onChange={(event) =>
+                  onChange={(value) =>
                     setTranslations((current) =>
                       current.map((entry) =>
                         entry.locale === activeTranslation.locale
-                          ? { ...entry, draftDescription: event.target.value }
+                          ? { ...entry, draftDescription: value }
                           : entry,
                       ),
                     )
                   }
-                  rows={4}
+                  placeholder={t('translations.placeholders.description')}
                 />
               </div>
 

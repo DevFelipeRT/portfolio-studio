@@ -5,6 +5,11 @@ export default {
         visibility: 'Portfolio Visibility',
     },
     fields: {
+        locale: {
+            label: 'Locale',
+            placeholder: 'Select a locale',
+            error: 'Locale is required',
+        },
         name: {
             label: 'Course Title',
             placeholder: 'e.g., Advanced React Patterns',

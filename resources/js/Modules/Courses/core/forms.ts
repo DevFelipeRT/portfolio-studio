@@ -1,4 +1,5 @@
 export type CourseFormData = {
+    locale: string;
     name: string;
     institution: string;
     category: string;

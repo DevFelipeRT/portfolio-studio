@@ -26,6 +26,7 @@ export default function Edit({ course, course_categories }: EditCourseProps) {
     const { data, setData, put, processing, errors } =
         useForm<CourseFormData>(
         {
+            locale: course.locale,
             name: course.name,
             institution: course.institution,
             category: course.category,
@@ -101,6 +102,7 @@ export default function Edit({ course, course_categories }: EditCourseProps) {
                 onClose={() => setTranslationOpen(false)}
                 courseId={course.id}
                 courseLabel={course.name}
+                baseLocale={course.locale}
             />
         </AuthenticatedLayout>
     );

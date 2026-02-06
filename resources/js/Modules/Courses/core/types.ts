@@ -5,6 +5,7 @@ export interface HasTimestamps {
 
 export interface Course extends HasTimestamps {
     id: number;
+    locale: string;
     name: string;
     institution: string;
     category: string;

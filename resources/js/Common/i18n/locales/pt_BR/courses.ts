@@ -5,6 +5,11 @@ export default {
         visibility: 'Visibilidade no Portfólio',
     },
     fields: {
+        locale: {
+            label: 'Locale',
+            placeholder: 'Selecione um locale',
+            error: 'Locale é obrigatório',
+        },
         name: {
             label: 'Título do Curso',
             placeholder: 'ex: Padrões React Avançados',
