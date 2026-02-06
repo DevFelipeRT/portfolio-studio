@@ -8,6 +8,7 @@ final class UpdateExperienceInput
 {
     public function __construct(
         public readonly string $locale,
+        public readonly bool $confirmSwap,
         public readonly string $position,
         public readonly string $company,
         public readonly ?string $summary,

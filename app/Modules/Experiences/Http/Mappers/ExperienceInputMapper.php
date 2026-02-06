@@ -36,6 +36,7 @@ final class ExperienceInputMapper
 
         return new UpdateExperienceInput(
             locale: $data['locale'],
+            confirmSwap: (bool) ($data['confirm_swap'] ?? false),
             position: $data['position'],
             company: $data['company'],
             summary: $data['summary'] ?? null,

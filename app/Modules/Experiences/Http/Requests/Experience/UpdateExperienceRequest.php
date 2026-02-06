@@ -32,6 +32,7 @@ class UpdateExperienceRequest extends FormRequest
 
         return [
             'locale' => ['required', 'string', 'max:20', Rule::in($supported)],
+            'confirm_swap' => ['sometimes', 'boolean'],
             'position' => ['required', 'string', 'max:255'],
             'company' => ['required', 'string', 'max:255'],
             'summary' => ['nullable', 'string', 'max:255'],
