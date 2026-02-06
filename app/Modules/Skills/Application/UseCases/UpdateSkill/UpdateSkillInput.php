@@ -9,6 +9,7 @@ final class UpdateSkillInput
     public function __construct(
         public readonly string $name,
         public readonly string $locale,
+        public readonly bool $confirmSwap,
         public readonly ?int $skillCategoryId,
     ) {
     }

@@ -34,6 +34,7 @@ final class SkillCategoryInputMapper
             name: $data['name'],
             slug: $data['slug'] ?? null,
             locale: $data['locale'],
+            confirmSwap: (bool) ($data['confirm_swap'] ?? false),
         );
     }
 }

@@ -44,6 +44,7 @@ class UpdateSkillRequest extends FormRequest
                 'max:20',
                 Rule::in($supported),
             ],
+            'confirm_swap' => ['sometimes', 'boolean'],
             'name' => [
                 'required',
                 'string',

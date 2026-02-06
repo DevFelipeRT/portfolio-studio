@@ -10,6 +10,7 @@ final class UpdateSkillCategoryInput
         public readonly string $name,
         public readonly ?string $slug,
         public readonly string $locale,
+        public readonly bool $confirmSwap,
     ) {
     }
 }
