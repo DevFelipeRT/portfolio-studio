@@ -18,7 +18,13 @@ final class ContactChannelController extends Controller
 
     public function index(): JsonResponse
     {
-        $channels = $this->listActiveContactChannels->handle();
+        $locale = request()->query('locale');
+        $fallbackLocale = app()->getFallbackLocale();
+
+        $channels = $this->listActiveContactChannels->handle(
+            is_string($locale) ? $locale : null,
+            $fallbackLocale,
+        );
 
         return response()->json([
             'data' => ContactChannelMapper::collection($channels),

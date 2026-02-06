@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\ContactChannels\Http\Requests\ContactChannel;
 
+use App\Modules\ContactChannels\Application\Services\SupportedLocalesResolver;
 use App\Modules\ContactChannels\Domain\Enums\ContactChannelType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -22,8 +23,15 @@ class StoreContactChannelRequest extends FormRequest
     public function rules(): array
     {
         $types = array_map(static fn(ContactChannelType $type) => $type->value, ContactChannelType::cases());
+        $supported = app(SupportedLocalesResolver::class)->resolve();
 
         return [
+            'locale' => [
+                'required',
+                'string',
+                'max:20',
+                Rule::in($supported),
+            ],
             'channel_type' => ['required', 'string', Rule::in($types)],
             'label' => ['nullable', 'string', 'max:255', 'required_if:channel_type,custom'],
             'value' => ['required', 'string', 'max:2048'],

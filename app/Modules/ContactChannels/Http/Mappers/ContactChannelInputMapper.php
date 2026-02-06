@@ -26,6 +26,7 @@ final class ContactChannelInputMapper
             channelType: ContactChannelType::from($data['channel_type']),
             label: $data['label'] ?? null,
             value: $data['value'],
+            locale: $data['locale'],
             isActive: $data['is_active'] ?? true,
             sortOrder: $data['sort_order'] ?? 0,
         );
@@ -41,6 +42,8 @@ final class ContactChannelInputMapper
             channelType: ContactChannelType::from($data['channel_type']),
             label: $data['label'] ?? null,
             value: $data['value'],
+            locale: $data['locale'],
+            confirmSwap: (bool) ($data['confirm_swap'] ?? false),
             isActive: $data['is_active'] ?? (bool) $channel->is_active,
             sortOrder: $data['sort_order'] ?? (int) $channel->sort_order,
         );

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Modules\ContactChannels\Http\Controllers\Admin\ContactChannelController;
+use App\Modules\ContactChannels\Http\Controllers\ContactChannelTranslationController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')
@@ -30,4 +31,16 @@ Route::prefix('admin')
 
         Route::post('contact-channels/{contactChannel}/toggle-active', [ContactChannelController::class, 'toggleActive'])
             ->name('contact-channels.toggle-active');
+
+        Route::get('contact-channels/{contactChannel}/translations', [ContactChannelTranslationController::class, 'index'])
+            ->name('contact-channels.translations.index');
+
+        Route::post('contact-channels/{contactChannel}/translations', [ContactChannelTranslationController::class, 'store'])
+            ->name('contact-channels.translations.store');
+
+        Route::put('contact-channels/{contactChannel}/translations/{locale}', [ContactChannelTranslationController::class, 'update'])
+            ->name('contact-channels.translations.update');
+
+        Route::delete('contact-channels/{contactChannel}/translations/{locale}', [ContactChannelTranslationController::class, 'destroy'])
+            ->name('contact-channels.translations.destroy');
     });
