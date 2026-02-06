@@ -28,10 +28,10 @@ final class ListSkillsGroupedByCategory
      *     skills: array<int, array{id: int, name: string}>
      * }>
      */
-    public function handle(): array
+    public function handle(?string $locale = null, ?string $fallbackLocale = null): array
     {
-        $locale = app()->getLocale();
-        $fallbackLocale = app()->getFallbackLocale();
+        $locale ??= app()->getLocale();
+        $fallbackLocale ??= app()->getFallbackLocale();
 
         $skills = $this->repository->allWithCategoryAndTranslations(
             $locale,

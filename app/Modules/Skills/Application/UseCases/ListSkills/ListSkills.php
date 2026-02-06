@@ -20,36 +20,56 @@ final class ListSkills
     /**
      * @return array<int,SkillDto>
      */
-    public function handle(): array
+    public function handle(
+        ?string $locale = null,
+        ?string $fallbackLocale = null,
+        bool $useTranslations = false,
+    ): array
     {
-        $locale = app()->getLocale();
-        $fallbackLocale = app()->getFallbackLocale();
+        if ($useTranslations) {
+            $locale ??= app()->getLocale();
+            $fallbackLocale ??= app()->getFallbackLocale();
 
-        $skills = $this->repository->allWithCategoryAndTranslations(
-            $locale,
-            $fallbackLocale,
-        );
+            $skills = $this->repository->allWithCategoryAndTranslations(
+                $locale,
+                $fallbackLocale,
+            );
 
-        return $skills
-            ->map(function ($skill) use ($locale, $fallbackLocale): SkillDto {
-                $categoryDto = null;
+            return $skills
+                ->map(function ($skill) use ($locale, $fallbackLocale): SkillDto {
+                    $categoryDto = null;
 
-                if ($skill->category !== null) {
-                    $categoryName = $this->translationResolver->resolveCategoryName(
-                        $skill->category,
+                    if ($skill->category !== null) {
+                        $categoryName = $this->translationResolver->resolveCategoryName(
+                            $skill->category,
+                            $locale,
+                            $fallbackLocale,
+                        );
+                        $categoryDto = SkillCategoryDto::fromModel($skill->category, $categoryName);
+                    }
+
+                    $skillName = $this->translationResolver->resolveSkillName(
+                        $skill,
                         $locale,
                         $fallbackLocale,
                     );
-                    $categoryDto = SkillCategoryDto::fromModel($skill->category, $categoryName);
+
+                    return SkillDto::fromModel($skill, $skillName, $categoryDto);
+                })
+                ->all();
+        }
+
+        $skills = $this->repository->allWithCategory();
+
+        return $skills
+            ->map(function ($skill): SkillDto {
+                $categoryDto = null;
+
+                if ($skill->category !== null) {
+                    $categoryDto = SkillCategoryDto::fromModel($skill->category);
                 }
 
-                $skillName = $this->translationResolver->resolveSkillName(
-                    $skill,
-                    $locale,
-                    $fallbackLocale,
-                );
-
-                return SkillDto::fromModel($skill, $skillName, $categoryDto);
+                return SkillDto::fromModel($skill, null, $categoryDto);
             })
             ->all();
     }

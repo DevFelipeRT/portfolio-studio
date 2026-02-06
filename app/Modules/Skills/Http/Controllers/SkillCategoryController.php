@@ -6,7 +6,6 @@ namespace App\Modules\Skills\Http\Controllers;
 
 use App\Modules\Shared\Abstractions\Http\Controller;
 use App\Modules\Skills\Application\Dtos\SkillCategoryDto;
-use App\Modules\Skills\Application\Services\SkillTranslationResolver;
 use App\Modules\Skills\Application\UseCases\CreateSkillCategory\CreateSkillCategory;
 use App\Modules\Skills\Application\UseCases\DeleteSkillCategory\DeleteSkillCategory;
 use App\Modules\Skills\Application\UseCases\ListSkillCategories\ListSkillCategories;
@@ -30,7 +29,6 @@ class SkillCategoryController extends Controller
         private readonly CreateSkillCategory $createSkillCategory,
         private readonly UpdateSkillCategory $updateSkillCategory,
         private readonly DeleteSkillCategory $deleteSkillCategory,
-        private readonly SkillTranslationResolver $translationResolver,
     ) {}
 
     /**
@@ -72,18 +70,7 @@ class SkillCategoryController extends Controller
      */
     public function edit(SkillCategory $skillCategory): Response
     {
-        $skillCategory->loadMissing('translations');
-
-        $locale = app()->getLocale();
-        $fallbackLocale = app()->getFallbackLocale();
-
-        $name = $this->translationResolver->resolveCategoryName(
-            $skillCategory,
-            $locale,
-            $fallbackLocale,
-        );
-
-        $categoryDto = SkillCategoryDto::fromModel($skillCategory, $name);
+        $categoryDto = SkillCategoryDto::fromModel($skillCategory);
 
         return Inertia::render('Skills/Pages/SkillCategories/Edit', [
             'category' => SkillCategoryMapper::map($categoryDto),

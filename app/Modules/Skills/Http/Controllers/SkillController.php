@@ -7,7 +7,6 @@ namespace App\Modules\Skills\Http\Controllers;
 use App\Modules\Shared\Abstractions\Http\Controller;
 use App\Modules\Skills\Application\Dtos\SkillCategoryDto;
 use App\Modules\Skills\Application\Dtos\SkillDto;
-use App\Modules\Skills\Application\Services\SkillTranslationResolver;
 use App\Modules\Skills\Application\UseCases\CreateSkill\CreateSkill;
 use App\Modules\Skills\Application\UseCases\DeleteSkill\DeleteSkill;
 use App\Modules\Skills\Application\UseCases\ListSkillCategories\ListSkillCategories;
@@ -35,7 +34,6 @@ class SkillController extends Controller
         private readonly CreateSkill $createSkill,
         private readonly UpdateSkill $updateSkill,
         private readonly DeleteSkill $deleteSkill,
-        private readonly SkillTranslationResolver $translationResolver,
     ) {}
 
     /**
@@ -83,29 +81,15 @@ class SkillController extends Controller
      */
     public function edit(Skill $skill): Response
     {
-        $skill->loadMissing('category', 'translations', 'category.translations');
+        $skill->loadMissing('category');
         $categories = $this->listSkillCategories->handle();
-
-        $locale = app()->getLocale();
-        $fallbackLocale = app()->getFallbackLocale();
 
         $categoryDto = null;
         if ($skill->category !== null) {
-            $categoryName = $this->translationResolver->resolveCategoryName(
-                $skill->category,
-                $locale,
-                $fallbackLocale,
-            );
-            $categoryDto = SkillCategoryDto::fromModel($skill->category, $categoryName);
+            $categoryDto = SkillCategoryDto::fromModel($skill->category);
         }
 
-        $skillName = $this->translationResolver->resolveSkillName(
-            $skill,
-            $locale,
-            $fallbackLocale,
-        );
-
-        $skillDto = SkillDto::fromModel($skill, $skillName, $categoryDto);
+        $skillDto = SkillDto::fromModel($skill, null, $categoryDto);
 
         return Inertia::render('Skills/Pages/Edit', [
             'skill' => SkillMapper::map($skillDto),

@@ -6,14 +6,12 @@ namespace App\Modules\Skills\Application\UseCases\CreateSkill;
 
 use App\Modules\Skills\Application\Dtos\SkillDto;
 use App\Modules\Skills\Application\Dtos\SkillCategoryDto;
-use App\Modules\Skills\Application\Services\SkillTranslationResolver;
 use App\Modules\Skills\Domain\Repositories\ISkillRepository;
 
 final class CreateSkill
 {
     public function __construct(
         private readonly ISkillRepository $repository,
-        private readonly SkillTranslationResolver $translationResolver,
     ) {
     }
 
@@ -24,27 +22,11 @@ final class CreateSkill
             'skill_category_id' => $input->skillCategoryId,
         ]);
 
-        $skill->loadMissing('category', 'translations', 'category.translations');
-
-        $locale = app()->getLocale();
-        $fallbackLocale = app()->getFallbackLocale();
-
         $categoryDto = null;
         if ($skill->category !== null) {
-            $categoryName = $this->translationResolver->resolveCategoryName(
-                $skill->category,
-                $locale,
-                $fallbackLocale,
-            );
-            $categoryDto = SkillCategoryDto::fromModel($skill->category, $categoryName);
+            $categoryDto = SkillCategoryDto::fromModel($skill->category);
         }
 
-        $skillName = $this->translationResolver->resolveSkillName(
-            $skill,
-            $locale,
-            $fallbackLocale,
-        );
-
-        return SkillDto::fromModel($skill, $skillName, $categoryDto);
+        return SkillDto::fromModel($skill, null, $categoryDto);
     }
 }
