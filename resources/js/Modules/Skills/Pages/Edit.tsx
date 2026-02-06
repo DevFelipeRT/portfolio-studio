@@ -8,6 +8,8 @@ import { TranslationModal } from '@/Modules/Skills/ui/TranslationModal';
 import { Button } from '@/Components/Ui/button';
 import { Head, Link, useForm } from '@inertiajs/react';
 import React from 'react';
+import { listSkillTranslations } from '@/Modules/Skills/core/api/translations';
+import { LocaleSwapDialog } from '@/Common/LocaleSwapDialog';
 
 interface EditSkillProps {
   skill: Skill;
@@ -16,11 +18,54 @@ interface EditSkillProps {
 
 export default function Edit({ skill, categories }: EditSkillProps) {
   const [showTranslations, setShowTranslations] = React.useState(false);
+  const [swapDialogOpen, setSwapDialogOpen] = React.useState(false);
+  const [pendingLocale, setPendingLocale] = React.useState<string | null>(null);
+  const [translationLocales, setTranslationLocales] = React.useState<string[]>(
+    [],
+  );
+  const [loadingTranslations, setLoadingTranslations] = React.useState(false);
+  const [localesLoadError, setLocalesLoadError] = React.useState<string | null>(
+    null,
+  );
   const { data, setData, put, processing, errors } = useForm<SkillFormData>({
     name: skill.name,
     locale: skill.locale,
+    confirm_swap: false,
     skill_category_id: skill.skill_category_id ?? '',
   });
+
+  React.useEffect(() => {
+    let mounted = true;
+
+    const loadTranslations = async (): Promise<void> => {
+      setLoadingTranslations(true);
+      setLocalesLoadError(null);
+      try {
+        const items = await listSkillTranslations(skill.id);
+        if (mounted) {
+          setTranslationLocales(
+            items.map((item) => item.locale).filter(Boolean),
+          );
+        }
+      } catch (err) {
+        if (mounted) {
+          setLocalesLoadError(
+            'Unable to load translations for locale conflict checks.',
+          );
+        }
+      } finally {
+        if (mounted) {
+          setLoadingTranslations(false);
+        }
+      }
+    };
+
+    void loadTranslations();
+
+    return () => {
+      mounted = false;
+    };
+  }, [skill.id]);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
@@ -31,6 +76,15 @@ export default function Edit({ skill, categories }: EditSkillProps) {
     field: keyof SkillFormData,
     value: string | number | '',
   ): void => {
+    if (field === 'locale' && typeof value === 'string') {
+      if (value !== data.locale && translationLocales.includes(value)) {
+        setPendingLocale(value);
+        setSwapDialogOpen(true);
+        return;
+      }
+
+      setData('confirm_swap', false);
+    }
     setData(field, value);
   };
 
@@ -88,8 +142,32 @@ export default function Edit({ skill, categories }: EditSkillProps) {
         entityId={skill.id}
         entityLabel={skill.name}
         entityType="skill"
-        baseLocale={skill.locale}
+        baseLocale={data.locale}
       />
+
+      {pendingLocale && (
+        <LocaleSwapDialog
+          open={swapDialogOpen}
+          currentLocale={data.locale}
+          nextLocale={pendingLocale}
+          onConfirmSwap={() => {
+            setData('confirm_swap', true);
+            setData('locale', pendingLocale);
+            setSwapDialogOpen(false);
+            setPendingLocale(null);
+          }}
+          onConfirmNoSwap={() => {
+            setData('confirm_swap', false);
+            setData('locale', pendingLocale);
+            setSwapDialogOpen(false);
+            setPendingLocale(null);
+          }}
+          onCancel={() => {
+            setSwapDialogOpen(false);
+            setPendingLocale(null);
+          }}
+        />
+      )}
     </>
   );
 }

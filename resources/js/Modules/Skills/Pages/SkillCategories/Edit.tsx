@@ -6,6 +6,8 @@ import type { SkillCategoryFormData } from '@/Modules/Skills/core/forms';
 import { SkillCategoryForm } from '@/Modules/Skills/ui/SkillCategoryForm';
 import { TranslationModal } from '@/Modules/Skills/ui/TranslationModal';
 import { Button } from '@/Components/Ui/button';
+import { listSkillCategoryTranslations } from '@/Modules/Skills/core/api/translations';
+import { LocaleSwapDialog } from '@/Common/LocaleSwapDialog';
 
 interface EditSkillCategoryProps {
     category: SkillCategory;
@@ -13,12 +15,55 @@ interface EditSkillCategoryProps {
 
 export default function Edit({ category }: EditSkillCategoryProps) {
     const [showTranslations, setShowTranslations] = React.useState(false);
+    const [swapDialogOpen, setSwapDialogOpen] = React.useState(false);
+    const [pendingLocale, setPendingLocale] = React.useState<string | null>(null);
+    const [translationLocales, setTranslationLocales] = React.useState<string[]>(
+        [],
+    );
+    const [loadingTranslations, setLoadingTranslations] = React.useState(false);
+    const [localesLoadError, setLocalesLoadError] = React.useState<string | null>(
+        null,
+    );
     const { data, setData, put, processing, errors } =
         useForm<SkillCategoryFormData>({
             name: category.name,
             slug: category.slug ?? '',
             locale: category.locale,
+            confirm_swap: false,
         });
+
+    React.useEffect(() => {
+        let mounted = true;
+
+        const loadTranslations = async (): Promise<void> => {
+            setLoadingTranslations(true);
+            setLocalesLoadError(null);
+            try {
+                const items = await listSkillCategoryTranslations(category.id);
+                if (mounted) {
+                    setTranslationLocales(
+                        items.map((item) => item.locale).filter(Boolean),
+                    );
+                }
+            } catch (err) {
+                if (mounted) {
+                    setLocalesLoadError(
+                        'Unable to load translations for locale conflict checks.',
+                    );
+                }
+            } finally {
+                if (mounted) {
+                    setLoadingTranslations(false);
+                }
+            }
+        };
+
+        void loadTranslations();
+
+        return () => {
+            mounted = false;
+        };
+    }, [category.id]);
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
@@ -29,6 +74,15 @@ export default function Edit({ category }: EditSkillCategoryProps) {
         field: keyof SkillCategoryFormData,
         value: string,
     ): void => {
+        if (field === 'locale') {
+            if (value !== data.locale && translationLocales.includes(value)) {
+                setPendingLocale(value);
+                setSwapDialogOpen(true);
+                return;
+            }
+
+            setData('confirm_swap', false);
+        }
         setData(field, value);
     };
 
@@ -90,8 +144,32 @@ export default function Edit({ category }: EditSkillCategoryProps) {
                 entityId={category.id}
                 entityLabel={category.name}
                 entityType="skill-category"
-                baseLocale={category.locale}
+                baseLocale={data.locale}
             />
+
+            {pendingLocale && (
+                <LocaleSwapDialog
+                    open={swapDialogOpen}
+                    currentLocale={data.locale}
+                    nextLocale={pendingLocale}
+                    onConfirmSwap={() => {
+                        setData('confirm_swap', true);
+                        setData('locale', pendingLocale);
+                        setSwapDialogOpen(false);
+                        setPendingLocale(null);
+                    }}
+                    onConfirmNoSwap={() => {
+                        setData('confirm_swap', false);
+                        setData('locale', pendingLocale);
+                        setSwapDialogOpen(false);
+                        setPendingLocale(null);
+                    }}
+                    onCancel={() => {
+                        setSwapDialogOpen(false);
+                        setPendingLocale(null);
+                    }}
+                />
+            )}
         </>
     );
 }
