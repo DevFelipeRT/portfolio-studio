@@ -11,6 +11,7 @@ import React from 'react';
 import { Button } from '@/Components/Ui/button';
 import { TranslationModal } from '@/Modules/Initiatives/ui/TranslationModal';
 import { listInitiativeTranslations } from '@/Modules/Initiatives/core/api/translations';
+import { LocaleSwapDialog } from '@/Common/LocaleSwapDialog';
 
 interface EditInitiativeProps {
     initiative: Initiative;
@@ -22,6 +23,7 @@ export default function Edit({ initiative }: EditInitiativeProps) {
     const { data, setData, post, processing, errors, transform } =
         useForm<InitiativeFormData>({
             locale: initiative.locale,
+            confirm_swap: false,
             name: initiative.name,
             summary: initiative.summary ?? '',
             description: initiative.description ?? '',
@@ -128,6 +130,8 @@ export default function Edit({ initiative }: EditInitiativeProps) {
     }
 
     const [translationOpen, setTranslationOpen] = React.useState(false);
+    const [swapDialogOpen, setSwapDialogOpen] = React.useState(false);
+    const [pendingLocale, setPendingLocale] = React.useState<string | null>(null);
     const [translationLocales, setTranslationLocales] = React.useState<string[]>(
         [],
     );
@@ -174,14 +178,12 @@ export default function Edit({ initiative }: EditInitiativeProps) {
             nextLocale !== data.locale &&
             translationLocales.includes(nextLocale)
         ) {
-            const confirmed = window.confirm(
-                `There is already a translation for ${nextLocale}. Switching the base locale may cause conflicts. Continue?`,
-            );
-            if (!confirmed) {
-                return;
-            }
+            setPendingLocale(nextLocale);
+            setSwapDialogOpen(true);
+            return;
         }
 
+        setData('confirm_swap', false);
         setData('locale', nextLocale);
     };
 
@@ -244,6 +246,30 @@ export default function Edit({ initiative }: EditInitiativeProps) {
                 initiativeLabel={initiative.name}
                 baseLocale={data.locale}
             />
+
+            {pendingLocale && (
+                <LocaleSwapDialog
+                    open={swapDialogOpen}
+                    currentLocale={data.locale}
+                    nextLocale={pendingLocale}
+                    onConfirmSwap={() => {
+                        setData('confirm_swap', true);
+                        setData('locale', pendingLocale);
+                        setSwapDialogOpen(false);
+                        setPendingLocale(null);
+                    }}
+                    onConfirmNoSwap={() => {
+                        setData('confirm_swap', false);
+                        setData('locale', pendingLocale);
+                        setSwapDialogOpen(false);
+                        setPendingLocale(null);
+                    }}
+                    onCancel={() => {
+                        setSwapDialogOpen(false);
+                        setPendingLocale(null);
+                    }}
+                />
+            )}
         </AuthenticatedLayout>
     );
 }

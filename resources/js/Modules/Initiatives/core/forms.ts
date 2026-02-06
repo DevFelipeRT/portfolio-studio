@@ -5,6 +5,7 @@ export type InitiativeImageInput = {
 
 export type InitiativeFormData = {
     locale: string;
+    confirm_swap?: boolean;
     name: string;
     summary: string;
     description: string;
