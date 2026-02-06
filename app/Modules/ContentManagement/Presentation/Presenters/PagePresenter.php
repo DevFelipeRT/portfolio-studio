@@ -145,7 +145,7 @@ final class PagePresenter
         /** @var array<int,PageSectionDto> $sectionDtos */
         $sectionDtos = $this->pageSections->getVisibleByPage($pageModel, $reference);
 
-        $capabilityResults = $this->resolveCapabilitiesForSections($sectionDtos);
+        $capabilityResults = $this->resolveCapabilitiesForSections($sectionDtos, $pageDto->locale);
 
         $sections = [];
 
@@ -296,7 +296,7 @@ final class PagePresenter
      * @param array<int,PageSectionDto> $sections
      * @return array<int,array{target_field:string,value:mixed}>
      */
-    private function resolveCapabilitiesForSections(array $sections): array
+    private function resolveCapabilitiesForSections(array $sections, string $defaultLocale): array
     {
         if ($sections === []) {
             return [];
@@ -337,6 +337,7 @@ final class PagePresenter
         $results = $this->sectionCapabilitiesDataFetcher->fetchForSections(
             $sections,
             $templateConfigs,
+            $defaultLocale,
         );
 
         $mapped = [];

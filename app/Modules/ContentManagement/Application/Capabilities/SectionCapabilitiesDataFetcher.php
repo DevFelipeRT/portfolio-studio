@@ -31,9 +31,10 @@ class SectionCapabilitiesDataFetcher
         PageSectionDto $section,
         string $capabilityKey,
         array $fieldParameterMap = [],
+        ?string $defaultLocale = null,
         ?ICapabilityContext $context = null,
     ): mixed {
-        $parameters = $this->buildParametersFromSection($section, $fieldParameterMap);
+        $parameters = $this->buildParametersFromSection($section, $fieldParameterMap, $defaultLocale);
 
         return $this->gateway->resolve($capabilityKey, $parameters, $context);
     }
@@ -48,6 +49,7 @@ class SectionCapabilitiesDataFetcher
     public function fetchForSections(
         array $sections,
         array $templateConfigs,
+        ?string $defaultLocale = null,
         ?ICapabilityContext $context = null,
     ): array {
         $requests = [];
@@ -69,7 +71,7 @@ class SectionCapabilitiesDataFetcher
             $capabilityKey = $config['capability'];
             $fieldParameterMap = $config['field_parameter_map'] ?? [];
 
-            $parameters = $this->buildParametersFromSection($section, $fieldParameterMap);
+            $parameters = $this->buildParametersFromSection($section, $fieldParameterMap, $defaultLocale);
 
             $indexMap[] = $index;
 
@@ -109,6 +111,7 @@ class SectionCapabilitiesDataFetcher
     private function buildParametersFromSection(
         PageSectionDto $section,
         array $fieldParameterMap,
+        ?string $defaultLocale,
     ): array {
         $parameters = [];
         $data = $section->data ?? [];
@@ -119,6 +122,14 @@ class SectionCapabilitiesDataFetcher
             }
 
             $parameters[$parameterName] = $data[$fieldName];
+        }
+
+        if (!array_key_exists('locale', $parameters)) {
+            $sectionLocale = $section->locale;
+            $resolvedLocale = $sectionLocale ?: $defaultLocale;
+            if (is_string($resolvedLocale) && $resolvedLocale !== '') {
+                $parameters['locale'] = $resolvedLocale;
+            }
         }
 
         return $parameters;
