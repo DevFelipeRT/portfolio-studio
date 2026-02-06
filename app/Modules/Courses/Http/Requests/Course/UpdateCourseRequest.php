@@ -30,6 +30,7 @@ class UpdateCourseRequest extends FormRequest
 
         return [
             'locale' => ['required', 'string', 'max:20', Rule::in($supported)],
+            'confirm_swap' => ['sometimes', 'boolean'],
             'name' => ['required', 'string', 'max:255'],
             'institution' => ['required', 'string', 'max:255'],
             'category' => ['required', 'string', 'max:255'],

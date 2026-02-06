@@ -37,6 +37,7 @@ final class CourseInputMapper
 
         return new UpdateCourseInput(
             locale: $data['locale'],
+            confirmSwap: (bool) ($data['confirm_swap'] ?? false),
             name: $data['name'],
             institution: $data['institution'],
             category: $data['category'],
