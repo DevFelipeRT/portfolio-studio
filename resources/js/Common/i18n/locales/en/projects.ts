@@ -23,7 +23,9 @@ export default {
             description: 'Translated description',
         },
         actions: {
+            back: 'Back',
             save: 'Save',
+            edit: 'Edit',
             add: 'Add',
             close: 'Close',
         },

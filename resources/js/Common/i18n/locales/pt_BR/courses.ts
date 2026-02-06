@@ -71,7 +71,9 @@ export default {
             description: 'Descrição traduzida',
         },
         actions: {
+            back: 'Voltar',
             save: 'Salvar',
+            edit: 'Editar',
             add: 'Adicionar',
             close: 'Fechar',
         },
