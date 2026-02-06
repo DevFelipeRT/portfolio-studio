@@ -16,10 +16,10 @@ final class ListVisibleProjects
     /**
      * @return Collection<int,\App\Modules\Projects\Domain\Models\Project>
      */
-    public function handle(): Collection
+    public function handle(?string $locale = null, ?string $fallbackLocale = null): Collection
     {
-        $locale = app()->getLocale();
-        $fallbackLocale = app()->getFallbackLocale();
+        $locale ??= app()->getLocale();
+        $fallbackLocale ??= app()->getFallbackLocale();
 
         return $this->projects->visibleWithTranslations($locale, $fallbackLocale);
     }

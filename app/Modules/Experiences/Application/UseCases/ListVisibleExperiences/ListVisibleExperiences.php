@@ -16,10 +16,10 @@ final class ListVisibleExperiences
     /**
      * @return Collection<int,\App\Modules\Experiences\Domain\Models\Experience>
      */
-    public function handle(): Collection
+    public function handle(?string $locale = null, ?string $fallbackLocale = null): Collection
     {
-        $locale = app()->getLocale();
-        $fallbackLocale = app()->getFallbackLocale();
+        $locale ??= app()->getLocale();
+        $fallbackLocale ??= app()->getFallbackLocale();
 
         return $this->experiences->visibleWithTranslations($locale, $fallbackLocale);
     }

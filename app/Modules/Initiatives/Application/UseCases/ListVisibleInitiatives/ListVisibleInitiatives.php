@@ -19,6 +19,9 @@ final class ListVisibleInitiatives
      */
     public function handle(?string $locale, ?string $fallbackLocale = null): Collection
     {
+        $locale ??= app()->getLocale();
+        $fallbackLocale ??= app()->getFallbackLocale();
+
         return $this->initiatives->visibleWithTranslations($locale, $fallbackLocale);
     }
 }

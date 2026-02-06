@@ -16,10 +16,10 @@ final class ListVisibleCourses
     /**
      * @return Collection<int,\App\Modules\Courses\Domain\Models\Course>
      */
-    public function handle(): Collection
+    public function handle(?string $locale = null, ?string $fallbackLocale = null): Collection
     {
-        $locale = app()->getLocale();
-        $fallbackLocale = app()->getFallbackLocale();
+        $locale ??= app()->getLocale();
+        $fallbackLocale ??= app()->getFallbackLocale();
 
         return $this->courses->visibleWithTranslations($locale, $fallbackLocale);
     }
