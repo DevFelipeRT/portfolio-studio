@@ -16,6 +16,7 @@ final class UpdateCourse
     public function handle(Course $course, UpdateCourseInput $input): Course
     {
         return $this->courses->update($course, [
+            'locale' => $input->locale,
             'name' => $input->name,
             'institution' => $input->institution,
             'category' => $input->category,

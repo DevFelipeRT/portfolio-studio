@@ -7,6 +7,7 @@ namespace App\Modules\Courses\Application\UseCases\CreateCourse;
 final class CreateCourseInput
 {
     public function __construct(
+        public readonly string $locale,
         public readonly string $name,
         public readonly string $institution,
         public readonly string $category,

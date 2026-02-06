@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * Course model.
  *
  * @property int $id
+ * @property string $locale
  * @property string $name
  * @property string|null $institution
  * @property CourseCategories $category
@@ -44,6 +45,7 @@ class Course extends Model
      * @var array<int,string>
      */
     protected $fillable = [
+        'locale',
         'name',
         'institution',
         'category',
@@ -64,6 +66,7 @@ class Course extends Model
     protected $casts = [
         'id' => 'integer',
         'category' => CourseCategories::class,
+        'locale' => 'string',
         'started_at' => 'immutable_date:Y-m-d',
         'completed_at' => 'immutable_date:Y-m-d',
     ];

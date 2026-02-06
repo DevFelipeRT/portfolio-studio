@@ -16,6 +16,7 @@ final class CreateCourse
     public function handle(CreateCourseInput $input): Course
     {
         return $this->courses->create([
+            'locale' => $input->locale,
             'name' => $input->name,
             'institution' => $input->institution,
             'category' => $input->category,

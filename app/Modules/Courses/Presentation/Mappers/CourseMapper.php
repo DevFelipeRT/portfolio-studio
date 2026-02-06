@@ -17,6 +17,7 @@ final class CourseMapper extends Mapper
         $course = $model;
         return [
             'id' => $course->id,
+            'locale' => $course->locale,
             'name' => $course->name,
             'institution' => $course->institution,
             'category' => $course->category,

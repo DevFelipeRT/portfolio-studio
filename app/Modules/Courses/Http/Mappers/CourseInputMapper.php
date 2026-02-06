@@ -17,6 +17,7 @@ final class CourseInputMapper
         $data = $request->validated();
 
         return new CreateCourseInput(
+            locale: $data['locale'],
             name: $data['name'],
             institution: $data['institution'],
             category: $data['category'],
@@ -35,6 +36,7 @@ final class CourseInputMapper
         $data = $request->validated();
 
         return new UpdateCourseInput(
+            locale: $data['locale'],
             name: $data['name'],
             institution: $data['institution'],
             category: $data['category'],

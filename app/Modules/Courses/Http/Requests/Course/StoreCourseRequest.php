@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\Courses\Http\Requests\Course;
 
+use App\Modules\Courses\Application\Services\SupportedLocalesResolver;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 /**
  * Request object for storing courses.
@@ -24,7 +26,10 @@ class StoreCourseRequest extends FormRequest
      */
     public function rules(): array
     {
+        $supported = app(SupportedLocalesResolver::class)->resolve();
+
         return [
+            'locale' => ['required', 'string', 'max:20', Rule::in($supported)],
             'name' => ['required', 'string', 'max:255'],
             'institution' => ['required', 'string', 'max:255'],
             'category' => ['required', 'string', 'max:255'],
