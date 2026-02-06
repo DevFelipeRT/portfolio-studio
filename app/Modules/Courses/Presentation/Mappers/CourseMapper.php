@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Modules\Courses\Presentation\Mappers;
 
 use App\Modules\Shared\Abstractions\Mapping\Mapper;
-use App\Modules\Courses\Application\Services\CourseTranslationResolver;
 use App\Modules\Courses\Domain\Models\Course;
 
 final class CourseMapper extends Mapper
@@ -16,23 +15,14 @@ final class CourseMapper extends Mapper
     {
         /** @var Course $course */
         $course = $model;
-        $resolver = app(CourseTranslationResolver::class);
-        $locale = app()->getLocale();
-        $fallbackLocale = app()->getFallbackLocale();
-
-        $name = $resolver->resolveName($course, $locale, $fallbackLocale);
-        $institution = $resolver->resolveInstitution($course, $locale, $fallbackLocale);
-        $summary = $resolver->resolveSummary($course, $locale, $fallbackLocale);
-        $description = $resolver->resolveDescription($course, $locale, $fallbackLocale);
-
         return [
             'id' => $course->id,
-            'name' => $name,
-            'institution' => $institution,
+            'name' => $course->name,
+            'institution' => $course->institution,
             'category' => $course->category,
             'status' => $course->status,
-            'summary' => $summary,
-            'description' => $description,
+            'summary' => $course->summary,
+            'description' => $course->description,
             'started_at' => self::formatDate($course->started_at),
             'completed_at' => self::formatDate($course->completed_at),
             'display' => $course->display,

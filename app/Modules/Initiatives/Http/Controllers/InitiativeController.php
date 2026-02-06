@@ -72,7 +72,7 @@ class InitiativeController extends Controller
      */
     public function edit(Initiative $initiative): Response
     {
-        $initiative->load(['images', 'translations']);
+        $initiative->load(['images']);
 
         return Inertia::render('Initiatives/Pages/Edit', [
             'initiative' => InitiativeMapper::toArray($initiative),

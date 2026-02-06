@@ -76,7 +76,7 @@ class ProjectController extends Controller
      */
     public function edit(Project $project): Response
     {
-        $project->load(['images', 'skills.category', 'translations']);
+        $project->load(['images', 'skills.category']);
 
         $skills = $this->capabilitiesGateway->resolve('skills.list.v1');
 

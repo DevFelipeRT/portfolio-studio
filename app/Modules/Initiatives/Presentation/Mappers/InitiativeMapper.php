@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Modules\Initiatives\Presentation\Mappers;
 
 use App\Modules\Shared\Abstractions\Mapping\Mapper;
-use App\Modules\Initiatives\Application\Services\InitiativeTranslationResolver;
 use App\Modules\Initiatives\Domain\Models\Initiative;
 use App\Modules\Images\Domain\Models\Image;
 
@@ -25,14 +24,6 @@ final class InitiativeMapper extends Mapper
     {
         /** @var Initiative $initiative */
         $initiative = $model;
-        $resolver = app(InitiativeTranslationResolver::class);
-        $locale = app()->getLocale();
-        $fallbackLocale = app()->getFallbackLocale();
-
-        $name = $resolver->resolveName($initiative, $locale, $fallbackLocale);
-        $summary = $resolver->resolveSummary($initiative, $locale, $fallbackLocale);
-        $description = $resolver->resolveDescription($initiative, $locale, $fallbackLocale);
-
         /** @var Collection<int,Image> $images */
         $images = $initiative->images instanceof Collection
             ? $initiative->images
@@ -41,9 +32,9 @@ final class InitiativeMapper extends Mapper
         return [
             'id' => $initiative->id,
             'locale' => $initiative->locale,
-            'name' => $name,
-            'summary' => $summary,
-            'description' => $description,
+            'name' => $initiative->name,
+            'summary' => $initiative->summary,
+            'description' => $initiative->description,
             'start_date' => self::formatDate($initiative->start_date),
             'end_date' => self::formatDate($initiative->end_date),
             'display' => $initiative->display,

@@ -70,8 +70,6 @@ class ExperienceController extends Controller
      */
     public function edit(Experience $experience): Response
     {
-        $experience->loadMissing('translations');
-
         return Inertia::render('Experiences/Pages/Edit', [
             'experience' => ExperienceMapper::toArray($experience),
         ]);

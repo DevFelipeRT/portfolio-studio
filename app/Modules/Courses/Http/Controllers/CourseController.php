@@ -102,8 +102,6 @@ class CourseController extends Controller
      */
     public function show(Course $course): Response
     {
-        $course->loadMissing('translations');
-
         return Inertia::render('Courses/Show', [
             'course' => CourseMapper::toArray($course),
         ]);
@@ -114,8 +112,6 @@ class CourseController extends Controller
      */
     public function edit(Course $course): Response
     {
-        $course->loadMissing('translations');
-
         return Inertia::render('Courses/Pages/Edit', [
             'course' => CourseMapper::toArray($course),
             'course_categories' => CourseCategories::options(),
