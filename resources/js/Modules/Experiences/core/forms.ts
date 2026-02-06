@@ -1,5 +1,6 @@
 export type ExperienceFormData = {
     locale: string;
+    confirm_swap?: boolean;
     position: string;
     company: string;
     summary: string;
