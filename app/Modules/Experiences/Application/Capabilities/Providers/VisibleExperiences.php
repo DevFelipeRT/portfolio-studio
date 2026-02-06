@@ -45,16 +45,15 @@ final class VisibleExperiences implements ICapabilityProvider
     public function execute(array $parameters, ?ICapabilityContext $context = null): mixed
     {
         $limit = $parameters['limit'] ?? null;
+        $locale = $this->resolveLocale($parameters);
+        $fallbackLocale = app()->getFallbackLocale();
 
         /** @var Collection<int, Experience> $experiences */
-        $experiences = $this->listVisibleExperiences->handle();
+        $experiences = $this->listVisibleExperiences->handle($locale, $fallbackLocale);
 
         if (\is_int($limit) && $limit > 0) {
             $experiences = $experiences->take($limit);
         }
-
-        $locale = app()->getLocale();
-        $fallbackLocale = app()->getFallbackLocale();
 
         return $experiences
             ->map(
@@ -99,6 +98,11 @@ final class VisibleExperiences implements ICapabilityProvider
             'experiences.visible.v1',
             'Returns public visible experiences ordered by most recent start date.',
             [
+                'locale' => [
+                    'required' => false,
+                    'type' => 'string',
+                    'default' => null,
+                ],
                 'limit' => [
                     'required' => false,
                     'type' => 'int',
@@ -107,5 +111,22 @@ final class VisibleExperiences implements ICapabilityProvider
             ],
             'array<VisibleExperienceItem>',
         );
+    }
+
+    /**
+     * @param array<string, mixed> $parameters
+     */
+    private function resolveLocale(array $parameters): string
+    {
+        $locale = $parameters['locale'] ?? null;
+
+        if (\is_string($locale)) {
+            $trimmed = trim($locale);
+            if ($trimmed !== '') {
+                return $trimmed;
+            }
+        }
+
+        return app()->getLocale();
     }
 }

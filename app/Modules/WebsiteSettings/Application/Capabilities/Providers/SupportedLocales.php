@@ -29,7 +29,13 @@ final class SupportedLocales implements ICapabilityProvider
         $this->definition = $this->capabilitiesFactory->createPublicDefinition(
             'website.locales.supported.v1',
             'Returns supported locales configured for the website.',
-            [],
+            [
+                'locale' => [
+                    'required' => false,
+                    'type' => 'string',
+                    'default' => null,
+                ],
+            ],
             'array<string>',
         );
 

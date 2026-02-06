@@ -38,6 +38,11 @@ final class VisibleInitiatives implements ICapabilityProvider
             'initiatives.visible.v1',
             'Returns public visible initiatives ordered by most recent start date.',
             [
+                'locale' => [
+                    'required' => false,
+                    'type' => 'string',
+                    'default' => null,
+                ],
                 'limit' => [
                     'required' => false,
                     'type' => 'int',
@@ -78,7 +83,7 @@ final class VisibleInitiatives implements ICapabilityProvider
     ): array {
         $limit = $this->extractLimit($parameters);
 
-        $locale = app()->getLocale();
+        $locale = $this->resolveLocale($parameters);
         $fallbackLocale = app()->getFallbackLocale();
         $initiatives = $this->listVisibleInitiatives->handle($locale, $fallbackLocale);
 
@@ -115,6 +120,23 @@ final class VisibleInitiatives implements ICapabilityProvider
         }
 
         return null;
+    }
+
+    /**
+     * @param array<string, mixed> $parameters
+     */
+    private function resolveLocale(array $parameters): string
+    {
+        $locale = $parameters['locale'] ?? null;
+
+        if (\is_string($locale)) {
+            $trimmed = trim($locale);
+            if ($trimmed !== '') {
+                return $trimmed;
+            }
+        }
+
+        return app()->getLocale();
     }
 
     /**

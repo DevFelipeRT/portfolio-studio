@@ -36,6 +36,11 @@ final class VisibleContactChannels implements ICapabilityProvider
             'contact-channels.visible.v1',
             'Returns active contact channels ordered by sort order.',
             [
+                'locale' => [
+                    'required' => false,
+                    'type' => 'string',
+                    'default' => null,
+                ],
                 'limit' => [
                     'required' => false,
                     'type' => 'int',

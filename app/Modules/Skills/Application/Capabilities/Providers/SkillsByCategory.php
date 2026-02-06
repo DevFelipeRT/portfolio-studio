@@ -32,7 +32,13 @@ final class SkillsByCategory implements ICapabilityProvider
         $this->definition = $this->capabilitiesFactory->createPublicDefinition(
             'skills.grouped_by_category.v1',
             'Returns portfolio skills grouped by category.',
-            [],
+            [
+                'locale' => [
+                    'required' => false,
+                    'type' => 'string',
+                    'default' => null,
+                ],
+            ],
             'array<VisibleSkillGroup>',
         );
 
@@ -51,6 +57,26 @@ final class SkillsByCategory implements ICapabilityProvider
         array $parameters,
         ?ICapabilityContext $context = null,
     ): array {
-        return $this->listSkillsGroupedByCategory->handle();
+        $locale = $this->resolveLocale($parameters);
+        $fallbackLocale = app()->getFallbackLocale();
+
+        return $this->listSkillsGroupedByCategory->handle($locale, $fallbackLocale);
+    }
+
+    /**
+     * @param array<string, mixed> $parameters
+     */
+    private function resolveLocale(array $parameters): string
+    {
+        $locale = $parameters['locale'] ?? null;
+
+        if (\is_string($locale)) {
+            $trimmed = trim($locale);
+            if ($trimmed !== '') {
+                return $trimmed;
+            }
+        }
+
+        return app()->getLocale();
     }
 }

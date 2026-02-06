@@ -38,6 +38,11 @@ final class VisibleProjects implements ICapabilityProvider
             'projects.visible.v1',
             'Returns public visible projects with images and skills, ordered by most recent creation date.',
             [
+                'locale' => [
+                    'required' => false,
+                    'type' => 'string',
+                    'default' => null,
+                ],
                 'limit' => [
                     'required' => false,
                     'type' => 'int',
@@ -83,15 +88,14 @@ final class VisibleProjects implements ICapabilityProvider
         ?ICapabilityContext $context = null,
     ): array {
         $limit = $this->extractLimit($parameters);
+        $locale = $this->resolveLocale($parameters);
+        $fallbackLocale = app()->getFallbackLocale();
 
-        $projects = $this->listVisibleProjects->handle();
+        $projects = $this->listVisibleProjects->handle($locale, $fallbackLocale);
 
         if ($limit !== null) {
             $projects = $projects->take($limit);
         }
-
-        $locale = app()->getLocale();
-        $fallbackLocale = app()->getFallbackLocale();
 
         return $this->mapProjects($projects, $locale, $fallbackLocale);
     }
@@ -122,6 +126,23 @@ final class VisibleProjects implements ICapabilityProvider
         }
 
         return null;
+    }
+
+    /**
+     * @param array<string, mixed> $parameters
+     */
+    private function resolveLocale(array $parameters): string
+    {
+        $locale = $parameters['locale'] ?? null;
+
+        if (\is_string($locale)) {
+            $trimmed = trim($locale);
+            if ($trimmed !== '') {
+                return $trimmed;
+            }
+        }
+
+        return app()->getLocale();
     }
 
     /**

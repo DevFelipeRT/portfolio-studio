@@ -38,6 +38,11 @@ final class VisibleCourses implements ICapabilityProvider
             'courses.visible.v1',
             'Returns public visible courses ordered by most recent start date.',
             [
+                'locale' => [
+                    'required' => false,
+                    'type' => 'string',
+                    'default' => null,
+                ],
                 'limit' => [
                     'required' => false,
                     'type' => 'int',
@@ -56,14 +61,16 @@ final class VisibleCourses implements ICapabilityProvider
     public function execute(array $parameters, ?ICapabilityContext $context = null): array
     {
         $limit = $this->extractLimit($parameters);
+        $locale = $this->resolveLocale($parameters);
+        $fallbackLocale = app()->getFallbackLocale();
 
-        $courses = $this->listVisibleCourses->handle();
+        $courses = $this->listVisibleCourses->handle($locale, $fallbackLocale);
 
         if ($limit !== null) {
             $courses = $courses->take($limit);
         }
 
-        return $this->mapCourses($courses);
+        return $this->mapCourses($courses, $locale, $fallbackLocale);
     }
 
     /**
@@ -95,13 +102,31 @@ final class VisibleCourses implements ICapabilityProvider
     }
 
     /**
+     * @param array<string, mixed> $parameters
+     */
+    private function resolveLocale(array $parameters): string
+    {
+        $locale = $parameters['locale'] ?? null;
+
+        if (\is_string($locale)) {
+            $trimmed = trim($locale);
+            if ($trimmed !== '') {
+                return $trimmed;
+            }
+        }
+
+        return app()->getLocale();
+    }
+
+    /**
      * @return array<int, array<string, mixed>>
      */
-    private function mapCourses(Collection $courses): array
+    private function mapCourses(
+        Collection $courses,
+        string $locale,
+        ?string $fallbackLocale,
+    ): array
     {
-        $locale = app()->getLocale();
-        $fallbackLocale = app()->getFallbackLocale();
-
         return $courses
             ->map(
                 function (Course $course) use ($locale, $fallbackLocale): array {
