@@ -9,6 +9,7 @@ export default function Create() {
         useForm<SkillCategoryFormData>({
             name: '',
             slug: '',
+            locale: '',
         });
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {

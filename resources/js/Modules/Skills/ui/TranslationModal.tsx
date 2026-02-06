@@ -35,6 +35,7 @@ type TranslationModalProps = {
   entityId: number;
   entityLabel: string;
   entityType: TranslationEntityType;
+  baseLocale?: string;
 };
 
 type EditableTranslation = TranslationItem & { draftName?: string };
@@ -52,6 +53,7 @@ export function TranslationModal({
   entityId,
   entityLabel,
   entityType,
+  baseLocale,
 }: TranslationModalProps) {
   const [supportedLocales, setSupportedLocales] = React.useState<string[]>([]);
   const [translations, setTranslations] = React.useState<EditableTranslation[]>(
@@ -93,7 +95,7 @@ export function TranslationModal({
 
   const usedLocales = new Set(translations.map((item) => item.locale));
   const availableLocales = supportedLocales.filter(
-    (locale) => !usedLocales.has(locale),
+    (locale) => !usedLocales.has(locale) && locale !== baseLocale,
   );
   const activeTranslation = React.useMemo(
     () => translations.find((item) => item.locale === activeLocale) ?? null,

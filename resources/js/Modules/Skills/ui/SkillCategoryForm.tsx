@@ -1,6 +1,14 @@
 import { Button } from '@/Components/Ui/button';
 import { Input } from '@/Components/Ui/input';
 import { Label } from '@/Components/Ui/label';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/Components/Ui/select';
+import { useSupportedLocales } from '@/Common/i18n';
 import type { SkillCategoryFormData } from '@/Modules/Skills/core/forms';
 import { Link } from '@inertiajs/react';
 import React, { JSX } from 'react';
@@ -37,6 +45,8 @@ export function SkillCategoryForm({
     deleteLabel = 'Delete',
     alignActions = 'right',
 }: SkillCategoryFormProps) {
+    const supportedLocales = useSupportedLocales();
+
     const normalizeError = (
         message: string | string[] | undefined,
     ): string | null => {
@@ -99,6 +109,31 @@ export function SkillCategoryForm({
             onSubmit={onSubmit}
             className="bg-card space-y-6 rounded-lg border p-6 shadow-sm"
         >
+            <div className="space-y-1.5">
+                <Label htmlFor="locale">Locale</Label>
+                <Select
+                    value={data.locale}
+                    onValueChange={(value) => onChange('locale', value)}
+                    disabled={processing}
+                >
+                    <SelectTrigger id="locale">
+                        <SelectValue placeholder="Select a locale" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {supportedLocales.map((locale) => (
+                            <SelectItem key={locale} value={locale}>
+                                {locale}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+                {errors.locale && (
+                    <p className="text-destructive text-sm">
+                        {normalizeError(errors.locale)}
+                    </p>
+                )}
+            </div>
+
             <div className="space-y-1.5">
                 <Label htmlFor="name">Name</Label>
                 <Input

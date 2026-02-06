@@ -18,6 +18,7 @@ export default function Edit({ skill, categories }: EditSkillProps) {
   const [showTranslations, setShowTranslations] = React.useState(false);
   const { data, setData, put, processing, errors } = useForm<SkillFormData>({
     name: skill.name,
+    locale: skill.locale,
     skill_category_id: skill.skill_category_id ?? '',
   });
 
@@ -28,7 +29,7 @@ export default function Edit({ skill, categories }: EditSkillProps) {
 
   const handleChange = (
     field: keyof SkillFormData,
-    value: number | '',
+    value: string | number | '',
   ): void => {
     setData(field, value);
   };
@@ -87,6 +88,7 @@ export default function Edit({ skill, categories }: EditSkillProps) {
         entityId={skill.id}
         entityLabel={skill.name}
         entityType="skill"
+        baseLocale={skill.locale}
       />
     </>
   );

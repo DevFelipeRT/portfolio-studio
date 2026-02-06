@@ -13,12 +13,14 @@ export interface SkillCategory extends HasTimestamps {
   id: number;
   name: string;
   slug: string;
+  locale: string;
   translations?: TranslationItem[];
 }
 
 export interface Skill extends HasTimestamps {
   id: number;
   name: string;
+  locale: string;
   category?: SkillCategory | null;
   skill_category_id?: number | null;
   translations?: TranslationItem[];

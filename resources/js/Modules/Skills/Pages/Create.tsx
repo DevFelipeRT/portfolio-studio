@@ -15,6 +15,7 @@ export default function Create({ categories }: CreateSkillProps) {
     const { data, setData, post, processing, errors } =
         useForm<SkillFormData>({
             name: '',
+            locale: '',
             skill_category_id: '',
         });
 
@@ -25,7 +26,7 @@ export default function Create({ categories }: CreateSkillProps) {
 
     const handleChange = (
         field: keyof SkillFormData,
-        value: number | '',
+        value: string | number | '',
     ): void => {
         setData(field, value);
     };

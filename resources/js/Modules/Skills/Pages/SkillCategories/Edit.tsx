@@ -17,6 +17,7 @@ export default function Edit({ category }: EditSkillCategoryProps) {
         useForm<SkillCategoryFormData>({
             name: category.name,
             slug: category.slug ?? '',
+            locale: category.locale,
         });
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
@@ -89,6 +90,7 @@ export default function Edit({ category }: EditSkillCategoryProps) {
                 entityId={category.id}
                 entityLabel={category.name}
                 entityType="skill-category"
+                baseLocale={category.locale}
             />
         </>
     );

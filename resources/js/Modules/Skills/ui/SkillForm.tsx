@@ -12,6 +12,7 @@ import {
 } from '@/Components/Ui/select';
 import type { SkillFormData } from '@/Modules/Skills/core/forms';
 import type { SkillCategory } from '@/Modules/Skills/core/types';
+import { useSupportedLocales } from '@/Common/i18n';
 import { Link } from '@inertiajs/react';
 import React, { JSX } from 'react';
 
@@ -49,6 +50,8 @@ export function SkillForm({
   deleteLabel = 'Delete',
   alignActions = 'right',
 }: SkillFormProps) {
+  const supportedLocales = useSupportedLocales();
+
   const normalizeError = (
     message: string | string[] | undefined,
   ): string | null => {
@@ -111,6 +114,31 @@ export function SkillForm({
       onSubmit={onSubmit}
       className="bg-card space-y-6 rounded-lg border p-6 shadow-sm"
     >
+      <div className="space-y-1.5">
+        <Label htmlFor="locale">Locale</Label>
+        <Select
+          value={data.locale}
+          onValueChange={(value) => onChange('locale', value)}
+          disabled={processing}
+        >
+          <SelectTrigger id="locale">
+            <SelectValue placeholder="Select a locale" />
+          </SelectTrigger>
+          <SelectContent>
+            {supportedLocales.map((locale) => (
+              <SelectItem key={locale} value={locale}>
+                {locale}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {errors.locale && (
+          <p className="text-destructive text-sm">
+            {normalizeError(errors.locale as string | string[])}
+          </p>
+        )}
+      </div>
+
       <div className="space-y-1.5">
         <Label htmlFor="name">Name</Label>
         <Input
