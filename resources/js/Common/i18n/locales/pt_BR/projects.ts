@@ -16,11 +16,13 @@ export default {
             name: 'Nome do projeto',
             summary: 'Resumo',
             description: 'Descrição',
+            status: 'Status',
         },
         placeholders: {
             name: 'Nome do projeto traduzido',
             summary: 'Resumo traduzido',
             description: 'Descrição traduzida',
+            status: 'Status traduzido',
         },
         actions: {
             back: 'Voltar',

@@ -37,6 +37,7 @@ type EditableTranslation = ProjectTranslationItem & {
   draftName?: string;
   draftSummary?: string;
   draftDescription?: string;
+  draftStatus?: string;
 };
 
 function normalizeError(error: unknown): string {
@@ -67,6 +68,7 @@ export function TranslationModal({
   const [newName, setNewName] = React.useState<string>('');
   const [newSummary, setNewSummary] = React.useState<string>('');
   const [newDescription, setNewDescription] = React.useState<string>('');
+  const [newStatus, setNewStatus] = React.useState<string>('');
   const [loading, setLoading] = React.useState(false);
   const [saving, setSaving] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -91,6 +93,7 @@ export function TranslationModal({
           draftName: item.name ?? '',
           draftSummary: item.summary ?? '',
           draftDescription: item.description ?? '',
+          draftStatus: item.status ?? '',
         })),
       );
     } catch (err) {
@@ -132,6 +135,7 @@ export function TranslationModal({
     setNewName('');
     setNewSummary('');
     setNewDescription('');
+    setNewStatus('');
   };
 
   const openAddPanel = (): void => {
@@ -151,7 +155,8 @@ export function TranslationModal({
     return (
       newName.trim() !== '' ||
       newSummary.trim() !== '' ||
-      newDescription.trim() !== ''
+      newDescription.trim() !== '' ||
+      newStatus.trim() !== ''
     );
   };
 
@@ -175,6 +180,7 @@ export function TranslationModal({
         name: normalizeText(newName),
         summary: normalizeText(newSummary),
         description: normalizeText(newDescription),
+        status: normalizeText(newStatus),
       };
 
       const created = await createProjectTranslation(projectId, payload);
@@ -186,6 +192,7 @@ export function TranslationModal({
           draftName: created.name ?? '',
           draftSummary: created.summary ?? '',
           draftDescription: created.description ?? '',
+          draftStatus: created.status ?? '',
         },
       ]);
       resetNewFields();
@@ -200,11 +207,13 @@ export function TranslationModal({
     const name = item.draftName ?? '';
     const summary = item.draftSummary ?? '';
     const description = item.draftDescription ?? '';
+    const status = item.draftStatus ?? '';
 
     if (
       name.trim() === '' &&
       summary.trim() === '' &&
-      description.trim() === ''
+      description.trim() === '' &&
+      status.trim() === ''
     ) {
       setError(t('translations.errors.atLeastOne'));
       return;
@@ -219,6 +228,7 @@ export function TranslationModal({
         name: normalizeText(name),
         summary: normalizeText(summary),
         description: normalizeText(description),
+        status: normalizeText(status),
       };
 
       const updated = await updateProjectTranslation(
@@ -235,6 +245,7 @@ export function TranslationModal({
                 draftName: updated.name ?? '',
                 draftSummary: updated.summary ?? '',
                 draftDescription: updated.description ?? '',
+                draftStatus: updated.status ?? '',
               }
             : entry,
         ),
@@ -409,6 +420,14 @@ export function TranslationModal({
                 />
               </div>
 
+              <div className="space-y-1.5">
+                <Input
+                  value={newStatus}
+                  onChange={(event) => setNewStatus(event.target.value)}
+                  placeholder={t('translations.placeholders.status')}
+                />
+              </div>
+
               <RichTextEditor
                 id="project-translation-new"
                 value={newDescription}
@@ -476,6 +495,22 @@ export function TranslationModal({
                     }
                   />
                 </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label>{t('translations.fields.status')}</Label>
+                <Input
+                  value={activeTranslation.draftStatus ?? ''}
+                  onChange={(event) =>
+                    setTranslations((current) =>
+                      current.map((entry) =>
+                        entry.locale === activeTranslation.locale
+                          ? { ...entry, draftStatus: event.target.value }
+                          : entry,
+                      ),
+                    )
+                  }
+                />
               </div>
 
               <div className="space-y-1.5">

@@ -5,6 +5,7 @@ type TranslationPayload = {
   name?: string | null;
   summary?: string | null;
   description?: string | null;
+  status?: string | null;
   repository_url?: string | null;
   live_url?: string | null;
 };

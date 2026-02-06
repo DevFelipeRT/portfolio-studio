@@ -45,32 +45,38 @@ final class UpdateProjectTranslationRequest extends FormRequest
                 'nullable',
                 'string',
                 'max:255',
-                'required_without_all:summary,description,repository_url,live_url',
+                'required_without_all:summary,description,repository_url,live_url,status',
             ],
             'summary' => [
                 'nullable',
                 'string',
                 'max:255',
-                'required_without_all:name,description,repository_url,live_url',
+                'required_without_all:name,description,repository_url,live_url,status',
             ],
             'description' => [
                 'nullable',
                 'string',
-                'required_without_all:name,summary,repository_url,live_url',
+                'required_without_all:name,summary,repository_url,live_url,status',
+            ],
+            'status' => [
+                'nullable',
+                'string',
+                'max:50',
+                'required_without_all:name,summary,description,repository_url,live_url',
             ],
             'repository_url' => [
                 'nullable',
                 'string',
                 'max:2048',
                 'url',
-                'required_without_all:name,summary,description,live_url',
+                'required_without_all:name,summary,description,live_url,status',
             ],
             'live_url' => [
                 'nullable',
                 'string',
                 'max:2048',
                 'url',
-                'required_without_all:name,summary,description,repository_url',
+                'required_without_all:name,summary,description,repository_url,status',
             ],
         ];
     }

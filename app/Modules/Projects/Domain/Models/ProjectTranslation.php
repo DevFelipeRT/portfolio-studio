@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $name
  * @property string|null $summary
  * @property string|null $description
+ * @property string|null $status
  * @property string|null $repository_url
  * @property string|null $live_url
  */
@@ -33,6 +34,7 @@ class ProjectTranslation extends Model
         'name',
         'summary',
         'description',
+        'status',
         'repository_url',
         'live_url',
     ];

@@ -12,6 +12,7 @@ final class UpdateProjectTranslationInput
         public readonly ?string $name,
         public readonly ?string $summary,
         public readonly ?string $description,
+        public readonly ?string $status,
         public readonly ?string $repositoryUrl,
         public readonly ?string $liveUrl,
     ) {

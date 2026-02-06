@@ -52,6 +52,7 @@ final class CreateProjectTranslation
      *   name?:string|null,
      *   summary?:string|null,
      *   description?:string|null,
+     *   status?:string|null,
      *   repository_url?:string|null,
      *   live_url?:string|null
      * }
@@ -62,6 +63,7 @@ final class CreateProjectTranslation
             'name' => $this->normalizeText($input->name),
             'summary' => $this->normalizeText($input->summary),
             'description' => $this->normalizeText($input->description),
+            'status' => $this->normalizeText($input->status),
             'repository_url' => $this->normalizeText($input->repositoryUrl),
             'live_url' => $this->normalizeText($input->liveUrl),
         ];
@@ -83,6 +85,7 @@ final class CreateProjectTranslation
      *   name?:string|null,
      *   summary?:string|null,
      *   description?:string|null,
+     *   status?:string|null,
      *   repository_url?:string|null,
      *   live_url?:string|null
      * } $payload
