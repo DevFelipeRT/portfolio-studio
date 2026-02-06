@@ -12,6 +12,7 @@ interface CreateContactChannelProps {
 export default function Create({ channelTypes }: CreateContactChannelProps) {
     const { data, setData, post, processing, errors } =
         useForm<ContactChannelFormData>({
+            locale: '',
             channel_type: channelTypes[0]?.value ?? '',
             label: '',
             value: '',

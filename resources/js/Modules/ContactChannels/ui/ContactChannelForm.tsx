@@ -9,6 +9,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/Components/Ui/select';
+import { useSupportedLocales } from '@/Common/i18n';
 import type {
     ContactChannelFormData,
 } from '@/Modules/ContactChannels/core/forms';
@@ -49,6 +50,8 @@ export function ContactChannelForm({
     deleteLabel = 'Delete',
     alignActions = 'right',
 }: ContactChannelFormProps) {
+    const supportedLocales = useSupportedLocales();
+
     const normalizeError = (
         message: string | string[] | undefined,
     ): string | null => {
@@ -111,6 +114,31 @@ export function ContactChannelForm({
             onSubmit={onSubmit}
             className="bg-card space-y-6 rounded-lg border p-6 shadow-sm"
         >
+            <div className="space-y-1.5">
+                <Label htmlFor="locale">Locale</Label>
+                <Select
+                    value={data.locale}
+                    onValueChange={(value) => onChange('locale', value)}
+                    disabled={processing}
+                >
+                    <SelectTrigger id="locale">
+                        <SelectValue placeholder="Select a locale" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {supportedLocales.map((locale) => (
+                            <SelectItem key={locale} value={locale}>
+                                {locale}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+                {errors.locale && (
+                    <p className="text-destructive text-sm">
+                        {normalizeError(errors.locale as string | string[])}
+                    </p>
+                )}
+            </div>
+
             <div className="space-y-1.5">
                 <Label htmlFor="channel-type">Type</Label>
                 <Select
