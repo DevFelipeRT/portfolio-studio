@@ -14,6 +14,10 @@ final class ExperienceTranslationResolver
         string $locale,
         ?string $fallbackLocale = null,
     ): string {
+        if ($locale === $experience->locale) {
+            return (string) $experience->position;
+        }
+
         return (string) $this->resolveField(
             $experience->translations,
             'position',
@@ -28,6 +32,10 @@ final class ExperienceTranslationResolver
         string $locale,
         ?string $fallbackLocale = null,
     ): ?string {
+        if ($locale === $experience->locale) {
+            return $experience->company;
+        }
+
         return $this->resolveField(
             $experience->translations,
             'company',
@@ -42,6 +50,10 @@ final class ExperienceTranslationResolver
         string $locale,
         ?string $fallbackLocale = null,
     ): ?string {
+        if ($locale === $experience->locale) {
+            return $experience->summary;
+        }
+
         return $this->resolveField(
             $experience->translations,
             'summary',
@@ -56,6 +68,10 @@ final class ExperienceTranslationResolver
         string $locale,
         ?string $fallbackLocale = null,
     ): ?string {
+        if ($locale === $experience->locale) {
+            return $experience->description;
+        }
+
         return $this->resolveField(
             $experience->translations,
             'description',

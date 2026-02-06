@@ -14,6 +14,10 @@ final class InitiativeTranslationResolver
         string $locale,
         ?string $fallbackLocale = null,
     ): string {
+        if ($locale === $initiative->locale) {
+            return (string) $initiative->name;
+        }
+
         return (string) $this->resolveField(
             $initiative->translations,
             'name',
@@ -28,6 +32,10 @@ final class InitiativeTranslationResolver
         string $locale,
         ?string $fallbackLocale = null,
     ): ?string {
+        if ($locale === $initiative->locale) {
+            return $initiative->summary;
+        }
+
         return $this->resolveField(
             $initiative->translations,
             'summary',
@@ -42,6 +50,10 @@ final class InitiativeTranslationResolver
         string $locale,
         ?string $fallbackLocale = null,
     ): ?string {
+        if ($locale === $initiative->locale) {
+            return $initiative->description;
+        }
+
         return $this->resolveField(
             $initiative->translations,
             'description',

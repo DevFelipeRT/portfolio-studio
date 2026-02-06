@@ -14,6 +14,10 @@ final class SkillTranslationResolver
         string $locale,
         ?string $fallbackLocale = null,
     ): string {
+        if ($locale === $skill->locale) {
+            return $skill->name;
+        }
+
         $translation = $this->resolveTranslation($skill->translations, $locale, $fallbackLocale);
 
         return $translation ?? $skill->name;
@@ -24,6 +28,10 @@ final class SkillTranslationResolver
         string $locale,
         ?string $fallbackLocale = null,
     ): string {
+        if ($locale === $category->locale) {
+            return $category->name;
+        }
+
         $translation = $this->resolveTranslation($category->translations, $locale, $fallbackLocale);
 
         return $translation ?? $category->name;

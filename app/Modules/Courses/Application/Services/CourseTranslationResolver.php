@@ -14,6 +14,10 @@ final class CourseTranslationResolver
         string $locale,
         ?string $fallbackLocale = null,
     ): string {
+        if ($locale === $course->locale) {
+            return $course->name;
+        }
+
         return $this->resolveField(
             $course->translations,
             'name',
@@ -28,6 +32,10 @@ final class CourseTranslationResolver
         string $locale,
         ?string $fallbackLocale = null,
     ): ?string {
+        if ($locale === $course->locale) {
+            return $course->institution;
+        }
+
         return $this->resolveField(
             $course->translations,
             'institution',
@@ -42,6 +50,10 @@ final class CourseTranslationResolver
         string $locale,
         ?string $fallbackLocale = null,
     ): ?string {
+        if ($locale === $course->locale) {
+            return $course->summary;
+        }
+
         return $this->resolveField(
             $course->translations,
             'summary',
@@ -56,6 +68,10 @@ final class CourseTranslationResolver
         string $locale,
         ?string $fallbackLocale = null,
     ): ?string {
+        if ($locale === $course->locale) {
+            return $course->description;
+        }
+
         return $this->resolveField(
             $course->translations,
             'description',

@@ -14,6 +14,10 @@ final class ProjectTranslationResolver
         string $locale,
         ?string $fallbackLocale = null,
     ): string {
+        if ($locale === $project->locale) {
+            return (string) $project->name;
+        }
+
         return (string) $this->resolveField(
             $project->translations,
             'name',
@@ -28,6 +32,10 @@ final class ProjectTranslationResolver
         string $locale,
         ?string $fallbackLocale = null,
     ): ?string {
+        if ($locale === $project->locale) {
+            return $project->summary;
+        }
+
         return $this->resolveField(
             $project->translations,
             'summary',
@@ -42,6 +50,10 @@ final class ProjectTranslationResolver
         string $locale,
         ?string $fallbackLocale = null,
     ): ?string {
+        if ($locale === $project->locale) {
+            return $project->description;
+        }
+
         return $this->resolveField(
             $project->translations,
             'description',
@@ -56,6 +68,10 @@ final class ProjectTranslationResolver
         string $locale,
         ?string $fallbackLocale = null,
     ): ?string {
+        if ($locale === $project->locale) {
+            return $project->repository_url;
+        }
+
         return $this->resolveField(
             $project->translations,
             'repository_url',
@@ -70,6 +86,10 @@ final class ProjectTranslationResolver
         string $locale,
         ?string $fallbackLocale = null,
     ): ?string {
+        if ($locale === $project->locale) {
+            return $project->live_url;
+        }
+
         return $this->resolveField(
             $project->translations,
             'live_url',
