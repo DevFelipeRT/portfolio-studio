@@ -28,6 +28,10 @@ final class CreateSkillCategoryTranslation
 
         $category = $this->categories->findById($input->skillCategoryId);
 
+        if ($input->locale === $category->locale) {
+            throw new InvalidArgumentException('Skill category translation locale must differ from base locale.');
+        }
+
         $existing = $this->translations->findByCategoryAndLocale($category, $input->locale);
         if ($existing !== null) {
             throw new InvalidArgumentException('Skill category translation already exists for this locale.');

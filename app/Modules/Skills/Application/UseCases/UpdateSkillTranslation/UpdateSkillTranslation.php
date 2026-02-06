@@ -28,6 +28,10 @@ final class UpdateSkillTranslation
 
         $skill = $this->skills->findById($input->skillId);
 
+        if ($input->locale === $skill->locale) {
+            throw new InvalidArgumentException('Skill translation locale must differ from base locale.');
+        }
+
         $existing = $this->translations->findBySkillAndLocale($skill, $input->locale);
         if ($existing === null) {
             throw new InvalidArgumentException('Skill translation not found for this locale.');

@@ -21,6 +21,8 @@ final class StoreSkillCategoryTranslationRequest extends FormRequest
     public function rules(): array
     {
         $supported = app(SupportedLocalesResolver::class)->resolve();
+        $category = $this->route('skill_category') ?? $this->route('skillCategory');
+        $baseLocale = $category?->locale;
 
         return [
             'locale' => [
@@ -28,6 +30,7 @@ final class StoreSkillCategoryTranslationRequest extends FormRequest
                 'string',
                 'max:20',
                 Rule::in($supported),
+                Rule::notIn($baseLocale ? [$baseLocale] : []),
             ],
             'name' => [
                 'required',

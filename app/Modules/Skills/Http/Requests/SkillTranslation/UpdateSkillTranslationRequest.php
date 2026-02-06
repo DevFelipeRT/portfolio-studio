@@ -30,6 +30,8 @@ final class UpdateSkillTranslationRequest extends FormRequest
     public function rules(): array
     {
         $supported = app(SupportedLocalesResolver::class)->resolve();
+        $skill = $this->route('skill');
+        $baseLocale = $skill?->locale;
 
         return [
             'locale' => [
@@ -37,6 +39,7 @@ final class UpdateSkillTranslationRequest extends FormRequest
                 'string',
                 'max:20',
                 Rule::in($supported),
+                Rule::notIn($baseLocale ? [$baseLocale] : []),
             ],
             'name' => [
                 'required',
