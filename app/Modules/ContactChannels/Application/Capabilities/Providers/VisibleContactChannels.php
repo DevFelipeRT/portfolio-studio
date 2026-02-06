@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\ContactChannels\Application\Capabilities\Providers;
 
 use App\Modules\ContactChannels\Application\Capabilities\Dtos\VisibleContactChannelItem;
+use App\Modules\ContactChannels\Application\Services\ContactChannelTranslationResolver;
 use App\Modules\ContactChannels\Domain\Repositories\IContactChannelRepository;
 use App\Modules\ContactChannels\Domain\Services\ContactChannelHrefBuilder;
 use App\Modules\Shared\Contracts\Capabilities\ICapabilitiesFactory;
@@ -22,6 +23,7 @@ final class VisibleContactChannels implements ICapabilityProvider
     public function __construct(
         private readonly IContactChannelRepository $repository,
         private readonly ContactChannelHrefBuilder $hrefBuilder,
+        private readonly ContactChannelTranslationResolver $translationResolver,
         private readonly ICapabilitiesFactory $capabilitiesFactory,
     ) {
     }
@@ -59,17 +61,25 @@ final class VisibleContactChannels implements ICapabilityProvider
     public function execute(array $parameters, ?ICapabilityContext $context = null): array
     {
         $limit = $this->extractLimit($parameters);
+        $locale = $this->extractLocale($parameters);
+        $fallbackLocale = app()->getFallbackLocale();
 
-        $channels = $this->repository->activeOrdered();
+        $channels = $locale === null
+            ? $this->repository->activeOrdered()
+            : $this->repository->activeOrderedWithTranslations($locale, $fallbackLocale);
 
         if ($limit !== null) {
             $channels = $channels->take($limit);
         }
 
         return $channels
-            ->map(
-                fn($channel) => VisibleContactChannelItem::fromModel($channel, $this->hrefBuilder)->toArray(),
-            )
+            ->map(function ($channel) use ($locale, $fallbackLocale): array {
+                $label = $locale !== null
+                    ? $this->translationResolver->resolveLabel($channel, $locale, $fallbackLocale)
+                    : null;
+
+                return VisibleContactChannelItem::fromModel($channel, $this->hrefBuilder, $label)->toArray();
+            })
             ->values()
             ->all();
     }
@@ -100,5 +110,25 @@ final class VisibleContactChannels implements ICapabilityProvider
         }
 
         return null;
+    }
+
+    /**
+     * @param array<string, mixed> $parameters
+     */
+    private function extractLocale(array $parameters): ?string
+    {
+        if (!array_key_exists('locale', $parameters)) {
+            return null;
+        }
+
+        $locale = $parameters['locale'];
+
+        if (!is_string($locale)) {
+            return null;
+        }
+
+        $trimmed = trim($locale);
+
+        return $trimmed !== '' ? $trimmed : null;
     }
 }

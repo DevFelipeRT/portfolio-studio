@@ -25,11 +25,12 @@ final class VisibleContactChannelItem
     public static function fromModel(
         ContactChannel $channel,
         ContactChannelHrefBuilder $hrefBuilder,
+        ?string $label = null,
     ): self {
         return new self(
             $channel->id,
             $channel->channel_type->value,
-            $channel->label,
+            $label ?? $channel->label,
             $channel->value,
             $hrefBuilder->build($channel->channel_type, $channel->value),
             (int) $channel->sort_order,

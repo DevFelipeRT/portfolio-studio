@@ -12,6 +12,8 @@ final class UpdateContactChannelInput
         public readonly ContactChannelType $channelType,
         public readonly ?string $label,
         public readonly string $value,
+        public readonly string $locale,
+        public readonly bool $confirmSwap,
         public readonly bool $isActive,
         public readonly int $sortOrder,
     ) {

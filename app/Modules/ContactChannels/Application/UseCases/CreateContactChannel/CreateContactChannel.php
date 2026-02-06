@@ -29,6 +29,7 @@ final class CreateContactChannel
             'channel_type' => $input->channelType,
             'label' => $input->label,
             'value' => $normalizedValue,
+            'locale' => $input->locale,
             'is_active' => $input->isActive,
             'sort_order' => $input->sortOrder,
         ]);

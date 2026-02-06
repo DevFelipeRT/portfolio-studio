@@ -16,6 +16,7 @@ final class ContactChannelDto
         public readonly ?string $label,
         public readonly string $value,
         public readonly string $href,
+        public readonly string $locale,
         public readonly bool $isActive,
         public readonly int $sortOrder,
     ) {
@@ -24,13 +25,15 @@ final class ContactChannelDto
     public static function fromModel(
         ContactChannel $channel,
         ContactChannelHrefBuilder $hrefBuilder,
+        ?string $label = null,
     ): self {
         return new self(
             id: $channel->id,
             channelType: $channel->channel_type,
-            label: $channel->label,
+            label: $label ?? $channel->label,
             value: $channel->value,
             href: $hrefBuilder->build($channel->channel_type, $channel->value),
+            locale: $channel->locale,
             isActive: (bool) $channel->is_active,
             sortOrder: (int) $channel->sort_order,
         );
@@ -47,6 +50,7 @@ final class ContactChannelDto
             'label' => $this->label,
             'value' => $this->value,
             'href' => $this->href,
+            'locale' => $this->locale,
             'is_active' => $this->isActive,
             'sort_order' => $this->sortOrder,
         ];
