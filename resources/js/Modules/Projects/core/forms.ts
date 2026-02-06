@@ -5,6 +5,7 @@ export type ImageInput = {
 
 export type ProjectFormData = {
     locale: string;
+    confirm_swap?: boolean;
     name: string;
     summary: string;
     description: string;
