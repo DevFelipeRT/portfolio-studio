@@ -54,6 +54,8 @@ interface CourseFormProps {
   categories: Record<string, string>;
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
   onCancel: () => void;
+  onLocaleChange?: (locale: string) => void;
+  localeDisabled?: boolean;
 }
 
 /**
@@ -68,6 +70,8 @@ export default function CourseForm({
   categories,
   onSubmit,
   onCancel,
+  onLocaleChange,
+  localeDisabled = false,
 }: CourseFormProps) {
   const { translate: t, locale } = useTranslation('courses');
   const supportedLocales = useSupportedLocales();
@@ -91,8 +95,14 @@ export default function CourseForm({
           <Label htmlFor="locale">{t('fields.locale.label')}</Label>
           <Select
             value={data.locale}
-            onValueChange={(value) => setData('locale', value)}
-            disabled={processing}
+            onValueChange={(value) => {
+              if (onLocaleChange) {
+                onLocaleChange(value);
+                return;
+              }
+              setData('locale', value);
+            }}
+            disabled={processing || localeDisabled}
           >
             <SelectTrigger id="locale">
               <SelectValue placeholder={t('fields.locale.placeholder')} />

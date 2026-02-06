@@ -8,6 +8,8 @@ import { ChevronLeft } from 'lucide-react';
 import React from 'react';
 import type { Course } from '@/Modules/Courses/core/types';
 import { useTranslation } from '@/Common/i18n';
+import { listCourseTranslations } from '@/Modules/Courses/core/api/translations';
+import { LocaleSwapDialog } from '@/Common/LocaleSwapDialog';
 
 /**
  * Defines the props received from the backend controller.
@@ -27,6 +29,7 @@ export default function Edit({ course, course_categories }: EditCourseProps) {
         useForm<CourseFormData>(
         {
             locale: course.locale,
+            confirm_swap: false,
             name: course.name,
             institution: course.institution,
             category: course.category,
@@ -54,6 +57,62 @@ export default function Edit({ course, course_categories }: EditCourseProps) {
     };
 
     const [translationOpen, setTranslationOpen] = React.useState(false);
+    const [swapDialogOpen, setSwapDialogOpen] = React.useState(false);
+    const [pendingLocale, setPendingLocale] = React.useState<string | null>(null);
+    const [translationLocales, setTranslationLocales] = React.useState<string[]>(
+        [],
+    );
+    const [loadingTranslations, setLoadingTranslations] = React.useState(false);
+    const [localesLoadError, setLocalesLoadError] = React.useState<string | null>(
+        null,
+    );
+
+    React.useEffect(() => {
+        let mounted = true;
+
+        const loadTranslations = async (): Promise<void> => {
+            setLoadingTranslations(true);
+            setLocalesLoadError(null);
+            try {
+                const items = await listCourseTranslations(course.id);
+                if (mounted) {
+                    setTranslationLocales(
+                        items.map((item) => item.locale).filter(Boolean),
+                    );
+                }
+            } catch (err) {
+                if (mounted) {
+                    setLocalesLoadError(
+                        'Unable to load translations for locale conflict checks.',
+                    );
+                }
+            } finally {
+                if (mounted) {
+                    setLoadingTranslations(false);
+                }
+            }
+        };
+
+        void loadTranslations();
+
+        return () => {
+            mounted = false;
+        };
+    }, [course.id]);
+
+    const handleLocaleChange = (nextLocale: string): void => {
+        if (
+            nextLocale !== data.locale &&
+            translationLocales.includes(nextLocale)
+        ) {
+            setPendingLocale(nextLocale);
+            setSwapDialogOpen(true);
+            return;
+        }
+
+        setData('confirm_swap', false);
+        setData('locale', nextLocale);
+    };
 
     return (
         <AuthenticatedLayout
@@ -93,6 +152,10 @@ export default function Edit({ course, course_categories }: EditCourseProps) {
                         categories={course_categories ?? {}}
                         onSubmit={handleSubmit}
                         onCancel={handleCancel}
+                        onLocaleChange={handleLocaleChange}
+                        localeDisabled={
+                            loadingTranslations || Boolean(localesLoadError)
+                        }
                     />
                 </div>
             </div>
@@ -102,8 +165,32 @@ export default function Edit({ course, course_categories }: EditCourseProps) {
                 onClose={() => setTranslationOpen(false)}
                 courseId={course.id}
                 courseLabel={course.name}
-                baseLocale={course.locale}
+                baseLocale={data.locale}
             />
+
+            {pendingLocale && (
+                <LocaleSwapDialog
+                    open={swapDialogOpen}
+                    currentLocale={data.locale}
+                    nextLocale={pendingLocale}
+                    onConfirmSwap={() => {
+                        setData('confirm_swap', true);
+                        setData('locale', pendingLocale);
+                        setSwapDialogOpen(false);
+                        setPendingLocale(null);
+                    }}
+                    onConfirmNoSwap={() => {
+                        setData('confirm_swap', false);
+                        setData('locale', pendingLocale);
+                        setSwapDialogOpen(false);
+                        setPendingLocale(null);
+                    }}
+                    onCancel={() => {
+                        setSwapDialogOpen(false);
+                        setPendingLocale(null);
+                    }}
+                />
+            )}
         </AuthenticatedLayout>
     );
 }
