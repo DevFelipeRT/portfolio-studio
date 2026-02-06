@@ -28,6 +28,10 @@ final class UpdateCourseTranslation
 
         $course = $this->courses->findById($input->courseId);
 
+        if ($input->locale === $course->locale) {
+            throw new InvalidArgumentException('Course translation locale must differ from base locale.');
+        }
+
         $existing = $this->translations->findByCourseAndLocale($course, $input->locale);
         if ($existing === null) {
             throw new InvalidArgumentException('Course translation not found for this locale.');

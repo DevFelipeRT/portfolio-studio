@@ -21,6 +21,8 @@ final class StoreCourseTranslationRequest extends FormRequest
     public function rules(): array
     {
         $supported = app(SupportedLocalesResolver::class)->resolve();
+        $course = $this->route('course');
+        $baseLocale = $course?->locale;
 
         return [
             'locale' => [
@@ -28,6 +30,7 @@ final class StoreCourseTranslationRequest extends FormRequest
                 'string',
                 'max:20',
                 Rule::in($supported),
+                Rule::notIn($baseLocale ? [$baseLocale] : []),
             ],
             'name' => [
                 'nullable',
