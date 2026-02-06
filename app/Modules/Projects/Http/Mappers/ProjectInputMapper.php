@@ -38,6 +38,7 @@ final class ProjectInputMapper
 
         return new UpdateProjectInput(
             locale: $data['locale'],
+            confirmSwap: (bool) ($data['confirm_swap'] ?? false),
             name: $data['name'],
             summary: $data['summary'],
             description: $data['description'],

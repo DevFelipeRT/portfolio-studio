@@ -32,6 +32,7 @@ class UpdateProjectRequest extends FormRequest
 
         return [
             'locale' => ['required', 'string', 'max:20', Rule::in($supported)],
+            'confirm_swap' => ['sometimes', 'boolean'],
             'name' => ['required', 'string', 'max:255'],
             'summary' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string'],

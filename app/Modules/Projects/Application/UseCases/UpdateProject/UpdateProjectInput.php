@@ -12,6 +12,7 @@ final class UpdateProjectInput
      */
     public function __construct(
         public readonly string $locale,
+        public readonly bool $confirmSwap,
         public readonly string $name,
         public readonly string $summary,
         public readonly string $description,
