@@ -19,6 +19,7 @@ final class CreateSkill
     {
         $skill = $this->repository->create([
             'name' => $input->name,
+            'locale' => $input->locale,
             'skill_category_id' => $input->skillCategoryId,
         ]);
 

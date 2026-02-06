@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Skills\Http\Requests\SkillCategory;
 
 use App\Modules\Skills\Domain\Models\SkillCategory;
+use App\Modules\Skills\Application\Services\SupportedLocalesResolver;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -28,12 +29,20 @@ class UpdateSkillCategoryRequest extends FormRequest
      */
     public function rules(): array
     {
+        $supported = app(SupportedLocalesResolver::class)->resolve();
+
         /** @var SkillCategory|null $category */
         $category = $this->route('skill_category') ?? $this->route('skillCategory');
 
         $categoryId = $category?->id;
 
         return [
+            'locale' => [
+                'required',
+                'string',
+                'max:20',
+                Rule::in($supported),
+            ],
             'name' => [
                 'required',
                 'string',

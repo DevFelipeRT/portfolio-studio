@@ -11,6 +11,7 @@ final class SkillDto
     public function __construct(
         public readonly int $id,
         public readonly string $name,
+        public readonly string $locale,
         public readonly ?int $skillCategoryId,
         public readonly ?SkillCategoryDto $category,
         public readonly ?string $createdAt,
@@ -26,6 +27,7 @@ final class SkillDto
         return new self(
             id: $skill->id,
             name: $name ?? $skill->name,
+            locale: $skill->locale,
             skillCategoryId: $skill->skill_category_id,
             category: $category,
             createdAt: $skill->created_at?->toJSON(),
@@ -41,6 +43,7 @@ final class SkillDto
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'locale' => $this->locale,
             'skill_category_id' => $this->skillCategoryId,
             'category' => $this->category?->toArray(),
             'created_at' => $this->createdAt,

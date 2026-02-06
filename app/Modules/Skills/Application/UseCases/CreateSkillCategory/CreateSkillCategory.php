@@ -21,6 +21,7 @@ final class CreateSkillCategory
         $category = $this->repository->create([
             'name' => $input->name,
             'slug' => $this->slugNormalizer->normalize($input->name, $input->slug),
+            'locale' => $input->locale,
         ]);
 
         return SkillCategoryDto::fromModel($category);

@@ -18,6 +18,7 @@ final class SkillInputMapper
 
         return new CreateSkillInput(
             name: $data['name'],
+            locale: $data['locale'],
             skillCategoryId: $data['skill_category_id'] ?? null,
         );
     }
@@ -30,6 +31,7 @@ final class SkillInputMapper
 
         return new UpdateSkillInput(
             name: $data['name'],
+            locale: $data['locale'],
             skillCategoryId: $data['skill_category_id'] ?? null,
         );
     }

@@ -20,6 +20,7 @@ final class UpdateSkill
     {
         $updated = $this->repository->update($skill, [
             'name' => $input->name,
+            'locale' => $input->locale,
             'skill_category_id' => $input->skillCategoryId,
         ]);
 

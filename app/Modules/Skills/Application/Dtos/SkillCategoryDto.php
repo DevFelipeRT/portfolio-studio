@@ -12,6 +12,7 @@ final class SkillCategoryDto
         public readonly int $id,
         public readonly string $name,
         public readonly string $slug,
+        public readonly string $locale,
         public readonly ?string $createdAt,
         public readonly ?string $updatedAt,
     ) {
@@ -25,6 +26,7 @@ final class SkillCategoryDto
             id: $category->id,
             name: $name ?? $category->name,
             slug: $category->slug,
+            locale: $category->locale,
             createdAt: $category->created_at?->toJSON(),
             updatedAt: $category->updated_at?->toJSON(),
         );
@@ -39,6 +41,7 @@ final class SkillCategoryDto
             'id' => $this->id,
             'name' => $this->name,
             'slug' => $this->slug,
+            'locale' => $this->locale,
             'created_at' => $this->createdAt,
             'updated_at' => $this->updatedAt,
         ];

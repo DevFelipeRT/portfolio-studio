@@ -20,6 +20,7 @@ final class SkillCategoryInputMapper
         return new CreateSkillCategoryInput(
             name: $data['name'],
             slug: $data['slug'] ?? null,
+            locale: $data['locale'],
         );
     }
 
@@ -32,6 +33,7 @@ final class SkillCategoryInputMapper
         return new UpdateSkillCategoryInput(
             name: $data['name'],
             slug: $data['slug'] ?? null,
+            locale: $data['locale'],
         );
     }
 }

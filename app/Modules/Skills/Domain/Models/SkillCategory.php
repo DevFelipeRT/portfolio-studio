@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int    $id
  * @property string $name
  * @property string $slug
+ * @property string $locale
  */
 class SkillCategory extends Model
 {
@@ -27,6 +28,7 @@ class SkillCategory extends Model
     protected $fillable = [
         'name',
         'slug',
+        'locale',
     ];
 
     /**
@@ -36,6 +38,7 @@ class SkillCategory extends Model
      */
     protected $casts = [
         'id' => 'integer',
+        'locale' => 'string',
     ];
 
     /**

@@ -6,6 +6,7 @@ namespace App\Modules\Skills\Http\Requests\Skill;
 
 use App\Modules\Skills\Domain\Models\Skill;
 
+use App\Modules\Skills\Application\Services\SupportedLocalesResolver;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -29,12 +30,20 @@ class UpdateSkillRequest extends FormRequest
      */
     public function rules(): array
     {
+        $supported = app(SupportedLocalesResolver::class)->resolve();
+
         /** @var Skill|null $skill */
         $skill = $this->route('skill');
 
         $skillId = $skill?->id;
 
         return [
+            'locale' => [
+                'required',
+                'string',
+                'max:20',
+                Rule::in($supported),
+            ],
             'name' => [
                 'required',
                 'string',

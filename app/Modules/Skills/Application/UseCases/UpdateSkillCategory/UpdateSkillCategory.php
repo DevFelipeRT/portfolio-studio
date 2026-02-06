@@ -24,6 +24,7 @@ final class UpdateSkillCategory
         $updated = $this->repository->update($category, [
             'name' => $input->name,
             'slug' => $this->slugNormalizer->normalize($input->name, $input->slug),
+            'locale' => $input->locale,
         ]);
 
         return SkillCategoryDto::fromModel($updated);

@@ -8,6 +8,7 @@ final class CreateSkillInput
 {
     public function __construct(
         public readonly string $name,
+        public readonly string $locale,
         public readonly ?int $skillCategoryId,
     ) {
     }
