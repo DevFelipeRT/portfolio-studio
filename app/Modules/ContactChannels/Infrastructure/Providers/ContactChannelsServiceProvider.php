@@ -6,7 +6,9 @@ namespace App\Modules\ContactChannels\Infrastructure\Providers;
 
 use App\Modules\ContactChannels\Application\Capabilities\Providers\VisibleContactChannels;
 use App\Modules\ContactChannels\Domain\Repositories\IContactChannelRepository;
+use App\Modules\ContactChannels\Domain\Repositories\IContactChannelTranslationRepository;
 use App\Modules\ContactChannels\Infrastructure\Repositories\ContactChannelRepository;
+use App\Modules\ContactChannels\Infrastructure\Repositories\ContactChannelTranslationRepository;
 use App\Modules\Shared\Support\Capabilities\Traits\RegisterCapabilitiesTrait;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
@@ -20,6 +22,7 @@ final class ContactChannelsServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(IContactChannelRepository::class, ContactChannelRepository::class);
+        $this->app->bind(IContactChannelTranslationRepository::class, ContactChannelTranslationRepository::class);
         $this->registerCapabilitiesIfAvailable([
             VisibleContactChannels::class,
         ]);

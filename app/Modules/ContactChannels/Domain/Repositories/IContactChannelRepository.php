@@ -19,6 +19,14 @@ interface IContactChannelRepository
      */
     public function activeOrdered(): EloquentCollection;
 
+    /**
+     * @return EloquentCollection<int,ContactChannel>
+     */
+    public function activeOrderedWithTranslations(
+        ?string $locale,
+        ?string $fallbackLocale = null,
+    ): EloquentCollection;
+
     public function findById(int $id): ContactChannel;
 
     /**

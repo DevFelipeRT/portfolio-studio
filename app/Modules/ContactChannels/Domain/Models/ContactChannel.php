@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property ContactChannelType $channel_type
  * @property string|null $label
  * @property string $value
+ * @property string $locale
  * @property bool $is_active
  * @property int $sort_order
  * @property \Illuminate\Support\Carbon|null $created_at
@@ -36,6 +37,7 @@ class ContactChannel extends Model
         'channel_type',
         'label',
         'value',
+        'locale',
         'is_active',
         'sort_order',
     ];
@@ -45,7 +47,18 @@ class ContactChannel extends Model
      */
     protected $casts = [
         'channel_type' => ContactChannelType::class,
+        'locale' => 'string',
         'is_active' => 'bool',
         'sort_order' => 'int',
     ];
+
+    /**
+     * Localized labels for this contact channel.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<ContactChannelTranslation>
+     */
+    public function translations(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(ContactChannelTranslation::class, 'contact_channel_id');
+    }
 }

@@ -28,6 +28,25 @@ final class ContactChannelRepository implements IContactChannelRepository
             ->get();
     }
 
+    public function activeOrderedWithTranslations(
+        ?string $locale,
+        ?string $fallbackLocale = null,
+    ): EloquentCollection {
+        $locales = $this->normalizeLocales($locale, $fallbackLocale);
+
+        return ContactChannel::query()
+            ->where('is_active', true)
+            ->when(
+                $locales !== [],
+                static fn($query) => $query->with([
+                    'translations' => static fn($relation) => $relation->whereIn('locale', $locales),
+                ]),
+            )
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get();
+    }
+
     public function findById(int $id): ContactChannel
     {
         return ContactChannel::query()->findOrFail($id);
@@ -70,5 +89,18 @@ final class ContactChannelRepository implements IContactChannelRepository
     public function delete(ContactChannel $channel): void
     {
         $channel->delete();
+    }
+
+    /**
+     * @return array<int,string>
+     */
+    private function normalizeLocales(?string $locale, ?string $fallbackLocale): array
+    {
+        $candidates = array_unique(array_filter([
+            $locale !== null ? trim($locale) : null,
+            $fallbackLocale !== null ? trim($fallbackLocale) : null,
+        ]));
+
+        return array_values($candidates);
     }
 }
