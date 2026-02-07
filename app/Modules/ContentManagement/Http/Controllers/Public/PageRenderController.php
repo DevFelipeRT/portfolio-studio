@@ -38,7 +38,7 @@ final class PageRenderController extends Controller
             abort(404);
         }
 
-        return Inertia::render('ContentManagement/Pages/Public/RenderedPage', [
+        return Inertia::render('content-management/public/RenderedPage', [
             'page' => $viewModel->page,
             'sections' => $viewModel->sections,
             'extra' => $viewModel->extraPayload,
@@ -60,7 +60,7 @@ final class PageRenderController extends Controller
             abort(404);
         }
 
-        return Inertia::render('ContentManagement/Pages/Public/RenderedPage', [
+        return Inertia::render('content-management/public/RenderedPage', [
             'page' => $viewModel->page,
             'sections' => $viewModel->sections,
             'extra' => $viewModel->extraPayload,

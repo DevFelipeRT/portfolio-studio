@@ -31,7 +31,7 @@ final class WebsiteSettingsController extends Controller
     {
         $settings = $this->getWebsiteSettings->handle();
 
-        return Inertia::render('WebsiteSettings/Pages/Edit', [
+        return Inertia::render('website-settings/admin/Edit', [
             'settings' => WebsiteSettingsMapper::map($settings),
             'locales' => $this->pageService->listLocales(),
         ]);

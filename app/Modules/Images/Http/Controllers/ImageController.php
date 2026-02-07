@@ -56,7 +56,7 @@ class ImageController extends Controller
                 static fn(Image $image): array => ImageMapper::toArray($image)
             );
 
-        return Inertia::render('Images/Pages/Index', [
+        return Inertia::render('images/admin/Index', [
             'images' => $images,
             'filters' => [
                 'search' => $filters['search'],
@@ -73,7 +73,7 @@ class ImageController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('Images/Pages/Create');
+        return Inertia::render('images/admin/Create');
     }
 
     /**
@@ -113,7 +113,7 @@ class ImageController extends Controller
     {
         $imageWithUsage = $this->imageService->loadUsage($image);
 
-        return Inertia::render('Images/Pages/Edit', [
+        return Inertia::render('images/admin/Edit', [
             'image' => $imageWithUsage,
         ]);
     }

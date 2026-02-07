@@ -52,7 +52,7 @@ class CourseController extends Controller
 
         $mapped = $this->mapPaginatedResource($paginatedCourses, CourseMapper::class);
 
-        return Inertia::render('Courses/Pages/Index', [
+        return Inertia::render('courses/admin/Index', [
             'courses' => $mapped,
             'filters' => ['per_page' => $perPage],
         ]);
@@ -63,7 +63,7 @@ class CourseController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('Courses/Pages/Create', [
+        return Inertia::render('courses/admin/Create', [
             'course_categories' => CourseCategories::options(),
         ]);
     }
@@ -112,7 +112,7 @@ class CourseController extends Controller
      */
     public function edit(Course $course): Response
     {
-        return Inertia::render('Courses/Pages/Edit', [
+        return Inertia::render('courses/admin/Edit', [
             'course' => CourseMapper::toArray($course),
             'course_categories' => CourseCategories::options(),
         ]);

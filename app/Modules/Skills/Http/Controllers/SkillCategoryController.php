@@ -38,7 +38,7 @@ class SkillCategoryController extends Controller
     {
         $categories = $this->listSkillCategories->handle();
 
-        return Inertia::render('Skills/Pages/SkillCategories/Index', [
+        return Inertia::render('skills/admin/skill-categories/Index', [
             'categories' => SkillCategoryMapper::collection($categories),
         ]);
     }
@@ -48,7 +48,7 @@ class SkillCategoryController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('Skills/Pages/SkillCategories/Create');
+        return Inertia::render('skills/admin/skill-categories/Create');
     }
 
     /**
@@ -72,7 +72,7 @@ class SkillCategoryController extends Controller
     {
         $categoryDto = SkillCategoryDto::fromModel($skillCategory);
 
-        return Inertia::render('Skills/Pages/SkillCategories/Edit', [
+        return Inertia::render('skills/admin/skill-categories/Edit', [
             'category' => SkillCategoryMapper::map($categoryDto),
         ]);
     }

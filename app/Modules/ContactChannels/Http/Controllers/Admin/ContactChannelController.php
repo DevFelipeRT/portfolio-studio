@@ -42,14 +42,14 @@ final class ContactChannelController extends Controller
     {
         $channels = $this->listContactChannels->handle();
 
-        return Inertia::render('ContactChannels/Pages/Index', [
+        return Inertia::render('contact-channels/admin/Index', [
             'channels' => ContactChannelMapper::collection($channels),
         ]);
     }
 
     public function create(): Response
     {
-        return Inertia::render('ContactChannels/Pages/Create', [
+        return Inertia::render('contact-channels/admin/Create', [
             'channelTypes' => $this->channelTypesPayload(),
         ]);
     }
@@ -58,7 +58,7 @@ final class ContactChannelController extends Controller
     {
         $dto = ContactChannelDto::fromModel($contactChannel, $this->hrefBuilder);
 
-        return Inertia::render('ContactChannels/Pages/Edit', [
+        return Inertia::render('contact-channels/admin/Edit', [
             'channel' => ContactChannelMapper::map($dto),
             'channelTypes' => $this->channelTypesPayload(),
         ]);

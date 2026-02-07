@@ -41,7 +41,7 @@ class ProjectController extends Controller
     {
         $projects = $this->listProjects->handle();
 
-        return Inertia::render('Projects/Pages/Index', [
+        return Inertia::render('projects/admin/Index', [
             'projects' => ProjectMapper::collection($projects),
         ]);
     }
@@ -53,7 +53,7 @@ class ProjectController extends Controller
     {
         $skills = $this->capabilitiesGateway->resolve('skills.list.v1');
 
-        return Inertia::render('Projects/Pages/Create', [
+        return Inertia::render('projects/admin/Create', [
             'skills' => is_array($skills) ? $skills : [],
         ]);
     }
@@ -80,7 +80,7 @@ class ProjectController extends Controller
 
         $skills = $this->capabilitiesGateway->resolve('skills.list.v1');
 
-        return Inertia::render('Projects/Pages/Edit', [
+        return Inertia::render('projects/admin/Edit', [
             'project' => ProjectMapper::toArray($project),
             'skills' => is_array($skills) ? $skills : [],
         ]);

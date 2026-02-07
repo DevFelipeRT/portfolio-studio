@@ -41,7 +41,7 @@ class InitiativeController extends Controller
         $fallbackLocale = app()->getFallbackLocale();
         $initiatives = $this->listInitiatives->handle($locale, $fallbackLocale);
 
-        return Inertia::render('Initiatives/Pages/Index', [
+        return Inertia::render('initiatives/admin/Index', [
             'initiatives' => InitiativeMapper::collection($initiatives),
         ]);
     }
@@ -51,7 +51,7 @@ class InitiativeController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('Initiatives/Pages/Create');
+        return Inertia::render('initiatives/admin/Create');
     }
 
     /**
@@ -74,7 +74,7 @@ class InitiativeController extends Controller
     {
         $initiative->load(['images']);
 
-        return Inertia::render('Initiatives/Pages/Edit', [
+        return Inertia::render('initiatives/admin/Edit', [
             'initiative' => InitiativeMapper::toArray($initiative),
         ]);
     }

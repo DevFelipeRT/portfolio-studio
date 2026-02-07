@@ -33,7 +33,7 @@ class MessageController extends Controller
      */
     public function index(): Response
     {
-        return Inertia::render('Messages/Pages/Index', [
+        return Inertia::render('messages/admin/Index', [
             'messages' => $this->messages->all(),
         ]);
     }

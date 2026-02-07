@@ -39,7 +39,7 @@ class ExperienceController extends Controller
     {
         $experiences = $this->listExperiences->handle();
 
-        return Inertia::render('Experiences/Pages/Index', [
+        return Inertia::render('experiences/admin/Index', [
             'experiences' => ExperienceMapper::collection($experiences),
         ]);
     }
@@ -49,7 +49,7 @@ class ExperienceController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('Experiences/Pages/Create');
+        return Inertia::render('experiences/admin/Create');
     }
 
     /**
@@ -70,7 +70,7 @@ class ExperienceController extends Controller
      */
     public function edit(Experience $experience): Response
     {
-        return Inertia::render('Experiences/Pages/Edit', [
+        return Inertia::render('experiences/admin/Edit', [
             'experience' => ExperienceMapper::toArray($experience),
         ]);
     }

@@ -38,7 +38,7 @@ final class PageController extends Controller
 
         $viewModel = $this->pageAdminPresenter->buildIndexViewModel($filters);
 
-        return Inertia::render('ContentManagement/Pages/Admin/PageIndex', [
+        return Inertia::render('content-management/admin/PageIndex', [
             'pages' => $viewModel->pages,
             'filters' => $viewModel->filters,
             'extra' => $viewModel->extraPayload,
@@ -50,7 +50,7 @@ final class PageController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('ContentManagement/Pages/Admin/PageCreate', [
+        return Inertia::render('content-management/admin/PageCreate', [
             // Additional data can be added later if needed.
         ]);
     }
@@ -78,7 +78,7 @@ final class PageController extends Controller
             abort(404);
         }
 
-        return Inertia::render('ContentManagement/Pages/Admin/PageEdit', [
+        return Inertia::render('content-management/admin/PageEdit', [
             'page' => $viewModel->page,
             'sections' => $viewModel->sections,
             'availableTemplates' => $viewModel->availableTemplates,
