@@ -12,7 +12,7 @@ import {
 import {
     EditSectionDialog,
     type EditSectionPayload,
-} from '@/Modules/ContentManagement/ui/admin/PageEdit/EditSectionDialog';
+} from '@/Modules/ContentManagement/ui/admin/PageEdit/EditSection/EditSectionDialog';
 import { SectionsList } from '@/Modules/ContentManagement/ui/admin/PageEdit/SectionsList';
 import {
     PageForm,
