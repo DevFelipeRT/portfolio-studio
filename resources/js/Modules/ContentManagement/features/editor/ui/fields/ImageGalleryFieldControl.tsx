@@ -1,6 +1,6 @@
 import { Label } from '@/Components/Ui/label';
 import { Textarea } from '@/Components/Ui/textarea';
-import { parseCommaSeparatedPositiveIntegers } from '@/Modules/ContentManagement/utils/numbers';
+import { parseCommaSeparatedPositiveIntegers } from '@/Modules/ContentManagement/shared/numbers';
 
 interface ImageGalleryFieldControlProps {
     name: string;

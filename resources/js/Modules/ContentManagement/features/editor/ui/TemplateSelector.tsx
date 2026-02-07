@@ -5,8 +5,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/Components/Ui/select';
-import type { TemplateDefinitionDto } from '@/Modules/ContentManagement/core/types';
-import { normalizeSlotKey } from '@/Modules/ContentManagement/utils/strings';
+import type { TemplateDefinitionDto } from '@/Modules/ContentManagement/types';
+import { normalizeSlotKey } from '@/Modules/ContentManagement/shared/strings';
 import React from 'react';
 
 interface TemplateSelectorProps {

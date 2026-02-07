@@ -3,7 +3,7 @@ import type {
     SectionDataValue,
     TemplateDefinitionDto,
     TemplateFieldDto,
-} from '@/Modules/ContentManagement/core/types';
+} from '@/Modules/ContentManagement/types';
 import { TemplateFieldRenderer } from './TemplateFieldRenderer';
 
 interface TemplateSectionFormProps {

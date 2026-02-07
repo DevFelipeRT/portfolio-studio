@@ -4,7 +4,7 @@ import type {
     SectionDataCollectionItem,
     SectionDataValue,
     TemplateFieldDto,
-} from '@/Modules/ContentManagement/core/types';
+} from '@/Modules/ContentManagement/types';
 import React, { JSX } from 'react';
 import { TemplateFieldRenderer } from '../TemplateFieldRenderer';
 

@@ -1,5 +1,5 @@
 import { Label } from '@/Components/Ui/label';
-import { parsePositiveIntegerStrict } from '@/Modules/ContentManagement/utils/numbers';
+import { parsePositiveIntegerStrict } from '@/Modules/ContentManagement/shared/numbers';
 
 interface ImageFieldControlProps {
     name: string;

@@ -1,6 +1,6 @@
 import { Input } from '@/Components/Ui/input';
 import { Label } from '@/Components/Ui/label';
-import { parseCommaSeparatedIntegers } from '@/Modules/ContentManagement/utils/numbers';
+import { parseCommaSeparatedIntegers } from '@/Modules/ContentManagement/shared/numbers';
 import React from 'react';
 
 interface ArrayIntegerFieldControlProps {

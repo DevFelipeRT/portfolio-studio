@@ -1,7 +1,7 @@
 import type {
     SectionDataValue,
     TemplateFieldDto,
-} from '@/Modules/ContentManagement/core/types';
+} from '@/Modules/ContentManagement/types';
 import { ArrayIntegerFieldControl } from './fields/ArrayIntegerFieldControl';
 import { BooleanFieldControl } from './fields/BooleanFieldControl';
 import { CollectionFieldControl } from './fields/CollectionFieldControl';

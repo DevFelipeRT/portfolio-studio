@@ -1,6 +1,6 @@
 import { Input } from '@/Components/Ui/input';
 import { Label } from '@/Components/Ui/label';
-import { parseOptionalInteger } from '@/Modules/ContentManagement/utils/numbers';
+import { parseOptionalInteger } from '@/Modules/ContentManagement/shared/numbers';
 import React from 'react';
 
 interface IntegerFieldControlProps {
