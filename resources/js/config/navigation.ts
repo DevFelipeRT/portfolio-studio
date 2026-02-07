@@ -1,6 +1,6 @@
 // resources/js/config/navigation.ts
 
-import type { NavigationConfigNode } from '@/Navigation/configTypes';
+import type { NavigationConfigNode } from '@/app/navigation/configTypes';
 
 export const navigationConfig = [
   {
