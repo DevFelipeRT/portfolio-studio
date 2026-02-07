@@ -8,7 +8,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import {
     CreateSectionDialog,
     type CreateSectionPayload,
-} from '@/Modules/ContentManagement/ui/admin/PageEdit/CreateSectionDialog';
+} from '@/Modules/ContentManagement/ui/admin/PageEdit/CreateSection/CreateSectionDialog';
 import {
     EditSectionDialog,
     type EditSectionPayload,
