@@ -1,6 +1,6 @@
 import { coursesSectionRegistryProvider } from '@/Modules/Courses/sectionRegistryProvider';
 import { contactChannelsSectionRegistryProvider } from '@/Modules/ContactChannels/sectionRegistryProvider';
-import { contentManagementSectionRegistryProvider } from '@/Modules/ContentManagement/sectionRegistryProvider';
+import { contentManagementSectionRegistryProvider } from '@/Modules/ContentManagement/features/sections/sectionRegistryProvider';
 import { experiencesSectionRegistryProvider } from '@/Modules/Experiences/sectionRegistryProvider';
 import { initiativesSectionRegistryProvider } from '@/Modules/Initiatives/sectionRegistryProvider';
 import { projectsSectionRegistryProvider } from '@/Modules/Projects/sectionRegistryProvider';

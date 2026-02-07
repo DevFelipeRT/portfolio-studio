@@ -2,10 +2,12 @@ import { useGetLocale } from '@/Common/i18n';
 import { RichTextRenderer } from '@/Common/RichText/RichTextRenderer';
 import { DateDisplay } from '@/Components/Ui/date-display';
 import { TimelineItem } from '@/Components/Ui/timeline-item';
-import type { SectionComponentProps } from '@/Modules/ContentManagement/core/sections/sectionRegistry';
-import type { SectionDataValue } from '@/Modules/ContentManagement/core/types';
-import { useSectionFieldResolver } from '@/Modules/ContentManagement/hooks/useSectionFieldResolver';
-import { SectionHeader } from '@/Modules/ContentManagement/ui/sections/SectionHeader';
+import {
+  SectionHeader,
+  type SectionComponentProps,
+  useSectionFieldResolver,
+} from '@/Modules/ContentManagement/features/sections';
+import type { SectionDataValue } from '@/Modules/ContentManagement/types';
 import { Briefcase } from 'lucide-react';
 import { JSX } from 'react';
 

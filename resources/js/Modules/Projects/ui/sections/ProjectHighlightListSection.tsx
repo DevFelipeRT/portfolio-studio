@@ -1,7 +1,9 @@
-import { SectionHeader } from '@/Modules/ContentManagement/ui/sections/SectionHeader';
-import type { SectionComponentProps } from '@/Modules/ContentManagement/core/sections/sectionRegistry';
-import { useSectionFieldResolver } from '@/Modules/ContentManagement/hooks/useSectionFieldResolver';
-import type { SectionDataValue } from '@/Modules/ContentManagement/core/types';
+import {
+    SectionHeader,
+    type SectionComponentProps,
+    useSectionFieldResolver,
+} from '@/Modules/ContentManagement/features/sections';
+import type { SectionDataValue } from '@/Modules/ContentManagement/types';
 import { ProjectCarousel } from '@/Modules/Projects/ui/ProjectCarousel';
 import type { Project } from '@/Modules/Projects/core/types';
 import { JSX } from 'react';

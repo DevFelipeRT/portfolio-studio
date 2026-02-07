@@ -1,6 +1,8 @@
-import { SectionHeader } from '@/Modules/ContentManagement/ui/sections/SectionHeader';
-import type { SectionComponentProps } from '@/Modules/ContentManagement/core/sections/sectionRegistry';
-import { useSectionFieldResolver } from '@/Modules/ContentManagement/hooks/useSectionFieldResolver';
+import {
+    SectionHeader,
+    type SectionComponentProps,
+    useSectionFieldResolver,
+} from '@/Modules/ContentManagement/features/sections';
 import { SkillBadge } from '@/Modules/Skills/ui/SkillBadge';
 import type { JSX } from 'react';
 

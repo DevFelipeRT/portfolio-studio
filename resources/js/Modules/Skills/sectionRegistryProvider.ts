@@ -1,5 +1,5 @@
 import { TechStackPrimarySection } from '@/Modules/Skills/ui/sections/TechStackPrimarySection';
-import type { SectionComponentRegistry } from '@/Modules/ContentManagement/core/sections/sectionRegistry';
+import type { SectionComponentRegistry } from '@/Modules/ContentManagement/features/sections';
 
 export const skillsSectionRegistryProvider = {
     getSectionRegistry(): SectionComponentRegistry {

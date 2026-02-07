@@ -2,10 +2,12 @@ import { useGetLocale } from '@/Common/i18n';
 import { Badge } from '@/Components/Ui/badge';
 import { DateDisplay } from '@/Components/Ui/date-display';
 import { ExpandableCard } from '@/Components/Ui/expandable-card';
-import type { SectionComponentProps } from '@/Modules/ContentManagement/core/sections/sectionRegistry';
-import type { SectionDataValue } from '@/Modules/ContentManagement/core/types';
-import { useSectionFieldResolver } from '@/Modules/ContentManagement/hooks/useSectionFieldResolver';
-import { SectionHeader } from '@/Modules/ContentManagement/ui/sections/SectionHeader';
+import {
+  SectionHeader,
+  type SectionComponentProps,
+  useSectionFieldResolver,
+} from '@/Modules/ContentManagement/features/sections';
+import type { SectionDataValue } from '@/Modules/ContentManagement/types';
 import { GraduationCap } from 'lucide-react';
 import { JSX } from 'react';
 

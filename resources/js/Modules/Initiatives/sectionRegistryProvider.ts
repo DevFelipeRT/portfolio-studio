@@ -1,5 +1,5 @@
 import { InitiativeHighlightListSection } from '@/Modules/Initiatives/ui/sections/InitiativeHighlightListSection';
-import type { SectionComponentRegistry } from '@/Modules/ContentManagement/core/sections/sectionRegistry';
+import type { SectionComponentRegistry } from '@/Modules/ContentManagement/features/sections';
 
 export const initiativesSectionRegistryProvider = {
     getSectionRegistry(): SectionComponentRegistry {
