@@ -3,8 +3,8 @@
 import {
     SECTION_COMPONENT_REGISTRY,
     type SectionComponentProps,
-} from '@/Modules/ContentManagement/features/sections/registry/sectionRegistry';
-import { SectionFieldResolverProvider } from '@/Modules/ContentManagement/features/sections/runtime/useSectionFieldResolver';
+} from '../registry/sectionRegistry';
+import { SectionFieldResolverProvider } from '../runtime/useSectionFieldResolver';
 import type {
     PageSectionDto,
     TemplateDefinitionDto,
@@ -12,7 +12,7 @@ import type {
 import {
     createSectionFieldResolver,
     type SectionFieldResolver,
-} from '@/Modules/ContentManagement/features/sections/lib/sectionFieldResolver';
+} from '../rules/sectionFieldResolver';
 import React, { JSX } from 'react';
 
 export interface SectionRendererProps {

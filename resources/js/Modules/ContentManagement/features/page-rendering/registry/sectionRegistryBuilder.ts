@@ -1,7 +1,7 @@
 import type {
     SectionComponentRegistry,
     SectionRegistryProvider,
-} from '@/Modules/ContentManagement/features/sections/registry/sectionRegistry';
+} from './sectionRegistry';
 
 function collectDuplicateKeys(
     baseRegistry: SectionComponentRegistry,

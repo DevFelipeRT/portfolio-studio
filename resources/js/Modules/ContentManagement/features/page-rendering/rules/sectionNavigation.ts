@@ -1,5 +1,5 @@
 import type { NavigationItem, NavigationSectionItem } from '@/app/navigation';
-import type { StringNormalizer } from '@/Modules/ContentManagement/features/sections/ports/stringNormalizer';
+import type { StringNormalizer } from './ports/stringNormalizer';
 import type { PageSectionDto } from '@/Modules/ContentManagement/types';
 
 type SectionNavigationMetadata = {

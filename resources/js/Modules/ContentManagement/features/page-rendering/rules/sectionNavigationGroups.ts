@@ -1,6 +1,6 @@
-import type { StringNormalizer } from '@/Modules/ContentManagement/features/sections/ports/stringNormalizer';
+import type { StringNormalizer } from './ports/stringNormalizer';
 import type { PageSectionDto } from '@/Modules/ContentManagement/types';
-import { getSectionNavigationGroup } from '@/Modules/ContentManagement/features/sections/lib/sectionNavigation';
+import { getSectionNavigationGroup } from './sectionNavigation';
 
 export function collectSectionNavigationGroups(
     sections: PageSectionDto[],

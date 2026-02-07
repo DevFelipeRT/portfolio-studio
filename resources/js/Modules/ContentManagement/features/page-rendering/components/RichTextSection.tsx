@@ -1,6 +1,6 @@
-import { SectionHeader } from '@/Modules/ContentManagement/features/sections/ui/components/SectionHeader';
-import type { SectionComponentProps } from '@/Modules/ContentManagement/features/sections/registry/sectionRegistry';
-import { useSectionFieldResolver } from '@/Modules/ContentManagement/features/sections/runtime/useSectionFieldResolver';
+import { SectionHeader } from './SectionHeader';
+import type { SectionComponentProps } from '../registry/sectionRegistry';
+import { useSectionFieldResolver } from '../runtime/useSectionFieldResolver';
 import { JSX } from 'react';
 import { RichTextRenderer } from '@/Common/RichText/RichTextRenderer';
 

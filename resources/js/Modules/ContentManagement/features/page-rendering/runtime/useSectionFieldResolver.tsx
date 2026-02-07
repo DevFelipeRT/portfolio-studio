@@ -1,4 +1,4 @@
-import type { SectionFieldResolver } from '@/Modules/ContentManagement/features/sections/lib/sectionFieldResolver';
+import type { SectionFieldResolver } from '../rules/sectionFieldResolver';
 import { createContext, useContext, type JSX, type ReactNode } from 'react';
 
 const SectionFieldResolverContext = createContext<

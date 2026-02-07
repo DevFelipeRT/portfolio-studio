@@ -2,7 +2,7 @@ import { createContext, JSX, useContext, type ReactNode } from 'react';
 import {
     createDefaultSectionEnvironment,
     type SectionEnvironment,
-} from '@/Modules/ContentManagement/features/sections/runtime/sectionEnvironment';
+} from './sectionEnvironment';
 
 const SectionEnvironmentContext = createContext<SectionEnvironment>(
     createDefaultSectionEnvironment(),

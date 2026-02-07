@@ -1,5 +1,5 @@
 import { CoursesHighlightGridSection } from '@/Modules/Courses/ui/sections/CoursesHighlightGridSection';
-import type { SectionComponentRegistry } from '@/Modules/ContentManagement/features/sections';
+import type { SectionComponentRegistry } from '@/Modules/ContentManagement/features/page-rendering';
 
 export const coursesSectionRegistryProvider = {
     getSectionRegistry(): SectionComponentRegistry {

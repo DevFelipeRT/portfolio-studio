@@ -7,7 +7,7 @@ import {
   SectionEnvironmentProvider,
   sectionSlotLayoutManager,
   sortSectionsByPosition,
-} from '@/Modules/ContentManagement/features/sections';
+} from '@/Modules/ContentManagement/features/page-rendering';
 import { defaultStringNormalizer } from '@/Modules/ContentManagement/shared/strings';
 import type {
   PageRenderViewModelProps,

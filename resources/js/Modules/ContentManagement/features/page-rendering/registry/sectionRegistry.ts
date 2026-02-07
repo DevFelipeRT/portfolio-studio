@@ -2,7 +2,7 @@ import type {
     PageSectionDto,
     TemplateDefinitionDto,
 } from '@/Modules/ContentManagement/types';
-import { buildSectionRegistry } from '@/Modules/ContentManagement/features/sections/registry/sectionRegistryBuilder';
+import { buildSectionRegistry } from './sectionRegistryBuilder';
 import { sectionRegistryProviders } from '@/config/sectionRegistryProviders';
 import React from 'react';
 

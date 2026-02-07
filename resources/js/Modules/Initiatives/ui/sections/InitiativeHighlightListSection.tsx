@@ -2,7 +2,7 @@ import {
     SectionHeader,
     type SectionComponentProps,
     useSectionFieldResolver,
-} from '@/Modules/ContentManagement/features/sections';
+} from '@/Modules/ContentManagement/features/page-rendering';
 import type { SectionDataValue } from '@/Modules/ContentManagement/types';
 import { JSX } from 'react';
 

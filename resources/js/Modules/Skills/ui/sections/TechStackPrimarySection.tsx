@@ -2,7 +2,7 @@ import {
     SectionHeader,
     type SectionComponentProps,
     useSectionFieldResolver,
-} from '@/Modules/ContentManagement/features/sections';
+} from '@/Modules/ContentManagement/features/page-rendering';
 import { SkillBadge } from '@/Modules/Skills/ui/SkillBadge';
 import type { JSX } from 'react';
 

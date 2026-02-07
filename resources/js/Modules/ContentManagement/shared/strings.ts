@@ -1,4 +1,4 @@
-import type { StringNormalizer } from '@/Modules/ContentManagement/features/sections';
+import type { StringNormalizer } from '@/Modules/ContentManagement/features/page-rendering';
 
 export function normalizeString(value: unknown): string | null {
     if (typeof value !== 'string') {

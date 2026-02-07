@@ -2,7 +2,7 @@ import type {
     PageSectionDto,
     TemplateDefinitionDto,
 } from '@/Modules/ContentManagement/types';
-import { SectionRenderer } from '@/Modules/ContentManagement/features/sections/rendering/SectionRenderer';
+import { SectionRenderer } from './SectionRenderer';
 import { normalizeSlotKey } from '@/Modules/ContentManagement/shared/strings';
 import type { JSX } from 'react';
 

@@ -5,9 +5,9 @@ import type {
     TemplateDefinitionDto,
     TemplateFieldPrimitiveType,
 } from '@/Modules/ContentManagement/types';
-import { buildTemplateDefaults } from '@/Modules/ContentManagement/features/sections/lib/fields/fieldDefaults';
-import { buildFieldTypeIndex } from '@/Modules/ContentManagement/features/sections/lib/fields/fieldTypes';
-import { normalizeValue } from '@/Modules/ContentManagement/features/sections/lib/fields/fieldNormalization';
+import { buildTemplateDefaults } from './fields/fieldDefaults';
+import { buildFieldTypeIndex } from './fields/fieldTypes';
+import { normalizeValue } from './fields/fieldNormalization';
 
 export interface SectionFieldResolver {
     /**

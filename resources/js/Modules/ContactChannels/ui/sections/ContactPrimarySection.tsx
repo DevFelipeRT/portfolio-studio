@@ -3,14 +3,14 @@ import { Input } from '@/Components/Ui/input';
 import { Label } from '@/Components/Ui/label';
 import { Textarea } from '@/Components/Ui/textarea';
 import { SocialLinksBar, type SocialLinkItem } from '@/Modules/ContactChannels/ui/SocialLinksBar';
-import type { SectionComponentProps } from '@/Modules/ContentManagement/features/sections';
+import type { SectionComponentProps } from '@/Modules/ContentManagement/features/page-rendering';
 import type {
   SectionDataCollectionItem,
   SectionDataPrimitive,
   SectionDataValue,
   SectionImage,
 } from '@/Modules/ContentManagement/types';
-import { SectionHeader, useSectionFieldResolver } from '@/Modules/ContentManagement/features/sections';
+import { SectionHeader, useSectionFieldResolver } from '@/Modules/ContentManagement/features/page-rendering';
 import { useForm } from '@inertiajs/react';
 import { Github, Linkedin, Link2, Mail, MessageCircle, PhoneCall } from 'lucide-react';
 import type { ComponentType, FormEvent, JSX, SVGProps } from 'react';
