@@ -4,6 +4,7 @@ import { SelectableInput } from '@/Components/Ui/selectable-input';
 import React from 'react';
 
 interface NavigationFieldsProps {
+  idPrefix: string;
   navigationLabel: string;
   navigationGroup: string;
   navigationGroups: string[];
@@ -13,6 +14,7 @@ interface NavigationFieldsProps {
 }
 
 export function NavigationFields({
+  idPrefix,
   navigationLabel,
   navigationGroup,
   navigationGroups,
@@ -20,12 +22,15 @@ export function NavigationFields({
   onNavigationLabelChange,
   onNavigationGroupChange,
 }: NavigationFieldsProps) {
+  const labelId = `${idPrefix}-navigation-label`;
+  const groupId = `${idPrefix}-navigation-group`;
+
   return (
     <div className="grid gap-4 md:grid-cols-2">
       <div className="space-y-1.5">
-        <Label htmlFor="section-navigation-label">Navigation label</Label>
+        <Label htmlFor={labelId}>Navigation label</Label>
         <Input
-          id="section-navigation-label"
+          id={labelId}
           value={navigationLabel}
           onChange={(event) => onNavigationLabelChange(event.target.value)}
           placeholder="Highlights"
@@ -33,9 +38,9 @@ export function NavigationFields({
       </div>
 
       <div className="space-y-1.5">
-        <Label htmlFor="section-navigation-group">Navigation group</Label>
+        <Label htmlFor={groupId}>Navigation group</Label>
         <SelectableInput
-          id="section-navigation-group"
+          id={groupId}
           value={navigationGroup}
           onChange={onNavigationGroupChange}
           placeholder="About"
@@ -49,3 +54,4 @@ export function NavigationFields({
     </div>
   );
 }
+

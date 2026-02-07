@@ -1,7 +1,7 @@
 import {
   getSectionNavigationGroup,
   getSectionNavigationLabel,
-} from '@/Modules/ContentManagement/features/sections/lib/sectionNavigation';
+} from '@/Modules/ContentManagement/features/sections';
 import type { PageSectionDto } from '@/Modules/ContentManagement/types';
 import { defaultStringNormalizer } from '@/Modules/ContentManagement/shared/strings';
 import { useSortable } from '@dnd-kit/sortable';

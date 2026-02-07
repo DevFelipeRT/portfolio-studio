@@ -12,9 +12,9 @@ import type {
   SectionData,
   TemplateDefinitionDto,
 } from '@/Modules/ContentManagement/types';
-import { buildInitialSectionData } from '@/Modules/ContentManagement/features/sections/lib/sectionDataFactory';
+import { buildInitialSectionData } from '@/Modules/ContentManagement/features/sections';
+import { ConfigureSectionStep } from '../shared/ConfigureSectionStep';
 import { CreateSectionFooter } from './components/CreateSectionFooter';
-import { ConfigureStep } from './steps/ConfigureStep';
 import { SelectStep } from './steps/SelectStep';
 import React from 'react';
 
@@ -220,10 +220,12 @@ export function CreateSectionDialog({
               onSelectTemplate={handleTemplateChange}
             />
           ) : (
-            <ConfigureStep
+            <ConfigureSectionStep
+              idPrefix="section"
               templates={templates}
               selectedTemplate={selectedTemplate}
               selectedTemplateKey={selectedTemplateKey}
+              templatePickerDisabled
               allowedSlots={allowedSlots}
               hasSlotOptions={hasSlotOptions}
               slot={slot}

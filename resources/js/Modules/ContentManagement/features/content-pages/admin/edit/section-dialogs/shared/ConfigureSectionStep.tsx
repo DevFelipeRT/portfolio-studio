@@ -2,18 +2,20 @@ import type {
   SectionData,
   TemplateDefinitionDto,
 } from '@/Modules/ContentManagement/types';
-import { ActiveToggle } from './Configure/components/ActiveToggle';
-import { AnchorField } from './Configure/components/AnchorField';
-import { NavigationFields } from './Configure/components/NavigationFields';
-import { SlotField } from './Configure/components/SlotField';
-import { TemplateDataForm } from './Configure/components/TemplateDataForm';
-import { TemplatePicker } from './Configure/components/TemplatePicker';
 import React from 'react';
+import { ActiveToggle } from './configure/ActiveToggle';
+import { AnchorField } from './configure/AnchorField';
+import { NavigationFields } from './configure/NavigationFields';
+import { SlotField } from './configure/SlotField';
+import { TemplateDataForm } from './configure/TemplateDataForm';
+import { TemplatePicker } from './configure/TemplatePicker';
 
-interface ConfigureStepProps {
+interface ConfigureSectionStepProps {
+  idPrefix: string;
   templates: TemplateDefinitionDto[];
   selectedTemplate: TemplateDefinitionDto | undefined;
   selectedTemplateKey: string;
+  templatePickerDisabled?: boolean;
   allowedSlots: string[];
   hasSlotOptions: boolean;
   slot: string;
@@ -33,10 +35,12 @@ interface ConfigureStepProps {
   onDataChange: (value: SectionData) => void;
 }
 
-export function ConfigureStep({
+export function ConfigureSectionStep({
+  idPrefix,
   templates,
   selectedTemplate,
   selectedTemplateKey,
+  templatePickerDisabled = false,
   allowedSlots,
   hasSlotOptions,
   slot,
@@ -54,26 +58,34 @@ export function ConfigureStep({
   onNavigationGroupChange,
   onIsActiveChange,
   onDataChange,
-}: ConfigureStepProps) {
+}: ConfigureSectionStepProps) {
   return (
     <div className="mx-1 my-4 space-y-6">
       <TemplatePicker
+        idPrefix={idPrefix}
         templates={templates}
         selectedTemplateKey={selectedTemplateKey}
+        disabled={templatePickerDisabled}
         onTemplateChange={onTemplateChange}
       />
 
       <div className="grid gap-4 md:grid-cols-2">
         <SlotField
+          idPrefix={idPrefix}
           allowedSlots={allowedSlots}
           hasSlotOptions={hasSlotOptions}
           slot={slot}
           onSlotChange={onSlotChange}
         />
-        <AnchorField anchor={anchor} onAnchorChange={onAnchorChange} />
+        <AnchorField
+          idPrefix={idPrefix}
+          anchor={anchor}
+          onAnchorChange={onAnchorChange}
+        />
       </div>
 
       <NavigationFields
+        idPrefix={idPrefix}
         navigationLabel={navigationLabel}
         navigationGroup={navigationGroup}
         navigationGroups={navigationGroups}
@@ -82,7 +94,11 @@ export function ConfigureStep({
         onNavigationGroupChange={onNavigationGroupChange}
       />
 
-      <ActiveToggle isActive={isActive} onIsActiveChange={onIsActiveChange} />
+      <ActiveToggle
+        idPrefix={idPrefix}
+        isActive={isActive}
+        onIsActiveChange={onIsActiveChange}
+      />
 
       {selectedTemplate && (
         <TemplateDataForm
@@ -94,3 +110,4 @@ export function ConfigureStep({
     </div>
   );
 }
+

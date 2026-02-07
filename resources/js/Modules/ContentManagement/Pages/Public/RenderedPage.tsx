@@ -6,12 +6,14 @@ import type {
     PageSectionDto,
     TemplateDefinitionDto,
 } from '@/Modules/ContentManagement/types';
-import type { SectionEnvironment } from '@/Modules/ContentManagement/features/sections/runtime/sectionEnvironment';
-import { buildNavigationItemsFromSections } from '@/Modules/ContentManagement/features/sections/lib/sectionNavigation';
-import { sectionSlotLayoutManager } from '@/Modules/ContentManagement/features/sections/rendering/SectionSlotLayout';
-import { sortSectionsByPosition } from '@/Modules/ContentManagement/features/sections/lib/sectionSort';
+import {
+    buildNavigationItemsFromSections,
+    type SectionEnvironment,
+    SectionEnvironmentProvider,
+    sectionSlotLayoutManager,
+    sortSectionsByPosition,
+} from '@/Modules/ContentManagement/features/sections';
 import { defaultStringNormalizer } from '@/Modules/ContentManagement/shared/strings';
-import { SectionEnvironmentProvider } from '@/Modules/ContentManagement/features/sections/runtime/useSectionEnvironment';
 import { Head } from '@inertiajs/react';
 import { JSX } from 'react';
 

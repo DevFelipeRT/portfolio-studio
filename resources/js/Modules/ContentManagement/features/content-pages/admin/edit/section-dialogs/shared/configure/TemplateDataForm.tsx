@@ -2,7 +2,7 @@ import type {
   SectionData,
   TemplateDefinitionDto,
 } from '@/Modules/ContentManagement/types';
-import { TemplateSectionForm } from '@/Modules/ContentManagement/features/editor/ui/TemplateSectionForm';
+import { TemplateSectionForm } from '@/Modules/ContentManagement/features/templates';
 
 interface TemplateDataFormProps {
   template: TemplateDefinitionDto;

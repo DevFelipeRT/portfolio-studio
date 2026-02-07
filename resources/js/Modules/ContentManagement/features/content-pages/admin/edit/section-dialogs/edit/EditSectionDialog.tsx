@@ -6,13 +6,13 @@ import type {
     SectionData,
     TemplateDefinitionDto,
 } from '@/Modules/ContentManagement/types';
-import { buildInitialSectionData } from '@/Modules/ContentManagement/features/sections/lib/sectionDataFactory';
+import { buildInitialSectionData } from '@/Modules/ContentManagement/features/sections';
+import { ConfigureSectionStep } from '../shared/ConfigureSectionStep';
 import { EditSectionFooter } from './components/EditSectionFooter';
-import { ConfigureStep } from './steps/ConfigureStep';
 import React from 'react';
 
 export interface EditSectionPayload {
-    templateKey: string;
+    template_key: string;
     slot: string | null;
     anchor: string | null;
     navigation_label: string | null;
@@ -99,7 +99,7 @@ export function EditSectionDialog({
         }
 
         onSubmit({
-            templateKey: selectedTemplateKey,
+            template_key: selectedTemplateKey,
             slot: slot || null,
             anchor: anchor || null,
             navigation_label: navigationLabel || null,
@@ -128,7 +128,8 @@ export function EditSectionDialog({
 
                 <ScrollArea className="px-5">
                     {section && (
-                        <ConfigureStep
+                        <ConfigureSectionStep
+                            idPrefix="edit-section"
                             templates={templates}
                             selectedTemplate={selectedTemplate}
                             selectedTemplateKey={selectedTemplateKey}

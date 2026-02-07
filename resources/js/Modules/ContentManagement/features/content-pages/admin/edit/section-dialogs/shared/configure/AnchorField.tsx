@@ -2,16 +2,19 @@ import { Input } from '@/Components/Ui/input';
 import { Label } from '@/Components/Ui/label';
 
 interface AnchorFieldProps {
+  idPrefix: string;
   anchor: string;
   onAnchorChange: (value: string) => void;
 }
 
-export function AnchorField({ anchor, onAnchorChange }: AnchorFieldProps) {
+export function AnchorField({ idPrefix, anchor, onAnchorChange }: AnchorFieldProps) {
+  const id = `${idPrefix}-anchor`;
+
   return (
     <div className="space-y-1.5">
-      <Label htmlFor="section-anchor">Anchor</Label>
+      <Label htmlFor={id}>Anchor</Label>
       <Input
-        id="section-anchor"
+        id={id}
         value={anchor}
         onChange={(event) => onAnchorChange(event.target.value)}
         placeholder="about, contact"
@@ -19,3 +22,4 @@ export function AnchorField({ anchor, onAnchorChange }: AnchorFieldProps) {
     </div>
   );
 }
+

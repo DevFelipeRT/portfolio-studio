@@ -9,6 +9,7 @@ import {
 } from '@/Components/Ui/select';
 
 interface SlotFieldProps {
+  idPrefix: string;
   allowedSlots: string[];
   hasSlotOptions: boolean;
   slot: string;
@@ -16,17 +17,20 @@ interface SlotFieldProps {
 }
 
 export function SlotField({
+  idPrefix,
   allowedSlots,
   hasSlotOptions,
   slot,
   onSlotChange,
 }: SlotFieldProps) {
+  const id = `${idPrefix}-slot`;
+
   return (
     <div className="space-y-1.5">
-      <Label htmlFor="section-slot">Slot</Label>
+      <Label htmlFor={id}>Slot</Label>
       {hasSlotOptions ? (
         <Select value={slot} onValueChange={onSlotChange}>
-          <SelectTrigger>
+          <SelectTrigger id={id}>
             <SelectValue placeholder="Select a slot" />
           </SelectTrigger>
           <SelectContent>
@@ -39,7 +43,7 @@ export function SlotField({
         </Select>
       ) : (
         <Input
-          id="section-slot"
+          id={id}
           value={slot}
           onChange={(event) => onSlotChange(event.target.value)}
           placeholder="hero, main, footer"
@@ -48,3 +52,4 @@ export function SlotField({
     </div>
   );
 }
+

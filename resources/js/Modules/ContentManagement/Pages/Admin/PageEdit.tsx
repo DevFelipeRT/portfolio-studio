@@ -8,23 +8,25 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import {
     CreateSectionDialog,
     type CreateSectionPayload,
-} from '@/Modules/ContentManagement/features/admin/PageEdit/CreateSection/CreateSectionDialog';
+} from '@/Modules/ContentManagement/features/content-pages/admin/edit/section-dialogs/create/CreateSectionDialog';
 import {
     EditSectionDialog,
     type EditSectionPayload,
-} from '@/Modules/ContentManagement/features/admin/PageEdit/EditSection/EditSectionDialog';
-import { SectionsList } from '@/Modules/ContentManagement/features/admin/PageEdit/ManageSections/SectionsList';
+} from '@/Modules/ContentManagement/features/content-pages/admin/edit/section-dialogs/edit/EditSectionDialog';
+import { SectionsList } from '@/Modules/ContentManagement/features/content-pages/admin/edit/sections/SectionsList';
 import {
     PageForm,
     type PageFormData,
-} from '@/Modules/ContentManagement/features/admin/PageForm';
+} from '@/Modules/ContentManagement/features/content-pages/admin/form/PageForm';
 import type {
     PageEditViewModelProps,
     PageSectionDto,
 } from '@/Modules/ContentManagement/types';
-import { collectSectionNavigationGroups } from '@/Modules/ContentManagement/features/sections/lib/sectionNavigationGroups';
-import { validateHeroFirstOrder } from '@/Modules/ContentManagement/features/sections/lib/sectionOrder';
-import { sortSectionsByPosition } from '@/Modules/ContentManagement/features/sections/lib/sectionSort';
+import {
+    collectSectionNavigationGroups,
+    sortSectionsByPosition,
+    validateHeroFirstOrder,
+} from '@/Modules/ContentManagement/features/sections';
 import { defaultStringNormalizer } from '@/Modules/ContentManagement/shared/strings';
 
 export default function PageEdit({
@@ -141,7 +143,7 @@ export default function PageEdit({
         router.put(
             route('admin.content.sections.update', selectedSection.id),
             {
-                template_key: payload.templateKey,
+                template_key: payload.template_key,
                 slot: payload.slot,
                 anchor: payload.anchor,
                 navigation_label: payload.navigation_label,
