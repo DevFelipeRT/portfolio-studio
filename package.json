@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && cross-env ASSET_URL='' vite build",
-    "lint": "eslint resources/js --ext .js,.jsx,.ts,.tsx --ignore-path .gitignore --fix"
+    "lint": "eslint resources/js",
+    "lint:fix": "eslint resources/js --fix"
   },
   "devDependencies": {
     "@eslint/css": "^0.14.1",

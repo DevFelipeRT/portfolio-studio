@@ -5,47 +5,42 @@ import pluginReact from "eslint-plugin-react";
 import json from "@eslint/json";
 import markdown from "@eslint/markdown";
 import css from "@eslint/css";
-import { defineConfig } from "eslint/config";
-import eslintConfigPrettier from "eslint-config-prettier/flat";
+import eslintConfigPrettier from "eslint-config-prettier";
 
-export default defineConfig([
+export default [
   {
-    files: ["**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
-    plugins: { js },
-    extends: ["js/recommended"],
     languageOptions: { globals: globals.browser },
+    settings: { react: { version: "detect" } },
   },
-  tseslint.configs.recommended,
+  js.configs.recommended,
+  ...tseslint.configs.recommended,
   pluginReact.configs.flat.recommended,
+  pluginReact.configs.flat["jsx-runtime"],
+  {
+    rules: {
+      "react/prop-types": "off",
+    },
+  },
   {
     files: ["**/*.json"],
-    plugins: { json },
     language: "json/json",
-    extends: ["json/recommended"],
+    ...json.configs.recommended,
   },
   {
     files: ["**/*.jsonc"],
-    plugins: { json },
     language: "json/jsonc",
-    extends: ["json/recommended"],
+    ...json.configs.recommended,
   },
   {
     files: ["**/*.json5"],
-    plugins: { json },
     language: "json/json5",
-    extends: ["json/recommended"],
+    ...json.configs.recommended,
   },
-  {
-    files: ["**/*.md"],
-    plugins: { markdown },
-    language: "markdown/commonmark",
-    extends: ["markdown/recommended"],
-  },
+  ...markdown.configs.recommended,
   {
     files: ["**/*.css"],
-    plugins: { css },
     language: "css/css",
-    extends: ["css/recommended"],
+    ...css.configs.recommended,
   },
   eslintConfigPrettier,
-]);
+];
