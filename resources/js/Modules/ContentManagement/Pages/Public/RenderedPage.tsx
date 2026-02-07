@@ -5,13 +5,13 @@ import type {
     PageRenderViewModelProps,
     PageSectionDto,
     TemplateDefinitionDto,
-} from '@/Modules/ContentManagement/core/types';
-import type { SectionEnvironment } from '@/Modules/ContentManagement/core/types/sectionEnvironment';
-import { buildNavigationItemsFromSections } from '@/Modules/ContentManagement/core/sections/sectionNavigation';
-import { sectionSlotLayoutManager } from '@/Modules/ContentManagement/ui/layout/SectionSlotLayout';
-import { sortSectionsByPosition } from '@/Modules/ContentManagement/core/sections/sectionSort';
-import { defaultStringNormalizer } from '@/Modules/ContentManagement/utils/strings';
-import { SectionEnvironmentProvider } from '@/Modules/ContentManagement/hooks/useSectionEnvironment';
+} from '@/Modules/ContentManagement/types';
+import type { SectionEnvironment } from '@/Modules/ContentManagement/features/sections/runtime/sectionEnvironment';
+import { buildNavigationItemsFromSections } from '@/Modules/ContentManagement/features/sections/lib/sectionNavigation';
+import { sectionSlotLayoutManager } from '@/Modules/ContentManagement/features/sections/rendering/SectionSlotLayout';
+import { sortSectionsByPosition } from '@/Modules/ContentManagement/features/sections/lib/sectionSort';
+import { defaultStringNormalizer } from '@/Modules/ContentManagement/shared/strings';
+import { SectionEnvironmentProvider } from '@/Modules/ContentManagement/features/sections/runtime/useSectionEnvironment';
 import { Head } from '@inertiajs/react';
 import { JSX } from 'react';
 

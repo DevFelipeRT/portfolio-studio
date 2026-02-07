@@ -2,9 +2,9 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 
 import { Button } from '@/Components/Ui/button';
-import { PageFilters } from '@/Modules/ContentManagement/ui/admin/PageIndex/PageFilters';
-import { PageTable } from '@/Modules/ContentManagement/ui/admin/PageIndex/PageTable';
-import type { PageIndexViewModelProps } from '@/Modules/ContentManagement/core/types';
+import { PageFilters } from '@/Modules/ContentManagement/features/admin/PageIndex/PageFilters';
+import { PageTable } from '@/Modules/ContentManagement/features/admin/PageIndex/PageTable';
+import type { PageIndexViewModelProps } from '@/Modules/ContentManagement/types';
 import { Link } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
 

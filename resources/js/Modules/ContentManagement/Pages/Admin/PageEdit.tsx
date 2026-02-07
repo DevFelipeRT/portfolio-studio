@@ -8,32 +8,29 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import {
     CreateSectionDialog,
     type CreateSectionPayload,
-} from '@/Modules/ContentManagement/ui/admin/PageEdit/CreateSection/CreateSectionDialog';
+} from '@/Modules/ContentManagement/features/admin/PageEdit/CreateSection/CreateSectionDialog';
 import {
     EditSectionDialog,
     type EditSectionPayload,
-} from '@/Modules/ContentManagement/ui/admin/PageEdit/EditSection/EditSectionDialog';
-import { SectionsList } from '@/Modules/ContentManagement/ui/admin/PageEdit/ManageSections/SectionsList';
+} from '@/Modules/ContentManagement/features/admin/PageEdit/EditSection/EditSectionDialog';
+import { SectionsList } from '@/Modules/ContentManagement/features/admin/PageEdit/ManageSections/SectionsList';
 import {
     PageForm,
     type PageFormData,
-} from '@/Modules/ContentManagement/ui/admin/PageForm';
+} from '@/Modules/ContentManagement/features/admin/PageForm';
 import type {
     PageEditViewModelProps,
     PageSectionDto,
-} from '@/Modules/ContentManagement/core/types';
-import { getSectionNavigationGroup } from '@/Modules/ContentManagement/core/sections/sectionNavigation';
-import { sortSectionsByPosition } from '@/Modules/ContentManagement/core/sections/sectionSort';
-import {
-    defaultStringNormalizer,
-    normalizeSlotKey,
-} from '@/Modules/ContentManagement/utils/strings';
+} from '@/Modules/ContentManagement/types';
+import { collectSectionNavigationGroups } from '@/Modules/ContentManagement/features/sections/lib/sectionNavigationGroups';
+import { validateHeroFirstOrder } from '@/Modules/ContentManagement/features/sections/lib/sectionOrder';
+import { sortSectionsByPosition } from '@/Modules/ContentManagement/features/sections/lib/sectionSort';
+import { defaultStringNormalizer } from '@/Modules/ContentManagement/shared/strings';
 
 export default function PageEdit({
     page,
     sections,
     availableTemplates,
-    extra: _extra,
 }: PageEditViewModelProps) {
     const { data, setData, put, processing, errors } = useForm<PageFormData>({
         slug: page.slug,
@@ -56,40 +53,17 @@ export default function PageEdit({
         [sections],
     );
     const navigationGroups = React.useMemo(() => {
-        const unique = new Set<string>();
-
-        sections.forEach((section) => {
-            const group = getSectionNavigationGroup(
-                section,
-                defaultStringNormalizer,
-            );
-            if (group) {
-                unique.add(group);
-            }
-        });
-
-        return Array.from(unique).sort((a, b) => a.localeCompare(b));
+        return collectSectionNavigationGroups(sections, defaultStringNormalizer);
     }, [sections]);
 
-    const validateHeroOrder = (
+    const validateSectionsOrder = (
         orderedSections: PageSectionDto[],
     ): boolean => {
-        let seenNonHero = false;
+        const result = validateHeroFirstOrder(orderedSections);
 
-        for (const section of orderedSections) {
-            const isHero = normalizeSlotKey(section.slot) === 'hero';
-
-            if (!isHero) {
-                seenNonHero = true;
-                continue;
-            }
-
-            if (seenNonHero) {
-                toast.error(
-                    'Hero sections must be positioned first with no other slots before or between them.',
-                );
-                return false;
-            }
+        if (!result.ok) {
+            toast.error(result.message);
+            return false;
         }
 
         return true;
@@ -222,7 +196,7 @@ export default function PageEdit({
             .map((id) => sortedSections.find((section) => section.id === id))
             .filter((section): section is PageSectionDto => Boolean(section));
 
-        if (!validateHeroOrder(orderedSections)) {
+        if (!validateSectionsOrder(orderedSections)) {
             return;
         }
 
@@ -264,7 +238,7 @@ export default function PageEdit({
 
         const orderedIds = swapped.map((item) => item.id);
 
-        if (!validateHeroOrder(swapped)) {
+        if (!validateSectionsOrder(swapped)) {
             return;
         }
 
@@ -318,7 +292,7 @@ export default function PageEdit({
                     onRemoveSection={handleRemoveSection}
                     onReorder={handleReorderSection}
                     onReorderIds={handleReorderSections}
-                    onValidateReorder={validateHeroOrder}
+                    onValidateReorder={validateSectionsOrder}
                 />
             </div>
 
