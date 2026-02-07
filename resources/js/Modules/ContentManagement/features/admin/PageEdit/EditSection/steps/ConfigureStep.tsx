@@ -1,0 +1,99 @@
+import type {
+    SectionData,
+    TemplateDefinitionDto,
+} from '@/Modules/ContentManagement/types';
+import React from 'react';
+import { ActiveToggle } from './Configure/components/ActiveToggle';
+import { AnchorField } from './Configure/components/AnchorField';
+import { NavigationFields } from './Configure/components/NavigationFields';
+import { SlotField } from './Configure/components/SlotField';
+import { TemplateDataForm } from './Configure/components/TemplateDataForm';
+import { TemplatePicker } from './Configure/components/TemplatePicker';
+
+interface ConfigureStepProps {
+    templates: TemplateDefinitionDto[];
+    selectedTemplate: TemplateDefinitionDto | undefined;
+    selectedTemplateKey: string;
+    templatePickerDisabled: boolean;
+    allowedSlots: string[];
+    hasSlotOptions: boolean;
+    slot: string;
+    anchor: string;
+    navigationLabel: string;
+    navigationGroup: string;
+    navigationGroups: string[];
+    isActive: boolean;
+    data: SectionData;
+    dialogContentRef: React.RefObject<HTMLDivElement | null>;
+    onTemplateChange: (value: string) => void;
+    onSlotChange: (value: string) => void;
+    onAnchorChange: (value: string) => void;
+    onNavigationLabelChange: (value: string) => void;
+    onNavigationGroupChange: (value: string) => void;
+    onIsActiveChange: (value: boolean) => void;
+    onDataChange: (value: SectionData) => void;
+}
+
+export function ConfigureStep({
+    templates,
+    selectedTemplate,
+    selectedTemplateKey,
+    templatePickerDisabled,
+    allowedSlots,
+    hasSlotOptions,
+    slot,
+    anchor,
+    navigationLabel,
+    navigationGroup,
+    navigationGroups,
+    isActive,
+    data,
+    dialogContentRef,
+    onTemplateChange,
+    onSlotChange,
+    onAnchorChange,
+    onNavigationLabelChange,
+    onNavigationGroupChange,
+    onIsActiveChange,
+    onDataChange,
+}: ConfigureStepProps) {
+    return (
+        <div className="mx-1 my-4 space-y-6">
+            <TemplatePicker
+                templates={templates}
+                selectedTemplateKey={selectedTemplateKey}
+                disabled={templatePickerDisabled}
+                onTemplateChange={onTemplateChange}
+            />
+
+            <div className="grid gap-4 md:grid-cols-2">
+                <SlotField
+                    hasSlotOptions={hasSlotOptions}
+                    allowedSlots={allowedSlots}
+                    slot={slot}
+                    onSlotChange={onSlotChange}
+                />
+                <AnchorField anchor={anchor} onAnchorChange={onAnchorChange} />
+            </div>
+
+            <NavigationFields
+                navigationLabel={navigationLabel}
+                navigationGroup={navigationGroup}
+                navigationGroups={navigationGroups}
+                dialogContentRef={dialogContentRef}
+                onNavigationLabelChange={onNavigationLabelChange}
+                onNavigationGroupChange={onNavigationGroupChange}
+            />
+
+            <ActiveToggle isActive={isActive} onIsActiveChange={onIsActiveChange} />
+
+            {selectedTemplate && (
+                <TemplateDataForm
+                    template={selectedTemplate}
+                    data={data}
+                    onDataChange={onDataChange}
+                />
+            )}
+        </div>
+    );
+}
