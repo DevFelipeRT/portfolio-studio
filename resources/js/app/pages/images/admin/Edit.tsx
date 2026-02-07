@@ -1,9 +1,9 @@
 // resources/js/Pages/Images/Edit.tsx
 
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link } from '@inertiajs/react';
-import { ImageForm } from '@/Modules/Images/ui/ImageForm';
+import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import type { Image } from '@/Modules/Images/core/types';
+import { ImageForm } from '@/Modules/Images/ui/ImageForm';
+import { Head, Link } from '@inertiajs/react';
 
 interface EditImagePageProps {
   image: Image;

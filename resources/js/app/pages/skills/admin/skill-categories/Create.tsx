@@ -1,31 +1,25 @@
-// resources/js/Pages/Skills/Create.tsx
-
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
-import type { SkillFormData } from '@/Modules/Skills/core/forms';
-import type { SkillCategory } from '@/Modules/Skills/core/types';
-import { SkillForm } from '@/Modules/Skills/ui/SkillForm';
+import type { SkillCategoryFormData } from '@/Modules/Skills/core/forms';
+import { SkillCategoryForm } from '@/Modules/Skills/ui/SkillCategoryForm';
 import { Head, Link, useForm } from '@inertiajs/react';
 import React from 'react';
 
-interface CreateSkillProps {
-  categories: SkillCategory[];
-}
-
-export default function Create({ categories }: CreateSkillProps) {
-  const { data, setData, post, processing, errors } = useForm<SkillFormData>({
-    name: '',
-    locale: '',
-    skill_category_id: '',
-  });
+export default function Create() {
+  const { data, setData, post, processing, errors } =
+    useForm<SkillCategoryFormData>({
+      name: '',
+      slug: '',
+      locale: '',
+    });
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
-    post(route('skills.store'));
+    post(route('skill-categories.store'));
   };
 
   const handleChange = (
-    field: keyof SkillFormData,
-    value: string | number | '',
+    field: keyof SkillCategoryFormData,
+    value: string,
   ): void => {
     setData(field, value);
   };
@@ -33,10 +27,12 @@ export default function Create({ categories }: CreateSkillProps) {
   return (
     <AuthenticatedLayout
       header={
-        <h1 className="text-xl leading-tight font-semibold">New skill</h1>
+        <h1 className="text-xl leading-tight font-semibold">
+          New skill category
+        </h1>
       }
     >
-      <Head title="New skill" />
+      <Head title="New skill category" />
 
       <div className="overflow-hidden">
         <div className="mx-auto max-w-xl px-4 py-8 sm:px-6 lg:px-8">
@@ -49,10 +45,9 @@ export default function Create({ categories }: CreateSkillProps) {
             </Link>
           </div>
 
-          <SkillForm
+          <SkillCategoryForm
             data={data}
             errors={errors}
-            categories={categories}
             processing={processing}
             onChange={handleChange}
             onSubmit={handleSubmit}

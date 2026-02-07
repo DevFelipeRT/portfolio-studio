@@ -1,106 +1,98 @@
 import { Button } from '@/Components/Ui/button';
 import { Input } from '@/Components/Ui/input';
 import { Label } from '@/Components/Ui/label';
-import GuestLayout from '@/Layouts/GuestLayout';
+import GuestLayout from '@/app/layouts/GuestLayout';
 import { Head, useForm } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
 
 export default function ResetPassword({
-    token,
-    email,
+  token,
+  email,
 }: {
-    token: string;
-    email: string;
+  token: string;
+  email: string;
 }) {
-    const { data, setData, post, processing, errors, reset } = useForm({
-        token: token,
-        email: email,
-        password: '',
-        password_confirmation: '',
+  const { data, setData, post, processing, errors, reset } = useForm({
+    token: token,
+    email: email,
+    password: '',
+    password_confirmation: '',
+  });
+
+  const submit: FormEventHandler = (e) => {
+    e.preventDefault();
+
+    post(route('password.store'), {
+      onFinish: () => reset('password', 'password_confirmation'),
     });
+  };
 
-    const submit: FormEventHandler = (e) => {
-        e.preventDefault();
+  return (
+    <GuestLayout>
+      <Head title="Reset Password" />
 
-        post(route('password.store'), {
-            onFinish: () => reset('password', 'password_confirmation'),
-        });
-    };
+      <form onSubmit={submit}>
+        <div>
+          <Label htmlFor="email">Email</Label>
 
-    return (
-        <GuestLayout>
-            <Head title="Reset Password" />
+          <Input
+            id="email"
+            type="email"
+            name="email"
+            value={data.email}
+            className="mt-1"
+            autoComplete="username"
+            onChange={(e) => setData('email', e.target.value)}
+          />
 
-            <form onSubmit={submit}>
-                <div>
-                    <Label htmlFor="email">Email</Label>
+          {errors.email && (
+            <p className="text-destructive mt-2 text-sm">{errors.email}</p>
+          )}
+        </div>
 
-                    <Input
-                        id="email"
-                        type="email"
-                        name="email"
-                        value={data.email}
-                        className="mt-1"
-                        autoComplete="username"
-                        onChange={(e) => setData('email', e.target.value)}
-                    />
+        <div className="mt-4">
+          <Label htmlFor="password">Password</Label>
 
-                    {errors.email && (
-                        <p className="text-destructive mt-2 text-sm">
-                            {errors.email}
-                        </p>
-                    )}
-                </div>
+          <Input
+            id="password"
+            type="password"
+            name="password"
+            value={data.password}
+            className="mt-1"
+            autoComplete="new-password"
+            autoFocus
+            onChange={(e) => setData('password', e.target.value)}
+          />
 
-                <div className="mt-4">
-                    <Label htmlFor="password">Password</Label>
+          {errors.password && (
+            <p className="text-destructive mt-2 text-sm">{errors.password}</p>
+          )}
+        </div>
 
-                    <Input
-                        id="password"
-                        type="password"
-                        name="password"
-                        value={data.password}
-                        className="mt-1"
-                        autoComplete="new-password"
-                        autoFocus
-                        onChange={(e) => setData('password', e.target.value)}
-                    />
+        <div className="mt-4">
+          <Label htmlFor="password_confirmation">Confirm Password</Label>
 
-                    {errors.password && (
-                        <p className="text-destructive mt-2 text-sm">
-                            {errors.password}
-                        </p>
-                    )}
-                </div>
+          <Input
+            id="password_confirmation"
+            type="password"
+            name="password_confirmation"
+            value={data.password_confirmation}
+            className="mt-1"
+            autoComplete="new-password"
+            onChange={(e) => setData('password_confirmation', e.target.value)}
+          />
 
-                <div className="mt-4">
-                    <Label htmlFor="password_confirmation">
-                        Confirm Password
-                    </Label>
+          {errors.password_confirmation && (
+            <p className="text-destructive mt-2 text-sm">
+              {errors.password_confirmation}
+            </p>
+          )}
+        </div>
 
-                    <Input
-                        id="password_confirmation"
-                        type="password"
-                        name="password_confirmation"
-                        value={data.password_confirmation}
-                        className="mt-1"
-                        autoComplete="new-password"
-                        onChange={(e) =>
-                            setData('password_confirmation', e.target.value)
-                        }
-                    />
-
-                    {errors.password_confirmation && (
-                        <p className="text-destructive mt-2 text-sm">
-                            {errors.password_confirmation}
-                        </p>
-                    )}
-                </div>
-
-                <div className="mt-4 flex items-center justify-end">
-                    <Button disabled={processing}>Reset Password</Button>
-                </div>
-            </form>
-        </GuestLayout>
-    );
+        <div className="mt-4 flex items-center justify-end">
+          <Button disabled={processing}>Reset Password</Button>
+        </div>
+      </form>
+    </GuestLayout>
+  );
 }

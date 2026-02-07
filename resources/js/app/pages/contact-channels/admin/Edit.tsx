@@ -1,22 +1,26 @@
-// resources/js/Pages/Skills/Edit.tsx
-
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import { LocaleSwapDialog } from '@/Common/LocaleSwapDialog';
 import { Button } from '@/Components/Ui/button';
-import { listSkillTranslations } from '@/Modules/Skills/core/api/translations';
-import type { SkillFormData } from '@/Modules/Skills/core/forms';
-import type { Skill, SkillCategory } from '@/Modules/Skills/core/types';
-import { SkillForm } from '@/Modules/Skills/ui/SkillForm';
-import { TranslationModal } from '@/Modules/Skills/ui/TranslationModal';
+import { listContactChannelTranslations } from '@/Modules/ContactChannels/core/api/translations';
+import type { ContactChannelFormData } from '@/Modules/ContactChannels/core/forms';
+import type {
+  ContactChannel,
+  ContactChannelTypeOption,
+} from '@/Modules/ContactChannels/core/types';
+import { ContactChannelForm } from '@/Modules/ContactChannels/ui/ContactChannelForm';
+import { TranslationModal } from '@/Modules/ContactChannels/ui/TranslationModal';
 import { Head, Link, useForm } from '@inertiajs/react';
 import React from 'react';
 
-interface EditSkillProps {
-  skill: Skill;
-  categories: SkillCategory[];
+interface EditContactChannelProps {
+  channel: ContactChannel;
+  channelTypes: ContactChannelTypeOption[];
 }
 
-export default function Edit({ skill, categories }: EditSkillProps) {
+export default function Edit({
+  channel,
+  channelTypes,
+}: EditContactChannelProps) {
   const [showTranslations, setShowTranslations] = React.useState(false);
   const [swapDialogOpen, setSwapDialogOpen] = React.useState(false);
   const [pendingLocale, setPendingLocale] = React.useState<string | null>(null);
@@ -27,12 +31,17 @@ export default function Edit({ skill, categories }: EditSkillProps) {
   const [localesLoadError, setLocalesLoadError] = React.useState<string | null>(
     null,
   );
-  const { data, setData, put, processing, errors } = useForm<SkillFormData>({
-    name: skill.name,
-    locale: skill.locale,
-    confirm_swap: false,
-    skill_category_id: skill.skill_category_id ?? '',
-  });
+
+  const { data, setData, put, processing, errors } =
+    useForm<ContactChannelFormData>({
+      locale: channel.locale,
+      confirm_swap: false,
+      channel_type: channel.channel_type,
+      label: channel.label ?? '',
+      value: channel.value,
+      is_active: channel.is_active,
+      sort_order: channel.sort_order,
+    });
 
   React.useEffect(() => {
     let mounted = true;
@@ -41,7 +50,7 @@ export default function Edit({ skill, categories }: EditSkillProps) {
       setLoadingTranslations(true);
       setLocalesLoadError(null);
       try {
-        const items = await listSkillTranslations(skill.id);
+        const items = await listContactChannelTranslations(channel.id);
         if (mounted) {
           setTranslationLocales(
             items.map((item) => item.locale).filter(Boolean),
@@ -65,16 +74,16 @@ export default function Edit({ skill, categories }: EditSkillProps) {
     return () => {
       mounted = false;
     };
-  }, [skill.id]);
+  }, [channel.id]);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
-    put(route('skills.update', skill.id));
+    put(route('contact-channels.update', channel.id));
   };
 
   const handleChange = (
-    field: keyof SkillFormData,
-    value: string | number | '',
+    field: keyof ContactChannelFormData,
+    value: string | number | boolean | '',
   ): void => {
     if (field === 'locale' && typeof value === 'string') {
       if (value !== data.locale && translationLocales.includes(value)) {
@@ -85,39 +94,42 @@ export default function Edit({ skill, categories }: EditSkillProps) {
 
       setData('confirm_swap', false);
     }
-    setData(field, value);
+
+    setData(field, value as never);
   };
 
   return (
     <>
       <AuthenticatedLayout
         header={
-          <h1 className="text-xl leading-tight font-semibold">Edit skill</h1>
+          <h1 className="text-xl leading-tight font-semibold">
+            Edit contact channel
+          </h1>
         }
       >
-        <Head title={`Edit skill: ${skill.name}`} />
+        <Head title={`Edit contact channel`} />
 
         <div className="overflow-hidden">
           <div className="mx-auto max-w-xl px-4 py-8 sm:px-6 lg:px-8">
             <div className="mb-4">
               <Link
-                href={route('skills.index')}
+                href={route('contact-channels.index')}
                 className="text-muted-foreground hover:text-foreground text-sm"
               >
-                Back to skills
+                Back to contact channels
               </Link>
             </div>
 
-            <SkillForm
+            <ContactChannelForm
               data={data}
               errors={errors}
-              categories={categories}
+              channelTypes={channelTypes}
               processing={processing}
               onChange={handleChange}
               onSubmit={handleSubmit}
-              cancelHref={route('skills.index')}
+              cancelHref={route('contact-channels.index')}
               submitLabel="Save changes"
-              deleteHref={route('skills.destroy', skill.id)}
+              deleteHref={route('contact-channels.destroy', channel.id)}
               deleteLabel="Delete"
               alignActions="split"
             />
@@ -139,9 +151,8 @@ export default function Edit({ skill, categories }: EditSkillProps) {
       <TranslationModal
         open={showTranslations}
         onClose={() => setShowTranslations(false)}
-        entityId={skill.id}
-        entityLabel={skill.name}
-        entityType="skill"
+        contactChannelId={channel.id}
+        entityLabel={channel.label ?? channel.channel_type}
         baseLocale={data.locale}
       />
 

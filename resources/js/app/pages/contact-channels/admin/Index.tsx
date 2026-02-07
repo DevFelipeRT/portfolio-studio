@@ -1,78 +1,82 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
-import type { Project } from '@/Modules/Projects/core/types';
-import type { Skill } from '@/Modules/Skills/core/types';
+import type { ContactChannel } from '@/Modules/ContactChannels/core/types';
 import { Head, Link } from '@inertiajs/react';
 
-interface ProjectsIndexProps {
-  projects: Project[];
+interface ContactChannelsIndexProps {
+  channels: ContactChannel[];
 }
 
-export default function Index({ projects }: ProjectsIndexProps) {
-  const hasProjects = projects.length > 0;
+const typeLabels: Record<string, string> = {
+  email: 'Email',
+  phone: 'Phone',
+  whatsapp: 'WhatsApp',
+  linkedin: 'LinkedIn',
+  github: 'GitHub',
+  custom: 'Custom',
+};
 
-  const skills = (project: Project): Skill[] => {
-    return project.skills ?? [];
-  };
+export default function Index({ channels }: ContactChannelsIndexProps) {
+  const hasChannels = channels.length > 0;
 
-  const truncate = (text: string, maxLength: number): string => {
-    if (text.length <= maxLength) {
-      return text;
+  const labelFor = (channel: ContactChannel): string => {
+    if (channel.channel_type === 'custom' && channel.label) {
+      return channel.label;
     }
 
-    return `${text.slice(0, maxLength - 1)}…`;
+    return typeLabels[channel.channel_type] ?? channel.channel_type;
   };
 
   return (
     <AuthenticatedLayout
       header={
         <h1 className="text-xl leading-tight font-semibold">
-          Project management
+          Contact channels
         </h1>
       }
     >
-      <Head title="Projects" />
+      <Head title="Contact channels" />
 
       <div className="overflow-hidden">
         <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-muted-foreground mt-1 text-sm">
-              Manage the projects displayed on your portfolio landing page.
+              Manage the contact channels displayed on your website.
             </p>
           </div>
 
           <Link
-            href={route('projects.create')}
+            href={route('contact-channels.create')}
             className="bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-ring inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium shadow-sm transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
           >
-            New project
+            New channel
           </Link>
         </div>
 
-        {!hasProjects && (
+        {!hasChannels && (
           <p className="text-muted-foreground text-sm">
-            No projects have been created yet.
+            No contact channels configured yet.
           </p>
         )}
 
-        {hasProjects && (
+        {hasChannels && (
           <div className="bg-card overflow-hidden rounded-lg border">
             <table className="min-w-full divide-y text-sm">
               <thead className="bg-muted/60">
                 <tr>
                   <th className="text-muted-foreground px-4 py-3 text-left font-medium">
-                    Name
+                    Type
                   </th>
                   <th className="text-muted-foreground px-4 py-3 text-left font-medium">
-                    Status
+                    Label
                   </th>
                   <th className="text-muted-foreground px-4 py-3 text-left font-medium">
-                    Display on landing
+                    Value
                   </th>
                   <th className="text-muted-foreground px-4 py-3 text-left font-medium">
-                    Skills
+                    Active
                   </th>
                   <th className="text-muted-foreground px-4 py-3 text-left font-medium">
-                    Updated at
+                    Order
                   </th>
                   <th className="text-muted-foreground px-4 py-3 text-right font-medium">
                     Actions
@@ -81,59 +85,47 @@ export default function Index({ projects }: ProjectsIndexProps) {
               </thead>
 
               <tbody className="divide-y">
-                {projects.map((project) => (
-                  <tr key={project.id}>
+                {channels.map((channel) => (
+                  <tr key={channel.id}>
                     <td className="px-4 py-3 align-top">
-                      <div className="font-medium">{project.name}</div>
-                      <div className="text-muted-foreground mt-0.5 text-xs">
-                        {truncate(project.summary, 80)}
-                      </div>
+                      {typeLabels[channel.channel_type] ?? channel.channel_type}
                     </td>
-
-                    <td className="text-muted-foreground px-4 py-3 align-top text-xs tracking-wide uppercase">
-                      {project.status}
-                    </td>
-
+                    <td className="px-4 py-3 align-top">{labelFor(channel)}</td>
                     <td className="text-muted-foreground px-4 py-3 align-top text-xs">
-                      {project.display ? 'Yes' : 'No'}
+                      {channel.value}
                     </td>
-
-                    <td className="text-muted-foreground px-4 py-3 align-top text-xs">
-                      {skills(project).length === 0 && (
-                        <span className="text-muted-foreground/70">
-                          No skills
-                        </span>
-                      )}
-
-                      {skills(project).length > 0 && (
-                        <ul className="flex flex-wrap gap-1">
-                          {skills(project).map((skill) => (
-                            <li
-                              key={skill.id}
-                              className="bg-muted rounded-full px-2 py-0.5 text-[0.7rem]"
-                            >
-                              {skill.name}
-                            </li>
-                          ))}
-                        </ul>
-                      )}
+                    <td className="px-4 py-3 align-top text-xs">
+                      {channel.is_active ? 'Yes' : 'No'}
                     </td>
-
-                    <td className="text-muted-foreground px-4 py-3 align-top text-xs whitespace-nowrap">
-                      {project.updated_at ?? '—'}
+                    <td className="px-4 py-3 align-top text-xs">
+                      {channel.sort_order}
                     </td>
-
                     <td className="px-4 py-3 align-top">
                       <div className="flex justify-end gap-3 text-xs">
                         <Link
-                          href={route('projects.edit', project.id)}
+                          href={route('contact-channels.edit', channel.id)}
                           className="text-primary font-medium hover:underline"
                         >
                           Edit
                         </Link>
 
                         <Link
-                          href={route('projects.destroy', project.id)}
+                          href={route(
+                            'contact-channels.toggle-active',
+                            channel.id,
+                          )}
+                          method="post"
+                          as="button"
+                          data={{
+                            is_active: !channel.is_active,
+                          }}
+                          className="text-muted-foreground font-medium hover:underline"
+                        >
+                          {channel.is_active ? 'Deactivate' : 'Activate'}
+                        </Link>
+
+                        <Link
+                          href={route('contact-channels.destroy', channel.id)}
                           method="delete"
                           as="button"
                           className="text-destructive font-medium hover:underline"

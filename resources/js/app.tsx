@@ -68,11 +68,8 @@ function resolveLocalizedValue(
   return Object.values(map)[0] ?? null;
 }
 
-// Application-level pages: resources/js/Pages/**/*.tsx
-const appPageFiles = import.meta.glob('./Pages/**/*.tsx');
-
-// Module-level pages: resources/js/Modules/**/Pages/**/*.tsx
-const modulePageFiles = import.meta.glob('./Modules/**/Pages/**/*.tsx');
+// App pages: resources/js/app/pages/**/*.tsx
+const appPageFiles = import.meta.glob('./app/pages/**/*.tsx');
 
 type PageModuleLoader = () => Promise<unknown>;
 
@@ -85,9 +82,9 @@ const pageRegistry: Record<string, PageModuleLoader> = {};
  * Registers pages from a file map into the global page registry.
  *
  * Example mappings:
- *   "./Pages/Dashboard.tsx"                         → "Dashboard"
- *   "./Pages/Projects/Index.tsx"                    → "Projects/Index"
- *   "./Modules/ContentManagement/Pages/Admin/X.tsx" → "ContentManagement/Pages/Admin/X"
+ *   "./app/pages/dashboard/admin/Dashboard.tsx"      → "dashboard/admin/Dashboard"
+ *   "./app/pages/projects/admin/Index.tsx"           → "projects/admin/Index"
+ *   "./app/pages/content-management/admin/PageEdit.tsx" → "content-management/admin/PageEdit"
  */
 function registerPages(
   files: Record<string, PageModuleLoader>,
@@ -107,8 +104,7 @@ function registerPages(
   });
 }
 
-registerPages(appPageFiles, './Pages/');
-registerPages(modulePageFiles, './Modules/');
+registerPages(appPageFiles, './app/pages/');
 
 createInertiaApp({
   title: (title) => {
