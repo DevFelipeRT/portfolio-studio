@@ -6,8 +6,8 @@ import type {
     SectionData,
     TemplateDefinitionDto,
 } from '@/Modules/ContentManagement/types';
-import { buildInitialSectionData } from '@/Modules/ContentManagement/features/sections';
-import { ConfigureSectionStep } from '../shared/ConfigureSectionStep';
+import { buildInitialSectionData } from '@/Modules/ContentManagement/features/page-rendering';
+import { ConfigureSectionStep } from '../configure/ConfigureSectionStep';
 import { EditSectionFooter } from './components/EditSectionFooter';
 import React from 'react';
 

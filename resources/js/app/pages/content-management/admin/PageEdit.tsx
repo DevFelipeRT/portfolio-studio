@@ -8,21 +8,21 @@ import { Button } from '@/Components/Ui/button';
 import {
   CreateSectionDialog,
   type CreateSectionPayload,
-} from '@/Modules/ContentManagement/features/content-pages/admin/edit/section-dialogs/create/CreateSectionDialog';
+} from '@/Modules/ContentManagement/features/page-management/section/dialogs/create/CreateSectionDialog';
 import {
   EditSectionDialog,
   type EditSectionPayload,
-} from '@/Modules/ContentManagement/features/content-pages/admin/edit/section-dialogs/edit/EditSectionDialog';
-import { SectionsList } from '@/Modules/ContentManagement/features/content-pages/admin/edit/sections/SectionsList';
+} from '@/Modules/ContentManagement/features/page-management/section/dialogs/edit/EditSectionDialog';
+import { SectionsList } from '@/Modules/ContentManagement/features/page-management/section/SectionsList';
 import {
   PageForm,
   type PageFormData,
-} from '@/Modules/ContentManagement/features/content-pages/admin/form/PageForm';
+} from '@/Modules/ContentManagement/features/page-management/page/PageForm';
 import {
   collectSectionNavigationGroups,
   sortSectionsByPosition,
   validateHeroFirstOrder,
-} from '@/Modules/ContentManagement/features/sections';
+} from '@/Modules/ContentManagement/features/page-rendering';
 import { defaultStringNormalizer } from '@/Modules/ContentManagement/shared/strings';
 import type {
   PageEditViewModelProps,

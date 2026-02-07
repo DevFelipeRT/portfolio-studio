@@ -3,12 +3,12 @@ import type {
   TemplateDefinitionDto,
 } from '@/Modules/ContentManagement/types';
 import React from 'react';
-import { ActiveToggle } from './configure/ActiveToggle';
-import { AnchorField } from './configure/AnchorField';
-import { NavigationFields } from './configure/NavigationFields';
-import { SlotField } from './configure/SlotField';
-import { TemplateDataForm } from './configure/TemplateDataForm';
-import { TemplatePicker } from './configure/TemplatePicker';
+import { ActiveToggle } from './fields/ActiveToggle';
+import { AnchorField } from './fields/AnchorField';
+import { NavigationFields } from './fields/NavigationFields';
+import { SlotField } from './fields/SlotField';
+import { TemplateDataForm } from './fields/TemplateDataForm';
+import { TemplatePicker } from './fields/TemplatePicker';
 
 interface ConfigureSectionStepProps {
   idPrefix: string;
@@ -110,4 +110,3 @@ export function ConfigureSectionStep({
     </div>
   );
 }
-

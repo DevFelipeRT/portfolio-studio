@@ -1,6 +1,6 @@
 import { Label } from '@/Components/Ui/label';
 import type { TemplateDefinitionDto } from '@/Modules/ContentManagement/types';
-import { TemplateSelector } from '@/Modules/ContentManagement/features/templates';
+import { TemplateSelector } from '@/Modules/ContentManagement/features/page-management/section/field-renderer';
 
 interface TemplatePickerProps {
   idPrefix: string;
