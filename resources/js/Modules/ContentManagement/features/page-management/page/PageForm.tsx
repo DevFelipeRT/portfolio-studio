@@ -23,7 +23,10 @@ interface PageFormProps {
     data: PageFormData;
     errors: Record<keyof PageFormData | string, string | string[] | undefined>;
     processing: boolean;
-    onChange: (field: keyof PageFormData, value: unknown) => void;
+    onChange: <K extends keyof PageFormData>(
+        field: K,
+        value: PageFormData[K],
+    ) => void;
     onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
     page?: PageDto;
 }

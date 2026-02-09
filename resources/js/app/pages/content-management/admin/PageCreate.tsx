@@ -4,6 +4,7 @@ import {
   type PageFormData,
 } from '@/Modules/ContentManagement/features/page-management/page/PageForm';
 import { Head, useForm } from '@inertiajs/react';
+import type { FormDataValues } from '@inertiajs/core';
 import React from 'react';
 
 export default function PageCreate() {
@@ -19,8 +20,11 @@ export default function PageCreate() {
     is_indexable: true,
   });
 
-  const handleChange = (field: keyof PageFormData, value: unknown): void => {
-    setData(field, value as never);
+  const handleChange = <K extends keyof PageFormData>(
+    field: K,
+    value: PageFormData[K],
+  ): void => {
+    setData(field, value as FormDataValues<PageFormData, K>);
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
