@@ -4,7 +4,8 @@ import { Head, Link, router } from '@inertiajs/react';
 import { Button } from '@/Components/Ui/button';
 import {
   PageFilters,
-  PageTable,
+  PageInfoModal,
+  PageList,
 } from '@/Modules/ContentManagement/features/page-management/page';
 import {
   buildPageListQueryParams,
@@ -12,13 +13,17 @@ import {
   type PageListFilters as PageListFiltersType,
 } from '@/Modules/ContentManagement/features/page-management/page/filtering';
 import type { PageIndexViewModelProps } from '@/Modules/ContentManagement/types';
+import type { PageDto } from '@/Modules/ContentManagement/types';
 import { Plus } from 'lucide-react';
+import React from 'react';
 
 export default function PageIndex({
   pages,
   filters,
   extra,
 }: PageIndexViewModelProps) {
+  const [infoPage, setInfoPage] = React.useState<PageDto | null>(null);
+
   const initialFilters = normalizePageListFilters({
     status: filters.status,
     search: filters.search,
@@ -66,13 +71,24 @@ export default function PageIndex({
           onApply={handleApplyFilters}
         />
 
-        <PageTable
+        <PageList
           pages={pages}
           homeSlug={
             typeof extra.homeSlug === 'string' ? extra.homeSlug : undefined
           }
+          onShowInfo={(page) => setInfoPage(page)}
         />
       </div>
+
+      <PageInfoModal
+        open={Boolean(infoPage)}
+        page={infoPage}
+        onOpenChange={(open) => {
+          if (!open) {
+            setInfoPage(null);
+          }
+        }}
+      />
     </AuthenticatedLayout>
   );
 }
