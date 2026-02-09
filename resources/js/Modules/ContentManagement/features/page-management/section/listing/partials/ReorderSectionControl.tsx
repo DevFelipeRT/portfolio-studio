@@ -1,6 +1,6 @@
 import { Button } from '@/Components/Ui/button';
-import type { ButtonHTMLAttributes, Ref } from 'react';
 import { ArrowDown, ArrowUp, GripVertical } from 'lucide-react';
+import type { ButtonHTMLAttributes, Ref } from 'react';
 
 interface ReorderSectionControlProps {
     canMoveUp: boolean;

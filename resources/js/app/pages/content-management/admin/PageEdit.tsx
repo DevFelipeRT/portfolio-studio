@@ -8,12 +8,25 @@ import { Button } from '@/Components/Ui/button';
 import {
   CreateSectionDialog,
   type CreateSectionPayload,
-} from '@/Modules/ContentManagement/features/page-management/section/dialogs/create/CreateSectionDialog';
+  useCreateSectionDialogController,
+} from '@/Modules/ContentManagement/features/page-management/section/dialogs/create';
 import {
   EditSectionDialog,
   type EditSectionPayload,
-} from '@/Modules/ContentManagement/features/page-management/section/dialogs/edit/EditSectionDialog';
-import { SectionsList } from '@/Modules/ContentManagement/features/page-management/section/SectionsList';
+  useEditSectionDialogController,
+} from '@/Modules/ContentManagement/features/page-management/section/dialogs/edit';
+import { SectionsList } from '@/Modules/ContentManagement/features/page-management/section/listing/SectionsList';
+import {
+  useCreateSection,
+  useDeleteSection,
+  useToggleSectionActive,
+  useUpdateSection,
+} from '@/Modules/ContentManagement/features/page-management/section/hooks';
+import {
+  orderedFromIds,
+  swappedIds,
+  useReorderSections,
+} from '@/Modules/ContentManagement/features/page-management/section/reordering';
 import {
   PageForm,
   type PageFormData,
@@ -46,10 +59,9 @@ export default function PageEdit({
     is_indexable: page.is_indexable,
   });
 
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = React.useState(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
-  const [selectedSection, setSelectedSection] =
-    React.useState<PageSectionDto | null>(null);
+  const createDialog = useCreateSectionDialogController();
+  const editDialog = useEditSectionDialogController();
+
   const sortedSections = React.useMemo(
     () => sortSectionsByPosition(sections),
     [sections],
@@ -57,6 +69,12 @@ export default function PageEdit({
   const navigationGroups = React.useMemo(() => {
     return collectSectionNavigationGroups(sections, defaultStringNormalizer);
   }, [sections]);
+
+  const createSection = useCreateSection(page.id);
+  const updateSection = useUpdateSection();
+  const deleteSection = useDeleteSection();
+  const toggleSectionActive = useToggleSectionActive();
+  const reorderSections = useReorderSections();
 
   const validateSectionsOrder = (
     orderedSections: PageSectionDto[],
@@ -96,82 +114,33 @@ export default function PageEdit({
    * Sections: create
    */
   const handleCreateSection = (): void => {
-    setIsCreateDialogOpen(true);
+    createDialog.openDialog();
   };
 
   const handleCreateSectionSubmit = (payload: CreateSectionPayload): void => {
-    router.post(
-      route('admin.content.sections.store'),
-      {
-        page_id: page.id,
-        template_key: payload.template_key,
-        slot: payload.slot,
-        anchor: payload.anchor,
-        navigation_label: payload.navigation_label,
-        is_active: payload.is_active,
-        locale: payload.locale,
-        data: payload.data,
-      },
-      {
-        preserveScroll: true,
-        preserveState: true,
-      },
-    );
+    createSection(payload);
   };
 
   /**
    * Sections: edit
    */
   const handleEditSection = (section: PageSectionDto): void => {
-    setSelectedSection(section);
-    setIsEditDialogOpen(true);
-  };
-
-  const handleEditDialogOpenChange = (open: boolean): void => {
-    setIsEditDialogOpen(open);
-
-    if (!open) {
-      setSelectedSection(null);
-    }
+    editDialog.openFor(section);
   };
 
   const handleEditSectionSubmit = (payload: EditSectionPayload): void => {
-    if (!selectedSection) {
+    if (!editDialog.section) {
       return;
     }
 
-    router.put(
-      route('admin.content.sections.update', selectedSection.id),
-      {
-        template_key: payload.template_key,
-        slot: payload.slot,
-        anchor: payload.anchor,
-        navigation_label: payload.navigation_label,
-        is_active: payload.is_active,
-        locale: payload.locale,
-        data: payload.data,
-      },
-      {
-        preserveScroll: true,
-        preserveState: true,
-      },
-    );
+    updateSection(editDialog.section.id, payload);
   };
 
   /**
    * Sections: toggle active
    */
   const handleToggleSectionActive = (section: PageSectionDto): void => {
-    router.post(
-      route('admin.content.sections.toggle-active', section.id),
-      {
-        is_active: !section.is_active,
-      },
-      {
-        preserveScroll: true,
-        preserveState: true,
-      },
-    );
+    toggleSectionActive(section.id, !section.is_active);
   };
 
   /**
@@ -182,10 +151,7 @@ export default function PageEdit({
       return;
     }
 
-    router.delete(route('admin.content.sections.destroy', section.id), {
-      preserveScroll: true,
-      preserveState: true,
-    });
+    deleteSection(section.id);
   };
 
   /**
@@ -194,55 +160,21 @@ export default function PageEdit({
   const handleReorderSections = (
     orderedIds: Array<PageSectionDto['id']>,
   ): void => {
-    const orderedSections = orderedIds
-      .map((id) => sortedSections.find((section) => section.id === id))
-      .filter((section): section is PageSectionDto => Boolean(section));
+    const orderedSections = orderedFromIds(sortedSections, orderedIds);
 
     if (!validateSectionsOrder(orderedSections)) {
       return;
     }
 
-    router.post(
-      route('admin.content.sections.reorder'),
-      {
-        page_id: page.id,
-        ordered_ids: orderedIds,
-      },
-      {
-        preserveScroll: true,
-        preserveState: true,
-      },
-    );
+    reorderSections(page.id, orderedIds);
   };
 
   const handleReorderSection = (
     section: PageSectionDto,
     direction: 'up' | 'down',
   ): void => {
-    const index = sortedSections.findIndex((item) => item.id === section.id);
-
-    if (index === -1) {
-      return;
-    }
-
-    const targetIndex = direction === 'up' ? index - 1 : index + 1;
-
-    if (targetIndex < 0 || targetIndex >= sortedSections.length) {
-      return;
-    }
-
-    const swapped = [...sortedSections];
-    const temp = swapped[index];
-    swapped[index] = swapped[targetIndex];
-    swapped[targetIndex] = temp;
-
-    const orderedIds = swapped.map((item) => item.id);
-
-    if (!validateSectionsOrder(swapped)) {
-      return;
-    }
-
-    handleReorderSections(orderedIds);
+    const nextIds = swappedIds(sortedSections, section.id, direction);
+    handleReorderSections(nextIds);
   };
 
   return (
@@ -297,8 +229,8 @@ export default function PageEdit({
       </div>
 
       <CreateSectionDialog
-        open={isCreateDialogOpen}
-        onOpenChange={setIsCreateDialogOpen}
+        open={createDialog.open}
+        onOpenChange={createDialog.setOpen}
         templates={availableTemplates}
         defaultLocale={page.locale}
         navigationGroups={navigationGroups}
@@ -306,9 +238,9 @@ export default function PageEdit({
       />
 
       <EditSectionDialog
-        open={isEditDialogOpen}
-        onOpenChange={handleEditDialogOpenChange}
-        section={selectedSection}
+        open={editDialog.open}
+        onOpenChange={editDialog.onOpenChange}
+        section={editDialog.section}
         templates={availableTemplates}
         navigationGroups={navigationGroups}
         allowTemplateChange

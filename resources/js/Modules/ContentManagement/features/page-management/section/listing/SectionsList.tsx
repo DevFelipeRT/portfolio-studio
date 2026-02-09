@@ -21,7 +21,7 @@ import {
 } from '@dnd-kit/sortable';
 import { Plus } from 'lucide-react';
 import React from 'react';
-import { SectionItem } from './components/SectionItem';
+import { SectionItem } from './partials/SectionItem';
 
 interface SectionsListProps {
   sections: PageSectionDto[];
