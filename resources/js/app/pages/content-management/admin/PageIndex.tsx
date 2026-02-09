@@ -1,11 +1,15 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 
 import { Button } from '@/Components/Ui/button';
-import { PageFilters } from '@/Modules/ContentManagement/features/page-management/page/PageFilters';
 import { PageTable } from '@/Modules/ContentManagement/features/page-management/page/PageTable';
+import {
+  buildPageListQueryParams,
+  normalizePageListFilters,
+  type PageListFilters as PageListFiltersType,
+} from '@/Modules/ContentManagement/features/page-management/page/filtering';
+import { PageFilters } from '@/Modules/ContentManagement/features/page-management/page/filtering/PageFilters';
 import type { PageIndexViewModelProps } from '@/Modules/ContentManagement/types';
-import { Link } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
 
 export default function PageIndex({
@@ -13,8 +17,21 @@ export default function PageIndex({
   filters,
   extra,
 }: PageIndexViewModelProps) {
-  const currentStatus =
-    typeof filters.status === 'string' ? filters.status : '';
+  const initialFilters = normalizePageListFilters({
+    status: filters.status,
+    search: filters.search,
+  });
+
+  const handleApplyFilters = (nextFilters: PageListFiltersType): void => {
+    router.get(
+      route('admin.content.pages.index'),
+      buildPageListQueryParams(nextFilters),
+      {
+        preserveState: true,
+        replace: true,
+      },
+    );
+  };
 
   return (
     <AuthenticatedLayout
@@ -43,11 +60,8 @@ export default function PageIndex({
 
       <div className="space-y-6">
         <PageFilters
-          initialStatus={currentStatus}
-          // search is kept in filters for future use
-          initialSearch={
-            typeof filters.search === 'string' ? filters.search : ''
-          }
+          initialFilters={initialFilters}
+          onApply={handleApplyFilters}
         />
 
         <PageTable

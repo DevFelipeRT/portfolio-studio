@@ -8,68 +8,65 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/Components/Ui/select';
-import { router } from '@inertiajs/react';
 import { FilterX, Search } from 'lucide-react';
 import React from 'react';
+import {
+    DEFAULT_PAGE_LIST_FILTERS,
+    type PageListFilters,
+} from './index';
+import { PAGE_STATUS_FILTER_OPTIONS } from './constants';
 
 interface PageFiltersProps {
-    initialStatus?: string | null;
-    initialSearch?: string | null;
+    /**
+     * Initial filter values for the UI.
+     *
+     * Consumers typically pass a normalized value (see `normalizePageListFilters`)
+     * so the component can remain purely controlled by its own local state.
+     */
+    initialFilters: PageListFilters;
+    /**
+     * Called when the user applies, changes, or resets filters.
+     *
+     * This component does not perform navigation; the consumer decides how to
+     * persist filters (e.g. update URL, refetch data, Inertia router.get, etc).
+     */
+    onApply: (filters: PageListFilters) => void;
 }
 
 /**
- * Filters row for the page index.
- *
- * Controls are wired to perform Inertia GET requests to the
- * admin.content.pages.index route, preserving state.
+ * Reusable filter row for page listing screens.
  */
 export function PageFilters({
-    initialStatus,
-    initialSearch,
+    initialFilters,
+    onApply,
 }: PageFiltersProps) {
-    /**
-     * Internal status state:
-     * - 'all'  => no status filter applied
-     * - 'draft' | 'published' | 'archived' => filtered
-     */
-    const [status, setStatus] = React.useState<string>(
-        initialStatus && initialStatus !== '' ? initialStatus : 'all',
+    const [status, setStatus] = React.useState<PageListFilters['status']>(
+        initialFilters.status,
     );
 
-    const [search, setSearch] = React.useState<string>(initialSearch ?? '');
+    const [search, setSearch] = React.useState<PageListFilters['search']>(
+        initialFilters.search,
+    );
 
-    const applyFilters = (nextStatus: string, nextSearch: string): void => {
-        const params: Record<string, string> = {};
-        const trimmedSearch = nextSearch.trim();
-
-        if (nextStatus && nextStatus !== 'all') {
-            params.status = nextStatus;
-        }
-
-        if (trimmedSearch !== '') {
-            params.search = trimmedSearch;
-        }
-
-        router.get(route('admin.content.pages.index'), params, {
-            preserveState: true,
-            replace: true,
-        });
+    const applyFilters = (next: PageListFilters): void => {
+        onApply(next);
     };
 
     const handleStatusChange = (value: string): void => {
-        setStatus(value);
-        applyFilters(value, search);
+        const nextStatus = value as PageListFilters['status'];
+        setStatus(nextStatus);
+        applyFilters({ status: nextStatus, search });
     };
 
     const handleSubmit = (event: React.FormEvent): void => {
         event.preventDefault();
-        applyFilters(status, search);
+        applyFilters({ status, search });
     };
 
     const handleReset = (): void => {
-        setStatus('all');
-        setSearch('');
-        applyFilters('all', '');
+        setStatus(DEFAULT_PAGE_LIST_FILTERS.status);
+        setSearch(DEFAULT_PAGE_LIST_FILTERS.search);
+        applyFilters(DEFAULT_PAGE_LIST_FILTERS);
     };
 
     return (
@@ -105,11 +102,14 @@ export function PageFilters({
                             <SelectValue placeholder="All statuses" />
                         </SelectTrigger>
                         <SelectContent>
-                            {/* Nenhum SelectItem usa value="" aqui */}
-                            <SelectItem value="all">All statuses</SelectItem>
-                            <SelectItem value="draft">Draft</SelectItem>
-                            <SelectItem value="published">Published</SelectItem>
-                            <SelectItem value="archived">Archived</SelectItem>
+                            {PAGE_STATUS_FILTER_OPTIONS.map((option) => (
+                                <SelectItem
+                                    key={option.value}
+                                    value={option.value}
+                                >
+                                    {option.label}
+                                </SelectItem>
+                            ))}
                         </SelectContent>
                     </Select>
                 </div>
