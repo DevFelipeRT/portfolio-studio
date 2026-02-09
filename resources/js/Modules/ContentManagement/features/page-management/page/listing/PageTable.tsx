@@ -15,7 +15,7 @@ import type {
 } from '@/Modules/ContentManagement/types';
 import { Link } from '@inertiajs/react';
 import { ChevronRight } from 'lucide-react';
-import { PageStatusBadge } from './PageStatusBadge';
+import { PageStatusBadge } from './partials/PageStatusBadge';
 
 interface PageTableProps {
   pages: Paginated<PageDto>;

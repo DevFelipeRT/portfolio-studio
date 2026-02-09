@@ -2,13 +2,15 @@ import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import { Head, Link, router } from '@inertiajs/react';
 
 import { Button } from '@/Components/Ui/button';
-import { PageTable } from '@/Modules/ContentManagement/features/page-management/page/PageTable';
+import {
+  PageFilters,
+  PageTable,
+} from '@/Modules/ContentManagement/features/page-management/page';
 import {
   buildPageListQueryParams,
   normalizePageListFilters,
   type PageListFilters as PageListFiltersType,
 } from '@/Modules/ContentManagement/features/page-management/page/filtering';
-import { PageFilters } from '@/Modules/ContentManagement/features/page-management/page/filtering/PageFilters';
 import type { PageIndexViewModelProps } from '@/Modules/ContentManagement/types';
 import { Plus } from 'lucide-react';
 
