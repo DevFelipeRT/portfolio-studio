@@ -1,6 +1,6 @@
 import { router } from '@inertiajs/react';
 import React from 'react';
-import type { CreateSectionPayload } from '@/Modules/ContentManagement/features/page-management/section/dialogs/create/CreateSectionDialog';
+import type { CreateSectionPayload } from '@/Modules/ContentManagement/features/page-management/section/dialogs/flows/create/CreateSectionDialog';
 
 interface UseCreateSectionOptions {
   preserveScroll?: boolean;

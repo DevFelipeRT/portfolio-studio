@@ -1,6 +1,6 @@
 import { router } from '@inertiajs/react';
 import React from 'react';
-import type { EditSectionPayload } from '@/Modules/ContentManagement/features/page-management/section/dialogs/edit/EditSectionDialog';
+import type { EditSectionPayload } from '@/Modules/ContentManagement/features/page-management/section/dialogs/flows/edit/EditSectionDialog';
 
 interface UseUpdateSectionOptions {
   preserveScroll?: boolean;

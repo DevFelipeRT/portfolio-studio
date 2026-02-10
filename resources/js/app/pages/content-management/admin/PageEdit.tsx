@@ -6,16 +6,16 @@ import { toast } from 'sonner';
 
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import { Button } from '@/Components/Ui/button';
-import {
-  CreateSectionDialog,
-  type CreateSectionPayload,
-  useCreateSectionDialogController,
-} from '@/Modules/ContentManagement/features/page-management/section/dialogs/create';
-import {
-  EditSectionDialog,
-  type EditSectionPayload,
-  useEditSectionDialogController,
-} from '@/Modules/ContentManagement/features/page-management/section/dialogs/edit';
+	import {
+	  CreateSectionDialog,
+	  type CreateSectionPayload,
+	  useCreateSectionDialogController,
+	} from '@/Modules/ContentManagement/features/page-management/section/dialogs/flows/create';
+	import {
+	  EditSectionDialog,
+	  type EditSectionPayload,
+	  useEditSectionDialogController,
+	} from '@/Modules/ContentManagement/features/page-management/section/dialogs/flows/edit';
 import { SectionsList } from '@/Modules/ContentManagement/features/page-management/section/listing/SectionsList';
 import {
   useCreateSection,

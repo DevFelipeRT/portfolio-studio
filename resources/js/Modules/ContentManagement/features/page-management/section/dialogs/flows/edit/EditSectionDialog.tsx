@@ -8,25 +8,13 @@ import {
 } from '@/Components/Ui/dialog';
 import { ScrollArea } from '@/Components/Ui/scroll-area';
 import { cn } from '@/lib/utils';
-import type {
-  PageSectionDto,
-  SectionData,
-  TemplateDefinitionDto,
-} from '@/Modules/ContentManagement/types';
-import { ConfigureSectionStep } from '../configure/ConfigureSectionStep';
-import { EditSectionFooter } from './components/EditSectionFooter';
-import React from 'react';
+import type { PageSectionDto, TemplateDefinitionDto } from '@/Modules/ContentManagement/types';
+import { ConfigureSectionStep } from '../../steps/configure/ConfigureSectionStep';
+import { EditSectionFooter } from './partials/EditSectionFooter';
 import { useEditSectionDialogState } from './useEditSectionDialogState';
+import { SectionDialogPayload } from '../../core/types';
 
-export interface EditSectionPayload {
-  template_key: string;
-  slot: string | null;
-  anchor: string | null;
-  navigation_label: string | null;
-  is_active: boolean;
-  locale: string | null;
-  data: SectionData;
-}
+export type EditSectionPayload = SectionDialogPayload;
 
 interface EditSectionDialogProps {
   open: boolean;
@@ -60,12 +48,12 @@ export function EditSectionDialog({
     anchor,
     navigationLabel,
     navigationGroup,
-    navigationGroups: resolvedNavigationGroups,
     isActive,
     data,
     setSlot,
     setAnchor,
     setNavigationLabel,
+    setNavigationGroup,
     setIsActive,
     setData,
     handleClose,
@@ -75,7 +63,6 @@ export function EditSectionDialog({
     open,
     section,
     templates,
-    navigationGroups,
     allowTemplateChange,
     onOpenChange,
     onSubmit,
@@ -118,7 +105,7 @@ export function EditSectionDialog({
               anchor={anchor}
               navigationLabel={navigationLabel}
               navigationGroup={navigationGroup}
-              navigationGroups={resolvedNavigationGroups}
+              navigationGroups={navigationGroups}
               isActive={isActive}
               data={data}
               dialogContentRef={dialogContentRef}
@@ -126,12 +113,7 @@ export function EditSectionDialog({
               onSlotChange={setSlot}
               onAnchorChange={setAnchor}
               onNavigationLabelChange={setNavigationLabel}
-              onNavigationGroupChange={(value) =>
-                setData((previous) => ({
-                  ...previous,
-                  navigation_group: value,
-                }))
-              }
+              onNavigationGroupChange={setNavigationGroup}
               onIsActiveChange={setIsActive}
               onDataChange={setData}
             />

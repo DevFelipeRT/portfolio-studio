@@ -8,25 +8,16 @@ import {
 } from '@/Components/Ui/dialog';
 import { ScrollArea } from '@/Components/Ui/scroll-area';
 import { cn } from '@/lib/utils';
-import type {
-  SectionData,
-  TemplateDefinitionDto,
-} from '@/Modules/ContentManagement/types';
-import { ConfigureSectionStep } from '../configure/ConfigureSectionStep';
-import { CreateSectionFooter } from './components/CreateSectionFooter';
-import { SelectStep } from './steps/SelectStep';
-import React from 'react';
+import type { TemplateDefinitionDto } from '@/Modules/ContentManagement/types';
+import { ConfigureSectionStep } from '../../steps/configure/ConfigureSectionStep';
+import { CreateSectionFooter } from './partials/CreateSectionFooter';
+import { SelectStep } from '../../steps/select/SelectStep';
 import { useCreateSectionDialogState } from './useCreateSectionDialogState';
+import { SectionDialogPayload } from '../../core/types';
+export type { TemplateFilterMode } from '../../steps/select/types';
+import { useTemplateFiltering } from '../../steps/select/useTemplateFiltering';
 
-export interface CreateSectionPayload {
-  template_key: string;
-  slot: string | null;
-  anchor: string | null;
-  navigation_label: string | null;
-  is_active: boolean;
-  locale: string | null;
-  data: SectionData;
-}
+export type CreateSectionPayload = SectionDialogPayload;
 
 interface CreateSectionDialogProps {
   open: boolean;
@@ -36,8 +27,6 @@ interface CreateSectionDialogProps {
   navigationGroups?: string[];
   onSubmit: (payload: CreateSectionPayload) => void;
 }
-
-export type TemplateFilterMode = 'all' | 'generic' | 'domain';
 
 /**
  * Dialog used to create a new section for a page.
@@ -56,10 +45,6 @@ export function CreateSectionDialog({
   const {
     dialogContentRef,
     step,
-    filterMode,
-    originFilter,
-    domainOrigins,
-    visibleTemplates,
     selectedTemplate,
     selectedTemplateKey,
     allowedSlots,
@@ -70,26 +55,33 @@ export function CreateSectionDialog({
     navigationGroup,
     isActive,
     data,
-    setOriginFilter,
     setSlot,
     setAnchor,
     setNavigationLabel,
+    setNavigationGroup,
     setIsActive,
     setData,
     setStep,
     handleClose,
     handleContinue,
     handleConfirm,
-    handleFilterModeChange,
     handleTemplateChange,
   } = useCreateSectionDialogState({
     open,
     templates,
     defaultLocale,
-    navigationGroups,
     onOpenChange,
     onSubmit,
   });
+
+  const {
+    filterMode,
+    originFilter,
+    domainOrigins,
+    visibleTemplates,
+    setOriginFilter: setTemplateOriginFilter,
+    handleFilterModeChange: handleTemplateFilterModeChange,
+  } = useTemplateFiltering({ open, templates });
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -116,8 +108,8 @@ export function CreateSectionDialog({
               domainOrigins={domainOrigins}
               visibleTemplates={visibleTemplates}
               selectedTemplateKey={selectedTemplateKey}
-              onFilterModeChange={handleFilterModeChange}
-              onOriginFilterChange={setOriginFilter}
+              onFilterModeChange={handleTemplateFilterModeChange}
+              onOriginFilterChange={setTemplateOriginFilter}
               onSelectTemplate={handleTemplateChange}
             />
           ) : (
@@ -141,12 +133,7 @@ export function CreateSectionDialog({
               onSlotChange={setSlot}
               onAnchorChange={setAnchor}
               onNavigationLabelChange={setNavigationLabel}
-              onNavigationGroupChange={(value) =>
-                setData((previous) => ({
-                  ...previous,
-                  navigation_group: value,
-                }))
-              }
+              onNavigationGroupChange={setNavigationGroup}
               onIsActiveChange={setIsActive}
               onDataChange={setData}
             />
