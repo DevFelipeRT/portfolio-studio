@@ -1,14 +1,11 @@
-import {
-  getSectionNavigationGroup,
-  getSectionNavigationLabel,
-} from '@/Modules/ContentManagement/features/page-rendering';
 import type { PageSectionDto } from '@/Modules/ContentManagement/types';
-import { defaultStringNormalizer } from '@/Modules/ContentManagement/shared/strings';
-import { useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
+
+import { useSortableSectionRow } from '../hooks';
+import { getSectionRowMeta } from '../utils';
+import { ReorderSectionControl } from './ReorderSectionControl';
+import { SectionMetaBadges } from './SectionMetaBadges';
 import { SectionToolbar } from './SectionToolbar';
 import { SectionVisibilityBadge } from './SectionVisibilityBadge';
-import { ReorderSectionControl } from './ReorderSectionControl';
 
 interface SectionItemProps {
   section: PageSectionDto;
@@ -50,34 +47,15 @@ export function SectionItem({
     onReorder(section, 'down');
   };
 
-  const canMoveUp = index > 0;
-  const canMoveDown = index < totalCount - 1;
-  const navigationLabel = getSectionNavigationLabel(
-    section,
-    defaultStringNormalizer,
-  );
-  const navigationGroup = getSectionNavigationGroup(
-    section,
-    defaultStringNormalizer,
-  );
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    setActivatorNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: section.id });
-  const dragStyle = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
+  const { canMoveUp, canMoveDown, navigationLabel, navigationGroup } =
+    getSectionRowMeta(section, { index, totalCount });
+  const { rowRef, dragHandleRef, dragHandleProps, style, isDragging } =
+    useSortableSectionRow(section.id);
 
   return (
     <li
-      ref={setNodeRef}
-      style={dragStyle}
+      ref={rowRef}
+      style={style}
       className={`bg-muted/40 flex items-stretch gap-2 rounded-md border px-3 py-2 ${
         isDragging ? 'opacity-80 shadow-sm' : ''
       }`}
@@ -87,37 +65,20 @@ export function SectionItem({
         canMoveDown={canMoveDown}
         onMoveUp={handleMoveUp}
         onMoveDown={handleMoveDown}
-        dragHandleRef={setActivatorNodeRef}
-        dragHandleProps={{ ...attributes, ...listeners }}
+        dragHandleRef={dragHandleRef}
+        dragHandleProps={dragHandleProps}
       />
 
       <div className="flex flex-1 flex-col justify-center gap-1 text-sm">
         <div className="flex flex-wrap items-center gap-2">
           <span className="font-medium">{templateLabel}</span>
 
-          {section.slot && (
-            <span className="bg-muted text-muted-foreground rounded px-2 py-0.5 text-xs">
-              Slot: {section.slot}
-            </span>
-          )}
-
-          {section.anchor && (
-            <span className="bg-muted text-muted-foreground rounded px-2 py-0.5 text-xs">
-              #{section.anchor}
-            </span>
-          )}
-
-          {navigationLabel && (
-            <span className="bg-muted text-muted-foreground rounded px-2 py-0.5 text-xs">
-              Nav: {navigationLabel}
-            </span>
-          )}
-
-          {navigationGroup && (
-            <span className="bg-muted text-muted-foreground rounded px-2 py-0.5 text-xs">
-              Group: {navigationGroup}
-            </span>
-          )}
+          <SectionMetaBadges
+            slot={section.slot}
+            anchor={section.anchor}
+            navigationLabel={navigationLabel}
+            navigationGroup={navigationGroup}
+          />
 
           <SectionVisibilityBadge section={section} />
         </div>
