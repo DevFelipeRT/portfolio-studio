@@ -34,5 +34,3 @@ export {
     getSectionNavigationLabel,
 } from '@/Modules/ContentManagement/features/page-rendering/rules/sectionNavigation';
 export { collectSectionNavigationGroups } from '@/Modules/ContentManagement/features/page-rendering/rules/sectionNavigationGroups';
-export { validateHeroFirstOrder } from '@/Modules/ContentManagement/features/page-rendering/rules/sectionOrder';
-
