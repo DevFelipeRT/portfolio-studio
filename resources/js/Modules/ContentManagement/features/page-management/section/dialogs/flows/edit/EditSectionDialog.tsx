@@ -9,10 +9,10 @@ import {
 import { ScrollArea } from '@/Components/Ui/scroll-area';
 import { cn } from '@/lib/utils';
 import type { PageSectionDto, TemplateDefinitionDto } from '@/Modules/ContentManagement/types';
-import { ConfigureSectionStep } from '../../steps/configure/ConfigureSectionStep';
+import { ConfigureSectionStep } from '../../steps';
 import { EditSectionFooter } from './partials/EditSectionFooter';
 import { useEditSectionDialogState } from './useEditSectionDialogState';
-import { SectionDialogPayload } from '../../core/types';
+import { SectionDialogPayload } from '../../core';
 
 export type EditSectionPayload = SectionDialogPayload;
 
@@ -38,6 +38,11 @@ export function EditSectionDialog({
   allowTemplateChange = true,
   onSubmit,
 }: EditSectionDialogProps) {
+  /**
+   * Flow orchestration for the "edit section" dialog.
+   *
+   * Steps live in dialogs/steps; this flow wires them together.
+   */
   const {
     dialogContentRef,
     selectedTemplate,

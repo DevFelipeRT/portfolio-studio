@@ -3,8 +3,7 @@ import type {
   PageSectionDto,
   TemplateDefinitionDto,
 } from '@/Modules/ContentManagement/types';
-import { buildSectionPayload } from '../../core/payload';
-import { useSectionState } from '../../core/useSectionState';
+import { buildSectionPayload, useSectionState } from '../../core';
 import type { EditSectionPayload } from './EditSectionDialog';
 
 interface UseEditSectionDialogStateArgs {
