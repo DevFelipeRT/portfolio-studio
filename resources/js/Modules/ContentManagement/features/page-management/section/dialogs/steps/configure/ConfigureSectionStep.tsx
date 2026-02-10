@@ -3,12 +3,15 @@ import type {
   TemplateDefinitionDto,
 } from '@/Modules/ContentManagement/types';
 import React from 'react';
-import { ActiveToggle } from './fields/ActiveToggle';
-import { AnchorField } from './fields/AnchorField';
-import { NavigationFields } from './fields/NavigationFields';
-import { SlotField } from './fields/SlotField';
-import { TemplateDataForm } from './fields/TemplateDataForm';
-import { TemplatePicker } from './fields/TemplatePicker';
+import {
+  ActiveToggle,
+  AnchorField,
+  NavigationFields,
+  SlotField,
+  TemplateDataForm,
+  TemplatePicker,
+  TemplateSummary,
+} from './partials';
 
 interface ConfigureSectionStepProps {
   idPrefix: string;
@@ -61,13 +64,26 @@ export function ConfigureSectionStep({
 }: ConfigureSectionStepProps) {
   return (
     <div className="mx-1 my-4 space-y-6">
-      <TemplatePicker
-        idPrefix={idPrefix}
-        templates={templates}
-        selectedTemplateKey={selectedTemplateKey}
-        disabled={templatePickerDisabled}
-        onTemplateChange={onTemplateChange}
-      />
+      {templatePickerDisabled ? (
+        selectedTemplate ? (
+          <TemplateSummary template={selectedTemplate} />
+        ) : (
+          <TemplatePicker
+            idPrefix={idPrefix}
+            templates={templates}
+            selectedTemplateKey={selectedTemplateKey}
+            disabled
+            onTemplateChange={onTemplateChange}
+          />
+        )
+      ) : (
+        <TemplatePicker
+          idPrefix={idPrefix}
+          templates={templates}
+          selectedTemplateKey={selectedTemplateKey}
+          onTemplateChange={onTemplateChange}
+        />
+      )}
 
       <div className="grid gap-4 md:grid-cols-2">
         <SlotField

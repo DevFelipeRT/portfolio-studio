@@ -1,6 +1,6 @@
 import { Button } from '@/Components/Ui/button';
 import { Label } from '@/Components/Ui/label';
-import type { TemplateFilterMode } from '../../CreateSectionDialog';
+import type { TemplateFilterMode } from '../types';
 
 interface TemplateFiltersProps {
   filterMode: TemplateFilterMode;

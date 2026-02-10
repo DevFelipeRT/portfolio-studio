@@ -1,7 +1,7 @@
 import type { TemplateDefinitionDto } from '@/Modules/ContentManagement/types';
-import type { TemplateFilterMode } from '../CreateSectionDialog';
-import { TemplateFilters } from './Select/TemplateFilters';
-import { TemplateGrid } from './Select/TemplateGrid';
+import type { TemplateFilterMode } from './types';
+import { TemplateFilters } from './partials/TemplateFilters';
+import { TemplateGrid } from './partials/TemplateGrid';
 
 interface SelectStepProps {
   filterMode: TemplateFilterMode;
