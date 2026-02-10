@@ -7,11 +7,11 @@ interface UseReorderSectionsOptions {
 }
 
 /**
- * Posts a new sections order for a given page.
+ * Persists a new sections order for a given page.
  *
- * This hook contains only the side-effect (Inertia request) and remains UI-agnostic.
- * Any domain constraints (e.g. hero sections first) should be validated by the caller
- * before invoking this.
+ * This hook contains only the side-effect (Inertia request) and remains UI-agnostic. Any
+ * domain constraints (e.g. hero sections first) should be validated by the caller before
+ * invoking this.
  */
 export function useReorderSections(options: UseReorderSectionsOptions = {}) {
   return React.useCallback(
