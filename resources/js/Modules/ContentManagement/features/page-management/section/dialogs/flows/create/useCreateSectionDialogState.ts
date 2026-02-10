@@ -1,7 +1,6 @@
 import React from 'react';
 import type { TemplateDefinitionDto } from '@/Modules/ContentManagement/types';
-import { buildSectionPayload } from '../../core/payload';
-import { useSectionState } from '../../core/useSectionState';
+import { buildSectionPayload, useSectionState } from '../../core';
 import type { CreateSectionPayload } from './CreateSectionDialog';
 
 type DialogStep = 'select' | 'configure';

@@ -9,13 +9,13 @@ import {
 import { ScrollArea } from '@/Components/Ui/scroll-area';
 import { cn } from '@/lib/utils';
 import type { TemplateDefinitionDto } from '@/Modules/ContentManagement/types';
-import { ConfigureSectionStep } from '../../steps/configure/ConfigureSectionStep';
+import { ConfigureSectionStep } from '../../steps';
 import { CreateSectionFooter } from './partials/CreateSectionFooter';
-import { SelectStep } from '../../steps/select/SelectStep';
+import { SelectStep } from '../../steps';
 import { useCreateSectionDialogState } from './useCreateSectionDialogState';
-import { SectionDialogPayload } from '../../core/types';
-export type { TemplateFilterMode } from '../../steps/select/types';
-import { useTemplateFiltering } from '../../steps/select/useTemplateFiltering';
+import { SectionDialogPayload } from '../../core';
+export type { TemplateFilterMode } from '../../steps';
+import { useTemplateFiltering } from '../../steps';
 
 export type CreateSectionPayload = SectionDialogPayload;
 
@@ -42,6 +42,11 @@ export function CreateSectionDialog({
   navigationGroups = [],
   onSubmit,
 }: CreateSectionDialogProps) {
+  /**
+   * Flow orchestration for the "create section" dialog.
+   *
+   * Steps and filtering live in dialogs/steps; this flow wires them together.
+   */
   const {
     dialogContentRef,
     step,

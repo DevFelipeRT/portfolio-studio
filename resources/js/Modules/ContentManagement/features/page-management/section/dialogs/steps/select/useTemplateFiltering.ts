@@ -8,6 +8,11 @@ interface UseTemplateFilteringArgs {
   templates: TemplateDefinitionDto[];
 }
 
+/**
+ * Owns filter state for the template selection step.
+ *
+ * Resets filters when the dialog closes to keep the flow predictable.
+ */
 export function useTemplateFiltering({ open, templates }: UseTemplateFilteringArgs) {
   const [filterMode, setFilterMode] = React.useState<TemplateFilterMode>('all');
   const [originFilter, setOriginFilter] = React.useState<string>('');
@@ -63,4 +68,3 @@ export function useTemplateFiltering({ open, templates }: UseTemplateFilteringAr
     handleFilterModeChange,
   };
 }
-

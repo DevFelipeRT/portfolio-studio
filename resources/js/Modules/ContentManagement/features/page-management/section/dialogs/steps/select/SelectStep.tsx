@@ -14,6 +14,9 @@ interface SelectStepProps {
   onSelectTemplate: (templateKey: string) => void;
 }
 
+/**
+ * Shared step for selecting a template with filters and preview grid.
+ */
 export function SelectStep({
   filterMode,
   originFilter,

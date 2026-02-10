@@ -38,6 +38,11 @@ interface ConfigureSectionStepProps {
   onDataChange: (value: SectionData) => void;
 }
 
+/**
+ * Shared step for configuring section metadata + template data.
+ *
+ * This step is dialog-agnostic and can be reused by create/edit flows.
+ */
 export function ConfigureSectionStep({
   idPrefix,
   templates,

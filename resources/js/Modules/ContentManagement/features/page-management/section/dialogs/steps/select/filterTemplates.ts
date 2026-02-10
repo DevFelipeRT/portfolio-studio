@@ -7,6 +7,9 @@ interface FilterTemplatesArgs {
   originFilter: string;
 }
 
+/**
+ * Applies the selection step filters to the template list.
+ */
 export function filterTemplates({
   templates,
   filterMode,
@@ -36,4 +39,3 @@ export function filterTemplates({
 
   return templates;
 }
-
