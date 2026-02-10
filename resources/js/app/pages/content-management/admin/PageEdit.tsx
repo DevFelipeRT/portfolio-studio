@@ -14,7 +14,7 @@ import {
   type EditSectionPayload,
   useEditSectionDialogController,
 } from '@/Modules/ContentManagement/features/page-management/section/dialogs';
-import { SectionsList } from '@/Modules/ContentManagement/features/page-management/section/listing/SectionsList';
+import { SectionList } from '@/Modules/ContentManagement/features/page-management/section/listing';
 import {
   useCreateSection,
   useDeleteSection,
@@ -22,10 +22,11 @@ import {
   useUpdateSection,
 } from '@/Modules/ContentManagement/features/page-management/section/hooks';
 import {
-  orderedFromIds,
-  swappedIds,
+  applyPermutation,
+  swapAdjacent,
   useReorderSections,
-} from '@/Modules/ContentManagement/features/page-management/section/reordering';
+  validateHeroFirstOrder,
+} from '@/Modules/ContentManagement/features/page-management/section/ordering';
 import {
   PageForm,
   type PageFormData,
@@ -33,7 +34,6 @@ import {
 import {
   collectSectionNavigationGroups,
   sortSectionsByPosition,
-  validateHeroFirstOrder,
 } from '@/Modules/ContentManagement/features/page-rendering';
 import { defaultStringNormalizer } from '@/Modules/ContentManagement/shared/strings';
 import type {
@@ -162,7 +162,7 @@ export default function PageEdit({
   const handleReorderSections = (
     orderedIds: Array<PageSectionDto['id']>,
   ): void => {
-    const orderedSections = orderedFromIds(sortedSections, orderedIds);
+    const orderedSections = applyPermutation(sortedSections, orderedIds);
 
     if (!validateSectionsOrder(orderedSections)) {
       return;
@@ -175,7 +175,7 @@ export default function PageEdit({
     section: PageSectionDto,
     direction: 'up' | 'down',
   ): void => {
-    const nextIds = swappedIds(sortedSections, section.id, direction);
+    const nextIds = swapAdjacent(sortedSections, section.id, direction);
     handleReorderSections(nextIds);
   };
 
@@ -217,7 +217,7 @@ export default function PageEdit({
           onSubmit={handleSubmit}
         />
 
-        <SectionsList
+        <SectionList
           sections={sortedSections}
           templates={availableTemplates}
           onCreateSection={handleCreateSection}

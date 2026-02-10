@@ -4,26 +4,18 @@ import type {
   PageSectionDto,
   TemplateDefinitionDto,
 } from '@/Modules/ContentManagement/types';
-import type { DragEndEvent } from '@dnd-kit/core';
+import { closestCenter, DndContext } from '@dnd-kit/core';
 import {
-  closestCenter,
-  DndContext,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from '@dnd-kit/core';
-import {
-  arrayMove,
   SortableContext,
-  sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { Plus } from 'lucide-react';
 import React from 'react';
-import { SectionItem } from './partials/SectionItem';
 
-interface SectionsListProps {
+import { useOrderedSections, useSectionsDragOrdering } from './hooks';
+import { SectionItem } from './partials';
+
+interface SectionListProps {
   sections: PageSectionDto[];
   templates: TemplateDefinitionDto[];
   onCreateSection?: () => void;
@@ -41,7 +33,7 @@ interface SectionsListProps {
  * This component wires layout and per-row actions, delegating individual
  * row rendering to SectionItem.
  */
-export function SectionsList({
+export function SectionList({
   sections,
   templates,
   onCreateSection,
@@ -51,55 +43,25 @@ export function SectionsList({
   onReorder,
   onReorderIds,
   onValidateReorder,
-}: SectionsListProps) {
-  const [orderedSections, setOrderedSections] = React.useState(sections);
+}: SectionListProps) {
+  const { orderedSections, setOrderedSections } = useOrderedSections(sections);
 
-  React.useEffect(() => {
-    setOrderedSections(sections);
-  }, [sections]);
+  const templateLabelByKey = React.useMemo(() => {
+    const map = new Map<string, string>();
 
-  const resolveTemplateLabel = (templateKey: string): string => {
-    const template = templates.find((item) => item.key === templateKey);
-
-    if (template) {
-      return template.label;
+    for (const template of templates) {
+      map.set(template.key, template.label);
     }
 
-    return templateKey;
-  };
+    return map;
+  }, [templates]);
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    }),
-  );
-
-  const handleDragEnd = (event: DragEndEvent): void => {
-    if (!event.over || event.active.id === event.over.id) {
-      return;
-    }
-
-    const oldIndex = orderedSections.findIndex(
-      (section) => section.id === event.active.id,
-    );
-    const newIndex = orderedSections.findIndex(
-      (section) => section.id === event.over?.id,
-    );
-
-    if (oldIndex === -1 || newIndex === -1) {
-      return;
-    }
-
-    const nextSections = arrayMove(orderedSections, oldIndex, newIndex);
-
-    if (onValidateReorder && !onValidateReorder(nextSections)) {
-      return;
-    }
-
-    setOrderedSections(nextSections);
-    onReorderIds?.(nextSections.map((section) => section.id));
-  };
+  const { sensors, handleDragEnd } = useSectionsDragOrdering({
+    orderedSections,
+    setOrderedSections,
+    onReorderIds,
+    onValidateReorder,
+  });
 
   return (
     <Card>
@@ -123,7 +85,7 @@ export function SectionsList({
       </CardHeader>
 
       <CardContent>
-        {sections.length === 0 && (
+        {orderedSections.length === 0 && (
           <p className="text-muted-foreground py-6 text-sm">
             No sections configured yet. Use the button above to add the first
             section.
@@ -144,7 +106,10 @@ export function SectionsList({
                 <SectionItem
                   key={section.id}
                   section={section}
-                  templateLabel={resolveTemplateLabel(section.template_key)}
+                  templateLabel={
+                    templateLabelByKey.get(section.template_key) ??
+                    section.template_key
+                  }
                   index={index}
                   totalCount={orderedSections.length}
                   onToggleActive={onToggleActive}
