@@ -8,6 +8,8 @@ export type SectionOrderValidationResult =
 /**
  * Enforces the "hero first" constraint:
  * all hero sections must appear before any non-hero section.
+ *
+ * This is a pure domain rule; callers decide how to display errors.
  */
 export function validateHeroFirstOrder(
   orderedSections: PageSectionDto[],
