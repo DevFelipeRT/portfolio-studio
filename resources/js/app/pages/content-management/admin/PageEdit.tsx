@@ -1,20 +1,17 @@
-import { Head, router, useForm } from '@inertiajs/react';
-import type { FormDataValues } from '@inertiajs/core';
-import { Trash2 } from 'lucide-react';
-import React from 'react';
-import { toast } from 'sonner';
-
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import { Button } from '@/Components/Ui/button';
 import {
+  PageForm,
+  type PageFormData,
+} from '@/Modules/ContentManagement/features/page-management/page/PageForm';
+import {
   CreateSectionDialog,
   type CreateSectionPayload,
-  useCreateSectionDialogController,
   EditSectionDialog,
   type EditSectionPayload,
+  useCreateSectionDialogController,
   useEditSectionDialogController,
 } from '@/Modules/ContentManagement/features/page-management/section/dialogs';
-import { SectionList } from '@/Modules/ContentManagement/features/page-management/section/listing';
 import {
   useCreateSection,
   useDeleteSection,
@@ -22,15 +19,9 @@ import {
   useUpdateSection,
 } from '@/Modules/ContentManagement/features/page-management/section/hooks';
 import {
-  applyPermutation,
-  swapAdjacent,
-  useReorderSections,
-  validateHeroFirstOrder,
-} from '@/Modules/ContentManagement/features/page-management/section/ordering';
-import {
-  PageForm,
-  type PageFormData,
-} from '@/Modules/ContentManagement/features/page-management/page/PageForm';
+  SectionList,
+  useSectionListController,
+} from '@/Modules/ContentManagement/features/page-management/section/listing';
 import {
   collectSectionNavigationGroups,
   sortSectionsByPosition,
@@ -40,7 +31,19 @@ import type {
   PageEditViewModelProps,
   PageSectionDto,
 } from '@/Modules/ContentManagement/types';
+import type { FormDataValues } from '@inertiajs/core';
+import { Head, router, useForm } from '@inertiajs/react';
+import { Trash2 } from 'lucide-react';
+import React from 'react';
 
+/**
+ * Administrative screen for editing a content-managed page.
+ *
+ * Responsibilities:
+ * - Manage the page metadata form and persist changes via Inertia.
+ * - Wire section CRUD dialogs (create/edit) and per-row actions (toggle/delete).
+ * - Render the sections list using the listing controller hook for reorder orchestration.
+ */
 export default function PageEdit({
   page,
   sections,
@@ -73,20 +76,12 @@ export default function PageEdit({
   const updateSection = useUpdateSection();
   const deleteSection = useDeleteSection();
   const toggleSectionActive = useToggleSectionActive();
-  const reorderSections = useReorderSections();
 
-  const validateSectionsOrder = (
-    orderedSections: PageSectionDto[],
-  ): boolean => {
-    const result = validateHeroFirstOrder(orderedSections);
-
-    if (!result.ok) {
-      toast.error(result.message);
-      return false;
-    }
-
-    return true;
-  };
+  // Ensure the list is displayed in a stable, deterministic order.
+  const sectionsList = useSectionListController({
+    pageId: page.id,
+    sections: sortedSections,
+  });
 
   const handleChange = <K extends keyof PageFormData>(
     field: K,
@@ -112,9 +107,7 @@ export default function PageEdit({
     router.delete(route('admin.content.pages.destroy', page.id));
   };
 
-  /**
-   * Sections: create
-   */
+  /** Sections: create */
   const handleCreateSection = (): void => {
     createDialog.openDialog();
   };
@@ -123,9 +116,7 @@ export default function PageEdit({
     createSection(payload);
   };
 
-  /**
-   * Sections: edit
-   */
+  /** Sections: edit */
   const handleEditSection = (section: PageSectionDto): void => {
     editDialog.openFor(section);
   };
@@ -138,45 +129,18 @@ export default function PageEdit({
     updateSection(editDialog.section.id, payload);
   };
 
-  /**
-   * Sections: toggle active
-   */
+  /** Sections: toggle active */
   const handleToggleSectionActive = (section: PageSectionDto): void => {
     toggleSectionActive(section.id, !section.is_active);
   };
 
-  /**
-   * Sections: delete
-   */
+  /** Sections: delete */
   const handleRemoveSection = (section: PageSectionDto): void => {
     if (!window.confirm('Are you sure you want to delete this section?')) {
       return;
     }
 
     deleteSection(section.id);
-  };
-
-  /**
-   * Sections: reorder
-   */
-  const handleReorderSections = (
-    orderedIds: Array<PageSectionDto['id']>,
-  ): void => {
-    const orderedSections = applyPermutation(sortedSections, orderedIds);
-
-    if (!validateSectionsOrder(orderedSections)) {
-      return;
-    }
-
-    reorderSections(page.id, orderedIds);
-  };
-
-  const handleReorderSection = (
-    section: PageSectionDto,
-    direction: 'up' | 'down',
-  ): void => {
-    const nextIds = swapAdjacent(sortedSections, section.id, direction);
-    handleReorderSections(nextIds);
   };
 
   return (
@@ -218,15 +182,16 @@ export default function PageEdit({
         />
 
         <SectionList
-          sections={sortedSections}
+          sections={sectionsList.sections}
           templates={availableTemplates}
+          reorderLocked={sectionsList.reorderLocked}
+          sensors={sectionsList.sensors}
+          onDragEnd={sectionsList.onDragEnd}
           onCreateSection={handleCreateSection}
           onEditSection={handleEditSection}
           onToggleActive={handleToggleSectionActive}
           onRemoveSection={handleRemoveSection}
-          onReorder={handleReorderSection}
-          onReorderIds={handleReorderSections}
-          onValidateReorder={validateSectionsOrder}
+          onReorder={sectionsList.onReorder}
         />
       </div>
 
