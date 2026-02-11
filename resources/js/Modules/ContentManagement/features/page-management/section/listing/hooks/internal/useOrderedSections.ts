@@ -17,4 +17,3 @@ export function useOrderedSections(sections: PageSectionDto[]) {
 
   return { orderedSections, setOrderedSections };
 }
-

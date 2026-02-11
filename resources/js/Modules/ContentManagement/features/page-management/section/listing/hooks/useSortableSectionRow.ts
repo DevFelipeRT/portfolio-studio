@@ -8,7 +8,7 @@ import { CSS } from '@dnd-kit/utilities';
  *
  * Exposes both the row ref (for transforms) and the drag handle ref/props.
  */
-export function useSortableSectionRow(sectionId: number) {
+export function useSortableSectionRow(sectionId: number, disabled = false) {
   const {
     attributes,
     listeners,
@@ -17,7 +17,7 @@ export function useSortableSectionRow(sectionId: number) {
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: sectionId });
+  } = useSortable({ id: sectionId, disabled });
 
   return {
     rowRef: setNodeRef,
@@ -33,4 +33,3 @@ export function useSortableSectionRow(sectionId: number) {
     isDragging,
   };
 }
-

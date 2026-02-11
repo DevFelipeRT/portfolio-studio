@@ -1,11 +1,11 @@
 /**
  * Public API for the page sections listing UI.
  *
- * `SectionList` is the main entry-point; `hooks`/`utils`/`partials` are exported for
- * composition and reuse in other screens.
+ * - `SectionList`: presentational component (UI-only).
+ * - `hooks`: orchestration + DnD wiring (see `useSectionListController`).
+ * - `utils`/`partials`: reusable building blocks for composition.
  */
 export { SectionList } from './SectionList';
 export * from './hooks';
 export * from './utils';
 export * from './partials';
-

@@ -5,6 +5,7 @@ import type { ButtonHTMLAttributes, Ref } from 'react';
 interface ReorderSectionControlProps {
   canMoveUp: boolean;
   canMoveDown: boolean;
+  locked?: boolean;
   onMoveUp?: () => void;
   onMoveDown?: () => void;
   dragHandleProps?: ButtonHTMLAttributes<HTMLButtonElement>;
@@ -17,6 +18,7 @@ interface ReorderSectionControlProps {
 export function ReorderSectionControl({
   canMoveUp,
   canMoveDown,
+  locked = false,
   onMoveUp,
   onMoveDown,
   dragHandleProps,
@@ -28,7 +30,7 @@ export function ReorderSectionControl({
         type="button"
         variant="ghost"
         size="icon"
-        disabled={!canMoveUp}
+        disabled={!canMoveUp || locked}
         onClick={onMoveUp}
         aria-label="Move section up"
         className="h-6 w-6"
@@ -39,8 +41,12 @@ export function ReorderSectionControl({
       <button
         type="button"
         ref={dragHandleRef}
-        className="bg-background text-muted-foreground touch-none cursor-grab rounded-md border p-1 transition active:cursor-grabbing"
+        disabled={locked}
+        className={`bg-background text-muted-foreground touch-none rounded-md border p-1 transition ${
+          locked ? 'cursor-not-allowed opacity-60' : 'cursor-grab active:cursor-grabbing'
+        }`}
         aria-label="Drag to reorder section"
+        aria-disabled={locked}
         {...dragHandleProps}
       >
         <GripVertical className="h-3 w-3" />
@@ -50,7 +56,7 @@ export function ReorderSectionControl({
         type="button"
         variant="ghost"
         size="icon"
-        disabled={!canMoveDown}
+        disabled={!canMoveDown || locked}
         onClick={onMoveDown}
         aria-label="Move section down"
         className="h-6 w-6"

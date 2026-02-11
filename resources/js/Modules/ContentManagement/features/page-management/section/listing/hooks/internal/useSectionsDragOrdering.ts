@@ -12,22 +12,20 @@ import type { PageSectionDto } from '@/Modules/ContentManagement/types';
 
 interface UseSectionsDragOrderingOptions {
   orderedSections: PageSectionDto[];
-  setOrderedSections: React.Dispatch<React.SetStateAction<PageSectionDto[]>>;
-  onReorderIds?: (orderedIds: Array<PageSectionDto['id']>) => void;
-  onValidateReorder?: (orderedSections: PageSectionDto[]) => boolean;
+  onMove?: (nextSections: PageSectionDto[]) => void;
+  isLocked?: boolean;
 }
 
 /**
  * Provides DnD-kit sensors + drag handler for reordering page sections.
  *
  * This hook is intentionally UI-agnostic:
- * it updates local ordered state and emits the resulting ids to the caller.
+ * it derives a next list order and notifies the caller via `onMove`.
  */
 export function useSectionsDragOrdering({
   orderedSections,
-  setOrderedSections,
-  onReorderIds,
-  onValidateReorder,
+  onMove,
+  isLocked = false,
 }: UseSectionsDragOrderingOptions) {
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
@@ -38,6 +36,10 @@ export function useSectionsDragOrdering({
 
   const handleDragEnd = React.useCallback(
     (event: DragEndEvent): void => {
+      if (isLocked) {
+        return;
+      }
+
       if (!event.over || event.active.id === event.over.id) {
         return;
       }
@@ -55,16 +57,14 @@ export function useSectionsDragOrdering({
 
       const nextSections = arrayMove(orderedSections, oldIndex, newIndex);
 
-      if (onValidateReorder && !onValidateReorder(nextSections)) {
-        return;
-      }
-
-      setOrderedSections(nextSections);
-      onReorderIds?.(nextSections.map((section) => section.id));
+      onMove?.(nextSections);
     },
-    [onReorderIds, onValidateReorder, orderedSections, setOrderedSections],
+    [
+      isLocked,
+      onMove,
+      orderedSections,
+    ],
   );
 
   return { sensors, handleDragEnd };
 }
-

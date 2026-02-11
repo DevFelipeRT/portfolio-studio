@@ -12,6 +12,7 @@ interface SectionItemProps {
   templateLabel: string;
   index: number;
   totalCount: number;
+  reorderLocked?: boolean;
   onToggleActive?: (section: PageSectionDto) => void;
   onEdit?: (section: PageSectionDto) => void;
   onRemove?: (section: PageSectionDto) => void;
@@ -26,13 +27,14 @@ export function SectionItem({
   templateLabel,
   index,
   totalCount,
+  reorderLocked = false,
   onToggleActive,
   onEdit,
   onRemove,
   onReorder,
 }: SectionItemProps) {
   const handleMoveUp = (): void => {
-    if (!onReorder) {
+    if (!onReorder || reorderLocked) {
       return;
     }
 
@@ -40,7 +42,7 @@ export function SectionItem({
   };
 
   const handleMoveDown = (): void => {
-    if (!onReorder) {
+    if (!onReorder || reorderLocked) {
       return;
     }
 
@@ -50,7 +52,7 @@ export function SectionItem({
   const { canMoveUp, canMoveDown, navigationLabel, navigationGroup } =
     getSectionRowMeta(section, { index, totalCount });
   const { rowRef, dragHandleRef, dragHandleProps, style, isDragging } =
-    useSortableSectionRow(section.id);
+    useSortableSectionRow(section.id, reorderLocked);
 
   return (
     <li
@@ -63,6 +65,7 @@ export function SectionItem({
       <ReorderSectionControl
         canMoveUp={canMoveUp}
         canMoveDown={canMoveDown}
+        locked={reorderLocked}
         onMoveUp={handleMoveUp}
         onMoveDown={handleMoveDown}
         dragHandleRef={dragHandleRef}

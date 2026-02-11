@@ -4,6 +4,10 @@ import type {
   PageSectionDto,
   TemplateDefinitionDto,
 } from '@/Modules/ContentManagement/types';
+import type {
+  DragEndEvent,
+  SensorDescriptor,
+} from '@dnd-kit/core';
 import { closestCenter, DndContext } from '@dnd-kit/core';
 import {
   SortableContext,
@@ -12,40 +16,41 @@ import {
 import { Plus } from 'lucide-react';
 import React from 'react';
 
-import { useOrderedSections, useSectionsDragOrdering } from './hooks';
 import { SectionItem } from './partials';
 
 interface SectionListProps {
   sections: PageSectionDto[];
   templates: TemplateDefinitionDto[];
+  reorderLocked?: boolean;
+  sensors: Array<SensorDescriptor<Record<string, unknown>>>;
+  onDragEnd: (event: DragEndEvent) => void;
   onCreateSection?: () => void;
   onEditSection?: (section: PageSectionDto) => void;
   onToggleActive?: (section: PageSectionDto) => void;
   onRemoveSection?: (section: PageSectionDto) => void;
   onReorder?: (section: PageSectionDto, direction: 'up' | 'down') => void;
-  onReorderIds?: (orderedIds: Array<PageSectionDto['id']>) => void;
-  onValidateReorder?: (orderedSections: PageSectionDto[]) => boolean;
 }
 
 /**
- * Sections list for the page edit screen.
+ * Presentational sections list used in the page edit screen.
  *
- * This component wires layout and per-row actions, delegating individual
- * row rendering to SectionItem.
+ * Notes:
+ * - This component is UI-only: it receives ordered `sections`, DnD sensors, and callbacks.
+ * - For the orchestration (optimistic reorder + persistence + locking), use
+ *   `useSectionListController`.
  */
 export function SectionList({
   sections,
   templates,
+  reorderLocked = false,
+  sensors,
+  onDragEnd,
   onCreateSection,
   onEditSection,
   onToggleActive,
   onRemoveSection,
   onReorder,
-  onReorderIds,
-  onValidateReorder,
 }: SectionListProps) {
-  const { orderedSections, setOrderedSections } = useOrderedSections(sections);
-
   const templateLabelByKey = React.useMemo(() => {
     const map = new Map<string, string>();
 
@@ -55,13 +60,6 @@ export function SectionList({
 
     return map;
   }, [templates]);
-
-  const { sensors, handleDragEnd } = useSectionsDragOrdering({
-    orderedSections,
-    setOrderedSections,
-    onReorderIds,
-    onValidateReorder,
-  });
 
   return (
     <Card>
@@ -85,7 +83,7 @@ export function SectionList({
       </CardHeader>
 
       <CardContent>
-        {orderedSections.length === 0 && (
+        {sections.length === 0 && (
           <p className="text-muted-foreground py-6 text-sm">
             No sections configured yet. Use the button above to add the first
             section.
@@ -95,14 +93,14 @@ export function SectionList({
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
-          onDragEnd={handleDragEnd}
+          onDragEnd={onDragEnd}
         >
           <SortableContext
-            items={orderedSections.map((section) => section.id)}
+            items={sections.map((section) => section.id)}
             strategy={verticalListSortingStrategy}
           >
             <ul className="space-y-2">
-              {orderedSections.map((section, index) => (
+              {sections.map((section, index) => (
                 <SectionItem
                   key={section.id}
                   section={section}
@@ -111,7 +109,8 @@ export function SectionList({
                     section.template_key
                   }
                   index={index}
-                  totalCount={orderedSections.length}
+                  totalCount={sections.length}
+                  reorderLocked={reorderLocked}
                   onToggleActive={onToggleActive}
                   onEdit={onEditSection}
                   onRemove={onRemoveSection}
