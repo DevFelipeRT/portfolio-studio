@@ -1,7 +1,7 @@
 import React from 'react';
 import type { TemplateDefinitionDto } from '@/Modules/ContentManagement/types';
 import { buildSectionPayload, useSectionState } from '../../core';
-import type { CreateSectionPayload } from './CreateSectionDialog';
+import type { CreateSectionPayload } from '../../../shared';
 
 type DialogStep = 'select' | 'configure';
 
@@ -60,10 +60,12 @@ export function useCreateSectionDialogState({
           slot: sectionState.slot,
           anchor: sectionState.anchor,
           navigationLabel: sectionState.navigationLabel,
+          navigationGroup: sectionState.navigationGroup,
           isActive: sectionState.isActive,
-          data: sectionState.data,
+          templateData: sectionState.data,
         },
         locale: defaultLocale ?? null,
+        template: sectionState.selectedTemplate ?? null,
       }),
     );
 

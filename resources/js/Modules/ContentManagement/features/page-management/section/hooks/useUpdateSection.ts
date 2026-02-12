@@ -1,6 +1,6 @@
 import { router } from '@inertiajs/react';
 import React from 'react';
-import type { EditSectionPayload } from '@/Modules/ContentManagement/features/page-management/section/dialogs';
+import type { UpdateSectionPayload } from '@/Modules/ContentManagement/features/page-management/section/shared';
 
 interface UseUpdateSectionOptions {
   preserveScroll?: boolean;
@@ -12,7 +12,7 @@ interface UseUpdateSectionOptions {
  */
 export function useUpdateSection(options: UseUpdateSectionOptions = {}) {
   return React.useCallback(
-    (sectionId: number, payload: EditSectionPayload): void => {
+    (sectionId: number, payload: UpdateSectionPayload): void => {
       router.put(
         route('admin.content.sections.update', sectionId),
         {

@@ -4,7 +4,7 @@ import type {
   TemplateDefinitionDto,
 } from '@/Modules/ContentManagement/types';
 import { buildSectionPayload, useSectionState } from '../../core';
-import type { EditSectionPayload } from './EditSectionDialog';
+import type { UpdateSectionPayload as EditSectionPayload } from '../../../shared';
 
 interface UseEditSectionDialogStateArgs {
   open: boolean;
@@ -63,10 +63,12 @@ export function useEditSectionDialogState({
           slot: sectionState.slot,
           anchor: sectionState.anchor,
           navigationLabel: sectionState.navigationLabel,
+          navigationGroup: sectionState.navigationGroup,
           isActive: sectionState.isActive,
-          data: sectionState.data,
+          templateData: sectionState.data,
         },
         locale,
+        template: sectionState.selectedTemplate ?? null,
       }),
     );
 
