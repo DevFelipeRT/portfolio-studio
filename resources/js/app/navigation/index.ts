@@ -19,3 +19,5 @@ export type {
   SectionPosition,
   SectionTargetNode,
 } from './types';
+
+export { createNavigationTree } from './tree';
