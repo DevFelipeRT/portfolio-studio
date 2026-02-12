@@ -1,85 +1,89 @@
+export function parseIntegerFromString(raw: string): number | undefined {
+  const trimmed = raw.trim();
+
+  if (trimmed === '') {
+    return undefined;
+  }
+
+  const parsed = Number.parseInt(trimmed, 10);
+
+  if (Number.isNaN(parsed)) {
+    return undefined;
+  }
+
+  return parsed;
+}
+
 export function parseOptionalInteger(raw: string): number | null {
-    const trimmed = raw.trim();
-
-    if (trimmed === '') {
-        return null;
-    }
-
-    const parsed = Number.parseInt(trimmed, 10);
-
-    if (Number.isNaN(parsed)) {
-        return null;
-    }
-
-    return parsed;
+  return parseIntegerFromString(raw) ?? null;
 }
 
 export function parsePositiveIntegerStrict(
-    raw: string,
+  raw: string,
 ): number | null | undefined {
-    const trimmed = raw.trim();
+  const trimmed = raw.trim();
 
-    if (trimmed === '') {
-        return null;
-    }
+  if (trimmed === '') {
+    return null;
+  }
 
-    if (!/^\d+$/.test(trimmed)) {
-        return undefined;
-    }
+  if (!/^\d+$/.test(trimmed)) {
+    return undefined;
+  }
 
-    const parsed = Number.parseInt(trimmed, 10);
+  const parsed = Number.parseInt(trimmed, 10);
 
-    if (Number.isNaN(parsed) || parsed < 1) {
-        return undefined;
-    }
+  if (Number.isNaN(parsed) || parsed < 1) {
+    return undefined;
+  }
 
-    return parsed;
+  return parsed;
 }
 
 export function parseCommaSeparatedIntegers(raw: string): number[] {
-    const trimmed = raw.trim();
+  const trimmed = raw.trim();
 
-    if (trimmed === '') {
-        return [];
-    }
+  if (trimmed === '') {
+    return [];
+  }
 
-    const parts = trimmed
-        .split(',')
-        .map((part) => part.trim())
-        .filter((part) => part !== '');
+  const parts = trimmed
+    .split(',')
+    .map((part) => part.trim())
+    .filter((part) => part !== '');
 
-    return parts
-        .map((part) => Number.parseInt(part, 10))
-        .filter((item) => !Number.isNaN(item));
+  return parts
+    .map((part) => Number.parseInt(part, 10))
+    .filter((item) => !Number.isNaN(item));
 }
 
 export function parseCommaSeparatedPositiveIntegers(raw: string): number[] {
-    const trimmed = raw.trim();
+  const trimmed = raw.trim();
 
-    if (trimmed === '') {
-        return [];
+  if (trimmed === '') {
+    return [];
+  }
+
+  const parts = trimmed
+    .split(',')
+    .map((part) => part.trim())
+    .filter((part) => part !== '');
+
+  const ids: number[] = [];
+
+  for (const part of parts) {
+    if (!/^\d+$/.test(part)) {
+      continue;
     }
 
-    const parts = trimmed
-        .split(',')
-        .map((part) => part.trim())
-        .filter((part) => part !== '');
+    const parsed = Number.parseInt(part, 10);
 
-    const ids: number[] = [];
-
-    for (const part of parts) {
-        if (!/^\d+$/.test(part)) {
-            continue;
-        }
-
-        const parsed = Number.parseInt(part, 10);
-
-        if (Number.isNaN(parsed) || parsed < 1) {
-            continue;
-        }
-
-        ids.push(parsed);
+    if (Number.isNaN(parsed) || parsed < 1) {
+      continue;
     }
 
-    return ids;
+    ids.push(parsed);
+  }
+
+  return ids;
 }

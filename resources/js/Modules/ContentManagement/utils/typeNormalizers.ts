@@ -1,37 +1,34 @@
-export function normalizeBoolean(
-    value: unknown,
-    fallback = false,
-): boolean {
-    return typeof value === 'boolean' ? value : fallback;
+export function coerceBoolean(value: unknown, fallback = false): boolean {
+  return typeof value === 'boolean' ? value : fallback;
 }
 
-export function normalizeInteger(value: unknown): number | null {
-    return typeof value === 'number' && Number.isInteger(value) ? value : null;
+export function coerceIntegerOrNull(value: unknown): number | null {
+  return typeof value === 'number' && Number.isInteger(value) ? value : null;
 }
 
-export function normalizeNumber(value: unknown): number | null {
-    return typeof value === 'number' ? value : null;
+export function coerceNumberOrNull(value: unknown): number | null {
+  return typeof value === 'number' ? value : null;
 }
 
-export function normalizeNumberArray(value: unknown): number[] {
-    return Array.isArray(value) && value.every((item) => typeof item === 'number')
-        ? [...value]
-        : [];
+export function coerceNumberArray(value: unknown): number[] {
+  return Array.isArray(value) && value.every((item) => typeof item === 'number')
+    ? [...value]
+    : [];
 }
 
 export function coalesceNullable<T>(
-    value: T | null | undefined,
-    fallback: T,
+  value: T | null | undefined,
+  fallback: T,
 ): T {
-    return value ?? fallback;
+  return value ?? fallback;
 }
 
-export function normalizeString(value: unknown): string | null {
-    if (typeof value !== 'string') {
-        return null;
-    }
+export function coerceTrimmedStringOrNull(value: unknown): string | null {
+  if (typeof value !== 'string') {
+    return null;
+  }
 
-    const trimmed = value.trim();
+  const trimmed = value.trim();
 
-    return trimmed.length > 0 ? trimmed : null;
+  return trimmed.length > 0 ? trimmed : null;
 }
