@@ -39,3 +39,7 @@ export type SectionDataValue =
 
 export type SectionData = Record<string, SectionDataValue>;
 
+// Branded type to represent "template-owned" section data (keys from template.fields).
+// This is a compile-time distinction only; runtime shape is identical to SectionData.
+declare const templateDataBrand: unique symbol;
+export type TemplateData = SectionData & { readonly [templateDataBrand]: true };

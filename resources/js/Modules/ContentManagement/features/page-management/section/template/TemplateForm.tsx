@@ -4,30 +4,35 @@ import type {
   TemplateDefinitionDto,
   TemplateFieldDto,
 } from '@/Modules/ContentManagement/types';
-import { TemplateFieldRenderer } from './TemplateFieldRenderer';
+import * as React from 'react';
+import { TemplateFieldRenderer } from './rendering/TemplateFieldRenderer';
+import { useTemplateForm } from './useTemplateForm';
 
-interface TemplateSectionFormProps {
+interface TemplateFormProps {
   template: TemplateDefinitionDto;
-  value: SectionData;
+  value?: SectionData | null;
   onChange: (next: SectionData) => void;
 }
 
 /**
- * Renders a field set for a given template definition.
+ * Controlled form for editing template-driven section data.
  *
- * This component is stateless and fully controlled via the value/onChange props.
+ * Ensures missing template fields are initialized using template defaults.
  */
-export function TemplateSectionForm({
-  template,
-  value,
-  onChange,
-}: TemplateSectionFormProps) {
+export function TemplateForm({ template, value, onChange }: TemplateFormProps) {
+  const emptyValueRef = React.useRef<SectionData>({});
+  const safeValue = value ?? emptyValueRef.current;
+
+  // Use resolved data only for rendering (defaults + intersection).
+  // Keep the underlying state as-is; discard happens only on save.
+  const resolvedValue = useTemplateForm({ template, value: safeValue });
+
   const handleFieldChange = (
     field: TemplateFieldDto,
     fieldValue: SectionDataValue,
   ): void => {
     const next: SectionData = {
-      ...value,
+      ...safeValue,
       [field.name]: fieldValue,
     };
 
@@ -43,7 +48,7 @@ export function TemplateSectionForm({
         <TemplateFieldRenderer
           key={field.name}
           field={field}
-          value={value[field.name]}
+          value={resolvedValue[field.name]}
           onChange={(fieldValue) => handleFieldChange(field, fieldValue)}
         />
       ))}

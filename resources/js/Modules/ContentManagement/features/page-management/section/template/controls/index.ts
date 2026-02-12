@@ -1,9 +1,0 @@
-export { ArrayIntegerFieldControl } from '@/Modules/ContentManagement/features/page-management/section/template/controls/ArrayIntegerFieldControl';
-export { BooleanFieldControl } from '@/Modules/ContentManagement/features/page-management/section/template/controls/BooleanFieldControl';
-export { CollectionFieldControl } from '@/Modules/ContentManagement/features/page-management/section/template/controls/collection/CollectionFieldControl';
-export { ImageFieldControl } from '@/Modules/ContentManagement/features/page-management/section/template/controls/ImageFieldControl';
-export { ImageGalleryFieldControl } from '@/Modules/ContentManagement/features/page-management/section/template/controls/ImageGalleryFieldControl';
-export { IntegerFieldControl } from '@/Modules/ContentManagement/features/page-management/section/template/controls/IntegerFieldControl';
-export { RichTextFieldControl } from '@/Modules/ContentManagement/features/page-management/section/template/controls/RichTextFieldControl';
-export { TextFieldControl } from '@/Modules/ContentManagement/features/page-management/section/template/controls/TextFieldControl';
-export { TextareaFieldControl } from '@/Modules/ContentManagement/features/page-management/section/template/controls/TextareaFieldControl';

@@ -1,8 +1,8 @@
 import { Input } from '@/Components/Ui/input';
 import { parseOptionalInteger } from '@/Modules/ContentManagement/shared/numbers';
 import React from 'react';
-import { FieldFrame } from '../components/FieldFrame';
-import type { TemplateFieldControlProps } from '../types';
+import { FieldFrame } from '../../components/FieldFrame';
+import type { TemplateFieldControlProps } from '../../types';
 
 export function IntegerFieldControl({
   value,

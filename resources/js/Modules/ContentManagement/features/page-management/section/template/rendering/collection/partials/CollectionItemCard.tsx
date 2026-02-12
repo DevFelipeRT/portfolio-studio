@@ -5,7 +5,7 @@ import type {
   SectionDataValue,
   TemplateFieldDto,
 } from '@/Modules/ContentManagement/types';
-import { TemplateFieldRenderer } from '../../../TemplateFieldRenderer';
+import { TemplateFieldRenderer } from '../../TemplateFieldRenderer';
 
 interface CollectionItemCardProps {
   index: number;

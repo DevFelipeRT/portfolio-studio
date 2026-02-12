@@ -26,7 +26,6 @@ export { SectionHeader } from '@/Modules/ContentManagement/features/page-renderi
 export { SectionRenderer } from '@/Modules/ContentManagement/features/page-rendering/rendering/SectionRenderer';
 export { sectionSlotLayoutManager } from '@/Modules/ContentManagement/features/page-rendering/rendering/SectionSlotLayout';
 
-export { buildInitialSectionData } from '@/Modules/ContentManagement/features/page-rendering/rules/sectionDataFactory';
 export {
   buildNavigationItemsFromSections,
   getSectionNavigationGroup,

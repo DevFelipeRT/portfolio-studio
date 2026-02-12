@@ -1,6 +1,6 @@
+import type { TemplateFieldControlProps } from '../types';
 import { normalizeFieldValue } from './normalizers';
 import { getFieldRenderer } from './registry';
-import type { TemplateFieldControlProps } from './types';
 
 /**
  * Dispatches a template field to the appropriate concrete control.

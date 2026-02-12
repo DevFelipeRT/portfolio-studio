@@ -18,6 +18,7 @@ export type {
     SectionDataPrimitive,
     SectionDataValue,
     SectionImage,
+    TemplateData,
 } from '@/Modules/ContentManagement/shared/types/sections';
 
 export type {

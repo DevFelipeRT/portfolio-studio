@@ -1,6 +1,6 @@
 import { Checkbox } from '@/Components/Ui/checkbox';
-import { InlineFieldFrame } from '../components/InlineFieldFrame';
-import type { TemplateFieldControlProps } from '../types';
+import { InlineFieldFrame } from '../../components/InlineFieldFrame';
+import type { TemplateFieldControlProps } from '../../types';
 
 export function BooleanFieldControl({
   value,

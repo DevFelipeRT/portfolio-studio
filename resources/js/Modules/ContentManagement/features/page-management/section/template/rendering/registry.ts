@@ -1,5 +1,6 @@
 import type { TemplateFieldPrimitiveType } from '@/Modules/ContentManagement/shared/types/templates';
 import type { ComponentType } from 'react';
+import type { TemplateFieldControlProps } from '../types';
 import {
   ArrayIntegerFieldControl,
   BooleanFieldControl,
@@ -10,8 +11,7 @@ import {
   RichTextFieldControl,
   TextareaFieldControl,
   TextFieldControl,
-} from './controls';
-import type { TemplateFieldControlProps } from './types';
+} from './fields';
 
 type FieldRenderer = ComponentType<TemplateFieldControlProps>;
 
