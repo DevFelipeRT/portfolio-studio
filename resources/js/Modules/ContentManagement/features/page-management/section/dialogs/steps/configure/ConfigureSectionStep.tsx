@@ -27,7 +27,7 @@ interface ConfigureSectionStepProps {
   navigationGroup: string;
   navigationGroups: string[];
   isActive: boolean;
-  data: SectionData;
+  templateData: SectionData;
   dialogContentRef: React.RefObject<HTMLDivElement | null>;
   onTemplateChange: (templateKey: string) => void;
   onSlotChange: (value: string) => void;
@@ -35,7 +35,7 @@ interface ConfigureSectionStepProps {
   onNavigationLabelChange: (value: string) => void;
   onNavigationGroupChange: (value: string) => void;
   onIsActiveChange: (value: boolean) => void;
-  onDataChange: (value: SectionData) => void;
+  onTemplateDataChange: (value: SectionData) => void;
 }
 
 /**
@@ -57,7 +57,7 @@ export function ConfigureSectionStep({
   navigationGroup,
   navigationGroups,
   isActive,
-  data,
+  templateData,
   dialogContentRef,
   onTemplateChange,
   onSlotChange,
@@ -65,7 +65,7 @@ export function ConfigureSectionStep({
   onNavigationLabelChange,
   onNavigationGroupChange,
   onIsActiveChange,
-  onDataChange,
+  onTemplateDataChange,
 }: ConfigureSectionStepProps) {
   return (
     <div className="mx-1 my-4 space-y-6">
@@ -124,8 +124,8 @@ export function ConfigureSectionStep({
       {selectedTemplate && (
         <TemplateDataForm
           template={selectedTemplate}
-          data={data}
-          onDataChange={onDataChange}
+          templateData={templateData}
+          onTemplateDataChange={onTemplateDataChange}
         />
       )}
     </div>

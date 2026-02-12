@@ -13,11 +13,10 @@ import { ConfigureSectionStep } from '../../steps';
 import { CreateSectionFooter } from './partials/CreateSectionFooter';
 import { SelectStep } from '../../steps';
 import { useCreateSectionDialogState } from './useCreateSectionDialogState';
-import { SectionDialogPayload } from '../../core';
+import type { CreateSectionPayload } from '../../../shared';
 export type { TemplateFilterMode } from '../../steps';
 import { useTemplateFiltering } from '../../steps';
-
-export type CreateSectionPayload = SectionDialogPayload;
+export type { CreateSectionPayload };
 
 interface CreateSectionDialogProps {
   open: boolean;
@@ -132,7 +131,7 @@ export function CreateSectionDialog({
               navigationGroup={navigationGroup}
               navigationGroups={navigationGroups}
               isActive={isActive}
-              data={data}
+              templateData={data}
               dialogContentRef={dialogContentRef}
               onTemplateChange={handleTemplateChange}
               onSlotChange={setSlot}
@@ -140,7 +139,7 @@ export function CreateSectionDialog({
               onNavigationLabelChange={setNavigationLabel}
               onNavigationGroupChange={setNavigationGroup}
               onIsActiveChange={setIsActive}
-              onDataChange={setData}
+              onTemplateDataChange={setData}
             />
           )}
         </ScrollArea>

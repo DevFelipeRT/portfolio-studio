@@ -2,25 +2,25 @@ import type {
     SectionData,
     TemplateDefinitionDto,
 } from '@/Modules/ContentManagement/types';
-import { TemplateSectionForm } from '@/Modules/ContentManagement/features/page-management/section/template';
+import { TemplateForm } from '@/Modules/ContentManagement/features/page-management/section/template';
 
 interface TemplateDataFormProps {
   template: TemplateDefinitionDto;
-  data: SectionData;
-  onDataChange: (value: SectionData) => void;
+  templateData: SectionData;
+  onTemplateDataChange: (value: SectionData) => void;
 }
 
 export function TemplateDataForm({
   template,
-  data,
-  onDataChange,
+  templateData,
+  onTemplateDataChange,
 }: TemplateDataFormProps) {
   return (
     <div className="bg-muted/40 rounded-md border p-4">
-      <TemplateSectionForm
+      <TemplateForm
         template={template}
-        value={data}
-        onChange={onDataChange}
+        value={templateData}
+        onChange={onTemplateDataChange}
       />
     </div>
   );

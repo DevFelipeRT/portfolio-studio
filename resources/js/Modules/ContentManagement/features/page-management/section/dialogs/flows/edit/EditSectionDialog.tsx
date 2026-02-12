@@ -12,9 +12,8 @@ import type { PageSectionDto, TemplateDefinitionDto } from '@/Modules/ContentMan
 import { ConfigureSectionStep } from '../../steps';
 import { EditSectionFooter } from './partials/EditSectionFooter';
 import { useEditSectionDialogState } from './useEditSectionDialogState';
-import { SectionDialogPayload } from '../../core';
-
-export type EditSectionPayload = SectionDialogPayload;
+import type { UpdateSectionPayload as EditSectionPayload } from '../../../shared';
+export type { EditSectionPayload };
 
 interface EditSectionDialogProps {
   open: boolean;
@@ -112,7 +111,7 @@ export function EditSectionDialog({
               navigationGroup={navigationGroup}
               navigationGroups={navigationGroups}
               isActive={isActive}
-              data={data}
+              templateData={data}
               dialogContentRef={dialogContentRef}
               onTemplateChange={handleTemplateChange}
               onSlotChange={setSlot}
@@ -120,7 +119,7 @@ export function EditSectionDialog({
               onNavigationLabelChange={setNavigationLabel}
               onNavigationGroupChange={setNavigationGroup}
               onIsActiveChange={setIsActive}
-              onDataChange={setData}
+              onTemplateDataChange={setData}
             />
           )}
         </ScrollArea>

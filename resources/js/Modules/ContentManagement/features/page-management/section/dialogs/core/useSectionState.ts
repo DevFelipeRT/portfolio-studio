@@ -1,11 +1,6 @@
 import React from 'react';
 import type { PageSectionDto, SectionData, TemplateDefinitionDto } from '@/Modules/ContentManagement/types';
-import { buildInitialSectionData } from '@/Modules/ContentManagement/features/page-rendering';
-import {
-  getAllowedSlots,
-  getNavigationGroup,
-  resolveSlotOnTemplateChange,
-} from './rules';
+import { getAllowedSlots, resolveSlotOnTemplateChange } from './slots';
 
 interface UseSectionStateArgs {
   templates: TemplateDefinitionDto[];
@@ -20,14 +15,12 @@ function useSectionStateBase() {
   const [slot, setSlot] = React.useState<string>('');
   const [anchor, setAnchor] = React.useState<string>('');
   const [navigationLabel, setNavigationLabel] = React.useState<string>('');
+  const [navigationGroup, setNavigationGroup] = React.useState<string>('');
   const [isActive, setIsActive] = React.useState<boolean>(true);
-  const [data, setData] = React.useState<SectionData>({});
+  const [templateData, setTemplateData] = React.useState<SectionData>({});
 
-  const setNavigationGroup = React.useCallback((value: string) => {
-    setData((previous) => ({
-      ...previous,
-      navigation_group: value,
-    }));
+  const setNavigationGroupValue = React.useCallback((value: string) => {
+    setNavigationGroup(value);
   }, []);
 
   const resetState = React.useCallback(() => {
@@ -35,8 +28,9 @@ function useSectionStateBase() {
     setSlot('');
     setAnchor('');
     setNavigationLabel('');
+    setNavigationGroup('');
     setIsActive(true);
-    setData({});
+    setTemplateData({});
   }, []);
 
   const setFromSection = React.useCallback((section: PageSectionDto) => {
@@ -45,7 +39,16 @@ function useSectionStateBase() {
     setAnchor(section.anchor ?? '');
     setNavigationLabel(section.navigation_label ?? '');
     setIsActive(section.is_active);
-    setData(section.data ?? {});
+
+    const rawData = section.data ?? {};
+    const nextNavigationGroup =
+      typeof rawData.navigation_group === 'string' ? rawData.navigation_group : '';
+
+    // Remove section-level data from the template form payload.
+    const { navigation_group: _ignored, ...nextTemplateData } = rawData;
+
+    setNavigationGroup(nextNavigationGroup);
+    setTemplateData(nextTemplateData);
   }, []);
 
   return {
@@ -53,15 +56,16 @@ function useSectionStateBase() {
     slot,
     anchor,
     navigationLabel,
+    navigationGroup,
     isActive,
-    data,
+    templateData,
     setSelectedTemplateKey,
     setSlot,
     setAnchor,
     setNavigationLabel,
-    setNavigationGroup,
+    setNavigationGroup: setNavigationGroupValue,
     setIsActive,
-    setData,
+    setData: setTemplateData,
     resetState,
     setFromSection,
   };
@@ -69,7 +73,14 @@ function useSectionStateBase() {
 
 export function useSectionState({ templates }: UseSectionStateArgs) {
   const base = useSectionStateBase();
-  const { setSelectedTemplateKey, setData, setSlot, data, slot } = base;
+  const {
+    setSelectedTemplateKey,
+    setData,
+    setSlot,
+    setNavigationGroup,
+    templateData,
+    slot,
+  } = base;
 
   const selectedTemplate = React.useMemo(
     () => templates.find((item) => item.key === base.selectedTemplateKey),
@@ -80,9 +91,110 @@ export function useSectionState({ templates }: UseSectionStateArgs) {
     [selectedTemplate],
   );
   const hasSlotOptions = allowedSlots.length > 0;
-  const navigationGroup = React.useMemo(
-    () => getNavigationGroup(base.data),
-    [base.data],
+
+  // Temporary in-dialog persistence to avoid accidental data loss when switching templates.
+  // Keeps a full snapshot per template key so switching back restores the previous state.
+  const templateDataStashRef = React.useRef<
+    Map<string, { templateData: SectionData; navigationGroup: string }>
+  >(
+    new Map(),
+  );
+
+  React.useEffect(() => {
+    const key = base.selectedTemplateKey;
+    if (!key) {
+      return;
+    }
+
+    templateDataStashRef.current.set(key, {
+      templateData,
+      navigationGroup: base.navigationGroup,
+    });
+  }, [base.navigationGroup, base.selectedTemplateKey, templateData]);
+
+  const buildTemplateChangeWarning = React.useCallback(
+    (
+      currentTemplate: TemplateDefinitionDto | undefined,
+      nextTemplate: TemplateDefinitionDto,
+      sourceData: SectionData,
+    ): string | null => {
+      const nextFieldNames = new Set(nextTemplate.fields.map((f) => f.name));
+
+      const preserved = (key: string): boolean => {
+        if (nextFieldNames.has(key)) {
+          return true;
+        }
+
+        return false;
+      };
+
+      const isMeaningfulValue = (value: unknown): boolean => {
+        if (value === null || value === undefined) {
+          return false;
+        }
+
+        if (typeof value === 'string') {
+          return value.trim().length > 0;
+        }
+
+        if (typeof value === 'number') {
+          return Number.isFinite(value);
+        }
+
+        if (typeof value === 'boolean') {
+          return value === true;
+        }
+
+        if (Array.isArray(value)) {
+          return value.length > 0;
+        }
+
+        if (typeof value === 'object') {
+          return Object.keys(value as Record<string, unknown>).length > 0;
+        }
+
+        return true;
+      };
+
+      const lostKeys = Object.keys(sourceData).filter((key) => {
+        if (preserved(key)) {
+          return false;
+        }
+
+        return isMeaningfulValue((sourceData as Record<string, unknown>)[key]);
+      });
+
+      if (lostKeys.length === 0) {
+        return null;
+      }
+
+      const labelByName = new Map<string, string>();
+      currentTemplate?.fields?.forEach((field) => {
+        labelByName.set(field.name, field.label);
+      });
+
+      const maxShown = 15;
+      const shown = lostKeys.slice(0, maxShown);
+      const remaining = lostKeys.length - shown.length;
+
+      const lines = [
+        'Ao trocar o template, os seguintes campos nao existem no novo template e serao perdidos quando voce salvar:',
+        ...shown.map((key) => {
+          const label = labelByName.get(key);
+          return label ? `- ${label} (${key})` : `- ${key}`;
+        }),
+      ];
+
+      if (remaining > 0) {
+        lines.push(`- ... e mais ${remaining}`);
+      }
+
+      lines.push('');
+      lines.push('Deseja continuar?');
+
+      return lines.join('\n');
+    },
+    [],
   );
 
   const handleTemplateChange = React.useCallback(
@@ -93,8 +205,6 @@ export function useSectionState({ templates }: UseSectionStateArgs) {
         return;
       }
 
-      setSelectedTemplateKey(nextTemplateKey);
-
       const template = templates.find((item) => item.key === nextTemplateKey);
 
       if (!template) {
@@ -102,10 +212,35 @@ export function useSectionState({ templates }: UseSectionStateArgs) {
         return;
       }
 
-      setData(buildInitialSectionData(template, { previousData: data }));
+      if (selectedTemplate && selectedTemplate.key !== template.key) {
+        const warning = buildTemplateChangeWarning(
+          selectedTemplate,
+          template,
+          templateData,
+        );
+
+        if (warning && !window.confirm(warning)) {
+          return;
+        }
+      }
+
+      setSelectedTemplateKey(nextTemplateKey);
+      const stashed = templateDataStashRef.current.get(nextTemplateKey);
+      setData(stashed?.templateData ?? templateData);
+      setNavigationGroup(stashed?.navigationGroup ?? base.navigationGroup);
       setSlot(resolveSlotOnTemplateChange(slot, template));
     },
-    [data, setData, setSelectedTemplateKey, setSlot, slot, templates],
+    [
+      buildTemplateChangeWarning,
+      selectedTemplate,
+      setData,
+      setNavigationGroup,
+      setSelectedTemplateKey,
+      setSlot,
+      slot,
+      templateData,
+      templates,
+    ],
   );
 
   return {
@@ -116,9 +251,9 @@ export function useSectionState({ templates }: UseSectionStateArgs) {
     slot: base.slot,
     anchor: base.anchor,
     navigationLabel: base.navigationLabel,
-    navigationGroup,
+    navigationGroup: base.navigationGroup,
     isActive: base.isActive,
-    data: base.data,
+    data: base.templateData,
     setSelectedTemplateKey: base.setSelectedTemplateKey,
     setSlot: base.setSlot,
     setAnchor: base.setAnchor,
