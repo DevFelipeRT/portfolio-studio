@@ -2,7 +2,7 @@ export type {
   SectionComponentProps,
   SectionComponentRegistry,
   SectionRegistryProvider,
-} from '@/Modules/ContentManagement/features/page-rendering/registry/sectionRegistry';
+} from '@/Modules/ContentManagement/features/page-rendering/types';
 
 export { SECTION_COMPONENT_REGISTRY } from '@/Modules/ContentManagement/features/page-rendering/registry/sectionRegistry';
 
@@ -26,5 +26,5 @@ export { SectionHeader } from '@/Modules/ContentManagement/features/page-renderi
 export { SectionRenderer } from '@/Modules/ContentManagement/features/page-rendering/rendering/SectionRenderer';
 export { sectionSlotLayoutManager } from '@/Modules/ContentManagement/features/page-rendering/rendering/SectionSlotLayout';
 
-export { buildNavigationItemsFromSections } from '@/Modules/ContentManagement/features/page-rendering/navigationItems';
-export { sortSectionsByPosition } from '@/Modules/ContentManagement/features/page-rendering/sectionSort';
+export { buildNavigationItems } from '@/Modules/ContentManagement/features/page-rendering/navigation';
+// Sorting is an internal implementation detail of page-rendering.

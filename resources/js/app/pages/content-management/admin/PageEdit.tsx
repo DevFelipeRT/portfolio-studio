@@ -21,7 +21,6 @@ import {
   useEditSectionDialogController,
   useSectionListController,
 } from '@/Modules/ContentManagement/features/page-management/section/operations';
-import { sortSectionsByPosition } from '@/Modules/ContentManagement/features/page-rendering';
 import type {
   PageEditViewModelProps,
   PageSectionDto,
@@ -60,10 +59,6 @@ export default function PageEdit({
   const createDialog = useCreateSectionDialogController();
   const editDialog = useEditSectionDialogController();
 
-  const sortedSections = React.useMemo(
-    () => sortSectionsByPosition(sections),
-    [sections],
-  );
   const navigationGroups = React.useMemo(() => {
     return collectSectionNavigationGroups(sections, defaultStringNormalizer);
   }, [sections]);
@@ -73,10 +68,9 @@ export default function PageEdit({
   const deleteSection = useDeleteSection();
   const toggleSectionActive = useToggleSectionActive();
 
-  // Ensure the list is displayed in a stable, deterministic order.
   const sectionsList = useSectionListController({
     pageId: page.id,
-    sections: sortedSections,
+    sections,
   });
 
   const handleChange = <K extends keyof PageFormData>(

@@ -1,16 +1,13 @@
 // resources/js/app/pages/content-management/public/RenderedPage.tsx
 import PublicLayout from '@/app/layouts/PublicLayout';
-
 import {
-  buildNavigationItemsFromSections,
+  buildNavigationItems,
   type SectionEnvironment,
   SectionEnvironmentProvider,
   sectionSlotLayoutManager,
-  sortSectionsByPosition,
 } from '@/Modules/ContentManagement/features/page-rendering';
 import type {
   PageRenderViewModelProps,
-  PageSectionDto,
   TemplateDefinitionDto,
 } from '@/Modules/ContentManagement/types';
 import { defaultStringNormalizer } from '@/Modules/ContentManagement/utils/strings';
@@ -29,11 +26,9 @@ export default function RenderedPage({
     ? extra.templates
     : [];
 
-  const sortedSections: PageSectionDto[] = sortSectionsByPosition(sections);
+  const visibleSections = sections.filter((section) => section.is_active);
 
-  const visibleSections = sortedSections.filter((section) => section.is_active);
-
-  const navigationItems = buildNavigationItemsFromSections(
+  const navigationItems = buildNavigationItems(
     visibleSections,
     defaultStringNormalizer,
   );

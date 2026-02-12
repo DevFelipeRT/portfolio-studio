@@ -5,6 +5,7 @@ import type {
 import { normalizeSlotKey } from '@/Modules/ContentManagement/utils/strings';
 import type { JSX } from 'react';
 import { SectionRenderer } from './SectionRenderer';
+import { orderSections } from '../sectionOrdering';
 
 type SlotName = 'hero' | 'main' | 'secondary' | 'footer' | 'other';
 
@@ -52,9 +53,10 @@ export class SectionSlotLayoutManager {
       return null;
     }
 
+    const orderedSections = orderSections(sections);
     const grouped = new Map<SlotName, PageSectionDto[]>();
 
-    sections.forEach((section) => {
+    orderedSections.forEach((section) => {
       const slot = normalizeSlot(section.slot);
       const bucket = grouped.get(slot) ?? [];
       bucket.push(section);
