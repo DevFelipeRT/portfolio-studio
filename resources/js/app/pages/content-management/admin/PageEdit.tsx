@@ -5,32 +5,28 @@ import {
   type PageFormData,
 } from '@/Modules/ContentManagement/features/page-management/page/PageForm';
 import {
-  CreateSectionDialog,
-  type CreateSectionPayload,
-  EditSectionDialog,
-  type EditSectionPayload,
-  useCreateSectionDialogController,
-  useEditSectionDialogController,
-} from '@/Modules/ContentManagement/features/page-management/section/dialogs';
-import {
   useCreateSection,
   useDeleteSection,
   useToggleSectionActive,
   useUpdateSection,
 } from '@/Modules/ContentManagement/features/page-management/section/hooks';
+import { collectSectionNavigationGroups } from '@/Modules/ContentManagement/features/page-management/section/navigation';
 import {
+  CreateSectionDialog,
+  type CreateSectionPayload,
+  EditSectionDialog,
+  type EditSectionPayload,
   SectionList,
+  useCreateSectionDialogController,
+  useEditSectionDialogController,
   useSectionListController,
-} from '@/Modules/ContentManagement/features/page-management/section/listing';
-import {
-  collectSectionNavigationGroups,
-  sortSectionsByPosition,
-} from '@/Modules/ContentManagement/features/page-rendering';
-import { defaultStringNormalizer } from '@/Modules/ContentManagement/shared/strings';
+} from '@/Modules/ContentManagement/features/page-management/section/operations';
+import { sortSectionsByPosition } from '@/Modules/ContentManagement/features/page-rendering';
 import type {
   PageEditViewModelProps,
   PageSectionDto,
 } from '@/Modules/ContentManagement/types';
+import { defaultStringNormalizer } from '@/Modules/ContentManagement/utils/strings';
 import type { FormDataValues } from '@inertiajs/core';
 import { Head, router, useForm } from '@inertiajs/react';
 import { Trash2 } from 'lucide-react';

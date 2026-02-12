@@ -1,6 +1,6 @@
+import type { UpdateSectionPayload } from '@/Modules/ContentManagement/features/page-management/section/types';
 import { router } from '@inertiajs/react';
 import React from 'react';
-import type { UpdateSectionPayload } from '@/Modules/ContentManagement/features/page-management/section/shared';
 
 interface UseUpdateSectionOptions {
   preserveScroll?: boolean;

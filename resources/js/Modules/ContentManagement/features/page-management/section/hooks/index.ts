@@ -5,5 +5,6 @@
  */
 export { useCreateSection } from './useCreateSection';
 export { useDeleteSection } from './useDeleteSection';
+export { useReorderSections } from './useReorderSections';
 export { useToggleSectionActive } from './useToggleSectionActive';
 export { useUpdateSection } from './useUpdateSection';
