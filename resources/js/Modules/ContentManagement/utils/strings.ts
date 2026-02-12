@@ -1,14 +1,5 @@
-import type { StringNormalizer } from '@/Modules/ContentManagement/features/page-rendering';
-
-export function normalizeString(value: unknown): string | null {
-    if (typeof value !== 'string') {
-        return null;
-    }
-
-    const trimmed = value.trim();
-
-    return trimmed.length > 0 ? trimmed : null;
-}
+import { StringNormalizer } from "../types/strings";
+import { normalizeString } from "./typeNormalizers";
 
 export function normalizeSlotKey(
     value: string | null | undefined,

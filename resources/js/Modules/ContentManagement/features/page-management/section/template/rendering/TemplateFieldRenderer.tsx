@@ -1,5 +1,5 @@
 import type { TemplateFieldControlProps } from '../types';
-import { normalizeFieldValue } from './normalizers';
+import { normalizeFieldValue } from './fieldValueNormalizer';
 import { getFieldRenderer } from './registry';
 
 /**
