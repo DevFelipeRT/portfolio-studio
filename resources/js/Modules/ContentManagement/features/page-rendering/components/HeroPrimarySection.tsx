@@ -5,8 +5,8 @@ import type {
 } from '@/Modules/ContentManagement/types';
 import { AspectRatio } from '@radix-ui/react-aspect-ratio';
 import { JSX } from 'react';
-import type { SectionComponentProps } from '../registry/sectionRegistry';
 import { useSectionFieldResolver } from '../runtime/useSectionFieldResolver';
+import { SectionComponentProps } from '../types';
 import { SectionHeader } from './partials/SectionHeader';
 
 /**

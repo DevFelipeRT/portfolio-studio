@@ -1,5 +1,3 @@
-// resources/js/Modules/ContentManagement/Components/Sections/CardsGridSection.tsx
-
 import {
   Card,
   CardContent,
@@ -13,8 +11,8 @@ import type {
   SectionDataValue,
 } from '@/Modules/ContentManagement/types';
 import { JSX } from 'react';
-import type { SectionComponentProps } from '../registry/sectionRegistry';
 import { useSectionFieldResolver } from '../runtime/useSectionFieldResolver';
+import { SectionComponentProps } from '../types';
 import { SectionHeader } from './partials/SectionHeader';
 
 interface CardsGridItem {

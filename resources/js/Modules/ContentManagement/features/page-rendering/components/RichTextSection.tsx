@@ -1,7 +1,7 @@
 import { RichTextRenderer } from '@/Common/RichText/RichTextRenderer';
 import { JSX } from 'react';
-import type { SectionComponentProps } from '../registry/sectionRegistry';
 import { useSectionFieldResolver } from '../runtime/useSectionFieldResolver';
+import { SectionComponentProps } from '../types';
 import { SectionHeader } from './partials/SectionHeader';
 
 /**

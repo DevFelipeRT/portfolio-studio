@@ -5,26 +5,12 @@ import type {
   TemplateDefinitionDto,
   TemplateFieldPrimitiveType,
 } from '@/Modules/ContentManagement/types';
-import { buildTemplateDefaults } from './fields/fieldDefaults';
-import { normalizeValue } from './fields/fieldNormalization';
-import { buildFieldTypeIndex } from './fields/fieldTypes';
-
-export interface SectionFieldResolver {
-  /**
-   * Returns the resolved and normalized value for a given field name.
-   *
-   * Resolution rules:
-   * - Non-empty values from section data have highest precedence.
-   * - If section data does not provide a usable value, template defaults are used.
-   * - Empty or whitespace-only strings are treated as "no value" to allow fallbacks.
-   * - Null and undefined are treated as "no value".
-   * - When a primitive type is available (or provided), normalization is applied.
-   */
-  getValue<TValue = SectionDataValue>(
-    fieldName: string,
-    expectedType?: TemplateFieldPrimitiveType,
-  ): TValue | undefined;
-}
+import {
+  buildTemplateFieldDefaults,
+  buildTemplateFieldTypeIndex,
+  normalizeTemplateFieldValue,
+} from '../template';
+import { SectionFieldResolver } from '../types';
 
 /**
  * Creates a field resolver bound to a specific section data payload and its template definition.
@@ -39,8 +25,8 @@ export function createSectionFieldResolver(
   template?: TemplateDefinitionDto,
 ): SectionFieldResolver {
   const safeData: SectionData = data ?? {};
-  const defaults = buildTemplateDefaults(template);
-  const fieldTypes = buildFieldTypeIndex(template);
+  const defaults = buildTemplateFieldDefaults(template);
+  const fieldTypes = buildTemplateFieldTypeIndex(template);
 
   return {
     getValue<TValue = SectionDataValue>(
@@ -56,7 +42,10 @@ export function createSectionFieldResolver(
         const rawFromData = safeData[fieldName];
 
         if (rawFromData !== undefined && rawFromData !== null) {
-          const normalizedFromData = normalizeValue(rawFromData, primitiveType);
+          const normalizedFromData = normalizeTemplateFieldValue(
+            rawFromData,
+            primitiveType,
+          );
 
           if (normalizedFromData !== undefined) {
             resolved = normalizedFromData;
@@ -71,7 +60,7 @@ export function createSectionFieldResolver(
         const rawFromDefault = defaults[fieldName];
 
         if (rawFromDefault !== undefined && rawFromDefault !== null) {
-          const normalizedFromDefault = normalizeValue(
+          const normalizedFromDefault = normalizeTemplateFieldValue(
             rawFromDefault,
             primitiveType,
           );

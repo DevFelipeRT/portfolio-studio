@@ -1,5 +1,5 @@
 import { createContext, useContext, type JSX, type ReactNode } from 'react';
-import type { SectionFieldResolver } from '../sectionFieldResolver';
+import { SectionFieldResolver } from '../types';
 
 const SectionFieldResolverContext = createContext<
   SectionFieldResolver | undefined

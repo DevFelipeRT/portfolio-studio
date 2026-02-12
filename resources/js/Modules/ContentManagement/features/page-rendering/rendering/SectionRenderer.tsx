@@ -1,19 +1,12 @@
-// resources/js/Modules/ContentManagement/Components/SectionRenderer.tsx
-
 import type {
   PageSectionDto,
   TemplateDefinitionDto,
 } from '@/Modules/ContentManagement/types';
 import React, { JSX } from 'react';
-import {
-  SECTION_COMPONENT_REGISTRY,
-  type SectionComponentProps,
-} from '../registry/sectionRegistry';
+import { SECTION_COMPONENT_REGISTRY } from '../registry/sectionRegistry';
 import { SectionFieldResolverProvider } from '../runtime/useSectionFieldResolver';
-import {
-  createSectionFieldResolver,
-  type SectionFieldResolver,
-} from '../sectionFieldResolver';
+import { SectionComponentProps, SectionFieldResolver } from '../types';
+import { createSectionFieldResolver } from './sectionFieldResolver';
 
 export interface SectionRendererProps {
   sections: PageSectionDto[];

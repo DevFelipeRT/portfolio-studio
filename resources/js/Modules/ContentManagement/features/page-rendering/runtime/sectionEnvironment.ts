@@ -1,21 +1,17 @@
 import type { SocialLinkItem } from '@/Modules/ContactChannels/ui/SocialLinksBar';
 
 /**
- * Represents ambient data available to content-managed sections.
- *
- * This environment is intended for front-only concerns that are
- * not part of CMS-managed section data, such as shared UI resources.
+ * Shape of the environment object provided to section rendering runtime.
  */
 export interface SectionEnvironment {
   /**
-   * Optional social link items that can be displayed by sections
-   * that support social contact channels.
+   * Optional list of social links available to section components.
    */
   socialLinks?: SocialLinkItem[];
 }
 
 /**
- * Creates a default section environment with no ambient data.
+ * Returns the default section environment object.
  */
 export function createDefaultSectionEnvironment(): SectionEnvironment {
   return {};
