@@ -1,6 +1,6 @@
 import { Textarea } from '@/Components/Ui/textarea';
-import { FieldFrame } from '../../components/FieldFrame';
 import type { TemplateFieldControlProps } from '../../types';
+import { FieldFrame } from './partials/FieldFrame';
 
 export function TextareaFieldControl({
   value,

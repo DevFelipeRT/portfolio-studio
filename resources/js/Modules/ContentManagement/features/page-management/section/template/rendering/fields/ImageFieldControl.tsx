@@ -1,6 +1,6 @@
 import { parsePositiveIntegerStrict } from '@/Modules/ContentManagement/utils/numbers';
-import { FieldFrame } from '../../components/FieldFrame';
 import type { TemplateFieldControlProps } from '../../types';
+import { FieldFrame } from './partials/FieldFrame';
 
 /**
  * ImageFieldControl renders a basic numeric input for a single image identifier.

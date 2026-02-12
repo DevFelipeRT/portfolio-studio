@@ -1,6 +1,6 @@
 import { RichTextEditor } from '@/Common/RichText/RichTextEditor';
-import { FieldFrame } from '../../components/FieldFrame';
 import type { TemplateFieldControlProps } from '../../types';
+import { FieldFrame } from './partials/FieldFrame';
 
 export function RichTextFieldControl({
   value,

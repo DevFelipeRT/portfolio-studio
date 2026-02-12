@@ -1,6 +1,6 @@
 import { Input } from '@/Components/Ui/input';
-import { FieldFrame } from '../../components/FieldFrame';
 import type { TemplateFieldControlProps } from '../../types';
+import { FieldFrame } from './partials/FieldFrame';
 
 export function TextFieldControl({
   value,
