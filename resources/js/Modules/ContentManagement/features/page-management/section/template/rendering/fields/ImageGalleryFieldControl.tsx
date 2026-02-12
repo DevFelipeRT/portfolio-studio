@@ -1,5 +1,5 @@
 import { Textarea } from '@/Components/Ui/textarea';
-import { parseCommaSeparatedPositiveIntegers } from '@/Modules/ContentManagement/shared/numbers';
+import { parseCommaSeparatedPositiveIntegers } from '@/Modules/ContentManagement/utils/numbers';
 import { FieldFrame } from '../../components/FieldFrame';
 import type { TemplateFieldControlProps } from '../../types';
 

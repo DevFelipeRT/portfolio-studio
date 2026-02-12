@@ -1,4 +1,4 @@
-import type { TemplateFieldPrimitiveType } from '@/Modules/ContentManagement/shared/types/templates';
+import type { TemplateFieldPrimitiveType } from '@/Modules/ContentManagement/types/templates';
 import type { ComponentType } from 'react';
 import type { TemplateFieldControlProps } from '../types';
 import {

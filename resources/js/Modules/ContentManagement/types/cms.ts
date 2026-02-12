@@ -1,5 +1,5 @@
-import type { SectionData } from '@/Modules/ContentManagement/shared/types/sections';
-import type { TemplateDefinitionDto } from '@/Modules/ContentManagement/shared/types/templates';
+import type { SectionData } from '@/Modules/ContentManagement/types/sections';
+import type { TemplateDefinitionDto } from '@/Modules/ContentManagement/types/templates';
 
 export interface HasTimestamps {
     created_at: string | null;
@@ -106,4 +106,3 @@ export interface PageRenderViewModelProps {
         [key: string]: unknown;
     };
 }
-

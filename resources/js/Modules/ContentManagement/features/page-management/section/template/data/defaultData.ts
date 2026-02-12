@@ -1,9 +1,11 @@
 import type {
-  TemplateDefinitionDto,
   TemplateData,
+  TemplateDefinitionDto,
 } from '@/Modules/ContentManagement/types';
 
-export function resolveDefaultData(template: TemplateDefinitionDto): TemplateData {
+export function resolveDefaultData(
+  template: TemplateDefinitionDto,
+): TemplateData {
   const defaults: Partial<TemplateData> = {};
 
   for (const field of template.fields) {

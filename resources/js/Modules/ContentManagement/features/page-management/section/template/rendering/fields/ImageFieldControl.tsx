@@ -1,4 +1,4 @@
-import { parsePositiveIntegerStrict } from '@/Modules/ContentManagement/shared/numbers';
+import { parsePositiveIntegerStrict } from '@/Modules/ContentManagement/utils/numbers';
 import { FieldFrame } from '../../components/FieldFrame';
 import type { TemplateFieldControlProps } from '../../types';
 

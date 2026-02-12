@@ -1,5 +1,5 @@
-// Backwards-compatible re-exports. Prefer importing from:
-//   "@/Modules/ContentManagement/shared/types/*"
+// Centralized type exports for ContentManagement.
+// Prefer importing from "@/Modules/ContentManagement/types".
 
 export type {
     HasTimestamps,
@@ -10,7 +10,7 @@ export type {
     PageEditViewModelProps,
     PageIndexViewModelProps,
     PageRenderViewModelProps,
-} from '@/Modules/ContentManagement/shared/types/cms';
+} from '@/Modules/ContentManagement/types/cms';
 
 export type {
     SectionData,
@@ -19,10 +19,10 @@ export type {
     SectionDataValue,
     SectionImage,
     TemplateData,
-} from '@/Modules/ContentManagement/shared/types/sections';
+} from '@/Modules/ContentManagement/types/sections';
 
 export type {
     TemplateDefinitionDto,
     TemplateFieldDto,
     TemplateFieldPrimitiveType,
-} from '@/Modules/ContentManagement/shared/types/templates';
+} from '@/Modules/ContentManagement/types/templates';

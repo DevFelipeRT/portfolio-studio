@@ -1,5 +1,5 @@
 import { Input } from '@/Components/Ui/input';
-import { parseCommaSeparatedIntegers } from '@/Modules/ContentManagement/shared/numbers';
+import { parseCommaSeparatedIntegers } from '@/Modules/ContentManagement/utils/numbers';
 import React from 'react';
 import { FieldFrame } from '../../components/FieldFrame';
 import type { TemplateFieldControlProps } from '../../types';

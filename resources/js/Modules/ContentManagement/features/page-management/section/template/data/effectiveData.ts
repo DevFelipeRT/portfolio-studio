@@ -1,7 +1,7 @@
 import type {
   SectionData,
-  TemplateDefinitionDto,
   TemplateData,
+  TemplateDefinitionDto,
 } from '@/Modules/ContentManagement/types';
 import { resolveDefaultData } from './defaultData';
 
