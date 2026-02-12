@@ -1,40 +1,10 @@
 import type { NavigationItem, NavigationSectionItem } from '@/app/navigation';
-import type { StringNormalizer } from './ports/stringNormalizer';
+import {
+  getSectionNavigationGroup,
+  getSectionNavigationLabel,
+} from '@/Modules/ContentManagement/features/page-management/section/navigation';
 import type { PageSectionDto } from '@/Modules/ContentManagement/types';
-
-type SectionNavigationMetadata = {
-  label: string | null;
-  group: string | null;
-  targetId: string | null;
-};
-
-function resolveSectionNavigationMetadata(
-  section: PageSectionDto,
-  normalizer: StringNormalizer,
-): SectionNavigationMetadata {
-  const data = section.data ?? {};
-  const label = normalizer.normalize(section.navigation_label);
-
-  return {
-    label: label ?? normalizer.normalize(data.navigation_label),
-    group: normalizer.normalize(data.navigation_group),
-    targetId: normalizer.normalize(section.anchor),
-  };
-}
-
-export function getSectionNavigationLabel(
-  section: PageSectionDto,
-  normalizer: StringNormalizer,
-): string | null {
-  return resolveSectionNavigationMetadata(section, normalizer).label;
-}
-
-export function getSectionNavigationGroup(
-  section: PageSectionDto,
-  normalizer: StringNormalizer,
-): string | null {
-  return resolveSectionNavigationMetadata(section, normalizer).group;
-}
+import type { StringNormalizer } from '../../types/strings';
 
 function buildGroupId(label: string): string {
   const safe = label
@@ -54,10 +24,9 @@ export function buildNavigationItemsFromSections(
   const groups = new Map<string, NavigationItem>();
 
   sections.forEach((section) => {
-    const { label, group, targetId } = resolveSectionNavigationMetadata(
-      section,
-      normalizer,
-    );
+    const label = getSectionNavigationLabel(section, normalizer);
+    const group = getSectionNavigationGroup(section, normalizer);
+    const targetId = normalizer.normalize(section.anchor);
 
     if (!label || !targetId) {
       return;

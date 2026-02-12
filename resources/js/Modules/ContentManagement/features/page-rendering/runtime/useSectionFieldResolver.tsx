@@ -1,27 +1,27 @@
-import type { SectionFieldResolver } from '../rules/sectionFieldResolver';
 import { createContext, useContext, type JSX, type ReactNode } from 'react';
+import type { SectionFieldResolver } from '../sectionFieldResolver';
 
 const SectionFieldResolverContext = createContext<
-    SectionFieldResolver | undefined
+  SectionFieldResolver | undefined
 >(undefined);
 
 interface SectionFieldResolverProviderProps {
-    resolver: SectionFieldResolver;
-    children: ReactNode;
+  resolver: SectionFieldResolver;
+  children: ReactNode;
 }
 
 /**
  * Provides a field resolver for a specific content-managed section.
  */
 export function SectionFieldResolverProvider({
-    resolver,
-    children,
+  resolver,
+  children,
 }: SectionFieldResolverProviderProps): JSX.Element {
-    return (
-        <SectionFieldResolverContext.Provider value={resolver}>
-            {children}
-        </SectionFieldResolverContext.Provider>
-    );
+  return (
+    <SectionFieldResolverContext.Provider value={resolver}>
+      {children}
+    </SectionFieldResolverContext.Provider>
+  );
 }
 
 /**
@@ -31,13 +31,13 @@ export function SectionFieldResolverProvider({
  * precedence between persisted data and template defaults.
  */
 export function useSectionFieldResolver(): SectionFieldResolver {
-    const resolver = useContext(SectionFieldResolverContext);
+  const resolver = useContext(SectionFieldResolverContext);
 
-    if (!resolver) {
-        throw new Error(
-            'useSectionFieldResolver must be used within a SectionFieldResolverProvider.',
-        );
-    }
+  if (!resolver) {
+    throw new Error(
+      'useSectionFieldResolver must be used within a SectionFieldResolverProvider.',
+    );
+  }
 
-    return resolver;
+  return resolver;
 }

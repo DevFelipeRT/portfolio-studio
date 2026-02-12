@@ -1,102 +1,99 @@
 import type {
-    PageSectionDto,
-    TemplateDefinitionDto,
+  PageSectionDto,
+  TemplateDefinitionDto,
 } from '@/Modules/ContentManagement/types';
-import { SectionRenderer } from './SectionRenderer';
-import { normalizeSlotKey } from '@/Modules/ContentManagement/shared/strings';
+import { normalizeSlotKey } from '@/Modules/ContentManagement/utils/strings';
 import type { JSX } from 'react';
+import { SectionRenderer } from './SectionRenderer';
 
 type SlotName = 'hero' | 'main' | 'secondary' | 'footer' | 'other';
 
 type SlotDefinition = {
-    slot: SlotName;
-    tag?: keyof JSX.IntrinsicElements;
+  slot: SlotName;
+  tag?: keyof JSX.IntrinsicElements;
 };
 
 const SLOT_DEFINITIONS: SlotDefinition[] = [
-    { slot: 'hero', tag: 'header' },
-    { slot: 'main' },
-    { slot: 'secondary', tag: 'aside' },
-    { slot: 'footer', tag: 'footer' },
-    { slot: 'other', tag: 'section' },
+  { slot: 'hero', tag: 'header' },
+  { slot: 'main' },
+  { slot: 'secondary', tag: 'aside' },
+  { slot: 'footer', tag: 'footer' },
+  { slot: 'other', tag: 'section' },
 ];
 
 function normalizeSlot(slot: string | null): SlotName {
-    const normalized = normalizeSlotKey(slot) ?? '';
+  const normalized = normalizeSlotKey(slot) ?? '';
 
-    if (normalized === 'hero') {
-        return 'hero';
-    }
+  if (normalized === 'hero') {
+    return 'hero';
+  }
 
-    if (normalized === 'main') {
-        return 'main';
-    }
+  if (normalized === 'main') {
+    return 'main';
+  }
 
-    if (normalized === 'secondary') {
-        return 'secondary';
-    }
+  if (normalized === 'secondary') {
+    return 'secondary';
+  }
 
-    if (normalized === 'footer') {
-        return 'footer';
-    }
+  if (normalized === 'footer') {
+    return 'footer';
+  }
 
-    return 'other';
+  return 'other';
 }
 
 export class SectionSlotLayoutManager {
-    public render(
-        sections: PageSectionDto[],
-        templates: TemplateDefinitionDto[],
-    ): JSX.Element | null {
-        if (sections.length === 0) {
-            return null;
-        }
-
-        const grouped = new Map<SlotName, PageSectionDto[]>();
-
-        sections.forEach((section) => {
-            const slot = normalizeSlot(section.slot);
-            const bucket = grouped.get(slot) ?? [];
-            bucket.push(section);
-            grouped.set(slot, bucket);
-        });
-
-        return (
-            <>
-                {SLOT_DEFINITIONS.map(({ slot, tag }) => {
-                    const items = grouped.get(slot) ?? [];
-
-                    if (items.length === 0) {
-                        return null;
-                    }
-
-                    if (!tag) {
-                        return (
-                            <SectionRenderer
-                                key={slot}
-                                sections={items}
-                                templates={templates}
-                            />
-                        );
-                    }
-
-                    const Container = tag;
-
-                    return (
-                        <Container
-                            key={slot}
-                            className={`content-slot content-slot-${slot}`}
-                        >
-                            <SectionRenderer
-                                sections={items}
-                                templates={templates}
-                            />
-                        </Container>
-                    );
-                })}
-            </>
-        );
+  public render(
+    sections: PageSectionDto[],
+    templates: TemplateDefinitionDto[],
+  ): JSX.Element | null {
+    if (sections.length === 0) {
+      return null;
     }
+
+    const grouped = new Map<SlotName, PageSectionDto[]>();
+
+    sections.forEach((section) => {
+      const slot = normalizeSlot(section.slot);
+      const bucket = grouped.get(slot) ?? [];
+      bucket.push(section);
+      grouped.set(slot, bucket);
+    });
+
+    return (
+      <>
+        {SLOT_DEFINITIONS.map(({ slot, tag }) => {
+          const items = grouped.get(slot) ?? [];
+
+          if (items.length === 0) {
+            return null;
+          }
+
+          if (!tag) {
+            return (
+              <SectionRenderer
+                key={slot}
+                sections={items}
+                templates={templates}
+              />
+            );
+          }
+
+          const Container = tag;
+
+          return (
+            <Container
+              key={slot}
+              className={`content-slot content-slot-${slot}`}
+            >
+              <SectionRenderer sections={items} templates={templates} />
+            </Container>
+          );
+        })}
+      </>
+    );
+  }
 }
 
 export const sectionSlotLayoutManager = new SectionSlotLayoutManager();

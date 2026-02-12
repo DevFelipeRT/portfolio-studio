@@ -8,12 +8,12 @@ import {
   sectionSlotLayoutManager,
   sortSectionsByPosition,
 } from '@/Modules/ContentManagement/features/page-rendering';
-import { defaultStringNormalizer } from '@/Modules/ContentManagement/shared/strings';
 import type {
   PageRenderViewModelProps,
   PageSectionDto,
   TemplateDefinitionDto,
 } from '@/Modules/ContentManagement/types';
+import { defaultStringNormalizer } from '@/Modules/ContentManagement/utils/strings';
 import { Head } from '@inertiajs/react';
 import { JSX } from 'react';
 
