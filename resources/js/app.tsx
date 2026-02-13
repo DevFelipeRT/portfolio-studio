@@ -2,6 +2,13 @@ import '../css/app.css';
 import './bootstrap';
 
 import { createInertiaApp } from '@inertiajs/react';
+import type { Page } from '@inertiajs/core';
+import {
+  createElement,
+  type ComponentType,
+  type ReactElement,
+  type ReactNode,
+} from 'react';
 import { createRoot } from 'react-dom/client';
 import { I18nProvider, createI18nEnvironment } from '@/Common/i18n';
 
@@ -106,7 +113,49 @@ function registerPages(
 
 registerPages(appPageFiles, './app/pages/');
 
+const useScriptElementForInitialPage = true;
+
+type PageModule = {
+  default: ComponentType<Record<string, unknown>> & {
+    layout?: unknown;
+    displayName?: string;
+  };
+};
+
+function isPageModule(value: unknown): value is PageModule {
+  if (!value || typeof value !== 'object') {
+    return false;
+  }
+
+  const maybeDefault = (value as Record<string, unknown>).default;
+
+  return typeof maybeDefault === 'function';
+}
+
+function resolveInitialPageForCSR(): Page {
+  const script = document.getElementById('inertia-page');
+
+  if (!script) {
+    throw new Error(
+      'Inertia initial page script element not found. Expected <script id="inertia-page" type="application/json"> in the root view.',
+    );
+  }
+
+  const raw = script.textContent;
+
+  if (!raw || raw.trim() === '') {
+    throw new Error(
+      'Inertia initial page script element is empty. Expected serialized page JSON.',
+    );
+  }
+
+  return JSON.parse(raw) as Page;
+}
+
 createInertiaApp({
+  page: useScriptElementForInitialPage
+    ? resolveInitialPageForCSR()
+    : undefined,
   title: (title) => {
     const locale = resolveInitialLocale(propsCache) ?? '';
     const pageTitle = typeof title === 'string' ? title.trim() : '';
@@ -150,23 +199,23 @@ createInertiaApp({
       throw new Error(`Page not found in registry: ${name}`);
     }
 
-    const pageModule: any = await loader();
+    const loadedModule: unknown = await loader();
 
-    if (!pageModule?.default) {
+    if (!isPageModule(loadedModule)) {
       throw new Error(
         `Resolved module for "${name}" does not have a default export.`,
       );
     }
 
-    const PageComponent = pageModule.default;
+    const PageComponent = loadedModule.default;
 
     const WrappedPage = (props: Record<string, unknown>) => (
       <PageComponent {...props} />
     );
 
     WrappedPage.displayName = `I18n(${PageComponent.displayName ?? PageComponent.name ?? 'Page'})`;
-    WrappedPage.layout = (page: any) => {
-      const props = (page?.props ?? {}) as InertiaPageProps;
+    WrappedPage.layout = (page: ReactElement<Record<string, unknown>>) => {
+      const props = (page.props ?? {}) as InertiaPageProps;
       const currentLocale = resolveInitialLocale(props) ?? null;
       const localizationConfig = props.localization || {};
 
@@ -176,18 +225,42 @@ createInertiaApp({
         fallbackLocale: localizationConfig.fallbackLocale,
       });
 
-      const content = PageComponent.layout
-        ? PageComponent.layout(page)
-        : page;
+      const layout = PageComponent.layout;
+      const content: ReactNode = (() => {
+        if (typeof layout === 'function') {
+          return layout(page);
+        }
+
+        if (Array.isArray(layout)) {
+          return layout
+            .concat(page)
+            .reverse()
+            .reduce((children: ReactNode, Layout: unknown) => {
+              if (typeof Layout !== 'function') {
+                return children;
+              }
+
+              const LayoutComponent = Layout as ComponentType<Record<string, unknown>>;
+
+              return createElement(
+                LayoutComponent,
+                props as Record<string, unknown>,
+                children,
+              );
+            }, page);
+        }
+
+        return page;
+      })();
 
       return (
         <I18nProvider
           initialLocale={currentLocale}
           localeResolver={localeResolver}
           translationResolver={translationResolver}
-        >
-          {content}
-        </I18nProvider>
+      >
+        {content}
+      </I18nProvider>
       );
     };
 

@@ -21,9 +21,9 @@
     @routes
     @viteReactRefresh
     @vite(['resources/css/app.css', 'resources/js/app.tsx'])
-    @inertiaHead
 </head>
 <body class="font-sans antialiased">
-    @inertia
+    <div id="app"></div>
+    <script id="inertia-page" type="application/json">@json($page)</script>
 </body>
 </html>

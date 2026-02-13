@@ -1,8 +1,8 @@
 // resources/js/app/pages/content-management/public/RenderedPage.tsx
 import PublicLayout from '@/app/layouts/PublicLayout';
 import {
-  buildPageRenderingContext,
   buildNavigationItems,
+  buildPageRenderingContext,
   PageRenderingContextProvider,
   sectionSlotLayoutManager,
 } from '@/Modules/ContentManagement/features/page-rendering';
