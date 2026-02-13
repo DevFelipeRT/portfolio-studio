@@ -1,4 +1,3 @@
-// resources/js/Modules/ContentManagement/utils/sectionFieldResolver.ts
 import type {
   SectionData,
   SectionDataValue,

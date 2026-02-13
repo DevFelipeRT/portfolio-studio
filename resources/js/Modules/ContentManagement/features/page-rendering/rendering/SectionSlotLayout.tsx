@@ -4,8 +4,8 @@ import type {
 } from '@/Modules/ContentManagement/types';
 import { normalizeSlotKey } from '@/Modules/ContentManagement/utils/strings';
 import type { JSX } from 'react';
-import { SectionRenderer } from './SectionRenderer';
-import { orderSections } from '../sectionOrdering';
+import { SectionRenderer } from './section-renderer';
+import { orderSections } from '../utils/sectionOrdering';
 
 type SlotName = 'hero' | 'main' | 'secondary' | 'footer' | 'other';
 
