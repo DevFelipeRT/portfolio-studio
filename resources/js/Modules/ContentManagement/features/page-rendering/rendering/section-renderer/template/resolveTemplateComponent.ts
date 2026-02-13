@@ -1,5 +1,8 @@
-import type { SectionComponentProps, SectionComponentRegistry } from '../../types';
 import type React from 'react';
+import {
+  SectionComponentProps,
+  SectionComponentRegistry,
+} from '../../../types';
 
 export function resolveTemplateComponent(
   registry: SectionComponentRegistry,

@@ -1,6 +1,3 @@
-export { SectionRenderer } from './section-renderer';
-export { sectionSlotLayoutManager } from './SectionSlotLayout';
-
 export type {
   PageRenderingContext,
   PageRenderingContextContributor,
@@ -13,3 +10,5 @@ export {
   usePageRenderingContext,
   usePageRenderingContextValue,
 } from './context/usePageRenderingContext';
+export { SectionRenderer } from './section-renderer';
+export { sectionSlotLayoutManager } from './SectionSlotLayout';

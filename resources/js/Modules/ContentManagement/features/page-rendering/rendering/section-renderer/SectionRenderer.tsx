@@ -1,16 +1,16 @@
+import { sectionRegistryProviders } from '@/config/sectionRegistryProviders';
 import type {
   PageSectionDto,
   TemplateDefinitionDto,
 } from '@/Modules/ContentManagement/types';
-import { sectionRegistryProviders } from '@/config/sectionRegistryProviders';
 import { JSX } from 'react';
-import { SectionFieldResolverProvider } from '../../runtime/sectionFieldResolverProvider';
 import { buildComponentRegistry } from '../../template/registry/componentRegistry';
-import { createSectionFieldResolver } from '../sectionFieldResolver';
-import { findTemplateDefinition } from './findTemplateDefinition';
+import { createFieldValueResolver } from './field-value/fieldValueResolver';
+import { FieldValueResolverProvider } from './field-value/fieldValueResolverProvider';
 import { renderGenericTemplateSection } from './renderGenericTemplateSection';
-import { resolveTemplateComponent } from './resolveTemplateComponent';
-import { toSectionRenderModel } from './toSectionRenderModel';
+import { buildSectionRenderModel } from './sectionRenderModel';
+import { findTemplateDefinition } from './template/findTemplateDefinition';
+import { resolveTemplateComponent } from './template/resolveTemplateComponent';
 
 export interface SectionRendererProps {
   sections: PageSectionDto[];
@@ -26,7 +26,7 @@ export interface SectionRendererProps {
  * Renders a list of page sections, using template-specific components when available
  * and falling back to a generic template-based renderer otherwise.
  *
- * Each rendered section receives a field resolver through context so that
+ * Each rendered section receives a field value resolver through context so that
  * components can read CMS values with the correct precedence between
  * persisted section data and template defaults.
  *
@@ -42,12 +42,15 @@ export function SectionRenderer({
     return null;
   }
 
-  const componentRegistry = buildComponentRegistry({}, sectionRegistryProviders);
+  const componentRegistry = buildComponentRegistry(
+    {},
+    sectionRegistryProviders,
+  );
 
   return (
     <>
       {sections.map((section) => {
-        const sectionModel = toSectionRenderModel(section);
+        const sectionModel = buildSectionRenderModel(section);
 
         const template = findTemplateDefinition(
           templates,
@@ -63,7 +66,7 @@ export function SectionRenderer({
           return null;
         }
 
-        const fieldResolver = createSectionFieldResolver(
+        const fieldValueResolver = createFieldValueResolver(
           section.data ?? null,
           template,
         );
@@ -85,7 +88,7 @@ export function SectionRenderer({
           renderGenericTemplateSection(
             sectionModel,
             template,
-            fieldResolver,
+            fieldValueResolver,
             resolvedSectionClassName,
           )
         );
@@ -95,12 +98,12 @@ export function SectionRenderer({
         }
 
         return (
-          <SectionFieldResolverProvider
+          <FieldValueResolverProvider
             key={section.id}
-            resolver={fieldResolver}
+            resolver={fieldValueResolver}
           >
             {content}
-          </SectionFieldResolverProvider>
+          </FieldValueResolverProvider>
         );
       })}
     </>
