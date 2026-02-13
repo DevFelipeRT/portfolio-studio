@@ -4,10 +4,15 @@ import type {
   TemplateDefinitionDto,
   TemplateFieldPrimitiveType,
 } from '@/Modules/ContentManagement/types';
+import type { ComponentRegistryProvider } from '@/Modules/ContentManagement/types/provider';
 import type { ComponentType } from 'react';
 
+export type SectionRenderModel = Pick<PageSectionDto, 'id' | 'anchor'> & {
+  templateKey: string;
+};
+
 export type SectionComponentProps = {
-  section: PageSectionDto;
+  section: SectionRenderModel;
   template?: TemplateDefinitionDto;
   anchorId?: string;
   className?: string;
@@ -18,9 +23,8 @@ export type SectionComponentRegistry = Record<
   ComponentType<SectionComponentProps>
 >;
 
-export type SectionRegistryProvider = {
-  getSectionRegistry(): SectionComponentRegistry;
-};
+export type SectionRegistryProvider =
+  ComponentRegistryProvider<SectionComponentRegistry>;
 
 export interface SectionFieldResolver {
   /**

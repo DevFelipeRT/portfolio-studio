@@ -25,12 +25,12 @@ type CapabilityProject = {
  * Primary source for all content is the section field resolver.
  */
 export function ProjectHighlightListSection({
-    section,
+    section: renderModel,
     className,
 }: SectionComponentProps): JSX.Element | null {
     const fieldResolver = useSectionFieldResolver();
 
-    const targetId = section.anchor || `projects-${section.id}`;
+    const targetId = renderModel.anchor || `projects-${renderModel.id}`;
 
     const highlightOnly =
         fieldResolver.getValue<boolean>('highlight_only') ??

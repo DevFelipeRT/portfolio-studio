@@ -75,13 +75,13 @@ function ExperiencePeriodDisplay({
  * integrating with the experiences.visible.v1 capability.
  */
 export function ExperienceTimelineSection({
-  section,
+  section: renderModel,
   className,
 }: SectionComponentProps): JSX.Element | null {
   const fieldResolver = useSectionFieldResolver();
   const locale = useGetLocale();
 
-  const targetId = section.anchor || `experience-${section.id}`;
+  const targetId = renderModel.anchor || `experience-${renderModel.id}`;
 
   const rawExperiences =
     fieldResolver.getValue<SectionDataValue>('experiences');

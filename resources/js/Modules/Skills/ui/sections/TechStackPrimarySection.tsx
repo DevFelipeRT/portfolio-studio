@@ -25,12 +25,12 @@ type CapabilitySkillGroup = {
  * with static defaults as final fallback.
  */
 export function TechStackPrimarySection({
-    section,
+    section: renderModel,
     className,
 }: SectionComponentProps): JSX.Element | null {
     const fieldResolver = useSectionFieldResolver();
 
-    const targetId = section.anchor || `tech-stack-${section.id}`;
+    const targetId = renderModel.anchor || `tech-stack-${renderModel.id}`;
 
     const sectionLabel =
         fieldResolver.getValue<string>('section_label') ??

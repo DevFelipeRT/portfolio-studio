@@ -26,3 +26,5 @@ export type {
     TemplateFieldDto,
     TemplateFieldPrimitiveType,
 } from '@/Modules/ContentManagement/types/templates';
+
+export type { ComponentRegistryProvider } from '@/Modules/ContentManagement/types/provider';

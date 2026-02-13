@@ -22,12 +22,12 @@ type CapabilityInitiative = {
  * Primary source for all content is the section field resolver.
  */
 export function InitiativeHighlightListSection({
-    section,
+    section: renderModel,
     className,
 }: SectionComponentProps): JSX.Element | null {
     const fieldResolver = useSectionFieldResolver();
 
-    const targetId = section.anchor || `initiatives-${section.id}`;
+    const targetId = renderModel.anchor || `initiatives-${renderModel.id}`;
 
     const highlightOnly =
         fieldResolver.getValue<boolean>('highlight_only') ??

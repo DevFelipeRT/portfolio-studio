@@ -23,12 +23,12 @@ import type { ComponentType, FormEvent, JSX, SVGProps } from 'react';
  * through the front-only section environment.
  */
 export function ContactPrimarySection({
-  section,
+  section: renderModel,
   className,
 }: SectionComponentProps): JSX.Element | null {
   const fieldResolver = useSectionFieldResolver();
 
-  const targetId = section.anchor || `contact-${section.id}`;
+  const targetId = renderModel.anchor || `contact-${renderModel.id}`;
 
   const sectionLabel =
     fieldResolver.getValue<string>('section_label') ??

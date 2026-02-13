@@ -77,13 +77,13 @@ function CoursePeriodDisplay({
  * integrating with the courses.visible.v1 capability.
  */
 export function CoursesHighlightGridSection({
-  section,
+  section: renderModel,
   className,
 }: SectionComponentProps): JSX.Element | null {
   const fieldResolver = useSectionFieldResolver();
   const locale = useGetLocale();
 
-  const targetId = section.anchor || `education-${section.id}`;
+  const targetId = renderModel.anchor || `education-${renderModel.id}`;
 
   const rawCourses = fieldResolver.getValue<SectionDataValue>('courses');
 
