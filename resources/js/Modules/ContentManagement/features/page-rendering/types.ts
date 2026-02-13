@@ -26,7 +26,7 @@ export type SectionComponentRegistry = Record<
 export type SectionRegistryProvider =
   ComponentRegistryProvider<SectionComponentRegistry>;
 
-export interface SectionFieldResolver {
+export interface FieldValueResolver {
   /**
    * Returns the resolved and normalized value for a given field name.
    *
@@ -37,7 +37,7 @@ export interface SectionFieldResolver {
    * - Null and undefined are treated as "no value".
    * - When a primitive type is available (or provided), normalization is applied.
    */
-  getValue<TValue = SectionDataValue>(
+  getFieldValue<TValue = SectionDataValue>(
     fieldName: string,
     expectedType?: TemplateFieldPrimitiveType,
   ): TValue | undefined;

@@ -2,12 +2,18 @@ import type {
   TemplateDefinitionDto,
 } from '@/Modules/ContentManagement/types';
 import type { JSX } from 'react';
-import type { SectionFieldResolver, SectionRenderModel } from '../../types';
+import type { FieldValueResolver, SectionRenderModel } from '../../types';
 
+/**
+ * Generic fallback renderer for template-driven sections.
+ *
+ * Uses the provided FieldValueResolver so values follow the same precedence and
+ * normalization rules as component-driven sections.
+ */
 export function renderGenericTemplateSection(
   renderModel: SectionRenderModel,
   template: TemplateDefinitionDto | undefined,
-  fieldResolver: SectionFieldResolver,
+  fieldValueResolver: FieldValueResolver,
   className?: string,
 ): JSX.Element | null {
   if (!template) {
@@ -18,7 +24,7 @@ export function renderGenericTemplateSection(
 
   const renderedFields = fields
     .map((field) => {
-      const value = fieldResolver.getValue<unknown>(field.name);
+      const value = fieldValueResolver.getFieldValue<unknown>(field.name);
 
       if (
         value === null ||

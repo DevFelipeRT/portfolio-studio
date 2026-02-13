@@ -8,27 +8,27 @@ import {
   buildTemplateFieldDefaults,
   buildTemplateFieldTypeIndex,
   normalizeTemplateFieldValue,
-} from '../template';
-import { SectionFieldResolver } from '../types';
+} from '../../../template';
+import { FieldValueResolver } from '../../../types';
 
 /**
- * Creates a field resolver bound to a specific section data payload and its template definition.
+ * Creates a value resolver bound to a specific section data payload and its template definition.
  *
  * Precedence and blank-handling rules:
  * - Section data is evaluated first; if normalization returns a usable value, it is returned.
  * - If section data does not yield a usable value (including empty strings), template defaults are evaluated.
  * - If template defaults also do not yield a usable value, undefined is returned.
  */
-export function createSectionFieldResolver(
+export function createFieldValueResolver(
   data: SectionData | null | undefined,
   template?: TemplateDefinitionDto,
-): SectionFieldResolver {
+): FieldValueResolver {
   const safeData: SectionData = data ?? {};
   const defaults = buildTemplateFieldDefaults(template);
   const fieldTypes = buildTemplateFieldTypeIndex(template);
 
   return {
-    getValue<TValue = SectionDataValue>(
+    getFieldValue<TValue = SectionDataValue>(
       fieldName: string,
       expectedType?: TemplateFieldPrimitiveType,
     ): TValue | undefined {
