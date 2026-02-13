@@ -1,5 +1,7 @@
-import { definePageRegistry } from '@/app/pages/registryHelpers';
+import { PageRegistryProvider } from '@/app/pages/PageRegistryProvider';
 
-export const websiteSettingsPages = definePageRegistry({
+export function registerPages(provider: PageRegistryProvider): void {
+  provider.registerMany({
   'website-settings/admin/Edit': () => import('./admin/edit/page'),
-});
+  });
+}

@@ -1,5 +1,7 @@
-import { definePageRegistry } from '@/app/pages/registryHelpers';
+import { PageRegistryProvider } from '@/app/pages/PageRegistryProvider';
 
-export const profilePages = definePageRegistry({
+export function registerPages(provider: PageRegistryProvider): void {
+  provider.registerMany({
   'profile/admin/Edit': () => import('./admin/edit/page'),
-});
+  });
+}

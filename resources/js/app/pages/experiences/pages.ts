@@ -1,7 +1,9 @@
-import { definePageRegistry } from '@/app/pages/registryHelpers';
+import { PageRegistryProvider } from '@/app/pages/PageRegistryProvider';
 
-export const experiencesPages = definePageRegistry({
+export function registerPages(provider: PageRegistryProvider): void {
+  provider.registerMany({
   'experiences/admin/Create': () => import('./admin/create/page'),
   'experiences/admin/Edit': () => import('./admin/edit/page'),
   'experiences/admin/Index': () => import('./admin/index/page'),
-});
+  });
+}

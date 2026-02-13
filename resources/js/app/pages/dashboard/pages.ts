@@ -1,5 +1,7 @@
-import { definePageRegistry } from '@/app/pages/registryHelpers';
+import { PageRegistryProvider } from '@/app/pages/PageRegistryProvider';
 
-export const dashboardPages = definePageRegistry({
+export function registerPages(provider: PageRegistryProvider): void {
+  provider.registerMany({
   'dashboard/admin/Dashboard': () => import('./admin/dashboard/page'),
-});
+  });
+}
