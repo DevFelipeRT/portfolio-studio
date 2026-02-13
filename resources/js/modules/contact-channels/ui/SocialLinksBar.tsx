@@ -1,4 +1,3 @@
-// resources/js/Modules/ContactChannels/ui/SocialLinksBar.tsx
 import { NAMESPACES, useTranslation } from '@/common/i18n';
 import { Button } from '@/components/ui/button';
 import {
