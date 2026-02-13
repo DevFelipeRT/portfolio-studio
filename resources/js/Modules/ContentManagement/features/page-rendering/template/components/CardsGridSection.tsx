@@ -11,7 +11,7 @@ import type {
   SectionDataValue,
 } from '@/Modules/ContentManagement/types';
 import { JSX } from 'react';
-import { useSectionFieldResolver } from '../../runtime/useSectionFieldResolver';
+import { useFieldValueResolver } from '../../rendering/section-renderer/field-value/useFieldValueResolver';
 import { SectionComponentProps } from '../../types';
 import { SectionHeader } from './partials/SectionHeader';
 
@@ -30,29 +30,29 @@ export function CardsGridSection({
   section: renderModel,
   className,
 }: SectionComponentProps): JSX.Element | null {
-  const fieldResolver = useSectionFieldResolver();
+  const fieldResolver = useFieldValueResolver();
   const targetId = renderModel.anchor || `cards-grid-${renderModel.id}`;
 
-  const eyebrow = fieldResolver.getValue<string>('eyebrow');
-  const title = fieldResolver.getValue<string>('title') ?? '';
-  const description = fieldResolver.getValue<string>('description');
+  const eyebrow = fieldResolver.getFieldValue<string>('eyebrow');
+  const title = fieldResolver.getFieldValue<string>('title') ?? '';
+  const description = fieldResolver.getFieldValue<string>('description');
 
-  const rawColumns = fieldResolver.getValue<number>('columns');
+  const rawColumns = fieldResolver.getFieldValue<number>('columns');
   const columns = rawColumns === 2 ? 2 : 3;
 
-  const rawAlignHeader = fieldResolver.getValue<string>('align_header');
+  const rawAlignHeader = fieldResolver.getFieldValue<string>('align_header');
   const alignHeader = rawAlignHeader === 'center' ? 'center' : 'left';
 
   const rawMaxItems =
-    fieldResolver.getValue<number>('max_items') ??
-    fieldResolver.getValue<number>('maxItems');
+    fieldResolver.getFieldValue<number>('max_items') ??
+    fieldResolver.getFieldValue<number>('maxItems');
 
   const maxItems =
     typeof rawMaxItems === 'number' && rawMaxItems > 0
       ? rawMaxItems
       : undefined;
 
-  const rawCards = fieldResolver.getValue<SectionDataValue>('cards');
+  const rawCards = fieldResolver.getFieldValue<SectionDataValue>('cards');
 
   const collectionItems: SectionDataCollectionItem[] = Array.isArray(rawCards)
     ? rawCards.filter(

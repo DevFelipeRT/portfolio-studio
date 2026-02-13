@@ -5,7 +5,7 @@ import type {
 } from '@/Modules/ContentManagement/types';
 import { AspectRatio } from '@radix-ui/react-aspect-ratio';
 import { JSX } from 'react';
-import { useSectionFieldResolver } from '../../runtime/useSectionFieldResolver';
+import { useFieldValueResolver } from '../../rendering/section-renderer/field-value/useFieldValueResolver';
 import { SectionComponentProps } from '../../types';
 import { SectionHeader } from './partials/SectionHeader';
 
@@ -16,7 +16,7 @@ export function HeroPrimarySection({
   section: renderModel,
   className,
 }: SectionComponentProps): JSX.Element | null {
-  const fieldResolver = useSectionFieldResolver();
+  const fieldResolver = useFieldValueResolver();
 
   const targetId = renderModel.anchor || `hero-${renderModel.id}`;
 
@@ -25,32 +25,32 @@ export function HeroPrimarySection({
   const resolvedClassName =
     [baseClassName, className].filter(Boolean).join(' ').trim() || undefined;
 
-  const rawHeroImage = fieldResolver.getValue<SectionDataValue>('hero_image');
+  const rawHeroImage = fieldResolver.getFieldValue<SectionDataValue>('hero_image');
 
   const heroImage: SectionImage | null = Array.isArray(rawHeroImage)
     ? ((rawHeroImage[0] as SectionImage | undefined) ?? null)
     : ((rawHeroImage as SectionImage | null | undefined) ?? null);
 
-  const eyebrow = fieldResolver.getValue<string>('eyebrow');
+  const eyebrow = fieldResolver.getFieldValue<string>('eyebrow');
 
   const title =
-    fieldResolver.getValue<string>('headline') ??
-    fieldResolver.getValue<string>('title') ??
-    fieldResolver.getValue<string>('heading') ??
+    fieldResolver.getFieldValue<string>('headline') ??
+    fieldResolver.getFieldValue<string>('title') ??
+    fieldResolver.getFieldValue<string>('heading') ??
     '';
 
   const description =
-    fieldResolver.getValue<string>('subheadline') ??
-    fieldResolver.getValue<string>('description') ??
+    fieldResolver.getFieldValue<string>('subheadline') ??
+    fieldResolver.getFieldValue<string>('description') ??
     undefined;
 
   const primaryCtaLabel =
-    fieldResolver.getValue<string>('primary_cta_label') ??
-    fieldResolver.getValue<string>('primaryCtaLabel');
+    fieldResolver.getFieldValue<string>('primary_cta_label') ??
+    fieldResolver.getFieldValue<string>('primaryCtaLabel');
 
   const primaryCtaUrl =
-    fieldResolver.getValue<string>('primary_cta_url') ??
-    fieldResolver.getValue<string>('primaryCtaUrl');
+    fieldResolver.getFieldValue<string>('primary_cta_url') ??
+    fieldResolver.getFieldValue<string>('primaryCtaUrl');
 
   if (!title && !description && !primaryCtaLabel) {
     return null;

@@ -1,6 +1,6 @@
 import { RichTextRenderer } from '@/Common/RichText/RichTextRenderer';
 import { JSX } from 'react';
-import { useSectionFieldResolver } from '../../runtime/useSectionFieldResolver';
+import { useFieldValueResolver } from '../../rendering/section-renderer/field-value/useFieldValueResolver';
 import { SectionComponentProps } from '../../types';
 import { SectionHeader } from './partials/SectionHeader';
 
@@ -11,27 +11,27 @@ export function RichTextSection({
   section: renderModel,
   className,
 }: SectionComponentProps): JSX.Element | null {
-  const fieldResolver = useSectionFieldResolver();
+  const fieldResolver = useFieldValueResolver();
 
   const targetId = renderModel.anchor || `rich-text-${renderModel.id}`;
 
-  const eyebrow = fieldResolver.getValue<string>('eyebrow');
+  const eyebrow = fieldResolver.getFieldValue<string>('eyebrow');
 
   const title =
-    fieldResolver.getValue<string>('title') ??
-    fieldResolver.getValue<string>('headline') ??
-    fieldResolver.getValue<string>('heading') ??
+    fieldResolver.getFieldValue<string>('title') ??
+    fieldResolver.getFieldValue<string>('headline') ??
+    fieldResolver.getFieldValue<string>('heading') ??
     '';
 
   const description =
-    fieldResolver.getValue<string>('subtitle') ??
-    fieldResolver.getValue<string>('description') ??
+    fieldResolver.getFieldValue<string>('subtitle') ??
+    fieldResolver.getFieldValue<string>('description') ??
     undefined;
 
   const content =
-    fieldResolver.getValue<string>('content') ??
-    fieldResolver.getValue<string>('body') ??
-    fieldResolver.getValue<string>('text') ??
+    fieldResolver.getFieldValue<string>('content') ??
+    fieldResolver.getFieldValue<string>('body') ??
+    fieldResolver.getFieldValue<string>('text') ??
     undefined;
 
   if (!title && !description && !content) {

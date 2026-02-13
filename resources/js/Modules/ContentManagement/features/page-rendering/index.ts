@@ -26,11 +26,11 @@ export {
 } from '@/Modules/ContentManagement/features/page-rendering/rendering';
 
 export {
-  SectionFieldResolverProvider,
-} from '@/Modules/ContentManagement/features/page-rendering/runtime/sectionFieldResolverProvider';
+  FieldValueResolverProvider,
+} from '@/Modules/ContentManagement/features/page-rendering/rendering/section-renderer/field-value/fieldValueResolverProvider';
 export {
-  useSectionFieldResolver,
-} from '@/Modules/ContentManagement/features/page-rendering/runtime/useSectionFieldResolver';
+  useFieldValueResolver,
+} from '@/Modules/ContentManagement/features/page-rendering/rendering/section-renderer/field-value/useFieldValueResolver';
 
 export { SectionHeader } from '@/Modules/ContentManagement/features/page-rendering/template/components/partials/SectionHeader';
 
