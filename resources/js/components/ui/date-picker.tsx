@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { format, isValid, parse, type Locale } from 'date-fns';
-import { enUS } from 'date-fns/locale';
+import { enUS } from 'date-fns/locale/en-US';
 import { Calendar as CalendarIcon, X } from 'lucide-react';
 import * as React from 'react';
 
@@ -23,6 +23,10 @@ const ISO_FORMAT = 'yyyy-MM-dd';
  */
 function normalizeLocaleCode(code: string): string {
     return code.replace(/[-_]/g, '').toUpperCase();
+}
+
+function normalizeLocaleId(code: string): string {
+    return code.trim().replace(/_/g, '-').toLowerCase();
 }
 
 /**
@@ -76,21 +80,16 @@ function useDynamicDateFnsLocale(
                 return;
             }
 
-            let importCode = codeToUse.replace(/[-_]/g, '');
-            if (importCode.toLowerCase() === 'en') importCode = 'enUS';
+            const normalizedId = normalizeLocaleId(codeToUse);
 
             try {
-                const localeModule = await import('date-fns/locale');
-                let localeObj = (localeModule as any)[importCode];
-
-                if (!localeObj) {
-                    const keys = Object.keys(localeModule);
-                    const matchingKey = keys.find(
-                        (key) => key.toLowerCase() === importCode.toLowerCase(),
-                    );
-                    if (matchingKey)
-                        localeObj = (localeModule as any)[matchingKey];
-                }
+                // Avoid importing `date-fns/locale` (it bundles all locales).
+                // Only load the locales the app actually uses.
+                const localeModule =
+                    normalizedId === 'pt-br'
+                        ? await import('date-fns/locale/pt-BR')
+                        : await import('date-fns/locale/en-US');
+                const localeObj = (localeModule as any).default;
 
                 if (isMounted && localeObj) {
                     // Critical: Force a new object reference to trigger useMemo/re-render in consuming components.

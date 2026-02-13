@@ -2,7 +2,7 @@
 
 import { cn } from '@/lib/utils';
 import { format as formatDate, isValid, parse, type Locale } from 'date-fns';
-import { enUS } from 'date-fns/locale';
+import { enUS } from 'date-fns/locale/en-US';
 import * as React from 'react';
 
 // --- Internal Utilities ---
@@ -36,6 +36,10 @@ const PARSE_STRATEGIES = [
  */
 function normalizeLocaleCode(code: string): string {
     return code.replace(/[-_]/g, '').toUpperCase();
+}
+
+function normalizeLocaleId(code: string): string {
+    return code.trim().replace(/_/g, '-').toLowerCase();
 }
 
 /**
@@ -75,23 +79,16 @@ function useDynamicDateFnsLocale(localeCode: string): Locale {
             }
 
             // --- Asynchronous Import for non-fallback locales ---
-            let normalizedCode = codeToUse.replace(/[-_]/g, '');
-            if (normalizedCode === 'en') normalizedCode = 'enUS';
+            const normalizedId = normalizeLocaleId(codeToUse);
 
             try {
-                const localeModule = await import('date-fns/locale');
-                let localeObj = (localeModule as any)[normalizedCode];
-
-                // Case-insensitive fallback search within the module
-                if (!localeObj) {
-                    const keys = Object.keys(localeModule);
-                    const matchingKey = keys.find(
-                        (key) =>
-                            key.toLowerCase() === normalizedCode.toLowerCase(),
-                    );
-                    if (matchingKey)
-                        localeObj = (localeModule as any)[matchingKey];
-                }
+                // Avoid importing `date-fns/locale` (it bundles all locales).
+                // Only load the locales the app actually uses.
+                const localeModule =
+                    normalizedId === 'pt-br'
+                        ? await import('date-fns/locale/pt-BR')
+                        : await import('date-fns/locale/en-US');
+                const localeObj = (localeModule as any).default;
 
                 if (isMounted && localeObj) {
                     // CRUCIAL: Force a new object reference to trigger useMemo in consuming components,
