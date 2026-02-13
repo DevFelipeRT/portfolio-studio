@@ -1,7 +1,7 @@
 import type {
   SectionComponentRegistry,
   SectionRegistryProvider,
-} from '../types';
+} from '../../types';
 
 function collectDuplicateKeys(
   baseRegistry: SectionComponentRegistry,
@@ -22,7 +22,7 @@ function collectDuplicateKeys(
     .map(([key]) => key);
 }
 
-export function buildSectionRegistry(
+export function buildComponentRegistry(
   baseRegistry: SectionComponentRegistry,
   providers: SectionRegistryProvider[],
 ): SectionComponentRegistry {

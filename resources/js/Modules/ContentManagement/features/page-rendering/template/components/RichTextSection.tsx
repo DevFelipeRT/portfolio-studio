@@ -1,19 +1,19 @@
 import { RichTextRenderer } from '@/Common/RichText/RichTextRenderer';
 import { JSX } from 'react';
-import { useSectionFieldResolver } from '../runtime/useSectionFieldResolver';
-import { SectionComponentProps } from '../types';
+import { useSectionFieldResolver } from '../../runtime/useSectionFieldResolver';
+import { SectionComponentProps } from '../../types';
 import { SectionHeader } from './partials/SectionHeader';
 
 /**
  * Renders a rich text content section for a content-managed page.
  */
 export function RichTextSection({
-  section,
+  section: renderModel,
   className,
 }: SectionComponentProps): JSX.Element | null {
   const fieldResolver = useSectionFieldResolver();
 
-  const targetId = section.anchor || `rich-text-${section.id}`;
+  const targetId = renderModel.anchor || `rich-text-${renderModel.id}`;
 
   const eyebrow = fieldResolver.getValue<string>('eyebrow');
 

@@ -11,8 +11,8 @@ import type {
   SectionDataValue,
 } from '@/Modules/ContentManagement/types';
 import { JSX } from 'react';
-import { useSectionFieldResolver } from '../runtime/useSectionFieldResolver';
-import { SectionComponentProps } from '../types';
+import { useSectionFieldResolver } from '../../runtime/useSectionFieldResolver';
+import { SectionComponentProps } from '../../types';
 import { SectionHeader } from './partials/SectionHeader';
 
 interface CardsGridItem {
@@ -27,11 +27,11 @@ interface CardsGridItem {
  * Section component that renders a grid of cards based on template-driven data.
  */
 export function CardsGridSection({
-  section,
+  section: renderModel,
   className,
 }: SectionComponentProps): JSX.Element | null {
   const fieldResolver = useSectionFieldResolver();
-  const targetId = section.anchor || `cards-grid-${section.id}`;
+  const targetId = renderModel.anchor || `cards-grid-${renderModel.id}`;
 
   const eyebrow = fieldResolver.getValue<string>('eyebrow');
   const title = fieldResolver.getValue<string>('title') ?? '';

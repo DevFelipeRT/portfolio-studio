@@ -5,20 +5,20 @@ import type {
 } from '@/Modules/ContentManagement/types';
 import { AspectRatio } from '@radix-ui/react-aspect-ratio';
 import { JSX } from 'react';
-import { useSectionFieldResolver } from '../runtime/useSectionFieldResolver';
-import { SectionComponentProps } from '../types';
+import { useSectionFieldResolver } from '../../runtime/useSectionFieldResolver';
+import { SectionComponentProps } from '../../types';
 import { SectionHeader } from './partials/SectionHeader';
 
 /**
  * Renders the primary hero section for a content-managed page.
  */
 export function HeroPrimarySection({
-  section,
+  section: renderModel,
   className,
 }: SectionComponentProps): JSX.Element | null {
   const fieldResolver = useSectionFieldResolver();
 
-  const targetId = section.anchor || `hero-${section.id}`;
+  const targetId = renderModel.anchor || `hero-${renderModel.id}`;
 
   const baseClassName = 'lg:py-28';
 
