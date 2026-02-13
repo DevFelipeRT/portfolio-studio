@@ -1,9 +1,9 @@
 // resources/js/app/pages/content-management/public/RenderedPage.tsx
 import PublicLayout from '@/app/layouts/PublicLayout';
 import {
+  buildPageRenderingContext,
   buildNavigationItems,
-  type SectionEnvironment,
-  SectionEnvironmentProvider,
+  PageRenderingContextProvider,
   sectionSlotLayoutManager,
 } from '@/Modules/ContentManagement/features/page-rendering';
 import type {
@@ -38,11 +38,11 @@ export default function RenderedPage({
     page.meta_description || undefined;
   const headImageUrl: string | undefined = page.meta_image_url || undefined;
 
-  const environment: SectionEnvironment = {};
+  const renderingContext = buildPageRenderingContext([]);
 
   return (
     <PublicLayout navigationItems={navigationItems}>
-      <SectionEnvironmentProvider value={environment}>
+      <PageRenderingContextProvider value={renderingContext}>
         <Head title={headTitle}>
           {headDescription && (
             <meta name="description" content={headDescription} />
@@ -58,7 +58,7 @@ export default function RenderedPage({
         </Head>
 
         {sectionSlotLayoutManager.render(visibleSections, templates)}
-      </SectionEnvironmentProvider>
+      </PageRenderingContextProvider>
     </PublicLayout>
   );
 }
