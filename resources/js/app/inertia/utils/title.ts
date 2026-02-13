@@ -1,6 +1,13 @@
-import { getInertiaRuntimeState } from './state';
-import { resolveInitialLocale, resolveLocalizedValue } from './locale';
+import {
+  resolveInitialLocale,
+  resolveLocalizedValue,
+} from '../page/utils/locale';
+import { getInertiaRuntimeState } from './runtimeState';
 
+/**
+ * Renders a document title from an optional page title and the current runtime
+ * metadata (template, site name, owner, locale).
+ */
 export function inertiaTitle(title: unknown): string {
   const { propsCache, titleTemplate, siteName, defaultMetaTitle, ownerName } =
     getInertiaRuntimeState();
@@ -9,7 +16,11 @@ export function inertiaTitle(title: unknown): string {
   const fallbackLocale = propsCache.localization?.fallbackLocale ?? '';
   const pageTitle = typeof title === 'string' ? title.trim() : '';
   const template = titleTemplate?.trim() || '{page_title}';
-  const resolvedSiteName = resolveLocalizedValue(siteName, locale, fallbackLocale);
+  const resolvedSiteName = resolveLocalizedValue(
+    siteName,
+    locale,
+    fallbackLocale,
+  );
   const resolvedDefaultMetaTitle = resolveLocalizedValue(
     defaultMetaTitle,
     locale,
@@ -33,4 +44,3 @@ export function inertiaTitle(title: unknown): string {
 
   return cleaned || effectivePageTitle;
 }
-

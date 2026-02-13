@@ -1,8 +1,8 @@
-import type { ComponentType } from 'react';
+import type { ComponentType, ExoticComponent } from 'react';
 import type { PageModuleLoader as AppPageModuleLoader } from '@/app/types';
 
 /**
- * Base shape for the initial Inertia page props.
+ * Base shape for the Inertia page props passed from the backend.
  */
 export interface InertiaPageProps extends Record<string, unknown> {
   locale?: string;
@@ -23,7 +23,10 @@ export interface InertiaPageProps extends Record<string, unknown> {
   };
 }
 
-export type InertiaPageComponent = ComponentType<Record<string, unknown>> & {
+export type InertiaPageComponent = (
+  | ComponentType<Record<string, unknown>>
+  | ExoticComponent<Record<string, unknown>>
+) & {
   layout?: unknown;
   displayName?: string;
 };

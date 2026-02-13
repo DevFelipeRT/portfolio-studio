@@ -1,4 +1,4 @@
-import type { InertiaPageProps } from './types';
+import type { InertiaPageProps } from '../types';
 
 type InertiaRuntimeState = {
   propsCache: InertiaPageProps;
@@ -20,6 +20,10 @@ export function getInertiaRuntimeState(): InertiaRuntimeState {
   return state;
 }
 
+/**
+ * Stores a snapshot of the initial page props and derived metadata used by
+ * other helpers (e.g. document title rendering).
+ */
 export function initializeInertiaRuntimeState(
   initialProps: InertiaPageProps,
 ): void {
@@ -31,4 +35,3 @@ export function initializeInertiaRuntimeState(
     ownerName: initialProps.websiteSettings?.ownerName ?? null,
   };
 }
-

@@ -1,7 +1,7 @@
 import { createElement, type ComponentType } from 'react';
 import { createRoot } from 'react-dom/client';
-import type { InertiaPageProps } from './types';
-import { initializeInertiaRuntimeState } from './state';
+import type { InertiaPageProps } from '../types';
+import { initializeInertiaRuntimeState } from './runtimeState';
 
 type InertiaSetupProps = {
   initialPage?: {
@@ -9,6 +9,10 @@ type InertiaSetupProps = {
   };
 } & Record<string, unknown>;
 
+/**
+ * Mounts the Inertia React application and initializes runtime state from the
+ * initial page props.
+ */
 export function renderInertiaApp(
   el: Element,
   App: unknown,

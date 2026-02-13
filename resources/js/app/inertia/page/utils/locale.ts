@@ -1,4 +1,4 @@
-import type { InertiaPageProps } from './types';
+import type { InertiaPageProps } from '../../types';
 
 /**
  * Resolves the initial locale based on the page props hierarchy.
@@ -36,4 +36,3 @@ export function resolveLocalizedValue(
 
   return Object.values(map)[0] ?? null;
 }
-

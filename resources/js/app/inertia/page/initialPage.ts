@@ -1,5 +1,9 @@
 import type { Page } from '@inertiajs/core';
 
+/**
+ * Reads the initial Inertia page JSON from the root HTML document when running
+ * in client-side rendering mode.
+ */
 export function resolveInitialPageForCSR(): Page {
   const script = document.getElementById('inertia-page');
 
@@ -17,6 +21,12 @@ export function resolveInitialPageForCSR(): Page {
     );
   }
 
-  return JSON.parse(raw) as Page;
+  try {
+    return JSON.parse(raw) as Page;
+  } catch (error) {
+    throw new Error(
+      'Failed to parse Inertia initial page JSON from <script id="inertia-page">.',
+      { cause: error },
+    );
+  }
 }
-
