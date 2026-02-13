@@ -5,7 +5,7 @@ import { ExpandableCard } from '@/Components/Ui/expandable-card';
 import {
   SectionHeader,
   type SectionComponentProps,
-  useSectionFieldResolver,
+  useFieldValueResolver,
 } from '@/Modules/ContentManagement/features/page-rendering';
 import type { SectionDataValue } from '@/Modules/ContentManagement/types';
 import { GraduationCap } from 'lucide-react';
@@ -80,12 +80,12 @@ export function CoursesHighlightGridSection({
   section: renderModel,
   className,
 }: SectionComponentProps): JSX.Element | null {
-  const fieldResolver = useSectionFieldResolver();
+  const fieldResolver = useFieldValueResolver();
   const locale = useGetLocale();
 
   const targetId = renderModel.anchor || `education-${renderModel.id}`;
 
-  const rawCourses = fieldResolver.getValue<SectionDataValue>('courses');
+  const rawCourses = fieldResolver.getFieldValue<SectionDataValue>('courses');
 
   const allCourses: CapabilityCourseCollection = Array.isArray(rawCourses)
     ? rawCourses.filter(
@@ -95,8 +95,8 @@ export function CoursesHighlightGridSection({
     : [];
 
   const maxItems =
-    fieldResolver.getValue<number>('max_items') ??
-    fieldResolver.getValue<number>('maxItems') ??
+    fieldResolver.getFieldValue<number>('max_items') ??
+    fieldResolver.getFieldValue<number>('maxItems') ??
     undefined;
 
   const visibleCourses: CapabilityCourseCollection =
@@ -107,29 +107,29 @@ export function CoursesHighlightGridSection({
   const hasCourses = visibleCourses.length > 0;
 
   const sectionLabel =
-    fieldResolver.getValue<string>('section_label') ??
+    fieldResolver.getFieldValue<string>('section_label') ??
     'Academic degree and technical courses';
 
-  const eyebrow = fieldResolver.getValue<string>('eyebrow') ?? 'Education';
+  const eyebrow = fieldResolver.getFieldValue<string>('eyebrow') ?? 'Education';
 
   const title =
-    fieldResolver.getValue<string>('title') ??
+    fieldResolver.getFieldValue<string>('title') ??
     'Academic Degree & Technical Courses';
 
   const subtitle =
-    fieldResolver.getValue<string>('subtitle') ??
-    fieldResolver.getValue<string>('description') ??
+    fieldResolver.getFieldValue<string>('subtitle') ??
+    fieldResolver.getFieldValue<string>('description') ??
     'Academic background and complementary technical courses that strengthen my profile as a software developer.';
 
   const emptyMessage =
-    fieldResolver.getValue<string>('empty_message') ??
+    fieldResolver.getFieldValue<string>('empty_message') ??
     'No education records available to display yet.';
 
   const presentLabel =
-    fieldResolver.getValue<string>('present_label') ?? 'Present';
+    fieldResolver.getFieldValue<string>('present_label') ?? 'Present';
 
   const notHighlightedLabel =
-    fieldResolver.getValue<string>('not_highlighted_label') ??
+    fieldResolver.getFieldValue<string>('not_highlighted_label') ??
     'Not currently highlighted';
 
   if (!hasCourses && !title && !subtitle && !eyebrow) {

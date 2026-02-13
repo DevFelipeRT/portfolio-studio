@@ -5,7 +5,7 @@ import { TimelineItem } from '@/Components/Ui/timeline-item';
 import {
   SectionHeader,
   type SectionComponentProps,
-  useSectionFieldResolver,
+  useFieldValueResolver,
 } from '@/Modules/ContentManagement/features/page-rendering';
 import type { SectionDataValue } from '@/Modules/ContentManagement/types';
 import { Briefcase } from 'lucide-react';
@@ -78,13 +78,13 @@ export function ExperienceTimelineSection({
   section: renderModel,
   className,
 }: SectionComponentProps): JSX.Element | null {
-  const fieldResolver = useSectionFieldResolver();
+  const fieldResolver = useFieldValueResolver();
   const locale = useGetLocale();
 
   const targetId = renderModel.anchor || `experience-${renderModel.id}`;
 
   const rawExperiences =
-    fieldResolver.getValue<SectionDataValue>('experiences');
+    fieldResolver.getFieldValue<SectionDataValue>('experiences');
 
   const allExperiences: CapabilityExperienceCollection = Array.isArray(
     rawExperiences,
@@ -96,8 +96,8 @@ export function ExperienceTimelineSection({
     : [];
 
   const maxItems =
-    fieldResolver.getValue<number>('max_items') ??
-    fieldResolver.getValue<number>('maxItems') ??
+    fieldResolver.getFieldValue<number>('max_items') ??
+    fieldResolver.getFieldValue<number>('maxItems') ??
     undefined;
 
   const visibleExperiences: CapabilityExperienceCollection =
@@ -108,25 +108,25 @@ export function ExperienceTimelineSection({
   const hasExperiences = visibleExperiences.length > 0;
 
   const sectionLabel =
-    fieldResolver.getValue<string>('section_label') ??
+    fieldResolver.getFieldValue<string>('section_label') ??
     'Professional experience timeline';
 
-  const eyebrow = fieldResolver.getValue<string>('eyebrow') ?? 'Career';
+  const eyebrow = fieldResolver.getFieldValue<string>('eyebrow') ?? 'Career';
 
   const title =
-    fieldResolver.getValue<string>('title') ?? 'Professional Experience';
+    fieldResolver.getFieldValue<string>('title') ?? 'Professional Experience';
 
   const description =
-    fieldResolver.getValue<string>('subtitle') ??
-    fieldResolver.getValue<string>('description') ??
+    fieldResolver.getFieldValue<string>('subtitle') ??
+    fieldResolver.getFieldValue<string>('description') ??
     'A timeline of roles and responsibilities that shaped my professional journey.';
 
   const emptyMessage =
-    fieldResolver.getValue<string>('empty_message') ??
+    fieldResolver.getFieldValue<string>('empty_message') ??
     'No professional experience available to display yet.';
 
   const presentLabel =
-    fieldResolver.getValue<string>('present_label') ?? 'Present';
+    fieldResolver.getFieldValue<string>('present_label') ?? 'Present';
 
   if (!hasExperiences && !title && !description && !eyebrow) {
     return null;

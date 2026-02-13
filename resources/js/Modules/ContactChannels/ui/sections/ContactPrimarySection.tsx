@@ -10,7 +10,7 @@ import type {
   SectionDataValue,
   SectionImage,
 } from '@/Modules/ContentManagement/types';
-import { SectionHeader, useSectionFieldResolver } from '@/Modules/ContentManagement/features/page-rendering';
+import { SectionHeader, useFieldValueResolver } from '@/Modules/ContentManagement/features/page-rendering';
 import { useForm } from '@inertiajs/react';
 import { Github, Linkedin, Link2, Mail, MessageCircle, PhoneCall } from 'lucide-react';
 import type { ComponentType, FormEvent, JSX, SVGProps } from 'react';
@@ -26,54 +26,54 @@ export function ContactPrimarySection({
   section: renderModel,
   className,
 }: SectionComponentProps): JSX.Element | null {
-  const fieldResolver = useSectionFieldResolver();
+  const fieldResolver = useFieldValueResolver();
 
   const targetId = renderModel.anchor || `contact-${renderModel.id}`;
 
   const sectionLabel =
-    fieldResolver.getValue<string>('section_label') ??
+    fieldResolver.getFieldValue<string>('section_label') ??
     'Contact and collaboration';
 
-  const eyebrow = fieldResolver.getValue<string>('eyebrow') ?? 'Contact';
+  const eyebrow = fieldResolver.getFieldValue<string>('eyebrow') ?? 'Contact';
 
   const title =
-    fieldResolver.getValue<string>('title') ??
+    fieldResolver.getFieldValue<string>('title') ??
     'Let us talk about opportunities, projects, or collaboration.';
 
   const description =
-    fieldResolver.getValue<string>('description') ??
-    fieldResolver.getValue<string>('subtitle') ??
+    fieldResolver.getFieldValue<string>('description') ??
+    fieldResolver.getFieldValue<string>('subtitle') ??
     'If you are looking for a developer to strengthen your team, support a specific project, or start a technical collaboration, use the form or the channels below to get in touch.';
 
   const formTitle =
-    fieldResolver.getValue<string>('form_title') ?? 'Send a message';
+    fieldResolver.getFieldValue<string>('form_title') ?? 'Send a message';
 
   const formDescription =
-    fieldResolver.getValue<string>('form_description') ??
+    fieldResolver.getFieldValue<string>('form_description') ??
     'Share what you have in mind and how I can help.';
 
-  const nameLabel = fieldResolver.getValue<string>('name_label') ?? 'Name';
+  const nameLabel = fieldResolver.getFieldValue<string>('name_label') ?? 'Name';
   const namePlaceholder =
-    fieldResolver.getValue<string>('name_placeholder') ?? 'Your name';
+    fieldResolver.getFieldValue<string>('name_placeholder') ?? 'Your name';
 
-  const emailLabel = fieldResolver.getValue<string>('email_label') ?? 'Email';
+  const emailLabel = fieldResolver.getFieldValue<string>('email_label') ?? 'Email';
   const emailPlaceholder =
-    fieldResolver.getValue<string>('email_placeholder') ?? 'you@example.com';
+    fieldResolver.getFieldValue<string>('email_placeholder') ?? 'you@example.com';
 
   const messageLabel =
-    fieldResolver.getValue<string>('message_label') ?? 'Message';
+    fieldResolver.getFieldValue<string>('message_label') ?? 'Message';
   const messagePlaceholder =
-    fieldResolver.getValue<string>('message_placeholder') ??
+    fieldResolver.getFieldValue<string>('message_placeholder') ??
     'Write your message here.';
 
   const submitLabel =
-    fieldResolver.getValue<string>('submit_label') ?? 'Send message';
+    fieldResolver.getFieldValue<string>('submit_label') ?? 'Send message';
   const submitProcessingLabel =
-    fieldResolver.getValue<string>('submit_processing_label') ?? 'Sending…';
+    fieldResolver.getFieldValue<string>('submit_processing_label') ?? 'Sending…';
 
   const rawContactChannels =
-    fieldResolver.getValue<SectionDataValue>('contact_channels') ??
-    fieldResolver.getValue<SectionDataValue>('contactChannels');
+    fieldResolver.getFieldValue<SectionDataValue>('contact_channels') ??
+    fieldResolver.getFieldValue<SectionDataValue>('contactChannels');
 
   const channelItems: SocialLinkItem[] = Array.isArray(rawContactChannels)
     ? (rawContactChannels as ContactChannelArrayItem[])
@@ -86,10 +86,10 @@ export function ContactPrimarySection({
   const hasSocialLinks = socialLinks.length > 0;
 
   const socialsHeading =
-    fieldResolver.getValue<string>('sidebar_heading') ??
+    fieldResolver.getFieldValue<string>('sidebar_heading') ??
     'Other contact channels';
   const socialsDescription =
-    fieldResolver.getValue<string>('sidebar_description') ??
+    fieldResolver.getFieldValue<string>('sidebar_description') ??
     'You can also contact me through your preferred channel using the links below to access my profiles and learn more about my work.';
 
   const {

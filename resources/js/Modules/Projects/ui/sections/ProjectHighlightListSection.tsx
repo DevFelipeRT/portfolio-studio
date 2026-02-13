@@ -1,7 +1,7 @@
 import {
     SectionHeader,
     type SectionComponentProps,
-    useSectionFieldResolver,
+    useFieldValueResolver,
 } from '@/Modules/ContentManagement/features/page-rendering';
 import type { SectionDataValue } from '@/Modules/ContentManagement/types';
 import { ProjectCarousel } from '@/Modules/Projects/ui/ProjectCarousel';
@@ -28,17 +28,17 @@ export function ProjectHighlightListSection({
     section: renderModel,
     className,
 }: SectionComponentProps): JSX.Element | null {
-    const fieldResolver = useSectionFieldResolver();
+    const fieldResolver = useFieldValueResolver();
 
     const targetId = renderModel.anchor || `projects-${renderModel.id}`;
 
     const highlightOnly =
-        fieldResolver.getValue<boolean>('highlight_only') ??
-        fieldResolver.getValue<boolean>('highlightOnly') ??
+        fieldResolver.getFieldValue<boolean>('highlight_only') ??
+        fieldResolver.getFieldValue<boolean>('highlightOnly') ??
         undefined;
 
     const eyebrow = (() => {
-        const fromData = fieldResolver.getValue<string>('eyebrow');
+        const fromData = fieldResolver.getFieldValue<string>('eyebrow');
 
         if (fromData) {
             return fromData;
@@ -51,19 +51,19 @@ export function ProjectHighlightListSection({
         return undefined;
     })();
 
-    const title = fieldResolver.getValue<string>('title') ?? '';
+    const title = fieldResolver.getFieldValue<string>('title') ?? '';
 
     const description =
-        fieldResolver.getValue<string>('subtitle') ??
-        fieldResolver.getValue<string>('description') ??
+        fieldResolver.getFieldValue<string>('subtitle') ??
+        fieldResolver.getFieldValue<string>('description') ??
         undefined;
 
     const maxItems =
-        fieldResolver.getValue<number>('max_items') ??
-        fieldResolver.getValue<number>('maxItems') ??
+        fieldResolver.getFieldValue<number>('max_items') ??
+        fieldResolver.getFieldValue<number>('maxItems') ??
         undefined;
 
-    const rawProjects = fieldResolver.getValue<SectionDataValue>('projects');
+    const rawProjects = fieldResolver.getFieldValue<SectionDataValue>('projects');
 
     const projectsArray = Array.isArray(rawProjects) ? rawProjects : [];
 

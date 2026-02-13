@@ -1,7 +1,7 @@
 import {
     SectionHeader,
     type SectionComponentProps,
-    useSectionFieldResolver,
+    useFieldValueResolver,
 } from '@/Modules/ContentManagement/features/page-rendering';
 import { SkillBadge } from '@/Modules/Skills/ui/SkillBadge';
 import type { JSX } from 'react';
@@ -28,25 +28,25 @@ export function TechStackPrimarySection({
     section: renderModel,
     className,
 }: SectionComponentProps): JSX.Element | null {
-    const fieldResolver = useSectionFieldResolver();
+    const fieldResolver = useFieldValueResolver();
 
     const targetId = renderModel.anchor || `tech-stack-${renderModel.id}`;
 
     const sectionLabel =
-        fieldResolver.getValue<string>('section_label') ??
+        fieldResolver.getFieldValue<string>('section_label') ??
         'Skills used across my projects';
 
-    const eyebrow = fieldResolver.getValue<string>('eyebrow') ?? 'Tech stack';
+    const eyebrow = fieldResolver.getFieldValue<string>('eyebrow') ?? 'Tech stack';
 
     const title =
-        fieldResolver.getValue<string>('title') ??
+        fieldResolver.getFieldValue<string>('title') ??
         'Skills I work with on a daily basis.';
 
     const description =
-        fieldResolver.getValue<string>('description') ??
+        fieldResolver.getFieldValue<string>('description') ??
         'A selection of tools and frameworks that I use to design, build and operate web applications.';
 
-    const rawGroups = fieldResolver.getValue<unknown>('groups');
+    const rawGroups = fieldResolver.getFieldValue<unknown>('groups');
 
     const groups: CapabilitySkillGroup[] = Array.isArray(rawGroups)
         ? rawGroups.filter(
