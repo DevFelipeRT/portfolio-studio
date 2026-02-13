@@ -1,7 +1,7 @@
 import type { NavigationItem } from '@/app/navigation';
 import type { PageSectionDto } from '@/Modules/ContentManagement/types';
 import type { StringNormalizer } from '@/Modules/ContentManagement/types/strings';
-import { orderSections } from '../sectionOrdering';
+import { orderSections } from '../utils/sectionOrdering';
 import { resolveSectionNavigationNode } from './navigationNodeResolver';
 import { createNavigationTree } from '@/app/navigation/tree';
 
