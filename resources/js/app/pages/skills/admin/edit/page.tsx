@@ -1,13 +1,13 @@
 // resources/js/Pages/Skills/Edit.tsx
 
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
-import { LocaleSwapDialog } from '@/Common/LocaleSwapDialog';
-import { Button } from '@/Components/Ui/button';
-import { listSkillTranslations } from '@/Modules/Skills/core/api/translations';
-import type { SkillFormData } from '@/Modules/Skills/core/forms';
-import type { Skill, SkillCategory } from '@/Modules/Skills/core/types';
-import { SkillForm } from '@/Modules/Skills/ui/SkillForm';
-import { TranslationModal } from '@/Modules/Skills/ui/TranslationModal';
+import { LocaleSwapDialog } from '@/common/LocaleSwapDialog';
+import { Button } from '@/components/ui/button';
+import { listSkillTranslations } from '@/modules/skills/core/api/translations';
+import type { SkillFormData } from '@/modules/skills/core/forms';
+import type { Skill, SkillCategory } from '@/modules/skills/core/types';
+import { SkillForm } from '@/modules/skills/ui/SkillForm';
+import { TranslationModal } from '@/modules/skills/ui/TranslationModal';
 import { Head, Link, useForm } from '@inertiajs/react';
 import React from 'react';
 

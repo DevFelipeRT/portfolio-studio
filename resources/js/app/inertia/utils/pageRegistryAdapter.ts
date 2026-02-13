@@ -1,4 +1,4 @@
-import { pageRegistry } from '@/app/pages/PageRegistryProvider';
+import { pageRegistry } from '@/app/pages/pageRegistryProvider';
 import type { PageModuleLoader } from '../types';
 
 /**

@@ -1,9 +1,9 @@
 // resources/js/Navigation/Navigation.tsx
 'use client';
 
-import { NAMESPACES } from '@/Common/i18n/config/namespaces';
-import { useTranslation } from '@/Common/i18n/react/hooks/useTranslation';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { NAMESPACES } from '@/common/i18n/config/namespaces';
+import { useTranslation } from '@/common/i18n/react/hooks/useTranslation';
+import { useIsMobile } from '@/hooks/useMobile';
 import { useMemo } from 'react';
 import { useActiveSectionTracking } from './hooks/useActiveSectionTracking';
 import { useRenderableSectionTargets } from './hooks/useRenderableSectionTargets';

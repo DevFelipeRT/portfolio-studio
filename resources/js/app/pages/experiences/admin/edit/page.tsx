@@ -1,22 +1,22 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
-import { useSupportedLocales, useTranslation } from '@/Common/i18n';
-import { LocaleSwapDialog } from '@/Common/LocaleSwapDialog';
-import { RichTextEditor } from '@/Common/RichText/RichTextEditor';
-import { Button } from '@/Components/Ui/button';
-import { Checkbox } from '@/Components/Ui/checkbox';
-import { Input } from '@/Components/Ui/input';
-import { Label } from '@/Components/Ui/label';
+import { useSupportedLocales, useTranslation } from '@/common/i18n';
+import { LocaleSwapDialog } from '@/common/LocaleSwapDialog';
+import { RichTextEditor } from '@/common/rich-text/RichTextEditor';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/Components/Ui/select';
-import { listExperienceTranslations } from '@/Modules/Experiences/core/api/translations';
-import type { ExperienceFormData } from '@/Modules/Experiences/core/forms';
-import type { Experience } from '@/Modules/Experiences/core/types';
-import { TranslationModal } from '@/Modules/Experiences/ui/TranslationModal';
+} from '@/components/ui/select';
+import { listExperienceTranslations } from '@/modules/experiences/core/api/translations';
+import type { ExperienceFormData } from '@/modules/experiences/core/forms';
+import type { Experience } from '@/modules/experiences/core/types';
+import { TranslationModal } from '@/modules/experiences/ui/TranslationModal';
 import { Head, Link, useForm } from '@inertiajs/react';
 import React from 'react';
 

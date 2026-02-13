@@ -1,7 +1,7 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
-import type { ContactChannelFormData } from '@/Modules/ContactChannels/core/forms';
-import type { ContactChannelTypeOption } from '@/Modules/ContactChannels/core/types';
-import { ContactChannelForm } from '@/Modules/ContactChannels/ui/ContactChannelForm';
+import type { ContactChannelFormData } from '@/modules/contact-channels/core/forms';
+import type { ContactChannelTypeOption } from '@/modules/contact-channels/core/types';
+import { ContactChannelForm } from '@/modules/contact-channels/ui/ContactChannelForm';
 import { Head, Link, useForm } from '@inertiajs/react';
 import React from 'react';
 

@@ -1,9 +1,9 @@
 // resources/js/Pages/Skills/Create.tsx
 
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
-import type { SkillFormData } from '@/Modules/Skills/core/forms';
-import type { SkillCategory } from '@/Modules/Skills/core/types';
-import { SkillForm } from '@/Modules/Skills/ui/SkillForm';
+import type { SkillFormData } from '@/modules/skills/core/forms';
+import type { SkillCategory } from '@/modules/skills/core/types';
+import { SkillForm } from '@/modules/skills/ui/SkillForm';
 import { Head, Link, useForm } from '@inertiajs/react';
 import React from 'react';
 

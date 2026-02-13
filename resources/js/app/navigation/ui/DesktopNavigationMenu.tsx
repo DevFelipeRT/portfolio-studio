@@ -8,7 +8,7 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-} from '@/Components/Ui/navigation-menu';
+} from '@/components/ui/navigation-menu';
 import { Link } from '@inertiajs/react';
 import type { MouseEvent } from 'react';
 import type {

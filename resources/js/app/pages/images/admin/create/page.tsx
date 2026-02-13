@@ -1,7 +1,7 @@
 // resources/js/Pages/Images/Create.tsx
 
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
-import { ImageForm } from '@/Modules/Images/ui/ImageForm';
+import { ImageForm } from '@/modules/images/ui/ImageForm';
 import { Head, Link } from '@inertiajs/react';
 
 /**

@@ -2,7 +2,7 @@ import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import {
   PageForm,
   type PageFormData,
-} from '@/Modules/ContentManagement/features/page-management/page/PageForm';
+} from '@/modules/content-management/features/page-management/page/PageForm';
 import { Head, useForm } from '@inertiajs/react';
 import type { FormDataValues } from '@inertiajs/core';
 import React from 'react';

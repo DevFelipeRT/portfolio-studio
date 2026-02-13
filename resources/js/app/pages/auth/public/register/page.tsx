@@ -1,6 +1,6 @@
-import { Button } from '@/Components/Ui/button';
-import { Input } from '@/Components/Ui/input';
-import { Label } from '@/Components/Ui/label';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import GuestLayout from '@/app/layouts/GuestLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { FormEventHandler } from 'react';

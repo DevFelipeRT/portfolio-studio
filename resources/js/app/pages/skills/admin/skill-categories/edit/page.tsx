@@ -1,11 +1,11 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
-import { LocaleSwapDialog } from '@/Common/LocaleSwapDialog';
-import { Button } from '@/Components/Ui/button';
-import { listSkillCategoryTranslations } from '@/Modules/Skills/core/api/translations';
-import type { SkillCategoryFormData } from '@/Modules/Skills/core/forms';
-import type { SkillCategory } from '@/Modules/Skills/core/types';
-import { SkillCategoryForm } from '@/Modules/Skills/ui/SkillCategoryForm';
-import { TranslationModal } from '@/Modules/Skills/ui/TranslationModal';
+import { LocaleSwapDialog } from '@/common/LocaleSwapDialog';
+import { Button } from '@/components/ui/button';
+import { listSkillCategoryTranslations } from '@/modules/skills/core/api/translations';
+import type { SkillCategoryFormData } from '@/modules/skills/core/forms';
+import type { SkillCategory } from '@/modules/skills/core/types';
+import { SkillCategoryForm } from '@/modules/skills/ui/SkillCategoryForm';
+import { TranslationModal } from '@/modules/skills/ui/TranslationModal';
 import { Head, Link, useForm } from '@inertiajs/react';
 import React from 'react';
 

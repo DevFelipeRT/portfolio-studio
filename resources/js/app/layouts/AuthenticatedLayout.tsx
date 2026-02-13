@@ -9,11 +9,11 @@ import {
 } from '@/app/navigation';
 import type { NavigationConfigNode } from '@/app/navigation/configTypes';
 import { useNavigationSheet } from '@/app/navigation/hooks/useNavigationSheet';
-import { NAMESPACES, useTranslation } from '@/Common/i18n';
-import { Alert, AlertDescription, AlertTitle } from '@/Components/Ui/alert';
-import { Toaster } from '@/Components/Ui/sonner';
+import { NAMESPACES, useTranslation } from '@/common/i18n';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Toaster } from '@/components/ui/sonner';
 import { navigationConfig } from '@/config/navigation';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from '@/hooks/useMobile';
 import { usePage } from '@inertiajs/react';
 import { PropsWithChildren, ReactNode, useEffect } from 'react';
 import { toast } from 'sonner';

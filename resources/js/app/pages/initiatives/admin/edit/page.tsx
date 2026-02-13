@@ -1,15 +1,15 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
-import { useSupportedLocales } from '@/Common/i18n';
-import { LocaleSwapDialog } from '@/Common/LocaleSwapDialog';
-import { Button } from '@/Components/Ui/button';
-import { listInitiativeTranslations } from '@/Modules/Initiatives/core/api/translations';
+import { useSupportedLocales } from '@/common/i18n';
+import { LocaleSwapDialog } from '@/common/LocaleSwapDialog';
+import { Button } from '@/components/ui/button';
+import { listInitiativeTranslations } from '@/modules/initiatives/core/api/translations';
 import type {
   InitiativeFormData,
   InitiativeImageInput,
-} from '@/Modules/Initiatives/core/forms';
-import type { Initiative } from '@/Modules/Initiatives/core/types';
-import { InitiativeForm } from '@/Modules/Initiatives/ui/InitiativeForm';
-import { TranslationModal } from '@/Modules/Initiatives/ui/TranslationModal';
+} from '@/modules/initiatives/core/forms';
+import type { Initiative } from '@/modules/initiatives/core/types';
+import { InitiativeForm } from '@/modules/initiatives/ui/InitiativeForm';
+import { TranslationModal } from '@/modules/initiatives/ui/TranslationModal';
 import { Head, Link, useForm } from '@inertiajs/react';
 import React from 'react';
 

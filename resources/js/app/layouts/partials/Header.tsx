@@ -3,7 +3,7 @@
 import ApplicationLogo from '@/app/layouts/partials/application-logo/ApplicationLogo';
 import { ModeToggle } from '@/app/layouts/partials/theme/ModeToggle';
 import { UserMenu } from '@/app/layouts/partials/UserMenu';
-import { SystemLanguageSelectorContainer, useTranslation } from '@/Common/i18n';
+import { SystemLanguageSelectorContainer, useTranslation } from '@/common/i18n';
 import { Link, usePage } from '@inertiajs/react';
 import { PropsWithChildren } from 'react';
 

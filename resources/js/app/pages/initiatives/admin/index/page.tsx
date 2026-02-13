@@ -4,11 +4,11 @@ import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import { Head, router } from '@inertiajs/react';
 import { useMemo, useState } from 'react';
 
-import type { Initiative } from '@/Modules/Initiatives/core/types';
-import { InitiativeHeader } from '@/Modules/Initiatives/ui/InitiativeHeader';
-import { InitiativeOverlay } from '@/Modules/Initiatives/ui/InitiativeOverlay';
-import { InitiativesEmptyState } from '@/Modules/Initiatives/ui/InitiativesEmptyState';
-import { InitiativesTable } from '@/Modules/Initiatives/ui/InitiativesTable';
+import type { Initiative } from '@/modules/initiatives/core/types';
+import { InitiativeHeader } from '@/modules/initiatives/ui/InitiativeHeader';
+import { InitiativeOverlay } from '@/modules/initiatives/ui/InitiativeOverlay';
+import { InitiativesEmptyState } from '@/modules/initiatives/ui/InitiativesEmptyState';
+import { InitiativesTable } from '@/modules/initiatives/ui/InitiativesTable';
 
 interface InitiativesIndexProps {
   initiatives: Initiative[];

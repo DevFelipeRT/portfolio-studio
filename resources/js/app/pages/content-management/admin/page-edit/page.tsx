@@ -1,16 +1,16 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
-import { Button } from '@/Components/Ui/button';
+import { Button } from '@/components/ui/button';
 import {
   PageForm,
   type PageFormData,
-} from '@/Modules/ContentManagement/features/page-management/page/PageForm';
+} from '@/modules/content-management/features/page-management/page/PageForm';
 import {
   useCreateSection,
   useDeleteSection,
   useToggleSectionActive,
   useUpdateSection,
-} from '@/Modules/ContentManagement/features/page-management/section/hooks';
-import { collectSectionNavigationGroups } from '@/Modules/ContentManagement/features/page-management/section/navigation';
+} from '@/modules/content-management/features/page-management/section/hooks';
+import { collectSectionNavigationGroups } from '@/modules/content-management/features/page-management/section/navigation';
 import {
   CreateSectionDialog,
   type CreateSectionPayload,
@@ -20,12 +20,12 @@ import {
   useCreateSectionDialogController,
   useEditSectionDialogController,
   useSectionListController,
-} from '@/Modules/ContentManagement/features/page-management/section/operations';
+} from '@/modules/content-management/features/page-management/section/operations';
 import type {
   PageEditViewModelProps,
   PageSectionDto,
-} from '@/Modules/ContentManagement/types';
-import { defaultStringNormalizer } from '@/Modules/ContentManagement/utils/strings';
+} from '@/modules/content-management/types';
+import { defaultStringNormalizer } from '@/modules/content-management/utils/strings';
 import type { FormDataValues } from '@inertiajs/core';
 import { Head, router, useForm } from '@inertiajs/react';
 import { Trash2 } from 'lucide-react';

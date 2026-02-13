@@ -1,4 +1,4 @@
-import { NAMESPACES, useTranslation } from '@/Common/i18n';
+import { NAMESPACES, useTranslation } from '@/common/i18n';
 
 export default function Footer() {
   const { translate } = useTranslation(NAMESPACES.layout);

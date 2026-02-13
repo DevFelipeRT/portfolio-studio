@@ -1,14 +1,14 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
-import { LocaleSwapDialog } from '@/Common/LocaleSwapDialog';
-import { Button } from '@/Components/Ui/button';
-import { listContactChannelTranslations } from '@/Modules/ContactChannels/core/api/translations';
-import type { ContactChannelFormData } from '@/Modules/ContactChannels/core/forms';
+import { LocaleSwapDialog } from '@/common/LocaleSwapDialog';
+import { Button } from '@/components/ui/button';
+import { listContactChannelTranslations } from '@/modules/contact-channels/core/api/translations';
+import type { ContactChannelFormData } from '@/modules/contact-channels/core/forms';
 import type {
   ContactChannel,
   ContactChannelTypeOption,
-} from '@/Modules/ContactChannels/core/types';
-import { ContactChannelForm } from '@/Modules/ContactChannels/ui/ContactChannelForm';
-import { TranslationModal } from '@/Modules/ContactChannels/ui/TranslationModal';
+} from '@/modules/contact-channels/core/types';
+import { ContactChannelForm } from '@/modules/contact-channels/ui/ContactChannelForm';
+import { TranslationModal } from '@/modules/contact-channels/ui/TranslationModal';
 import { Head, Link, useForm } from '@inertiajs/react';
 import React from 'react';
 

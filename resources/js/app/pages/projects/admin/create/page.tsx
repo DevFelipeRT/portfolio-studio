@@ -1,11 +1,11 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
-import { useSupportedLocales } from '@/Common/i18n';
+import { useSupportedLocales } from '@/common/i18n';
 import type {
   ImageInput,
   ProjectFormData,
-} from '@/Modules/Projects/core/forms';
-import { ProjectForm } from '@/Modules/Projects/ui/ProjectForm';
-import type { Skill } from '@/Modules/Skills/core/types';
+} from '@/modules/projects/core/forms';
+import { ProjectForm } from '@/modules/projects/ui/ProjectForm';
+import type { Skill } from '@/modules/skills/core/types';
 import { Head, Link, useForm } from '@inertiajs/react';
 import React from 'react';
 

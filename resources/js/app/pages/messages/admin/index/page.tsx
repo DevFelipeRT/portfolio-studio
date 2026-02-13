@@ -4,11 +4,11 @@ import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import { Head, router } from '@inertiajs/react';
 import { useMemo, useState } from 'react';
 
-import type { Message } from '@/Modules/Messages/core/types';
-import { MessageOverlay } from '@/Modules/Messages/ui/MessageOverlay';
-import { MessagesEmptyState } from '@/Modules/Messages/ui/MessagesEmptyState';
-import { MessagesHeader } from '@/Modules/Messages/ui/MessagesHeader';
-import { MessagesTable } from '@/Modules/Messages/ui/MessagesTable';
+import type { Message } from '@/modules/messages/core/types';
+import { MessageOverlay } from '@/modules/messages/ui/MessageOverlay';
+import { MessagesEmptyState } from '@/modules/messages/ui/MessagesEmptyState';
+import { MessagesHeader } from '@/modules/messages/ui/MessagesHeader';
+import { MessagesTable } from '@/modules/messages/ui/MessagesTable';
 
 interface MessagesIndexProps {
   messages: Message[];

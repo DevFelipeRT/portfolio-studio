@@ -1,5 +1,5 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
-import type { Experience } from '@/Modules/Experiences/core/types';
+import type { Experience } from '@/modules/experiences/core/types';
 import { Head, Link } from '@inertiajs/react';
 
 interface ExperiencesIndexProps {

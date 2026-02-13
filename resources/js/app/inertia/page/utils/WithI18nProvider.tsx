@@ -1,4 +1,4 @@
-import { I18nProvider, createI18nEnvironment } from '@/Common/i18n';
+import { I18nProvider, createI18nEnvironment } from '@/common/i18n';
 import type { ReactNode } from 'react';
 import type { InertiaPageProps } from '../../types';
 import { resolveInitialLocale } from './locale';

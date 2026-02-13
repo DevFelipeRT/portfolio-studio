@@ -1,16 +1,16 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
-import { useSupportedLocales, useTranslation } from '@/Common/i18n';
-import { LocaleSwapDialog } from '@/Common/LocaleSwapDialog';
-import { Button } from '@/Components/Ui/button';
-import { listProjectTranslations } from '@/Modules/Projects/core/api/translations';
+import { useSupportedLocales, useTranslation } from '@/common/i18n';
+import { LocaleSwapDialog } from '@/common/LocaleSwapDialog';
+import { Button } from '@/components/ui/button';
+import { listProjectTranslations } from '@/modules/projects/core/api/translations';
 import type {
   ImageInput,
   ProjectFormData,
-} from '@/Modules/Projects/core/forms';
-import type { Project, ProjectImage } from '@/Modules/Projects/core/types';
-import { ProjectForm } from '@/Modules/Projects/ui/ProjectForm';
-import { TranslationModal } from '@/Modules/Projects/ui/TranslationModal';
-import type { Skill } from '@/Modules/Skills/core/types';
+} from '@/modules/projects/core/forms';
+import type { Project, ProjectImage } from '@/modules/projects/core/types';
+import { ProjectForm } from '@/modules/projects/ui/ProjectForm';
+import { TranslationModal } from '@/modules/projects/ui/TranslationModal';
+import type { Skill } from '@/modules/skills/core/types';
 import { Head, Link, useForm } from '@inertiajs/react';
 import React from 'react';
 

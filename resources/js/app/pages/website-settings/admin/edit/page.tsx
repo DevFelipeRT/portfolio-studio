@@ -3,9 +3,9 @@ import {
   buildWebsiteSettingsFormData,
   syncLocaleMaps,
   type WebsiteSettingsFormData,
-} from '@/Modules/WebsiteSettings/core/forms';
-import type { WebsiteSettingsPageProps } from '@/Modules/WebsiteSettings/core/types';
-import { WebsiteSettingsForm } from '@/Modules/WebsiteSettings/ui/admin/WebsiteSettingsForm';
+} from '@/modules/website-settings/core/forms';
+import type { WebsiteSettingsPageProps } from '@/modules/website-settings/core/types';
+import { WebsiteSettingsForm } from '@/modules/website-settings/ui/admin/WebsiteSettingsForm';
 import { Head, useForm } from '@inertiajs/react';
 import React from 'react';
 

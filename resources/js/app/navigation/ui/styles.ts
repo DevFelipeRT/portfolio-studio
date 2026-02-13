@@ -1,5 +1,5 @@
 // resources/js/Navigation/styles.ts
-import { navigationMenuTriggerStyle } from '@/Components/Ui/navigation-menu';
+import { navigationMenuTriggerStyle } from '@/components/ui/navigation-menu';
 
 export function desktopItemClass(isActive: boolean | undefined): string {
   const base = 'border-l-3 md:border-l-0 md:border-b-3 transition';

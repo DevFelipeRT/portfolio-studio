@@ -1,6 +1,6 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
-import type { CourseFormData } from '@/Modules/Courses/core/forms';
-import CourseForm from '@/Modules/Courses/ui/CourseForm';
+import type { CourseFormData } from '@/modules/courses/core/forms';
+import CourseForm from '@/modules/courses/ui/CourseForm';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { ChevronLeft } from 'lucide-react';
 import React from 'react';

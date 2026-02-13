@@ -1,5 +1,5 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
-import type { ContactChannel } from '@/Modules/ContactChannels/core/types';
+import type { ContactChannel } from '@/modules/contact-channels/core/types';
 import { Head, Link } from '@inertiajs/react';
 
 interface ContactChannelsIndexProps {

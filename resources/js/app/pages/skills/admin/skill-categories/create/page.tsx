@@ -1,6 +1,6 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
-import type { SkillCategoryFormData } from '@/Modules/Skills/core/forms';
-import { SkillCategoryForm } from '@/Modules/Skills/ui/SkillCategoryForm';
+import type { SkillCategoryFormData } from '@/modules/skills/core/forms';
+import { SkillCategoryForm } from '@/modules/skills/ui/SkillCategoryForm';
 import { Head, Link, useForm } from '@inertiajs/react';
 import React from 'react';
 

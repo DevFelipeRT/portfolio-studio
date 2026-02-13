@@ -1,6 +1,6 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
-import { RichTextEditor } from '@/Common/RichText/RichTextEditor';
-import { RichTextRenderer } from '@/Common/RichText/RichTextRenderer';
+import { RichTextEditor } from '@/common/rich-text/RichTextEditor';
+import { RichTextRenderer } from '@/common/rich-text/RichTextRenderer';
 import { Head } from '@inertiajs/react';
 import { useState } from 'react';
 

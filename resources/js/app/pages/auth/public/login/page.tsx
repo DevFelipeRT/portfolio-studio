@@ -1,7 +1,7 @@
-import { Button } from '@/Components/Ui/button';
-import { Checkbox } from '@/Components/Ui/checkbox';
-import { Input } from '@/Components/Ui/input';
-import { Label } from '@/Components/Ui/label';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import GuestLayout from '@/app/layouts/GuestLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { FormEventHandler } from 'react';

@@ -5,12 +5,12 @@ import {
   buildPageRenderingContext,
   PageRenderingContextProvider,
   sectionSlotLayoutManager,
-} from '@/Modules/ContentManagement/features/page-rendering';
+} from '@/modules/content-management/features/page-rendering';
 import type {
   PageRenderViewModelProps,
   TemplateDefinitionDto,
-} from '@/Modules/ContentManagement/types';
-import { defaultStringNormalizer } from '@/Modules/ContentManagement/utils/strings';
+} from '@/modules/content-management/types';
+import { defaultStringNormalizer } from '@/modules/content-management/utils/strings';
 import { Head } from '@inertiajs/react';
 import { JSX } from 'react';
 

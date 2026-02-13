@@ -1,7 +1,7 @@
 // resources/js/Navigation/ui/MobileNavigationMenu.tsx
 'use client';
 
-import { Button } from '@/Components/Ui/button';
+import { Button } from '@/components/ui/button';
 import { Link } from '@inertiajs/react';
 import type { MouseEvent } from 'react';
 import type { NavigationItem, NavigationSectionItem } from '../types';

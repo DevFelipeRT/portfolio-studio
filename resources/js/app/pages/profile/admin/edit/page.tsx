@@ -1,7 +1,7 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
-import DeleteUserForm from '@/Modules/Profile/ui/DeleteUserForm';
-import UpdatePasswordForm from '@/Modules/Profile/ui/UpdatePasswordForm';
-import UpdateProfileInformationForm from '@/Modules/Profile/ui/UpdateProfileInformationForm';
+import DeleteUserForm from '@/modules/profile/ui/DeleteUserForm';
+import UpdatePasswordForm from '@/modules/profile/ui/UpdatePasswordForm';
+import UpdateProfileInformationForm from '@/modules/profile/ui/UpdateProfileInformationForm';
 import { PageProps } from '@/types';
 import { Head } from '@inertiajs/react';
 

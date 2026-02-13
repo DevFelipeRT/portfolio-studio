@@ -4,10 +4,10 @@ import { Link, usePage } from '@inertiajs/react';
 import { CircleUser, LayoutGrid, LogOut, MoreVertical } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-import { NAMESPACES } from '@/Common/i18n/config/namespaces';
-import { useTranslation } from '@/Common/i18n/react/hooks/useTranslation';
-import { Avatar, AvatarFallback, AvatarImage } from '@/Components/Ui/avatar';
-import { Button } from '@/Components/Ui/button';
+import { NAMESPACES } from '@/common/i18n/config/namespaces';
+import { useTranslation } from '@/common/i18n/react/hooks/useTranslation';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,7 +16,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/Components/Ui/dropdown-menu';
+} from '@/components/ui/dropdown-menu';
 
 type UserMenuProps = {
   user: {

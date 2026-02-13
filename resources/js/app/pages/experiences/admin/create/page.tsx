@@ -1,17 +1,17 @@
-import { RichTextEditor } from '@/Common/RichText/RichTextEditor';
-import { useSupportedLocales, useTranslation } from '@/Common/i18n';
-import { Button } from '@/Components/Ui/button';
-import { Checkbox } from '@/Components/Ui/checkbox';
-import { Input } from '@/Components/Ui/input';
-import { Label } from '@/Components/Ui/label';
+import { RichTextEditor } from '@/common/rich-text/RichTextEditor';
+import { useSupportedLocales, useTranslation } from '@/common/i18n';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/Components/Ui/select';
-import type { ExperienceFormData } from '@/Modules/Experiences/core/forms';
+} from '@/components/ui/select';
+import type { ExperienceFormData } from '@/modules/experiences/core/forms';
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
 import React from 'react';

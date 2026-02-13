@@ -1,10 +1,10 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
-import { useSupportedLocales } from '@/Common/i18n';
+import { useSupportedLocales } from '@/common/i18n';
 import type {
   InitiativeFormData,
   InitiativeImageInput,
-} from '@/Modules/Initiatives/core/forms';
-import { InitiativeForm } from '@/Modules/Initiatives/ui/InitiativeForm';
+} from '@/modules/initiatives/core/forms';
+import { InitiativeForm } from '@/modules/initiatives/ui/InitiativeForm';
 import { Head, Link, useForm } from '@inertiajs/react';
 import React from 'react';
 

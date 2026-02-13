@@ -2,16 +2,16 @@
 
 import { Moon, Sun } from 'lucide-react';
 
-import { NAMESPACES } from '@/Common/i18n/config/namespaces';
-import { useTranslation } from '@/Common/i18n/react/hooks/useTranslation';
-import { Button } from '@/Components/Ui/button';
+import { NAMESPACES } from '@/common/i18n/config/namespaces';
+import { useTranslation } from '@/common/i18n/react/hooks/useTranslation';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
-} from '@/Components/Ui/dropdown-menu';
+} from '@/components/ui/dropdown-menu';
 import { useTheme } from '@/app/layouts/partials/theme/ThemeProvider';
 
 /**

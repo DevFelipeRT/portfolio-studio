@@ -1,16 +1,16 @@
 // resources/js/Layouts/Partials/MobileSidebar.tsx
 'use client';
 
-import { Button } from '@/Components/Ui/button';
+import { Button } from '@/components/ui/button';
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from '@/Components/Ui/sheet';
+} from '@/components/ui/sheet';
 import { UserMenu } from '@/app/layouts/partials/UserMenu';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from '@/hooks/useMobile';
 import { Menu } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { useEffect } from 'react';
