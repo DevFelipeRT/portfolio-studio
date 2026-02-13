@@ -14,7 +14,8 @@ export function wrapWithI18nProvider(
   const currentLocale = resolveInitialLocale(props) ?? null;
   const localizationConfig = props.localization || {};
 
-  const { localeResolver, translationResolver } = createI18nEnvironment({
+  const { localeResolver, translationResolver, catalogProvider } =
+    createI18nEnvironment({
     supportedLocales: localizationConfig.supportedLocales,
     defaultLocale: currentLocale,
     fallbackLocale: localizationConfig.fallbackLocale,
@@ -25,6 +26,8 @@ export function wrapWithI18nProvider(
       initialLocale={currentLocale}
       localeResolver={localeResolver}
       translationResolver={translationResolver}
+      fallbackLocale={localizationConfig.fallbackLocale ?? null}
+      catalogProvider={catalogProvider}
     >
       {content}
     </I18nProvider>

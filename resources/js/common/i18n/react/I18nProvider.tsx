@@ -11,6 +11,11 @@ type I18nProviderProps = {
     initialLocale: string | null;
     localeResolver: LocaleResolver;
     translationResolver: TranslationResolver;
+    fallbackLocale?: string | null;
+    catalogProvider?: {
+        preloadLocale?(locale: Locale): Promise<void>;
+    };
+    loadingFallback?: ReactNode;
 };
 
 /**
@@ -22,12 +27,23 @@ export function I18nProvider({
     initialLocale,
     localeResolver,
     translationResolver,
+    fallbackLocale = null,
+    catalogProvider,
+    loadingFallback = null,
 }: I18nProviderProps) {
     const resolvedInitial: Locale = localeResolver.resolve(
         initialLocale ?? localeResolver.defaultLocale,
     );
 
     const [activeLocale, setActiveLocale] = useState<Locale>(resolvedInitial);
+    const [isCatalogReady, setIsCatalogReady] = useState<boolean>(false);
+
+    const resolvedFallbackLocale = useMemo(() => {
+        if (!fallbackLocale) {
+            return null;
+        }
+        return localeResolver.resolve(fallbackLocale);
+    }, [fallbackLocale, localeResolver]);
 
     useEffect(() => {
         const resolved = localeResolver.resolve(
@@ -39,9 +55,49 @@ export function I18nProvider({
         }
     }, [activeLocale, initialLocale, localeResolver]);
 
+    useEffect(() => {
+        let cancelled = false;
+
+        const preload = catalogProvider?.preloadLocale;
+        if (typeof preload !== 'function') {
+            setIsCatalogReady(true);
+            return;
+        }
+        const preloadLocale: (locale: Locale) => Promise<void> = preload;
+
+        async function run() {
+            setIsCatalogReady(false);
+            try {
+                await preloadLocale(activeLocale);
+                if (
+                    resolvedFallbackLocale &&
+                    resolvedFallbackLocale !== activeLocale
+                ) {
+                    await preloadLocale(resolvedFallbackLocale);
+                }
+            } catch (error) {
+                if (import.meta.env.DEV) {
+                    // eslint-disable-next-line no-console
+                    console.warn('[i18n] Failed to preload catalogs.', error);
+                }
+            } finally {
+                if (!cancelled) {
+                    setIsCatalogReady(true);
+                }
+            }
+        }
+
+        run();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [activeLocale, catalogProvider, resolvedFallbackLocale]);
+
     const setLocale = useCallback(
         (nextLocale: string): Locale => {
             const resolved = localeResolver.resolve(nextLocale as Locale);
+            setIsCatalogReady(false);
             setActiveLocale(resolved);
             return resolved;
         },
@@ -69,6 +125,10 @@ export function I18nProvider({
         }),
         [activeLocale, localeResolver, setLocale, translate],
     );
+
+    if (!isCatalogReady) {
+        return <>{loadingFallback}</>;
+    }
 
     return (
         <I18nContext.Provider value={contextValue}>
