@@ -53,6 +53,16 @@ export default defineConfig(({ mode, command }) => {
            * Groups vendor core and internal i18n modules into dedicated chunks.
            */
           manualChunks: (id) => {
+            // Keep translation catalogs lazily loaded by locale.
+            // Otherwise, bundling them into the i18n/core chunk defeats code-splitting.
+            const normalizedId = id.split(path.sep).join('/');
+            const localeCatalogMatch = normalizedId.match(
+              /resources\/js\/(?:common\/i18n\/locales|modules\/.+?\/locales)\/([^/]+)\/[^/]+\.ts$/,
+            );
+            if (localeCatalogMatch) {
+              return `i18n-${localeCatalogMatch[1]}`;
+            }
+
             if (id.includes('node_modules')) {
               if (
                 id.includes('react') ||
@@ -65,7 +75,7 @@ export default defineConfig(({ mode, command }) => {
             }
 
             if (id.includes('resources/js/common/i18n')) {
-              return 'app-i18n';
+              return 'app-i18n-core';
             }
 
             return undefined;
