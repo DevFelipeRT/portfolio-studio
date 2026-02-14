@@ -1,22 +1,21 @@
-// resources/js/Navigation/Navigation.tsx
-'use client';
-
 import { NAMESPACES } from '@/common/i18n/config/namespaces';
 import { useTranslation } from '@/common/i18n/react/hooks/useTranslation';
 import { useIsMobile } from '@/hooks/useMobile';
 import { useMemo } from 'react';
-import { useActiveSectionTracking } from './hooks/useActiveSectionTracking';
-import { useRenderableSectionTargets } from './hooks/useRenderableSectionTargets';
-import { useSectionNavigation } from './hooks/useSectionNavigation';
-import { useSectionPositions } from './hooks/useSectionPositions';
-import type { NavigationProps, NavigationSectionItem } from './types';
-import { DesktopNavigationMenu } from './ui/DesktopNavigationMenu';
-import { MobileNavigationMenu } from './ui/MobileNavigationMenu';
+import { DesktopNavigationMenu, MobileNavigationMenu } from './menu';
 import {
-  shouldRenderSectionChild,
-  shouldRenderSectionNode,
-} from './utils/renderRules';
-import { collectSectionTargets } from './utils/sectionTargets';
+  collectSectionTargets,
+  useActiveSectionTracking,
+  useRenderableSectionTargets,
+  useSectionNavigation,
+  useSectionPositions,
+} from './section-tracking';
+import type { NavigationItem } from './types';
+
+type NavigationProps = {
+  items: NavigationItem[];
+  onClose?: () => void;
+};
 
 export default function Navigation({ items, onClose }: NavigationProps) {
   const isMobile = useIsMobile();
@@ -60,13 +59,6 @@ export default function Navigation({ items, onClose }: NavigationProps) {
     return hasSections && activeSectionId === identity;
   };
 
-  const shouldRenderSectionNodeBound = (node: NavigationSectionItem): boolean =>
-    shouldRenderSectionNode(node, renderableSectionTargets);
-
-  const shouldRenderSectionChildBound = (
-    node: NavigationSectionItem,
-  ): boolean => shouldRenderSectionChild(node, renderableSectionTargets);
-
   const hasItems = safeItems.length > 0;
 
   if (!hasItems) {
@@ -83,9 +75,8 @@ export default function Navigation({ items, onClose }: NavigationProps) {
         <MobileNavigationMenu
           items={safeItems}
           hasSections={hasSections}
+          renderableSectionTargets={renderableSectionTargets}
           isSectionIdentityActive={isSectionIdentityActive}
-          shouldRenderSectionNode={shouldRenderSectionNodeBound}
-          shouldRenderSectionChild={shouldRenderSectionChildBound}
           onSectionNavigate={handleSectionNavigate}
           onClose={onClose}
         />
@@ -94,9 +85,8 @@ export default function Navigation({ items, onClose }: NavigationProps) {
           items={safeItems}
           hasSections={hasSections}
           sectionTargets={sectionTargets}
+          renderableSectionTargets={renderableSectionTargets}
           isSectionIdentityActive={isSectionIdentityActive}
-          shouldRenderSectionNode={shouldRenderSectionNodeBound}
-          shouldRenderSectionChild={shouldRenderSectionChildBound}
           onSectionNavigate={handleSectionNavigate}
         />
       )}

@@ -1,6 +1,5 @@
-// resources/js/Navigation/hooks/useRenderableSectionTargets.ts
 import { useEffect, useState } from 'react';
-import type { SectionTargetNode } from '../types';
+import type { SectionTargetNode } from '../../types';
 
 type UseRenderableSectionTargetsResult = string[] | null;
 

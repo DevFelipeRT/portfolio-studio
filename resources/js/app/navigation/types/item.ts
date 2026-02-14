@@ -33,18 +33,3 @@ export type NavigationItem =
   | NavigationLinkItem
   | NavigationSectionItem
   | NavigationGroupItem;
-
-export type NavigationProps = {
-  items: NavigationItem[];
-  onClose?: () => void;
-};
-
-export type SectionPosition = {
-  id: string;
-  top: number;
-};
-
-export type SectionTargetNode = {
-  identity: string;
-  node: NavigationSectionItem;
-};

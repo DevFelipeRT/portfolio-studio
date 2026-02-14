@@ -1,24 +1,6 @@
-import type { NavigationSectionItem } from '../types';
-import { isSectionItem } from './guards';
-
-export function shouldRenderSectionChild(
-  node: NavigationSectionItem,
-  renderableSectionTargets: string[] | null,
-): boolean {
-  if (node.scrollToTop) {
-    return true;
-  }
-
-  if (!node.targetId) {
-    return false;
-  }
-
-  if (renderableSectionTargets === null) {
-    return true;
-  }
-
-  return renderableSectionTargets.includes(node.targetId);
-}
+import type { NavigationSectionItem } from '../../types';
+import { isSectionItem } from '../../utils/guards';
+import { shouldRenderSectionChild } from './shouldRenderSectionChild';
 
 export function shouldRenderSectionNode(
   node: NavigationSectionItem,
@@ -27,19 +9,7 @@ export function shouldRenderSectionNode(
   const hasChildren = !!node.children && node.children.length > 0;
 
   if (!hasChildren) {
-    if (node.scrollToTop) {
-      return true;
-    }
-
-    if (!node.targetId) {
-      return false;
-    }
-
-    if (renderableSectionTargets === null) {
-      return true;
-    }
-
-    return renderableSectionTargets.includes(node.targetId);
+    return shouldRenderSectionChild(node, renderableSectionTargets);
   }
 
   const children = node.children!.filter(isSectionItem);

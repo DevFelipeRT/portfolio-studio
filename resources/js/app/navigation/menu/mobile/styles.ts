@@ -1,20 +1,3 @@
-// resources/js/Navigation/styles.ts
-import { navigationMenuTriggerStyle } from '@/components/ui/navigation-menu';
-
-export function desktopItemClass(isActive: boolean | undefined): string {
-  const base = 'border-l-3 md:border-l-0 md:border-b-3 transition';
-  const active = 'border-primary';
-  const inactive = 'border-transparent';
-  return [base, isActive ? active : inactive].join(' ');
-}
-
-export function desktopTriggerClass(isActive: boolean | undefined): string {
-  const base = navigationMenuTriggerStyle();
-  const inactive =
-    'text-muted-foreground hover:text-foreground hover:bg-muted md:hover:bg-transparent';
-  return [base, isActive ? '' : inactive].join(' ');
-}
-
 export function mobileWrapperClass(isActive: boolean | undefined): string {
   const base = 'w-full pl-2 transition-all';
   const active =
@@ -42,10 +25,5 @@ export function mobileButtonClass(isActive: boolean | undefined): string {
   return [base, isActive ? active : inactive].join(' ');
 }
 
-export function submenuLinkClass(isActive: boolean | undefined): string {
-  const base =
-    'block w-full text-nowrap rounded-md px-3 py-2 text-sm leading-tight text-left transition transition-colors';
-  const active = 'bg-primary text-primary-foreground';
-  const inactive = 'text-muted-foreground hover:bg-muted hover:text-foreground';
-  return [base, isActive ? active : inactive].join(' ');
-}
+export const mobileSubmenuContainerClass = 'flex flex-col gap-1 pl-3';
+export const mobileSubmenuChildrenClass = 'flex flex-col gap-1 pl-2';

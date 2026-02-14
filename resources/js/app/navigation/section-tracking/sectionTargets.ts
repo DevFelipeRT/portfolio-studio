@@ -1,6 +1,6 @@
 import type { NavigationItem, SectionTargetNode } from '../types';
-import { isSectionItem } from './guards';
-import { buildSectionIdentity } from './identity';
+import { isSectionItem } from '../utils/guards';
+import { buildSectionIdentity } from './sectionIdentity';
 
 export function collectSectionTargets(
   items: NavigationItem[],

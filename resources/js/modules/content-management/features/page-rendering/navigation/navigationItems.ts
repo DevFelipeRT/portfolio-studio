@@ -3,7 +3,7 @@ import type { PageSectionDto } from '@/modules/content-management/types';
 import type { StringNormalizer } from '@/modules/content-management/types/strings';
 import { orderSections } from '../utils/sectionOrdering';
 import { resolveSectionNavigationNode } from './navigationNodeResolver';
-import { createNavigationTree } from '@/app/navigation/tree';
+import { createNavigationTree } from '@/app/navigation';
 
 /**
  * Builds the navigation tree used by the page renderer.

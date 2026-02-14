@@ -1,7 +1,4 @@
-import type {
-  NavigationGroupItem,
-  NavigationItem,
-} from './types';
+import type { NavigationGroupItem, NavigationItem } from './types';
 
 export interface NavigationTree {
   items: NavigationItem[];

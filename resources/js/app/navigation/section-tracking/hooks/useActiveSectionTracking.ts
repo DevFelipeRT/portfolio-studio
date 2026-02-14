@@ -1,7 +1,6 @@
-// resources/js/Navigation/hooks/useActiveSectionTracking.ts
 import { useEffect, useMemo, useState } from 'react';
-import type { SectionPosition, SectionTargetNode } from '../types';
-import { getHeaderHeight } from '../utils/dom';
+import type { SectionPosition, SectionTargetNode } from '../../types';
+import { getHeaderHeight } from '../../utils/headerHeight';
 
 function pickInitialActiveSectionId(
   sectionTargets: SectionTargetNode[],

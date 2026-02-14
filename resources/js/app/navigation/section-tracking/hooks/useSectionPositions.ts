@@ -1,7 +1,6 @@
-// resources/js/Navigation/hooks/useSectionPositions.ts
 import { useEffect, useState } from 'react';
-import type { SectionPosition, SectionTargetNode } from '../types';
-import { getHeaderHeight } from '../utils/dom';
+import type { SectionPosition, SectionTargetNode } from '../../types';
+import { getHeaderHeight } from '../../utils/headerHeight';
 
 export function useSectionPositions(
   sectionTargets: SectionTargetNode[],

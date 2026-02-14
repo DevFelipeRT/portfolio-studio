@@ -1,6 +1,5 @@
 // resources/js/Layouts/PublicLayout.tsx
 
-import { NAMESPACES, useTranslation } from '@/common/i18n';
 import { MobileSidebar } from '@/app/layouts/partials/MobileSidebar';
 import { ThemeProvider } from '@/app/layouts/partials/theme/ThemeProvider';
 import {
@@ -8,7 +7,8 @@ import {
   type AuthUser,
   type NavigationItem,
 } from '@/app/navigation';
-import { useNavigationSheet } from '@/app/navigation/hooks/useNavigationSheet';
+import { useNavigationSheet } from '@/app/navigation/useNavigationSheet';
+import { NAMESPACES, useTranslation } from '@/common/i18n';
 import { useIsMobile } from '@/hooks/useMobile';
 import { usePage } from '@inertiajs/react';
 import { PropsWithChildren } from 'react';

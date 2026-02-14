@@ -1,4 +1,3 @@
-// resources/js/Navigation/hooks/useNavigationSheet.ts
 import { useEffect, useState } from 'react';
 
 export function useNavigationSheet(url: string) {

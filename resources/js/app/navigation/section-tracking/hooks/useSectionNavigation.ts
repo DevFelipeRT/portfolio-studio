@@ -1,7 +1,6 @@
-// resources/js/Navigation/hooks/useSectionNavigation.ts
 import type { MouseEvent } from 'react';
-import type { NavigationSectionItem } from '../types';
-import { getHeaderHeight } from '../utils/dom';
+import type { NavigationSectionItem } from '../../types';
+import { getHeaderHeight } from '../../utils/headerHeight';
 
 type SetActiveSectionId = (value: string | null) => void;
 

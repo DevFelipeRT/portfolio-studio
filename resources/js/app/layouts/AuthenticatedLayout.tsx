@@ -7,8 +7,8 @@ import {
   type AuthUser,
   type NavigationItem,
 } from '@/app/navigation';
-import type { NavigationConfigNode } from '@/app/navigation/configTypes';
-import { useNavigationSheet } from '@/app/navigation/hooks/useNavigationSheet';
+import type { NavigationConfigNode } from '@/app/navigation/types';
+import { useNavigationSheet } from '@/app/navigation/useNavigationSheet';
 import { NAMESPACES, useTranslation } from '@/common/i18n';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Toaster } from '@/components/ui/sonner';
