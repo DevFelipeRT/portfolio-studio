@@ -33,15 +33,33 @@ export function useEditSectionDialogState({
   const dialogContentRef = React.useRef<HTMLDivElement | null>(null);
   const sectionDialogState = useSectionDialogState({ templates });
   const { hydrateFromSection } = sectionDialogState;
+  const hydratedSectionIdRef = React.useRef<number | null>(null);
+  const hasHydratedInCurrentOpenRef = React.useRef(false);
 
   const locale = section?.locale ?? null;
 
   React.useEffect(() => {
-    if (!open || !section) {
+    if (!open) {
+      hasHydratedInCurrentOpenRef.current = false;
+      hydratedSectionIdRef.current = null;
+      return;
+    }
+
+    if (!section) {
+      return;
+    }
+
+    const shouldHydrate =
+      !hasHydratedInCurrentOpenRef.current ||
+      hydratedSectionIdRef.current !== section.id;
+
+    if (!shouldHydrate) {
       return;
     }
 
     hydrateFromSection(section);
+    hasHydratedInCurrentOpenRef.current = true;
+    hydratedSectionIdRef.current = section.id;
   }, [hydrateFromSection, open, section]);
 
   const handleTemplateChange = (nextTemplateKey: string): void => {
