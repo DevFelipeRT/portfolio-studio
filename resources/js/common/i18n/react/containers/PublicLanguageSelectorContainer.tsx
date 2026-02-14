@@ -47,6 +47,7 @@ export function PublicLanguageSelectorContainer({
     maxAgeDays,
     apiEndpoint: resolvedApiEndpoint,
     persistClientCookie,
+    reloadDelayMs: 400,
   });
 
   const ariaLabel = translate(

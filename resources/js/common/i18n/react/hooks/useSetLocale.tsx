@@ -1,7 +1,7 @@
 'use client';
 
 import { router } from '@inertiajs/react';
-import { useCallback, useContext } from 'react';
+import { useCallback, useContext, useEffect, useRef } from 'react';
 import { I18nContext } from '../I18nContext';
 
 export type UseSetLocaleOptions = {
@@ -9,6 +9,13 @@ export type UseSetLocaleOptions = {
     maxAgeDays?: number;
     apiEndpoint?: string;
     persistClientCookie?: boolean;
+    /**
+     * Delay before reloading the current Inertia route.
+     * - `0`: reload immediately
+     * - `> 0`: reload after delay (only the last selection)
+     * - `< 0`: disable reload (still persists cookie/API)
+     */
+    reloadDelayMs?: number;
 };
 
 export type SetLocaleHandler = (nextLocale: string) => Promise<string>;
@@ -17,6 +24,9 @@ export type SetLocaleHandler = (nextLocale: string) => Promise<string>;
  * Hook to update the current locale, persist it in a cookie,
  * notify the backend, and reload the current Inertia route
  * while preserving scroll position and form state.
+ *
+ * UI locale changes are applied by `I18nProvider` after the target locale
+ * catalogs are loaded. The reload aligns backend/Inertia props.
  */
 export function useSetLocale(options?: UseSetLocaleOptions): SetLocaleHandler {
     const context = useContext(I18nContext);
@@ -30,40 +40,79 @@ export function useSetLocale(options?: UseSetLocaleOptions): SetLocaleHandler {
     const maxAgeDays = options?.maxAgeDays ?? 30;
     const apiEndpoint = options?.apiEndpoint ?? '/set-locale';
     const persistClientCookie = options?.persistClientCookie ?? true;
+    const reloadDelayMs = options?.reloadDelayMs ?? 400;
+
+    // Stores state for the debounced reload.
+    const reloadTimerId = useRef<number | null>(null);
+    const lastRequestedLocale = useRef<string | null>(null);
+    const lastPersistPromise = useRef<Promise<unknown> | null>(null);
+
+    useEffect(() => {
+        return () => {
+            if (reloadTimerId.current !== null) {
+                window.clearTimeout(reloadTimerId.current);
+                reloadTimerId.current = null;
+            }
+        };
+    }, []);
 
     const handler: SetLocaleHandler = useCallback(
         async (nextLocale: string) => {
             const resolved = setLocale(nextLocale);
+            lastRequestedLocale.current = resolved;
 
             if (persistClientCookie) {
                 persistLocaleCookie(cookieName, resolved, maxAgeDays);
             }
 
-            try {
-                await fetch(apiEndpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRF-TOKEN': getCsrfToken(),
-                    },
-                    body: JSON.stringify({ locale: resolved }),
-                    credentials: 'include',
-                });
-            } catch (error) {
+            const persistPromise = fetch(apiEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': getCsrfToken(),
+                },
+                body: JSON.stringify({ locale: resolved }),
+                credentials: 'include',
+            }).catch((error) => {
                 console.error('Failed to persist locale on backend:', error);
+            });
+
+            lastPersistPromise.current = persistPromise;
+
+            // Debounced reload: rapid toggles should only reload once (last selection).
+            if (reloadTimerId.current !== null) {
+                window.clearTimeout(reloadTimerId.current);
+                reloadTimerId.current = null;
             }
 
-            // Reload the current route preserving state
-            router.visit(window.location.pathname, {
-                method: 'get',
-                preserveState: true,
-                preserveScroll: true,
-            });
+            if (reloadDelayMs >= 0) {
+                reloadTimerId.current = window.setTimeout(() => {
+                    if (lastRequestedLocale.current !== resolved) {
+                        return;
+                    }
+
+                    void (async () => {
+                        await lastPersistPromise.current;
+                        router.visit(window.location.pathname, {
+                            method: 'get',
+                            preserveState: true,
+                            preserveScroll: true,
+                        });
+                    })();
+                }, reloadDelayMs);
+            }
 
             return resolved;
         },
-        [setLocale, cookieName, maxAgeDays, apiEndpoint, persistClientCookie],
+        [
+            setLocale,
+            cookieName,
+            maxAgeDays,
+            apiEndpoint,
+            persistClientCookie,
+            reloadDelayMs,
+        ],
     );
 
     return handler;
