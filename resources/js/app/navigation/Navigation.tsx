@@ -1,5 +1,6 @@
 import { NAMESPACES } from '@/common/i18n/config/namespaces';
 import { useTranslation } from '@/common/i18n/react/hooks/useTranslation';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { useIsMobile } from '@/hooks/useMobile';
 import { useMemo } from 'react';
 import { DesktopNavigationMenu, MobileNavigationMenu } from './menu';
@@ -66,20 +67,22 @@ export default function Navigation({ items, onClose }: NavigationProps) {
   }
 
   const navigationClassName = isMobile
-    ? 'flex w-full flex-col'
+    ? 'flex w-full flex-1 min-h-0 flex-col'
     : 'flex grow items-center justify-center gap-3';
 
   return (
     <nav className={navigationClassName} aria-label={primaryNavigationLabel}>
       {isMobile ? (
-        <MobileNavigationMenu
-          items={safeItems}
-          hasSections={hasSections}
-          renderableSectionTargets={renderableSectionTargets}
-          isSectionIdentityActive={isSectionIdentityActive}
-          onSectionNavigate={handleSectionNavigate}
-          onClose={onClose}
-        />
+        <ScrollArea className="w-full flex-1 min-h-0 [&>[data-orientation=vertical]]:hidden [&>[data-orientation=horizontal]]:hidden">
+          <MobileNavigationMenu
+            items={safeItems}
+            hasSections={hasSections}
+            renderableSectionTargets={renderableSectionTargets}
+            isSectionIdentityActive={isSectionIdentityActive}
+            onSectionNavigate={handleSectionNavigate}
+            onClose={onClose}
+          />
+        </ScrollArea>
       ) : (
         <DesktopNavigationMenu
           items={safeItems}

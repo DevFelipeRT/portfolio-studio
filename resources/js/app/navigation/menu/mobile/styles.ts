@@ -8,16 +8,16 @@ export function mobileWrapperClass(isActive: boolean | undefined): string {
 
 export function mobileTriggerClass(isActive: boolean | undefined): string {
   const base =
-    'w-full px-3 rounded-l-none py-2 text-sm justify-start font-medium transition transition-colors focus:text-accent focus-visible:text-accent border-b';
+    'w-full px-3 rounded-l-none py-2 text-sm justify-start font-medium transition transition-colors border-b';
   const active =
-    'text-primary focus-visible:text-accent hover:bg-transparent border-primary';
+    'text-primary focus-visible:text-primary hover:bg-transparent border-primary';
   const inactive = 'text-muted-foreground hover:bg-transparent border-border';
   return [base, isActive ? active : inactive].join(' ');
 }
 
 export function mobileButtonClass(isActive: boolean | undefined): string {
   const base =
-    'flex w-full max-w-35 xs:max-w-3xs px-3 rounded-l-none py-2 text-sm justify-start font-medium transition transition-colors focus:text-white';
+    'flex w-full max-w-35 xs:max-w-3xs px-3 rounded-l-none py-2 text-sm justify-start font-medium transition transition-colors';
   const active =
     'text-white focus-visible:text-white hover:text-white hover:bg-transparent drop-shadow-xs drop-shadow-primary-shadow-soft';
   const inactive =

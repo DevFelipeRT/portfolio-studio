@@ -1,5 +1,12 @@
 import { Button } from '@/components/ui/button';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
+import { ChevronDown } from 'lucide-react';
 import type { MouseEvent } from 'react';
+import { useEffect, useState } from 'react';
 import { buildSectionIdentity } from '../../../section-tracking/sectionIdentity';
 import type { NavigationSectionItem } from '../../../types';
 import { isSectionItem } from '../../../utils/guards';
@@ -37,10 +44,6 @@ export function MobileSectionSubmenu({
   const sectionChildren = children.filter(isSectionItem);
   const visibleChildren = sectionChildren.filter(shouldRenderSectionChild);
 
-  if (visibleChildren.length === 0) {
-    return null;
-  }
-
   const isActiveRoot =
     (hasSections && isSectionIdentityActive(item.id)) ||
     isAnyNavigationChildActive(
@@ -49,6 +52,20 @@ export function MobileSectionSubmenu({
       hasSections,
       isSectionIdentityActive,
     );
+
+  const [isOpen, setIsOpen] = useState(isActiveRoot);
+
+  useEffect(() => {
+    if (isActiveRoot) {
+      setIsOpen(true);
+    }
+  }, [isActiveRoot]);
+
+  const isHighlighted = isActiveRoot || isOpen;
+
+  if (visibleChildren.length === 0) {
+    return null;
+  }
 
   const renderSectionChild = (child: NavigationSectionItem) => {
     const identity = buildSectionIdentity(item.id, child.id);
@@ -72,22 +89,47 @@ export function MobileSectionSubmenu({
   };
 
   return (
-    <div className={mobileSubmenuContainerClass}>
-      <Button
-        type="button"
-        variant="ghost"
-        className={mobileTriggerClass(isActiveRoot)}
-        onClick={(event) => {
-          onSectionNavigate(event, item, item.id);
-          onClose?.();
-        }}
-      >
-        {item.label}
-      </Button>
+    <Collapsible
+      open={isOpen}
+      onOpenChange={setIsOpen}
+      className={mobileSubmenuContainerClass}
+    >
+      <div className="flex w-full items-stretch">
+        <Button
+          type="button"
+          variant="ghost"
+          className={[
+            mobileTriggerClass(isHighlighted),
+            'flex-1 inline-flex items-center justify-start',
+          ].join(' ')}
+          onClick={(event) => {
+            onSectionNavigate(event, item, item.id);
+            onClose?.();
+          }}
+        >
+          {item.label}
+        </Button>
 
-      <div className={mobileSubmenuChildrenClass}>
-        {visibleChildren.map(renderSectionChild)}
+        <CollapsibleTrigger asChild>
+          <Button
+            type="button"
+            variant="ghost"
+            className={[
+              mobileTriggerClass(isHighlighted),
+              'group w-10 shrink-0 px-0 justify-center',
+            ].join(' ')}
+            aria-label={`Toggle ${item.label} submenu`}
+          >
+            <ChevronDown className="h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
+          </Button>
+        </CollapsibleTrigger>
       </div>
-    </div>
+
+      <CollapsibleContent className="data-[state=open]:animate-collapsible-down data-[state=closed]:animate-collapsible-up overflow-hidden">
+        <div className={mobileSubmenuChildrenClass}>
+          {visibleChildren.map(renderSectionChild)}
+        </div>
+      </CollapsibleContent>
+    </Collapsible>
   );
 }

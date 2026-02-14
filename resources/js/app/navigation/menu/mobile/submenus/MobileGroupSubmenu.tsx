@@ -1,6 +1,13 @@
 import { Button } from '@/components/ui/button';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 import { Link } from '@inertiajs/react';
+import { ChevronDown } from 'lucide-react';
 import type { MouseEvent } from 'react';
+import { useEffect, useState } from 'react';
 import { buildSectionIdentity } from '../../../section-tracking/sectionIdentity';
 import type {
   NavigationGroupItem,
@@ -40,9 +47,6 @@ export function MobileGroupSubmenu({
   onClose,
 }: MobileGroupSubmenuProps) {
   const children = item.children ?? [];
-  if (children.length === 0) {
-    return null;
-  }
 
   const isActiveRoot = isAnyNavigationChildActive(
     item.id,
@@ -50,6 +54,20 @@ export function MobileGroupSubmenu({
     hasSections,
     isSectionIdentityActive,
   );
+
+  const [isOpen, setIsOpen] = useState(isActiveRoot);
+
+  useEffect(() => {
+    if (isActiveRoot) {
+      setIsOpen(true);
+    }
+  }, [isActiveRoot]);
+
+  const isHighlighted = isActiveRoot || isOpen;
+
+  if (children.length === 0) {
+    return null;
+  }
 
   const renderLinkChild = (child: NavigationLinkItem) => {
     const isActive = !!child.isActive;
@@ -105,21 +123,59 @@ export function MobileGroupSubmenu({
   };
 
   return (
-    <div className={mobileSubmenuContainerClass}>
+    <Collapsible
+      open={isOpen}
+      onOpenChange={setIsOpen}
+      className={mobileSubmenuContainerClass}
+    >
       {'href' in item ? (
-        <Link
-          href={item.href}
-          className={mobileTriggerClass(isActiveRoot)}
-          onClick={onClose}
-        >
-          {item.label}
-        </Link>
+        <div className="flex w-full items-stretch">
+          <Link
+            href={item.href}
+            className={[
+              mobileTriggerClass(isHighlighted),
+              'inline-flex flex-1 items-center justify-start',
+            ].join(' ')}
+            onClick={onClose}
+          >
+            {item.label}
+          </Link>
+
+          <CollapsibleTrigger asChild>
+            <Button
+              type="button"
+              variant="ghost"
+              className={[
+                mobileTriggerClass(isHighlighted),
+                'group w-10 shrink-0 px-0 justify-center',
+              ].join(' ')}
+              aria-label={`Toggle ${item.label} submenu`}
+            >
+              <ChevronDown className="h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
+            </Button>
+          </CollapsibleTrigger>
+        </div>
       ) : (
-        <div className={mobileTriggerClass(isActiveRoot)}>{item.label}</div>
+        <CollapsibleTrigger asChild>
+          <Button
+            type="button"
+            variant="ghost"
+            className={[
+              mobileTriggerClass(isHighlighted),
+              'group flex items-center justify-between gap-2',
+            ].join(' ')}
+          >
+            <span className="truncate">{item.label}</span>
+            <ChevronDown className="h-4 w-4 shrink-0 transition-transform group-data-[state=open]:rotate-180" />
+          </Button>
+        </CollapsibleTrigger>
       )}
-      <div className={mobileSubmenuChildrenClass}>
-        {children.map(renderChild)}
-      </div>
-    </div>
+
+      <CollapsibleContent className="data-[state=open]:animate-collapsible-down data-[state=closed]:animate-collapsible-up overflow-hidden">
+        <div className={mobileSubmenuChildrenClass}>
+          {children.map(renderChild)}
+        </div>
+      </CollapsibleContent>
+    </Collapsible>
   );
 }
