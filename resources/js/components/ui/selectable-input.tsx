@@ -38,6 +38,29 @@ export function SelectableInput({
     disabled = false,
     portalContainer,
 }: SelectableInputProps) {
+    const [draftValue, setDraftValue] = React.useState(value);
+
+    React.useEffect(() => {
+        setDraftValue(value);
+    }, [value]);
+
+    const isUserInputChange = React.useCallback(
+        (eventDetails?: { reason?: string; event?: Event }) => {
+            const reason = eventDetails?.reason ?? '';
+
+            if (
+                reason === 'input-change' ||
+                reason === 'input-paste' ||
+                reason === 'clear-press'
+            ) {
+                return true;
+            }
+
+            return reason === 'input-clear' && eventDetails?.event != null;
+        },
+        [],
+    );
+
     const items = React.useMemo(
         () => options.map((option) => option.value),
         [options],
@@ -51,20 +74,19 @@ export function SelectableInput({
         return map;
     }, [options]);
 
-    const matchedValue = React.useMemo(
-        () => (items.includes(value) ? value : null),
-        [items, value],
-    );
-
     const handleInputValueChange = React.useCallback(
-        (nextValue: string, eventDetails: { reason?: string }) => {
-            if (eventDetails?.reason === 'item-press') {
+        (
+            nextValue: string,
+            eventDetails: { reason?: string; event?: Event },
+        ) => {
+            if (!isUserInputChange(eventDetails)) {
                 return;
             }
 
+            setDraftValue(nextValue);
             onChange(nextValue);
         },
-        [onChange],
+        [isUserInputChange, onChange],
     );
 
     return (
@@ -72,13 +94,15 @@ export function SelectableInput({
             items={items}
             itemToStringLabel={(item) => labelByValue.get(item) ?? String(item)}
             itemToStringValue={(item) => String(item)}
-            inputValue={value}
+            inputValue={draftValue}
             onInputValueChange={handleInputValueChange}
-            value={matchedValue}
-            onValueChange={(nextValue) => {
+            value={draftValue.trim() === '' ? null : draftValue}
+            onValueChange={(nextValue, eventDetails) => {
                 if (typeof nextValue === 'string') {
+                    setDraftValue(nextValue);
                     onChange(nextValue);
-                } else if (nextValue === null) {
+                } else if (nextValue === null && isUserInputChange(eventDetails)) {
+                    setDraftValue('');
                     onChange('');
                 }
             }}
