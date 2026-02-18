@@ -1,64 +1,111 @@
-# Portfolio (Laravel + Inertia + React)
+# Portfolio (Laravel 12 + Inertia + React)
 
-Portfolio website with an authenticated admin panel for managing content and portfolio entities (projects, experiences, courses, skills, initiatives, images, contact channels) and a public-facing site rendered via Inertia.
+A personal portfolio website built as a modular Laravel + Inertia application: a public-facing site and an admin dashboard to manage content and portfolio entities.
 
-## Tech Stack
+- Backend: Laravel modular monolith under `app/Modules/*` (`app/Providers/AppServiceProvider.php`)
+- Frontend: React/TypeScript via Inertia + Vite (`resources/js/app.tsx`, `vite.config.js`)
+- Documentation-first structure: cross-cutting overviews + dedicated module docs (`docs/`)
+
+## What’s included (high level)
+
+This repository contains:
+
+- Public site rendered via Inertia (`resources/views/app.blade.php`, `config/inertia.php`)
+- Admin area (dashboard + module screens) rendered via Inertia pages (`routes/web.php`, `resources/js/app/pages/*`)
+- Content-managed pages composed from “section templates” and module-provided section components (`resources/templates/**`, `resources/js/modules/*/sectionRegistryProvider.ts`)
+- Localization split into public vs system locale cookies (`routes/web.php`, `config/localization.php`)
+- A cross-module “capabilities” subsystem for in-process data access via stable keys (`app/Modules/Capabilities/**`, `docs/adrs/0003-capabilities-as-cross-module-mediator.md`)
+
+Portfolio data modules documented under `docs/modules/` include: Skills, Experiences, Courses, Contact Channels, Projects, Initiatives, Images, Content Management, Mail (contact messages), System Locale, Identity & Access, Shared, and Inertia (`docs/modules/README.md`).
+
+## Feature highlights (evidence-based)
+
+- Admin CRUD for portfolio entities such as skills, experiences, courses, projects, and initiatives (module routes + UI under `app/Modules/*` and `resources/js/app/pages/*`; module docs in `docs/modules/`)
+- Multi-locale content model with per-entity translations and an optional “locale swap” flow when changing a base record’s locale (`app/Modules/*/Application/Services/*LocaleSwapService.php`, `app/Modules/*/Http/Mappers/*InputMapper.php`, `docs/backend/README.md`)
+- Image uploads and attachments implemented as a shared morph pivot (`image_attachments`) reused across modules (`database/migrations/2025_12_16_191418_create_image_attachments_table.php`, `app/Modules/Images/**`)
+- Contact form submission endpoint with optional host notification email when `MAIL_TO_ADDRESS` is configured (`routes/web.php`, `app/Modules/Mail/Application/Services/MessageService.php`, `.env.example`)
+- CMS-style public pages composed from section templates and capability-enriched section payloads (`resources/templates/**`, `app/Modules/ContentManagement/**`, `resources/js/modules/content-management/**`)
+
+## Tech stack
 
 **Backend**
-- PHP (`composer.json`)
-- Laravel (`composer.json`)
+- PHP 8.2+ (`composer.json`)
+- Laravel 12 (`composer.json`, `bootstrap/app.php`)
 - Inertia Laravel adapter (`composer.json`)
+- Ziggy route helper shared to the client (`composer.json`, `resources/views/app.blade.php`)
 
 **Frontend**
 - React + TypeScript (`package.json`, `tsconfig.json`)
-- Inertia React adapter (`package.json`)
-- Vite + Tailwind CSS (`vite.config.js`, `tailwind.config.ts`)
+- Inertia React adapter (`package.json`, `resources/js/app/inertia/InertiaApp.tsx`)
+- Vite (`vite.config.js`)
+- Tailwind CSS (`resources/css/app.css`, `tailwind.config.ts`)
 
-## Architecture (High Level)
+**Tooling**
+- PHPUnit via `php artisan test` (`composer.json`, `phpunit.xml`)
+- ESLint + Prettier (`package.json`, `eslint.config.js`, `.prettierrc`)
+- Laravel Pint (`composer.json`, `vendor/bin/pint`)
+
+## Architecture at a glance
 
 **Backend**
-- Modular monolith organized under `app/Modules/*` and wired via `app/Providers/AppServiceProvider.php`.
-- Routes are composed from `routes/web.php` and module route files under `app/Modules/*/Routes/*.php`.
-- Admin routes are typically protected with `auth` + `verified` middleware (see module service providers under `app/Modules/*/Infrastructure/Providers/*ServiceProvider.php`).
+- Modular monolith: modules in `app/Modules/*` and registered in `app/Providers/AppServiceProvider.php`
+- Route composition: core routes in `routes/web.php`, module routes in `app/Modules/*/Routes/*.php`
+- Inertia shared props and request-aware behavior via `App\Modules\Inertia\Http\Middleware\HandleInertiaRequests` (`bootstrap/app.php`, `app/Modules/Inertia/Http/Middleware/HandleInertiaRequests.php`)
 
 **Frontend**
-- Inertia app bootstraps from `resources/js/app.tsx`.
-- Pages are registered via a page registry (`resources/js/app/pages/pageRegistryProvider.ts`) and resolved by name during Inertia navigation.
-- CSR is used by default with initial page JSON embedded in `resources/views/app.blade.php` (see `config/inertia.php`).
+- App bootstraps from `resources/js/app.tsx` and sets up Inertia in `resources/js/app/inertia/InertiaApp.tsx`
+- Inertia pages are registered through a page registry provider (`resources/js/app/pages/pageRegistryProvider.ts`)
+- Client-side navigation uses Ziggy’s `route(...)` helper (shared via `resources/views/app.blade.php`, `app/Modules/Inertia/Http/Middleware/HandleInertiaRequests.php`)
 
-## Quickstart
+See the detailed overviews:
+- Backend overview: `docs/backend/README.md`
+- Frontend overview: `docs/frontend/README.md`
 
-Install dependencies, configure env, run migrations, and build assets:
+## Quickstart (local development)
+
+### Prerequisites
+
+- PHP 8.2+ and Composer (`composer.json`)
+- Node.js + npm (for Vite + TypeScript) (`package.json`)
+- A configured database (defaults to MySQL) (`.env.example`, `config/database.php`)
+
+### Setup
+
+Installs dependencies, creates `.env` from `.env.example` if missing, generates an app key, runs migrations, installs JS deps, and builds assets (`composer.json`):
 ```sh
 composer setup
 ```
 
-Start the local dev stack (PHP server, queue worker, log tailing, Vite):
+### Run dev stack
+
+Runs the PHP server, queue listener, Laravel Pail log tailing, and Vite in parallel (`composer.json`):
 ```sh
 composer dev
 ```
 
-Run tests (currently focused on auth/profile basics):
+### Tests and linting
+
 ```sh
 composer test
-```
-
-Frontend-only commands:
-```sh
-npm run dev
-npm run build
 npm run lint
+./vendor/bin/pint
 ```
 
-## Key Runtime Notes
+## Key runtime notes (evidence-based)
 
- - Database connection is configured by `DB_CONNECTION` (`config/database.php`). The application default is MySQL when `DB_CONNECTION` is unset.
-- Queue defaults to the database driver and is started in `composer dev` (`.env.example`, `config/queue.php`, `composer.json`).
-- Contact message email notifications are only sent when `MAIL_TO_ADDRESS` is configured (`config/mail.php`, `app/Modules/Mail/Application/Services/MessageService.php`).
-- Public locale is set via `POST /set-locale`, system locale via `POST /system/locale` (auth) (`routes/web.php`, `config/localization.php`).
+- Database: configured via `DB_CONNECTION` (default is `mysql`) (`.env.example`, `config/database.php`)
+- Queue: configured via `QUEUE_CONNECTION` (default is `database`) and started as part of `composer dev` (`.env.example`, `config/queue.php`, `composer.json`)
+- Vite dev server defaults: `VITE_HOST=localhost`, `VITE_PORT=5173` (`.env.example`, `vite.config.js`)
+- Contact form notifications: only sent when `MAIL_TO_ADDRESS` is configured; default local mailer is `log` (`.env.example`, `config/mail.php`, `app/Modules/Mail/Application/Services/MessageService.php`)
+- Locale endpoints: public locale via `POST /set-locale`, system locale via `POST /system/locale` (`routes/web.php`, `config/localization.php`)
 
-## Documentation
+## Security / scope notes
 
-- Backend: `docs/backend/README.md`
-- Frontend: `docs/frontend/README.md`
-- ADRs: `docs/adrs/`
+- Some auth endpoints (registration and password reset) are intentionally disabled (commented out routes) in `app/Modules/IdentityAccess/Routes/auth.php`.
+
+## Documentation map
+
+- Backend overview (cross-cutting): `docs/backend/README.md`
+- Frontend overview (cross-cutting): `docs/frontend/README.md`
+- Module docs index: `docs/modules/README.md`
+- Architecture decisions (ADRs): `docs/adrs/`
