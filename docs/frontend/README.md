@@ -1,108 +1,80 @@
-# Frontend Documentation
+# Frontend Overview
 
-This document describes the frontend architecture, page organization, localization, and build tooling based on the current repository code.
+This document is an overview of cross-cutting frontend architecture and conventions. Module-specific UI and API contracts are documented under `docs/modules/`.
 
-## Entry Points
+## Tech stack (evidence-based)
+
+- React + TypeScript + Vite (`package.json`, `resources/js/app.tsx`, `vite.config.js`, `tsconfig.json`)
+- Inertia client adapter: `@inertiajs/react` (`package.json`, `resources/js/app/inertia/InertiaApp.tsx`)
+- HTTP client: Axios (`package.json`, `resources/js/**/core/api/*.ts`)
+- UI primitives: Radix-based components + Tailwind (`package.json`, `resources/css/app.css`, `tailwind.config.ts`)
+
+## Entry points (Inertia + Vite)
 
 - Frontend entry: `resources/js/app.tsx`
-- CSS entry: `resources/css/app.css`
 - Inertia boot: `resources/js/app/inertia/InertiaApp.tsx`
 - Root HTML shell: `resources/views/app.blade.php`
+- CSS entry: `resources/css/app.css`
 
-## Inertia Rendering Model (CSR Default)
+Inertia SSR is configured via `config/inertia.php` (env-controlled). Evidence: `resources/js/app/inertia/InertiaApp.tsx`, `resources/views/app.blade.php`, `config/inertia.php`.
 
-The initial Inertia page payload is embedded as JSON in the root Blade view:
+## Page registry (Inertia page resolution)
 
-- `resources/views/app.blade.php` (`<script id="inertia-page" type="application/json">...`)
+Inertia pages are organized under `resources/js/app/pages/*`. Each feature folder exports a `registerPages(...)` function from a `pages.ts` manifest, and the registry provider eagerly loads those manifests.
 
-The client bootstraps the Inertia app and resolves the initial page on the client:
+Evidence:
 
-- `resources/js/app/inertia/InertiaApp.tsx`
-- Inertia SSR is disabled by default via configuration: `config/inertia.php` (env-controlled).
+- Registry provider: `resources/js/app/pages/pageRegistryProvider.ts`
+- Example manifests: `resources/js/app/pages/projects/pages.ts`, `resources/js/app/pages/initiatives/pages.ts`
 
-## Page Registry and Naming
+Backend controllers render pages using the same page keys via `Inertia::render(...)`. Evidence: `app/Modules/*/Http/Controllers/*Controller.php`.
 
-Pages are organized under `resources/js/app/pages/*` and registered via a page registry provider:
+## Frontend structure (app vs modules)
 
-- `resources/js/app/pages/pageRegistryProvider.ts` loads `./*/pages.ts` manifests using `import.meta.glob(..., { eager: true })`.
+- `resources/js/app/`: application shell, layouts, navigation, Inertia integration
+- `resources/js/modules/`: domain-oriented feature modules (admin UI + public CMS sections)
+- `resources/js/common/`: shared utilities (i18n, rich text, etc.)
+- `resources/js/components/`: reusable UI primitives
 
-Each feature folder contains a `pages.ts` that registers one or more Inertia page keys, for example:
+Evidence: folder structure under `resources/js/`.
 
-- `resources/js/app/pages/content-management/pages.ts`
-- `resources/js/app/pages/dashboard/pages.ts`
-- `resources/js/app/pages/auth/pages.ts`
+## Routing on the client (Ziggy)
 
-The page keys match the strings used by backend controllers when calling `Inertia::render(...)` (e.g. `content-management/public/RenderedPage` in `app/Modules/ContentManagement/Http/Controllers/Public/PageRenderController.php`).
+Frontend code uses Ziggy’s `route(...)` helper and relies on Ziggy route metadata being shared by the backend:
 
-## Frontend Structure
-
-At a high level, the frontend is separated into:
-
-- `resources/js/app/`: app shell, Inertia integration, layouts, navigation, and page registry
-- `resources/js/modules/`: domain-oriented feature modules and UI for admin/public sections
-- `resources/js/common/`: shared utilities (including i18n and rich text)
-- `resources/js/components/`: reusable UI components
-
-### Navigation
-
-Navigation config is defined as route-name-based nodes:
-
-- `resources/js/config/navigation.ts`
-
-This relies on Ziggy route metadata being provided to the frontend:
-
-- `resources/views/app.blade.php` includes `@routes`
-- Shared Ziggy props are exposed via `app/Modules/Inertia/Http/Middleware/HandleInertiaRequests.php`
+- Blade includes Ziggy routes: `resources/views/app.blade.php` (`@routes`)
+- Backend shares Ziggy props: `app/Modules/Inertia/Http/Middleware/HandleInertiaRequests.php`
 
 ## Localization (i18n)
 
-Backend provides localization metadata in shared Inertia props:
+Localization metadata (locale + supported locales) is shared to the client via the Inertia middleware, and frontend i18n code lives under `resources/js/common/i18n/`. Evidence: `app/Modules/Inertia/Http/Middleware/HandleInertiaRequests.php`, `resources/js/common/i18n/`.
 
-- `app/Modules/Inertia/Http/Middleware/HandleInertiaRequests.php`
+Build config keeps locale catalogs code-split by locale. Evidence: `vite.config.js`.
 
-Frontend localization code lives under:
+## Common admin UX patterns
 
-- `resources/js/common/i18n/` (setup, catalogs, React hooks/containers)
+These are patterns visible across multiple modules:
 
-Build configuration intentionally keeps locale catalogs code-split by locale:
+- **Overlays instead of `show` pages**: admin index pages often open a client-side overlay/modal for read-only details rather than navigating to a `*.show` route (e.g. Courses, Initiatives). Evidence: `resources/js/app/pages/courses/admin/index/page.tsx`, `resources/js/app/pages/initiatives/admin/index/page.tsx`.
+- **Translations modal**: edit pages open a “Manage translations” modal that calls `{entity}.translations.*` JSON endpoints via `window.axios` + Ziggy `route(...)`. Evidence: `resources/js/modules/*/core/api/translations.ts`, `resources/js/modules/*/ui/TranslationModal.tsx`.
+- **Locale conflict handling**: edit pages prefetch existing translations and use a locale swap dialog when selecting a locale that already exists in translations; the backend accepts `confirm_swap`. Evidence: `resources/js/app/pages/*/admin/edit/page.tsx`, `app/Modules/*/Application/UseCases/Update*/Update*.php`.
+- **Multipart form submissions**: create/edit pages that upload images submit `forceFormData: true` and often use method spoofing (`_method: 'put'`) for updates. Evidence: `resources/js/app/pages/projects/admin/edit/page.tsx`, `resources/js/app/pages/initiatives/admin/edit/page.tsx`.
 
-- `vite.config.js` (manual chunking for `resources/js/common/i18n/locales/*` and `resources/js/modules/**/locales/*`)
+## Public CMS sections (Content Management)
 
-## Rich Text
+The public website UI is built from content-managed pages and “section components” contributed by frontend modules.
 
-The project uses Lexical-based rich text editor utilities and UI under:
+- Each module can expose a section registry mapping template keys → React components. Evidence: `resources/js/modules/*/sectionRegistryProvider.ts`.
+- The Content Management frontend renderer resolves section fields through a shared field resolver and receives capability-enriched section data from the backend. Evidence: `resources/js/modules/content-management/features/page-rendering`, `app/Modules/ContentManagement/Presentation/Presenters/PagePresenter.php`.
 
-- `resources/js/common/rich-text/`
+## Build and tooling
 
-## Build and Tooling
+- Scripts and tooling: `package.json`
+- Vite: `vite.config.js` (Laravel + React integration, aliases)
+- TypeScript: `tsconfig.json`
+- Linting/formatting: `eslint.config.js`, `.prettierrc`
+- Tailwind: `tailwind.config.ts`, `postcss.config.js`
 
-### Scripts
+## Module documentation
 
-- Dev server: `npm run dev` (`package.json`)
-- Production build: `npm run build` (runs `tsc` + Vite build) (`package.json`)
-- Lint: `npm run lint` / `npm run lint:fix` (`package.json`)
-
-### Vite
-
-- Config: `vite.config.js`
-- Laravel integration: `laravel-vite-plugin`
-- React integration: `@vitejs/plugin-react`
-- Tailwind integration via Vite: `@tailwindcss/vite`
-- Aliases:
-  - `@` -> `resources/js/` (`vite.config.js`, `tsconfig.json`)
-
-The dev server host/port and HMR configuration can be driven via environment variables:
-
-- `VITE_HOST`, `VITE_PORT`, `VITE_BIND` (`vite.config.js`)
-
-### TypeScript / ESLint / Prettier
-
-- TypeScript config: `tsconfig.json`
-- ESLint config: `eslint.config.js`
-- Prettier config: `.prettierrc`
-
-### Tailwind
-
-- Tailwind config: `tailwind.config.ts`
-- PostCSS config: `postcss.config.js`
-
+- Module index: `docs/modules/README.md`
