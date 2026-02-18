@@ -9,7 +9,9 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('admin')
     ->group(static function (): void {
         // Courses CRUD (admin.courses.pages.*)
-        Route::resource('courses', CourseController::class)->names('courses');
+        Route::resource('courses', CourseController::class)
+            ->except(['show'])
+            ->names('courses');
 
         // Course translations (admin.courses.translations.*)
         Route::get('courses/{course}/translations', [CourseTranslationController::class, 'index'])

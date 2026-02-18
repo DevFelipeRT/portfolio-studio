@@ -39,18 +39,6 @@ class MessageController extends Controller
     }
 
     /**
-     * Display a single message for detailed view in the admin panel.
-     */
-    public function show(int $id): Response
-    {
-        $message = $this->messages->find($id);
-
-        return Inertia::render('Messages/Show', [
-            'message' => $message,
-        ]);
-    }
-
-    /**
      * Store a newly created message from the public contact form.
      */
     public function store(StoreMessageRequest $request): RedirectResponse

@@ -11,7 +11,7 @@ Route::prefix('admin')
          * Messages management.
          */
         Route::resource('messages', MessageController::class)
-            ->only(['index', 'show', 'destroy'])
+            ->only(['index', 'destroy'])
             ->names('messages');
 
         Route::patch('/messages/{message}/important', [MessageController::class, 'markAsImportant'])

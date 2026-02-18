@@ -61,7 +61,7 @@ class SkillCategoryController extends Controller
         $this->createSkillCategory->handle($input);
 
         return redirect()
-            ->route('skill-categories.index')
+            ->route('skills.index')
             ->with('status', 'Skill category successfully created.');
     }
 
@@ -89,7 +89,7 @@ class SkillCategoryController extends Controller
         $this->updateSkillCategory->handle($skillCategory, $input);
 
         return redirect()
-            ->route('skill-categories.index')
+            ->route('skills.index')
             ->with('status', 'Skill category successfully updated.');
     }
 
@@ -101,7 +101,7 @@ class SkillCategoryController extends Controller
         $this->deleteSkillCategory->handle($skillCategory);
 
         return redirect()
-            ->route('skill-categories.index')
+            ->route('skills.index')
             ->with('status', 'Skill category successfully deleted.');
     }
 }

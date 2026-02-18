@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use App\Modules\Initiatives\Http\Controllers\InitiativeController;
-use App\Modules\Initiatives\Http\Controllers\InitiativeImageController;
 use App\Modules\Initiatives\Http\Controllers\InitiativeTranslationController;
 use Illuminate\Support\Facades\Route;
 
@@ -12,14 +11,9 @@ Route::prefix('admin')
         /**
          * Initiatives management.
          */
-        Route::resource('initiatives', InitiativeController::class)->names('initiatives');
-
-        /**
-         * Initiative images management.
-         */
-        Route::resource('initiatives.images', InitiativeImageController::class)
-            ->only(['store', 'update', 'destroy'])
-            ->names('initiatives.images');
+        Route::resource('initiatives', InitiativeController::class)
+            ->except(['show'])
+            ->names('initiatives');
 
         /**
          * Initiative translations management.
@@ -33,8 +27,8 @@ Route::prefix('admin')
         Route::delete('initiatives/{initiative}/translations/{locale}', [InitiativeTranslationController::class, 'destroy'])
             ->name('initiatives.translations.destroy');
 
-        Route::put(
+        Route::patch(
             'initiatives/{initiative}/toggle-display',
             [InitiativeController::class, 'toggleDisplay']
-        )->name('initiatives.toggleDisplay');
+        )->name('initiatives.toggle-display');
     });

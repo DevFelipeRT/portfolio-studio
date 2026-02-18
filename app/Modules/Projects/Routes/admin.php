@@ -12,13 +12,15 @@ Route::prefix('admin')
         /**
          * Projects management.
          */
-        Route::resource('projects', ProjectController::class)->names('projects');
+        Route::resource('projects', ProjectController::class)
+            ->except(['show'])
+            ->names('projects');
 
         /**
          * Project images management.
          */
         Route::resource('projects.images', ProjectImageController::class)
-            ->only(['store', 'update', 'destroy'])
+            ->only(['destroy'])
             ->names('projects.images');
 
         /**

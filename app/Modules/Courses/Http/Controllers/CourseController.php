@@ -98,16 +98,6 @@ class CourseController extends Controller
     }
 
     /**
-     * Display the specified course.
-     */
-    public function show(Course $course): Response
-    {
-        return Inertia::render('Courses/Show', [
-            'course' => CourseMapper::toArray($course),
-        ]);
-    }
-
-    /**
      * Show the form for editing the specified course.
      */
     public function edit(Course $course): Response

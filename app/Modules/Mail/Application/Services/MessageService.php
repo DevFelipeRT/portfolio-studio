@@ -30,16 +30,6 @@ class MessageService
 
 
     /**
-     * Find a single message by its primary key.
-     *
-     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
-     */
-    public function find(int $id): Message
-    {
-        return Message::query()->findOrFail($id);
-    }
-
-    /**
      * Create a new message and notify the host by email.
      *
      * @param array{name:string,email:string,message:string} $data

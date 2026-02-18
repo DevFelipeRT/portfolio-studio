@@ -11,7 +11,9 @@ Route::prefix('admin')
         /**
          * Experiences management.
          */
-        Route::resource('experiences', ExperienceController::class)->names('experiences');
+        Route::resource('experiences', ExperienceController::class)
+            ->except(['show'])
+            ->names('experiences');
 
         // Experience translations (admin.experiences.translations.*)
         Route::get('experiences/{experience}/translations', [ExperienceTranslationController::class, 'index'])
