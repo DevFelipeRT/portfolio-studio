@@ -88,3 +88,4 @@ Core wiring:
 ## Module documentation
 
 - Module index: `docs/modules/README.md`
+- Root project overview: [`README.md`](../../README.md)

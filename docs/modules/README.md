@@ -2,6 +2,10 @@
 
 This folder contains module-focused documentation that complements the high-level backend and frontend overviews.
 
+- Root project overview: [`README.md`](../../README.md)
+- Backend overview (cross-cutting): [`docs/backend/README.md`](../backend/README.md)
+- Frontend overview (cross-cutting): [`docs/frontend/README.md`](../frontend/README.md)
+
 ## Identity & Access (Auth)
 
 - Backend: `docs/modules/identity-access/backend/README.md`

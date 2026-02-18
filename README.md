@@ -105,7 +105,7 @@ npm run lint
 
 ## Documentation map
 
-- Backend overview (cross-cutting): `docs/backend/README.md`
-- Frontend overview (cross-cutting): `docs/frontend/README.md`
-- Module docs index: `docs/modules/README.md`
-- Architecture decisions (ADRs): `docs/adrs/`
+- Backend overview (cross-cutting): [`docs/backend/README.md`](docs/backend/README.md)
+- Frontend overview (cross-cutting): [`docs/frontend/README.md`](docs/frontend/README.md)
+- Module docs index: [`docs/modules/README.md`](docs/modules/README.md)
+- Architecture decisions (ADRs): [`docs/adrs/`](docs/adrs/)

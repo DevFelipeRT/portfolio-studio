@@ -78,3 +78,4 @@ The public website UI is built from content-managed pages and “section compone
 ## Module documentation
 
 - Module index: `docs/modules/README.md`
+- Root project overview: [`README.md`](../../README.md)
