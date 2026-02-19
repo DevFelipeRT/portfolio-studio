@@ -1,6 +1,6 @@
 # Backend Overview
 
-This document is an overview of cross-cutting backend architecture and conventions. Module-specific behavior (routes, payloads, UI contracts) is documented under `docs/modules/`.
+This document is an overview of cross-cutting backend architecture and conventions. Module-specific behavior (routes, payloads, UI contracts) is documented under [`docs/modules/`](../modules/).
 
 ## Tech stack (evidence-based)
 
@@ -87,5 +87,5 @@ Core wiring:
 
 ## Module documentation
 
-- Module index: `docs/modules/README.md`
+- Module index: [`docs/modules/README.md`](../modules/README.md)
 - Root project overview: [`README.md`](../../README.md)

@@ -1,6 +1,6 @@
 # Frontend Overview
 
-This document is an overview of cross-cutting frontend architecture and conventions. Module-specific UI and API contracts are documented under `docs/modules/`.
+This document is an overview of cross-cutting frontend architecture and conventions. Module-specific UI and API contracts are documented under [`docs/modules/`](../modules/).
 
 ## Tech stack (evidence-based)
 
@@ -77,5 +77,5 @@ The public website UI is built from content-managed pages and “section compone
 
 ## Module documentation
 
-- Module index: `docs/modules/README.md`
+- Module index: [`docs/modules/README.md`](../modules/README.md)
 - Root project overview: [`README.md`](../../README.md)
