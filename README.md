@@ -1,6 +1,6 @@
-# Portfolio (Laravel 12 + Inertia + React)
+# Portfolio Studio (Laravel 12 + Inertia + React)
 
-A personal portfolio website built as a modular Laravel + Inertia application: a public-facing site and an admin dashboard to manage content and portfolio entities.
+A modular Laravel + Inertia studio for a content-managed public site and an admin dashboard.
 
 - Backend: Laravel modular monolith under `app/Modules/*` (`app/Providers/AppServiceProvider.php`)
 - Frontend: React/TypeScript via Inertia + Vite (`resources/js/app.tsx`, `vite.config.js`)
