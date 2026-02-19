@@ -103,6 +103,19 @@ npm run lint
 
 - Some auth endpoints (registration and password reset) are intentionally disabled (commented out routes) in `app/Modules/IdentityAccess/Routes/auth.php`.
 
+## CI/CD (GitHub Actions)
+
+This repository includes GitHub Actions workflows under [`.github/workflows/`](.github/workflows/):
+
+- Backend remote optimize on `master` pushes (skips docs-only changes): [`.github/workflows/backend-optimize.yml`](.github/workflows/backend-optimize.yml)
+  - Runs `composer dump-autoload -o`, `php artisan optimize:clear`, and `php artisan optimize` on a remote host over SSH.
+  - Requires secrets: `SSH_PRIVATE_KEY`, `KNOWN_HOSTS`, `HOST`, `PORT`, `USERNAME`, `TARGET_DIR`.
+- Frontend build publish on `master` pushes (frontend-related paths only): [`.github/workflows/frontend-build.yml`](.github/workflows/frontend-build.yml)
+  - Runs `npm ci` + `npm run build` and force-pushes `public/build` into a `frontend-dist` branch.
+- Frontend deploy from `frontend-dist`: [`.github/workflows/frontend-deploy.yml`](.github/workflows/frontend-deploy.yml)
+  - Uses `rsync` over SSH to upload `public/build` to the server.
+  - Requires secrets: `SSH_PRIVATE_KEY`, `KNOWN_HOSTS`, `HOST`, `PORT`, `USERNAME`, `TARGET_DIR`.
+
 ## Documentation map
 
 - Backend overview (cross-cutting): [`docs/backend/README.md`](docs/backend/README.md)
