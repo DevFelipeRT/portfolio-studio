@@ -1,0 +1,54 @@
+#############################################
+#  Domain root (shared hosting `public_html`)
+#############################################
+#
+# This project uses Laravel's `public/` directory as the web entrypoint.
+# If your hosting provider fixes the document root to `public_html` and you
+# cannot point it to `public/`, this rewrite setup forwards requests to
+# `public/index.php` while keeping clean URLs.
+#
+# Notes:
+# - Requires Apache with `mod_rewrite` enabled and `AllowOverride` permitted.
+# - `public/.htaccess` still handles Laravel's front controller routing once
+#   the request is inside `public/`.
+#
+
+RewriteEngine On
+RewriteBase /
+
+# 0) Redirect any direct access to /public/ back to the domain root.
+RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s/+public/ [NC]
+RewriteRule ^public(/.*)?$ / [R=301,L]
+
+# 1a) Forward the domain root ("/") to the public front controller.
+RewriteRule ^$ public/index.php [L]
+
+# 1b) Forward any request that is not an existing file or directory to /public.
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ public/$1 [L,QSA]
+
+# 2) Prevent directory listing.
+Options -Indexes
+
+# 3) Block sensitive files from being served.
+<FilesMatch "(^\.env|composer\.(json|lock)|\.git|\.htaccess|php\.ini|README\.md|LICENSE)">
+    Require all denied
+</FilesMatch>
+
+# 4) Block hidden files (dotfiles).
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+# 5) Security headers.
+<IfModule mod_headers.c>
+    Header always append X-Frame-Options "SAMEORIGIN"
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-XSS-Protection "1; mode=block"
+</IfModule>
+
+# 6) Force HTTPS (optional).
+RewriteCond %{HTTPS} off
+RewriteCond %{HTTP:X-Forwarded-Proto} !https [NC]
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]

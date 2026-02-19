@@ -103,6 +103,17 @@ npm run lint
 
 - Some auth endpoints (registration and password reset) are intentionally disabled (commented out routes) in `app/Modules/IdentityAccess/Routes/auth.php`.
 
+## Deployment (shared hosting / Apache)
+
+Laravel expects the web server document root to point to `public/`. On shared hosting providers, the document root is often fixed to something like `public_html/`.
+
+If you cannot change the document root to `public/`, this repository includes a root `.htaccess` that forwards requests to `public/` while keeping clean URLs:
+
+- Root rewrite file: [`.htaccess`](.htaccess)
+- Laravel front controller rules inside `public/`: [`public/.htaccess`](public/.htaccess)
+
+If you use the included GitHub Actions deployment workflows, the frontend build is published to `frontend-dist` and deployed from that branch (see [CI/CD (GitHub Actions)](#cicd-github-actions)).
+
 ## CI/CD (GitHub Actions)
 
 This repository includes GitHub Actions workflows under [`.github/workflows/`](.github/workflows/):
