@@ -133,3 +133,11 @@ This repository includes GitHub Actions workflows under [`.github/workflows/`](.
 - Frontend overview (cross-cutting): [`docs/frontend/README.md`](docs/frontend/README.md)
 - Module docs index: [`docs/modules/README.md`](docs/modules/README.md)
 - Architecture decisions (ADRs): [`docs/adrs/`](docs/adrs/)
+
+## Copyright / License
+
+Copyright (c) 2026 Felipe Terrazas. All rights reserved.
+
+This repository is **not** open source. No license is granted to use, copy, modify, or distribute this code unless you have an explicit written agreement with the copyright holder.
+
+Third-party dependencies are licensed by their respective authors under their own terms (see `composer.lock` / `package-lock.json`).
