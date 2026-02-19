@@ -2,7 +2,7 @@ name: Deploy frontend build to Hostinger
 
 on:
   push:
-    branches: ["main"]
+    branches: ["master"]
 
 concurrency:
   group: deploy-hostinger
