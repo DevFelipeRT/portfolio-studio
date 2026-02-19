@@ -46,15 +46,35 @@ jobs:
           PORT: ${{ secrets.PORT }}
           USERNAME: ${{ secrets.USERNAME }}
           TARGET_DIR: ${{ secrets.TARGET_DIR }}
+          APP_DIR: ${{ secrets.APP_DIR }}
         run: |
           set -euo pipefail
 
           PUBLIC_DIR="${TARGET_DIR%/}"
-          APP_DIR="$(dirname "${PUBLIC_DIR}")"
+          APP_DIR_OVERRIDE="${APP_DIR:-}"
 
           ssh -p "${PORT}" -o StrictHostKeyChecking=yes "${USERNAME}@${HOST}" "
             set -e
-            cd '${APP_DIR}'
+
+            PUBLIC_DIR='${PUBLIC_DIR}'
+            APP_DIR_OVERRIDE='${APP_DIR_OVERRIDE}'
+            RESOLVED_APP_DIR=''
+
+            if [ -n \"\${APP_DIR_OVERRIDE}\" ] && [ -f \"\${APP_DIR_OVERRIDE}/composer.json\" ]; then
+              RESOLVED_APP_DIR=\"\${APP_DIR_OVERRIDE}\"
+            elif [ -f \"\${PUBLIC_DIR}/composer.json\" ]; then
+              RESOLVED_APP_DIR=\"\${PUBLIC_DIR}\"
+            elif [ -f \"\$(dirname \"\${PUBLIC_DIR}\")/composer.json\" ]; then
+              RESOLVED_APP_DIR=\"\$(dirname \"\${PUBLIC_DIR}\")\"
+            fi
+
+            if [ -z \"\${RESOLVED_APP_DIR}\" ]; then
+              echo 'Unable to resolve APP_DIR with composer.json.'
+              echo \"Checked: \${APP_DIR_OVERRIDE} \${PUBLIC_DIR} \$(dirname \"\${PUBLIC_DIR}\")\"
+              exit 1
+            fi
+
+            cd \"\${RESOLVED_APP_DIR}\"
 
             if command -v composer >/dev/null 2>&1; then
               composer dump-autoload -o
