@@ -1,0 +1,65 @@
+name: Backend Optimize (composer dump-autoload + artisan optimize)
+
+on:
+  push:
+    branches: ["master"]
+    paths:
+      - "app/**"
+      - "bootstrap/**"
+      - "config/**"
+      - "database/**"
+      - "routes/**"
+      - "resources/templates/**"
+      - "resources/views/**"
+      - "lang/**"
+      - "composer.json"
+      - "composer.lock"
+      - "artisan"
+  workflow_dispatch: {}
+
+concurrency:
+  group: backend-optimize
+  cancel-in-progress: true
+
+jobs:
+  optimize:
+    runs-on: ubuntu-latest
+    environment: production
+    permissions: {}
+
+    steps:
+      - name: Start SSH agent
+        uses: webfactory/ssh-agent@dc588b651fe13675774614f8e6a936a468676387
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Trust remote host
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          echo "${{ secrets.KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Run composer dump-autoload and artisan optimize
+        env:
+          HOST: ${{ secrets.HOST }}
+          PORT: ${{ secrets.PORT }}
+          USERNAME: ${{ secrets.USERNAME }}
+          TARGET_DIR: ${{ secrets.TARGET_DIR }}
+        run: |
+          set -euo pipefail
+
+          PUBLIC_DIR="${TARGET_DIR%/}"
+          APP_DIR="$(dirname "${PUBLIC_DIR}")"
+
+          ssh -p "${PORT}" -o StrictHostKeyChecking=yes "${USERNAME}@${HOST}" "
+            set -e
+            cd '${APP_DIR}'
+
+            if command -v composer >/dev/null 2>&1; then
+              composer dump-autoload -o
+            fi
+
+            php artisan optimize:clear
+            php artisan optimize
+          "
