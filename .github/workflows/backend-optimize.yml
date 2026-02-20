@@ -1,20 +1,6 @@
-name: Backend Optimize (composer dump-autoload + artisan optimize)
+name: Backend Optimize (manual)
 
 on:
-  push:
-    branches: ["master"]
-    paths:
-      - "app/**"
-      - "bootstrap/**"
-      - "config/**"
-      - "database/**"
-      - "routes/**"
-      - "resources/templates/**"
-      - "resources/views/**"
-      - "lang/**"
-      - "composer.json"
-      - "composer.lock"
-      - "artisan"
   workflow_dispatch: {}
 
 concurrency:
