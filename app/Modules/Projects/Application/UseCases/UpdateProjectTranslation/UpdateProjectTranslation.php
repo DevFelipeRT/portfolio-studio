@@ -8,6 +8,9 @@ use App\Modules\Projects\Application\Dtos\ProjectTranslationDto;
 use App\Modules\Projects\Application\Services\SupportedLocalesResolver;
 use App\Modules\Projects\Domain\Repositories\IProjectRepository;
 use App\Modules\Projects\Domain\Repositories\IProjectTranslationRepository;
+use App\Modules\Projects\Domain\Exceptions\ProjectDescriptionTooLongException;
+use App\Modules\Projects\Domain\ValueObjects\ProjectDescription;
+use App\Modules\Shared\Contracts\RichText\IRichTextService;
 use InvalidArgumentException;
 
 final class UpdateProjectTranslation
@@ -16,6 +19,7 @@ final class UpdateProjectTranslation
         private readonly IProjectRepository $projects,
         private readonly IProjectTranslationRepository $translations,
         private readonly SupportedLocalesResolver $supportedLocales,
+        private readonly IRichTextService $richText,
     ) {
     }
 
@@ -59,10 +63,28 @@ final class UpdateProjectTranslation
      */
     private function normalizePayload(UpdateProjectTranslationInput $input): array
     {
+        $descriptionRaw = $this->normalizeText($input->description);
+        if ($descriptionRaw !== null) {
+            $preparedDescription = $this->richText->prepareForPersistence($descriptionRaw, 'description');
+            try {
+                $projectDescription = ProjectDescription::fromRawAndPlainText(
+                    raw: $preparedDescription->normalized(),
+                    plainText: $preparedDescription->plainText(),
+                );
+            } catch (ProjectDescriptionTooLongException $exception) {
+                throw \App\Modules\Shared\Support\RichText\Exceptions\RichTextValidationException::forCharacters(
+                    field: 'description',
+                    maxCharacters: $exception->limit(),
+                    actualCharacters: $exception->actual(),
+                );
+            }
+            $descriptionRaw = $projectDescription->raw();
+        }
+
         return [
             'name' => $this->normalizeText($input->name),
             'summary' => $this->normalizeText($input->summary),
-            'description' => $this->normalizeText($input->description),
+            'description' => $descriptionRaw,
             'status' => $this->normalizeText($input->status),
             'repository_url' => $this->normalizeText($input->repositoryUrl),
             'live_url' => $this->normalizeText($input->liveUrl),

@@ -9,6 +9,9 @@ use App\Modules\Projects\Domain\Repositories\IProjectRepository;
 use App\Modules\Projects\Domain\Repositories\IProjectTranslationRepository;
 use App\Modules\Projects\Application\Services\ProjectImageService;
 use App\Modules\Projects\Application\Services\ProjectLocaleSwapService;
+use App\Modules\Projects\Domain\Exceptions\ProjectDescriptionTooLongException;
+use App\Modules\Projects\Domain\ValueObjects\ProjectDescription;
+use App\Modules\Shared\Contracts\RichText\IRichTextService;
 use Illuminate\Support\Facades\DB;
 
 final class UpdateProject
@@ -18,6 +21,7 @@ final class UpdateProject
         private readonly IProjectTranslationRepository $translations,
         private readonly ProjectImageService $projectImageService,
         private readonly ProjectLocaleSwapService $localeSwapService,
+        private readonly IRichTextService $richText,
     ) {
     }
 
@@ -38,11 +42,25 @@ final class UpdateProject
             if ($shouldSwap) {
                 $project = $this->localeSwapService->swap($project, $input->locale);
             } else {
+                $preparedDescription = $this->richText->prepareForPersistence($input->description, 'description');
+                try {
+                    $projectDescription = ProjectDescription::fromRawAndPlainText(
+                        raw: $preparedDescription->normalized(),
+                        plainText: $preparedDescription->plainText(),
+                    );
+                } catch (ProjectDescriptionTooLongException $exception) {
+                    throw \App\Modules\Shared\Support\RichText\Exceptions\RichTextValidationException::forCharacters(
+                        field: 'description',
+                        maxCharacters: $exception->limit(),
+                        actualCharacters: $exception->actual(),
+                    );
+                }
+
                 $this->projects->update($project, [
                     'locale' => $input->locale,
                     'name' => $input->name,
                     'summary' => $input->summary,
-                    'description' => $input->description,
+                    'description' => $projectDescription->raw(),
                     'status' => $input->status,
                     'repository_url' => $input->repositoryUrl,
                     'live_url' => $input->liveUrl,

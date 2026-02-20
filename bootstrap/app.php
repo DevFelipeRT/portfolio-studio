@@ -3,6 +3,8 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Validation\ValidationException;
+use App\Modules\Shared\Support\RichText\Exceptions\RichTextValidationException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -20,5 +22,10 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->map(
+            RichTextValidationException::class,
+            static fn (RichTextValidationException $exception): ValidationException => ValidationException::withMessages([
+                $exception->field() => [$exception->getMessage()],
+            ]),
+        );
     })->create();
