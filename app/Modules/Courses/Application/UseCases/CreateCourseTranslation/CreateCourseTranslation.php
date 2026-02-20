@@ -8,6 +8,7 @@ use App\Modules\Courses\Application\Dtos\CourseTranslationDto;
 use App\Modules\Courses\Application\Services\SupportedLocalesResolver;
 use App\Modules\Courses\Domain\Repositories\ICourseRepository;
 use App\Modules\Courses\Domain\Repositories\ICourseTranslationRepository;
+use App\Modules\Shared\Contracts\RichText\IRichTextService;
 use InvalidArgumentException;
 
 final class CreateCourseTranslation
@@ -16,6 +17,7 @@ final class CreateCourseTranslation
         private readonly ICourseRepository $courses,
         private readonly ICourseTranslationRepository $translations,
         private readonly SupportedLocalesResolver $supportedLocales,
+        private readonly IRichTextService $richText,
     ) {
     }
 
@@ -52,11 +54,17 @@ final class CreateCourseTranslation
      */
     private function normalizePayload(CreateCourseTranslationInput $input): array
     {
+        $descriptionRaw = $this->normalizeText($input->description);
+        if ($descriptionRaw !== null) {
+            $preparedDescription = $this->richText->prepareForPersistence($descriptionRaw, 'description');
+            $descriptionRaw = $preparedDescription->normalized();
+        }
+
         return [
             'name' => $this->normalizeText($input->name),
             'institution' => $this->normalizeText($input->institution),
             'summary' => $this->normalizeText($input->summary),
-            'description' => $this->normalizeText($input->description),
+            'description' => $descriptionRaw,
         ];
     }
 

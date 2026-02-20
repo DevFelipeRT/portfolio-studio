@@ -8,6 +8,7 @@ use App\Modules\Courses\Domain\Models\Course;
 use App\Modules\Courses\Domain\Repositories\ICourseRepository;
 use App\Modules\Courses\Domain\Repositories\ICourseTranslationRepository;
 use App\Modules\Courses\Application\Services\CourseLocaleSwapService;
+use App\Modules\Shared\Contracts\RichText\IRichTextService;
 use Illuminate\Support\Facades\DB;
 
 final class UpdateCourse
@@ -16,6 +17,7 @@ final class UpdateCourse
         private readonly ICourseRepository $courses,
         private readonly ICourseTranslationRepository $translations,
         private readonly CourseLocaleSwapService $localeSwapService,
+        private readonly IRichTextService $richText,
     ) {
     }
 
@@ -36,12 +38,14 @@ final class UpdateCourse
             if ($shouldSwap) {
                 $course = $this->localeSwapService->swap($course, $input->locale);
             } else {
+                $preparedDescription = $this->richText->prepareForPersistence($input->description, 'description');
+
                 $this->courses->update($course, [
                     'locale' => $input->locale,
                     'name' => $input->name,
                     'institution' => $input->institution,
                     'summary' => $input->summary,
-                    'description' => $input->description,
+                    'description' => $preparedDescription->normalized(),
                 ]);
             }
 
