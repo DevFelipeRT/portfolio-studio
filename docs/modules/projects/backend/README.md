@@ -35,6 +35,12 @@ Declared in `app/Modules/Projects/Routes/admin.php`:
 
 Base projects are stored in `projects` and include (among other fields) `locale`, `name`, `summary`, `description`, `status`, URLs and a `display` flag (`database/migrations/2025_11_22_130224_create_projects_table.php`, `database/migrations/2026_02_03_160000_add_locale_to_projects.php`, `database/migrations/2026_02_03_170000_rename_project_description_columns.php`).
 
+### Rich text (`description`)
+
+`description` is persisted as serialized Lexical JSON (normalized before write) using the shared RichText pipeline (`app/Modules/Shared/Contracts/RichText/IRichTextService.php`, `app/Modules/Shared/Support/RichText/LexicalRichTextService.php`).
+
+Projects also enforce a domain-level character limit on visible/plain text via `ProjectDescription` (`app/Modules/Projects/Domain/ValueObjects/ProjectDescription.php`).
+
 Translations are stored in `project_translations` (unique `(project_id, locale)`) and include localized copies of the content fields plus a translation-level `status` (`database/migrations/2026_02_03_150000_add_project_translations.php`, `database/migrations/2026_02_06_110000_add_status_to_project_translations.php`, `app/Modules/Projects/Domain/Models/ProjectTranslation.php`).
 
 Projects can be associated with:
@@ -61,4 +67,3 @@ This capability is used by Content Management templates as a data source: `proje
 ## Admin skills integration
 
 The project create/edit payload includes a “skills catalog” resolved via `skills.list.v1` using the module’s `CapabilitiesGateway` (`app/Modules/Projects/Http/Controllers/ProjectController.php`, `app/Modules/Projects/Application/Capabilities/CapabilitiesGateway.php`).
-

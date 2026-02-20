@@ -40,6 +40,10 @@ Translation records are stored separately (`database/migrations/2026_02_03_13000
 
 The Eloquent model exposes the translation relationship (`app/Modules/Experiences/Domain/Models/Experience.php`).
 
+### Rich text (`description`)
+
+`description` is persisted as serialized Lexical JSON (normalized before write) using the shared RichText pipeline (`app/Modules/Shared/Contracts/RichText/IRichTextService.php`, `app/Modules/Shared/Support/RichText/LexicalRichTextService.php`).
+
 ## Locale + translations behavior
 
 - Admin validation restricts `locale` to supported locales resolved via the capability key `website.locales.supported.v1` (`app/Modules/Experiences/Application/Services/SupportedLocalesResolver.php`, `app/Modules/Experiences/Http/Requests/Experience/UpdateExperienceRequest.php`).

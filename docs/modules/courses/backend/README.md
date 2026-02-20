@@ -46,6 +46,10 @@ Notable changes:
 
 The Course model casts `category` to an enum and appends a computed `status` attribute derived from date fields (`app/Modules/Courses/Domain/Models/Course.php`).
 
+### Rich text (`description`)
+
+`description` is persisted as serialized Lexical JSON (normalized before write) using the shared RichText pipeline (`app/Modules/Shared/Contracts/RichText/IRichTextService.php`, `app/Modules/Shared/Support/RichText/LexicalRichTextService.php`).
+
 ## Locale + translations behavior
 
 - Admin validation restricts `locale` to supported locales resolved via the capability key `website.locales.supported.v1` (`app/Modules/Courses/Application/Services/SupportedLocalesResolver.php`, `app/Modules/Courses/Http/Requests/Course/UpdateCourseRequest.php`).
@@ -56,4 +60,3 @@ The Course model casts `category` to an enum and appends a computed `status` att
 The module registers `courses.visible.v1` via `VisibleCourses` (`app/Modules/Courses/Infrastructure/Providers/CoursesServiceProvider.php`, `app/Modules/Courses/Application/Capabilities/Providers/VisibleCourses.php`).
 
 This capability is used as a CMS section data source: the `courses_highlight_grid` template binds `courses.visible.v1` into the section’s `courses` field (`resources/templates/courses/courses_highlight_grid/courses_highlight_grid.php`).
-
