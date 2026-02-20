@@ -1,0 +1,148 @@
+name: Backend Deploy (pull + migrate + optimize)
+
+on:
+  push:
+    branches: ["master"]
+    paths:
+      - "app/**"
+      - "bootstrap/**"
+      - "config/**"
+      - "database/**"
+      - "routes/**"
+      - "resources/templates/**"
+      - "resources/views/**"
+      - "lang/**"
+      - "composer.json"
+      - "composer.lock"
+      - "artisan"
+  workflow_dispatch: {}
+
+concurrency:
+  group: backend-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout source (for change detection)
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          fetch-depth: 0
+
+      - name: Detect changes
+        id: changes
+        run: |
+          set -euo pipefail
+
+          BEFORE="${{ github.event.before }}"
+          AFTER="${{ github.sha }}"
+          ZERO_SHA="0000000000000000000000000000000000000000"
+
+          if [ -z "${BEFORE}" ] || [ "${BEFORE}" = "${ZERO_SHA}" ]; then
+            RANGE="${AFTER}^..${AFTER}"
+          else
+            RANGE="${BEFORE}..${AFTER}"
+          fi
+
+          CHANGED="$(git diff --name-only "${RANGE}" || true)"
+
+          if echo "${CHANGED}" | grep -q '^database/migrations/'; then
+            echo "migrations_changed=true" >> "${GITHUB_OUTPUT}"
+          else
+            echo "migrations_changed=false" >> "${GITHUB_OUTPUT}"
+          fi
+
+          if echo "${CHANGED}" | grep -qE '^(composer\\.json|composer\\.lock)$'; then
+            echo "composer_changed=true" >> "${GITHUB_OUTPUT}"
+          else
+            echo "composer_changed=false" >> "${GITHUB_OUTPUT}"
+          fi
+
+      - name: Start SSH agent
+        uses: webfactory/ssh-agent@dc588b651fe13675774614f8e6a936a468676387
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Trust remote host
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          echo "${{ secrets.KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Pull code, run migrate (if needed), then optimize
+        env:
+          HOST: ${{ secrets.HOST }}
+          PORT: ${{ secrets.PORT }}
+          USERNAME: ${{ secrets.USERNAME }}
+          TARGET_DIR: ${{ secrets.TARGET_DIR }}
+          APP_DIR: ${{ secrets.APP_DIR }}
+          MIGRATIONS_CHANGED: ${{ steps.changes.outputs.migrations_changed }}
+          COMPOSER_CHANGED: ${{ steps.changes.outputs.composer_changed }}
+          BRANCH: master
+        run: |
+          set -euo pipefail
+
+          PUBLIC_DIR="${TARGET_DIR%/}"
+          APP_DIR_OVERRIDE="${APP_DIR:-}"
+
+          ssh -p "${PORT}" -o StrictHostKeyChecking=yes "${USERNAME}@${HOST}" "
+            set -e
+
+            PUBLIC_DIR='${PUBLIC_DIR}'
+            APP_DIR_OVERRIDE='${APP_DIR_OVERRIDE}'
+            RESOLVED_APP_DIR=''
+            BRANCH='${BRANCH}'
+            MIGRATIONS_CHANGED='${MIGRATIONS_CHANGED}'
+            COMPOSER_CHANGED='${COMPOSER_CHANGED}'
+
+            if [ -n \"\${APP_DIR_OVERRIDE}\" ] && [ -f \"\${APP_DIR_OVERRIDE}/composer.json\" ]; then
+              RESOLVED_APP_DIR=\"\${APP_DIR_OVERRIDE}\"
+            elif [ -f \"\${PUBLIC_DIR}/composer.json\" ]; then
+              RESOLVED_APP_DIR=\"\${PUBLIC_DIR}\"
+            elif [ -f \"\$(dirname \"\${PUBLIC_DIR}\")/composer.json\" ]; then
+              RESOLVED_APP_DIR=\"\$(dirname \"\${PUBLIC_DIR}\")\"
+            fi
+
+            if [ -z \"\${RESOLVED_APP_DIR}\" ]; then
+              echo 'Unable to resolve APP_DIR with composer.json.'
+              echo \"Checked: \${APP_DIR_OVERRIDE} \${PUBLIC_DIR} \$(dirname \"\${PUBLIC_DIR}\")\"
+              exit 1
+            fi
+
+            cd \"\${RESOLVED_APP_DIR}\"
+
+            if [ ! -d .git ]; then
+              echo 'Target directory is not a git repo (.git missing).'
+              exit 1
+            fi
+
+            if command -v git >/dev/null 2>&1; then
+              git fetch --prune origin
+              git reset --hard \"origin/\${BRANCH}\"
+              git clean -fd
+            else
+              echo 'git not found on server.'
+              exit 1
+            fi
+
+            if command -v composer >/dev/null 2>&1; then
+              if [ \"\${COMPOSER_CHANGED}\" = 'true' ]; then
+                composer install --no-interaction --no-dev --prefer-dist --optimize-autoloader
+              else
+                composer dump-autoload -o
+              fi
+            fi
+
+            if [ \"\${MIGRATIONS_CHANGED}\" = 'true' ]; then
+              php artisan migrate --force
+            fi
+
+            php artisan optimize:clear
+            php artisan optimize
+          "
