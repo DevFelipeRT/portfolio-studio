@@ -118,9 +118,12 @@ If you use the included GitHub Actions deployment workflows, the frontend build 
 
 This repository includes GitHub Actions workflows under [`.github/workflows/`](.github/workflows/):
 
-- Backend remote optimize on `master` pushes (skips docs-only changes): [`.github/workflows/backend-optimize.yml`](.github/workflows/backend-optimize.yml)
+- Backend deploy pipeline on `master` pushes (backend-related paths only): [`.github/workflows/backend-deploy.yml`](.github/workflows/backend-deploy.yml)
+  - Connects to a remote host over SSH, hard-resets the working tree to `origin/master`, runs Composer (install when `composer.*` changed, otherwise `dump-autoload -o`), runs `php artisan migrate --force` if migrations changed, then runs `php artisan optimize`.
+  - Assumes the target directory on the server is a git clone of this repo (has `.git` and an `origin` remote).
+  - Requires secrets: `SSH_PRIVATE_KEY`, `KNOWN_HOSTS`, `HOST`, `PORT`, `USERNAME`, `TARGET_DIR` (and optional `APP_DIR` to force the app path).
+- Backend optimize (manual utility): [`.github/workflows/backend-optimize.yml`](.github/workflows/backend-optimize.yml)
   - Runs `composer dump-autoload -o`, `php artisan optimize:clear`, and `php artisan optimize` on a remote host over SSH.
-  - Requires secrets: `SSH_PRIVATE_KEY`, `KNOWN_HOSTS`, `HOST`, `PORT`, `USERNAME`, `TARGET_DIR`.
 - Frontend build publish on `master` pushes (frontend-related paths only): [`.github/workflows/frontend-build.yml`](.github/workflows/frontend-build.yml)
   - Runs `npm ci` + `npm run build` and force-pushes `public/build` into a `frontend-dist` branch.
 - Frontend deploy from `frontend-dist`: [`.github/workflows/frontend-deploy.yml`](.github/workflows/frontend-deploy.yml)
