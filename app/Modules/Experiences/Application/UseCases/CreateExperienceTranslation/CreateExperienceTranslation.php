@@ -8,6 +8,7 @@ use App\Modules\Experiences\Application\Dtos\ExperienceTranslationDto;
 use App\Modules\Experiences\Application\Services\SupportedLocalesResolver;
 use App\Modules\Experiences\Domain\Repositories\IExperienceRepository;
 use App\Modules\Experiences\Domain\Repositories\IExperienceTranslationRepository;
+use App\Modules\Shared\Contracts\RichText\IRichTextService;
 use InvalidArgumentException;
 
 final class CreateExperienceTranslation
@@ -16,6 +17,7 @@ final class CreateExperienceTranslation
         private readonly IExperienceRepository $experiences,
         private readonly IExperienceTranslationRepository $translations,
         private readonly SupportedLocalesResolver $supportedLocales,
+        private readonly IRichTextService $richText,
     ) {
     }
 
@@ -52,11 +54,17 @@ final class CreateExperienceTranslation
      */
     private function normalizePayload(CreateExperienceTranslationInput $input): array
     {
+        $descriptionRaw = $this->normalizeText($input->description);
+        if ($descriptionRaw !== null) {
+            $preparedDescription = $this->richText->prepareForPersistence($descriptionRaw, 'description');
+            $descriptionRaw = $preparedDescription->normalized();
+        }
+
         return [
             'position' => $this->normalizeText($input->position),
             'company' => $this->normalizeText($input->company),
             'summary' => $this->normalizeText($input->summary),
-            'description' => $this->normalizeText($input->description),
+            'description' => $descriptionRaw,
         ];
     }
 

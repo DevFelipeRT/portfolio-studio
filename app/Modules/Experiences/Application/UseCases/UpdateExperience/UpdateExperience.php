@@ -8,6 +8,7 @@ use App\Modules\Experiences\Domain\Models\Experience;
 use App\Modules\Experiences\Domain\Repositories\IExperienceRepository;
 use App\Modules\Experiences\Domain\Repositories\IExperienceTranslationRepository;
 use App\Modules\Experiences\Application\Services\ExperienceLocaleSwapService;
+use App\Modules\Shared\Contracts\RichText\IRichTextService;
 use Illuminate\Support\Facades\DB;
 
 final class UpdateExperience
@@ -16,6 +17,7 @@ final class UpdateExperience
         private readonly IExperienceRepository $experiences,
         private readonly IExperienceTranslationRepository $translations,
         private readonly ExperienceLocaleSwapService $localeSwapService,
+        private readonly IRichTextService $richText,
     ) {
     }
 
@@ -36,12 +38,14 @@ final class UpdateExperience
             if ($shouldSwap) {
                 $experience = $this->localeSwapService->swap($experience, $input->locale);
             } else {
+                $preparedDescription = $this->richText->prepareForPersistence($input->description, 'description');
+
                 $this->experiences->update($experience, [
                     'locale' => $input->locale,
                     'position' => $input->position,
                     'company' => $input->company,
                     'summary' => $input->summary,
-                    'description' => $input->description,
+                    'description' => $preparedDescription->normalized(),
                 ]);
             }
 
