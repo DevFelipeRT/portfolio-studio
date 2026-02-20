@@ -13,6 +13,7 @@ use App\Modules\Initiatives\Infrastructure\Providers\InitiativesServiceProvider;
 use App\Modules\Mail\Infrastructure\Providers\MailServiceProvider;
 use App\Modules\Projects\Infrastructure\Providers\ProjectsServiceProvider;
 use App\Modules\Skills\Infrastructure\Providers\SkillsServiceProvider;
+use App\Modules\Shared\Support\RichText\RichTextServiceProvider;
 use App\Modules\WebsiteSettings\Infrastructure\Providers\WebsiteSettingsServiceProvider;
 
 use Illuminate\Support\ServiceProvider;
@@ -26,6 +27,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        $this->app->register(RichTextServiceProvider::class);
+
         $this->app->register(CapabilitiesServiceProvider::class);
 
         $this->app->register(ContentManagementServiceProvider::class);

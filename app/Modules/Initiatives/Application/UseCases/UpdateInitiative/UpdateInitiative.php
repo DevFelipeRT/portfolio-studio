@@ -9,6 +9,7 @@ use App\Modules\Initiatives\Domain\Repositories\IInitiativeRepository;
 use App\Modules\Initiatives\Application\Services\InitiativeImageService;
 use App\Modules\Initiatives\Application\Services\InitiativeLocaleSwapService;
 use App\Modules\Initiatives\Domain\Repositories\IInitiativeTranslationRepository;
+use App\Modules\Shared\Contracts\RichText\IRichTextService;
 use Illuminate\Support\Facades\DB;
 
 final class UpdateInitiative
@@ -18,6 +19,7 @@ final class UpdateInitiative
         private readonly InitiativeImageService $initiativeImageService,
         private readonly IInitiativeTranslationRepository $translations,
         private readonly InitiativeLocaleSwapService $localeSwapService,
+        private readonly IRichTextService $richText,
     ) {
     }
 
@@ -38,11 +40,13 @@ final class UpdateInitiative
             if ($shouldSwap) {
                 $initiative = $this->localeSwapService->swap($initiative, $input->locale);
             } else {
+                $preparedDescription = $this->richText->prepareForPersistence($input->description, 'description');
+
                 $this->initiatives->update($initiative, [
                     'locale' => $input->locale,
                     'name' => $input->name,
                     'summary' => $input->summary,
-                    'description' => $input->description,
+                    'description' => $preparedDescription->normalized(),
                 ]);
             }
 

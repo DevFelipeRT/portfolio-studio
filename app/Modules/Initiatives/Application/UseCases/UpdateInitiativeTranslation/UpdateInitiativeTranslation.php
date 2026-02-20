@@ -8,6 +8,7 @@ use App\Modules\Initiatives\Application\Dtos\InitiativeTranslationDto;
 use App\Modules\Initiatives\Application\Services\SupportedLocalesResolver;
 use App\Modules\Initiatives\Domain\Repositories\IInitiativeRepository;
 use App\Modules\Initiatives\Domain\Repositories\IInitiativeTranslationRepository;
+use App\Modules\Shared\Contracts\RichText\IRichTextService;
 use InvalidArgumentException;
 
 final class UpdateInitiativeTranslation
@@ -16,6 +17,7 @@ final class UpdateInitiativeTranslation
         private readonly IInitiativeRepository $initiatives,
         private readonly IInitiativeTranslationRepository $translations,
         private readonly SupportedLocalesResolver $supportedLocales,
+        private readonly IRichTextService $richText,
     ) {
     }
 
@@ -56,10 +58,16 @@ final class UpdateInitiativeTranslation
      */
     private function normalizePayload(UpdateInitiativeTranslationInput $input): array
     {
+        $descriptionRaw = $this->normalizeText($input->description);
+        if ($descriptionRaw !== null) {
+            $preparedDescription = $this->richText->prepareForPersistence($descriptionRaw, 'description');
+            $descriptionRaw = $preparedDescription->normalized();
+        }
+
         return [
             'name' => $this->normalizeText($input->name),
             'summary' => $this->normalizeText($input->summary),
-            'description' => $this->normalizeText($input->description),
+            'description' => $descriptionRaw,
         ];
     }
 

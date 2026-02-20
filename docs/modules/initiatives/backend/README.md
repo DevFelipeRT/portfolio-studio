@@ -34,6 +34,10 @@ Declared in `app/Modules/Initiatives/Routes/admin.php`:
 
 Initiatives are stored in `initiatives` and include `locale`, `name`, `summary`, `description`, `display`, and date fields (`database/migrations/2025_11_27_165214_create_initiatives_table.php`, `database/migrations/2026_02_04_090000_rename_initiative_description_columns.php`, `database/migrations/2026_02_04_091000_add_locale_to_initiatives.php`).
 
+### Rich text (`description`)
+
+`description` is persisted as serialized Lexical JSON (normalized before write) using the shared RichText pipeline (`app/Modules/Shared/Contracts/RichText/IRichTextService.php`, `app/Modules/Shared/Support/RichText/LexicalRichTextService.php`).
+
 Translations are stored in `initiative_translations` (unique `(initiative_id, locale)`) (`database/migrations/2026_02_04_092000_add_initiative_translations.php`).
 
 Initiatives can have images via the `image_attachments` morph pivot (`Initiative::images()` in `app/Modules/Initiatives/Domain/Models/Initiative.php`).
@@ -52,4 +56,3 @@ Create/update requests accept an `images[]` payload (files + optional metadata).
 The module registers `initiatives.visible.v1` via `VisibleInitiatives` (`app/Modules/Initiatives/Infrastructure/Providers/InitiativesServiceProvider.php`, `app/Modules/Initiatives/Application/Capabilities/Providers/VisibleInitiatives.php`).
 
 This capability is used by Content Management templates as a data source: `initiative_highlight_list` binds `initiatives.visible.v1` into the section’s `initiatives` field (`resources/templates/initiatives/initiative_highlight_list/initiative_highlight_list.php`).
-
