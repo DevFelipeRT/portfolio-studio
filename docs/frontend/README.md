@@ -40,10 +40,15 @@ Evidence: folder structure under `resources/js/`.
 
 ## Routing on the client (Ziggy)
 
-Frontend code uses Ziggy’s `route(...)` helper and relies on Ziggy route metadata being shared by the backend:
+Frontend code uses Ziggy’s `route(...)` helper. In this codebase, the `route` function is provided globally by the root Blade view via Ziggy’s `@routes` directive:
 
 - Blade includes Ziggy routes: `resources/views/app.blade.php` (`@routes`)
-- Backend shares Ziggy props: `app/Modules/Inertia/Http/Middleware/HandleInertiaRequests.php`
+
+Additionally, the backend also shares a `ziggy` Inertia prop (routes + current location) via:
+
+- `app/Modules/Inertia/Http/Middleware/HandleInertiaRequests.php`
+
+Note: the frontend currently doesn’t read `props.ziggy` directly (it relies on the global `route`), but the prop is available if we later want to pass Ziggy config explicitly (e.g. SSR or non-global usage).
 
 ## Localization (i18n)
 
