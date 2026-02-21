@@ -31,6 +31,7 @@ class DatabaseSeeder extends Seeder
             CoursesSeeder::class,
             ContactChannelsSeeder::class,
             ExperiencesSeeder::class,
+            ImagesSeeder::class,
             ProjectsSeeder::class,
             InitiativesSeeder::class,
             ContentManagementSeeder::class,
