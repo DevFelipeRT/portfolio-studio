@@ -38,6 +38,12 @@ Evidence: module layout under `app/Modules/*` and provider wiring in `app/Provid
 - Queue: default connection is `database` via `QUEUE_CONNECTION` (`config/queue.php`).
 - Local dev script runs web server + queue listener + log viewer + Vite concurrently (`composer.json`).
 
+## Database seeding (local dev/demo)
+
+The repository includes deterministic seeders for local development and UI previews:
+
+- Seeding guide: [`docs/backend/seeding.md`](seeding.md) (`database/seeders/*`)
+
 ## Inertia integration (shared props)
 
 Inertia middleware is appended to the `web` middleware stack in `bootstrap/app.php`:
