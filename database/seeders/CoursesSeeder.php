@@ -6,15 +6,20 @@ namespace Database\Seeders;
 
 use App\Modules\Courses\Domain\Models\Course;
 use App\Modules\Courses\Domain\Models\CourseTranslation;
+use Database\Seeders\Concerns\PreventsProductionSeeding;
 use Illuminate\Database\Seeder;
 
 class CoursesSeeder extends Seeder
 {
+    use PreventsProductionSeeding;
+
     /**
      * Seed courses module base data and translations.
      */
     public function run(): void
     {
+        $this->assertNotProduction();
+
         // Keep this seeder deterministic: remove previous courses data first.
         Course::query()->delete();
 

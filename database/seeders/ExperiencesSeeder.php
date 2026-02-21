@@ -6,15 +6,20 @@ namespace Database\Seeders;
 
 use App\Modules\Experiences\Domain\Models\Experience;
 use App\Modules\Experiences\Domain\Models\ExperienceTranslation;
+use Database\Seeders\Concerns\PreventsProductionSeeding;
 use Illuminate\Database\Seeder;
 
 class ExperiencesSeeder extends Seeder
 {
+    use PreventsProductionSeeding;
+
     /**
      * Seed experiences module base data and translations.
      */
     public function run(): void
     {
+        $this->assertNotProduction();
+
         // Keep this seeder deterministic: remove previous experiences data first.
         Experience::query()->delete();
 

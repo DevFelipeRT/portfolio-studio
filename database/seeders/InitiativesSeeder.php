@@ -7,12 +7,15 @@ namespace Database\Seeders;
 use App\Modules\Images\Domain\Models\Image;
 use App\Modules\Initiatives\Domain\Models\Initiative;
 use App\Modules\Initiatives\Domain\Models\InitiativeTranslation;
+use Database\Seeders\Concerns\PreventsProductionSeeding;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class InitiativesSeeder extends Seeder
 {
+    use PreventsProductionSeeding;
+
     private const IMAGE_MANIFEST_PATH = 'database/seeders/assets/images/manifest.json';
 
     /**
@@ -20,6 +23,8 @@ class InitiativesSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->assertNotProduction();
+
         // Keep this seeder deterministic: remove previous initiatives data first.
         if (Schema::hasTable('image_attachments')) {
             DB::table('image_attachments')

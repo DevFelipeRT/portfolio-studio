@@ -6,15 +6,20 @@ namespace Database\Seeders;
 
 use App\Modules\ContactChannels\Domain\Models\ContactChannel;
 use App\Modules\ContactChannels\Domain\Models\ContactChannelTranslation;
+use Database\Seeders\Concerns\PreventsProductionSeeding;
 use Illuminate\Database\Seeder;
 
 class ContactChannelsSeeder extends Seeder
 {
+    use PreventsProductionSeeding;
+
     /**
      * Seed contact channels base data and translations.
      */
     public function run(): void
     {
+        $this->assertNotProduction();
+
         // Keep this seeder deterministic: remove previous contact channels first.
         ContactChannel::query()->delete();
 

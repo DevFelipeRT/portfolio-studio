@@ -62,6 +62,8 @@ These seeders are intentionally **deterministic**, which means:
 
 Do **not** run these seeders against a database that contains real content you want to keep.
 
+Additionally, all seeders in `database/seeders/*` are blocked when `APP_ENV=production` (they throw an exception at runtime).
+
 ## Seed image assets (manifest + attribution)
 
 Seed images are committed under:
@@ -85,4 +87,3 @@ For quick visual inspection of the committed seed assets:
 2. Add an entry to `database/seeders/assets/images/manifest.json` with (at minimum) `module`, `seeder_item`, and `local_path`.
 3. Update `database/seeders/assets/images/ATTRIBUTION.md` with the source and license.
 4. Ensure the `seeder_item` matches whatever your module seeder uses as the lookup key (for projects/initiatives this is the record `name`).
-

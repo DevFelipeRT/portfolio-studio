@@ -5,15 +5,20 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Modules\WebsiteSettings\Domain\Models\WebsiteSettings;
+use Database\Seeders\Concerns\PreventsProductionSeeding;
 use Illuminate\Database\Seeder;
 
 class WebsiteSettingsSeeder extends Seeder
 {
+    use PreventsProductionSeeding;
+
     /**
      * Seed global website settings with deterministic data.
      */
     public function run(): void
     {
+        $this->assertNotProduction();
+
         // Keep this seeder deterministic: remove previous settings first.
         WebsiteSettings::query()->delete();
 

@@ -8,6 +8,7 @@ use App\Modules\ContentManagement\Domain\Models\ContentSettings;
 use App\Modules\ContentManagement\Domain\Models\Page;
 use App\Modules\ContentManagement\Domain\Models\PageSection;
 use App\Modules\Images\Domain\Models\Image;
+use Database\Seeders\Concerns\PreventsProductionSeeding;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -15,11 +16,15 @@ use Illuminate\Support\Facades\Schema;
 
 class ContentManagementSeeder extends Seeder
 {
+    use PreventsProductionSeeding;
+
     /**
      * Seed content pages and sections with deterministic data.
      */
     public function run(): void
     {
+        $this->assertNotProduction();
+
         $this->clearPreviousData();
 
         $pages = [

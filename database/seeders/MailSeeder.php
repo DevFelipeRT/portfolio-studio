@@ -5,16 +5,21 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Modules\Mail\Domain\Models\Message;
+use Database\Seeders\Concerns\PreventsProductionSeeding;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 
 class MailSeeder extends Seeder
 {
+    use PreventsProductionSeeding;
+
     /**
      * Seed mail messages with deterministic data for admin inbox testing.
      */
     public function run(): void
     {
+        $this->assertNotProduction();
+
         // Keep this seeder deterministic: remove previous messages first.
         Message::query()->delete();
 

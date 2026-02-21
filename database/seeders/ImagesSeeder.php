@@ -6,11 +6,14 @@ namespace Database\Seeders;
 
 use App\Modules\Images\Application\Services\ImageService;
 use App\Modules\Images\Domain\Models\Image;
+use Database\Seeders\Concerns\PreventsProductionSeeding;
 use Illuminate\Database\Seeder;
 use Illuminate\Http\UploadedFile;
 
 final class ImagesSeeder extends Seeder
 {
+    use PreventsProductionSeeding;
+
     private const MANIFEST_PATH = 'database/seeders/assets/images/manifest.json';
 
     /**
@@ -21,6 +24,8 @@ final class ImagesSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->assertNotProduction();
+
         $manifest = $this->loadManifest();
 
         $originalFilenames = [];

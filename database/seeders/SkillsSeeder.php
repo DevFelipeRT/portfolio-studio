@@ -8,15 +8,20 @@ use App\Modules\Skills\Domain\Models\Skill;
 use App\Modules\Skills\Domain\Models\SkillCategory;
 use App\Modules\Skills\Domain\Models\SkillCategoryTranslation;
 use App\Modules\Skills\Domain\Models\SkillTranslation;
+use Database\Seeders\Concerns\PreventsProductionSeeding;
 use Illuminate\Database\Seeder;
 
 class SkillsSeeder extends Seeder
 {
+    use PreventsProductionSeeding;
+
     /**
      * Seed skills module base data and translations.
      */
     public function run(): void
     {
+        $this->assertNotProduction();
+
         // Keep this seeder deterministic: remove previous skills data first.
         Skill::query()->delete();
         SkillCategory::query()->delete();
