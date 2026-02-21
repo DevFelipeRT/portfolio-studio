@@ -1,0 +1,137 @@
+[
+  {
+    "module": "content-management",
+    "seeder_item": "Hero Primary",
+    "local_path": "database/seeders/assets/images/content-management/hero_primary.jpg",
+    "source_url": "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=2400&auto=format&fit=max&q=80",
+    "source_page": "https://unsplash.com/photos/1SAnrIxw5OY",
+    "license": "Unsplash License",
+    "author": "Kari Shea"
+  },
+  {
+    "module": "initiatives",
+    "seeder_item": "Accessibility Improvement Program",
+    "local_path": "database/seeders/assets/images/initiatives/accessibility_improvement_program.jpg",
+    "source_url": "https://unsplash.com/photos/8hTqBs8N4f0/download?force=true",
+    "source_page": "https://unsplash.com/photos/8hTqBs8N4f0",
+    "license": "Unsplash License",
+    "author": "Annie Spratt"
+  },
+  {
+    "module": "initiatives",
+    "seeder_item": "Developer Mentoring Circle",
+    "local_path": "database/seeders/assets/images/initiatives/developer_mentoring_circle.jpg",
+    "source_url": "https://unsplash.com/photos/fSWOVc3e06w/download?force=true",
+    "source_page": "https://unsplash.com/photos/fSWOVc3e06w",
+    "license": "Unsplash License",
+    "author": "Scott Graham"
+  },
+  {
+    "module": "initiatives",
+    "seeder_item": "Engineering Knowledge Base",
+    "local_path": "database/seeders/assets/images/initiatives/engineering_knowledge_base.jpg",
+    "source_url": "https://unsplash.com/photos/HNjWq8WPyoY/download?force=true",
+    "source_page": "https://unsplash.com/photos/HNjWq8WPyoY",
+    "license": "Unsplash License",
+    "author": "Andrew Neel"
+  },
+  {
+    "module": "initiatives",
+    "seeder_item": "Open Source Contributions Sprint",
+    "local_path": "database/seeders/assets/images/initiatives/open_source_contributions_sprint.jpg",
+    "source_url": "https://unsplash.com/photos/fPPwHFn6Eis/download?force=true",
+    "source_page": "https://unsplash.com/photos/fPPwHFn6Eis",
+    "license": "Unsplash License",
+    "author": "Luca Bravo"
+  },
+  {
+    "module": "initiatives",
+    "seeder_item": "Performance Budget Initiative",
+    "local_path": "database/seeders/assets/images/initiatives/performance_budget_initiative.jpg",
+    "source_url": "https://unsplash.com/photos/J7vp4RK-FPY/download?force=true",
+    "source_page": "https://unsplash.com/photos/J7vp4RK-FPY",
+    "license": "Unsplash License",
+    "author": "KOBU Agency"
+  },
+  {
+    "module": "initiatives",
+    "seeder_item": "Sustainable Hosting Transition",
+    "local_path": "database/seeders/assets/images/initiatives/sustainable_hosting_transition.jpg",
+    "source_url": "https://unsplash.com/photos/oxwPGUnsfpE/download?force=true",
+    "source_page": "https://unsplash.com/photos/oxwPGUnsfpE",
+    "license": "Unsplash License",
+    "author": "Taylor Vick"
+  },
+  {
+    "module": "projects",
+    "seeder_item": "Analytics Dashboard",
+    "local_path": "database/seeders/assets/images/projects/analytics_dashboard.jpg",
+    "source_url": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=2400&auto=format&fit=max&q=80",
+    "source_page": "https://unsplash.com/photos/JKUTrJ4vK00",
+    "license": "Unsplash License",
+    "author": "Luke Chesser"
+  },
+  {
+    "module": "projects",
+    "seeder_item": "Cloud Cost Monitor",
+    "local_path": "database/seeders/assets/images/projects/cloud_cost_monitor.jpg",
+    "source_url": "https://images.unsplash.com/photo-1667984390535-6d03cff0b11a?w=2400&auto=format&fit=max&q=80",
+    "source_page": "https://unsplash.com/photos/wlQUkvDhvQw",
+    "license": "Unsplash License",
+    "author": "Growtika"
+  },
+  {
+    "module": "projects",
+    "seeder_item": "DevOps Automation Toolkit",
+    "local_path": "database/seeders/assets/images/projects/devops_automation_toolkit.jpg",
+    "source_url": "https://images.unsplash.com/photo-1580106815433-a5b1d1d53d85?w=2400&auto=format&fit=max&q=80",
+    "source_page": "https://unsplash.com/photos/s0XabTAKvak",
+    "license": "Unsplash License",
+    "author": "Paul Hanaoka"
+  },
+  {
+    "module": "projects",
+    "seeder_item": "E-commerce API",
+    "local_path": "database/seeders/assets/images/projects/ecommerce_api.jpg",
+    "source_url": "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=2400&auto=format&fit=max&q=80",
+    "source_page": "https://unsplash.com/photos/Q59HmzK38eQ",
+    "license": "Unsplash License",
+    "author": "rupixen"
+  },
+  {
+    "module": "projects",
+    "seeder_item": "Internal Dev Portal",
+    "local_path": "database/seeders/assets/images/projects/internal_dev_portal.jpg",
+    "source_url": "https://images.unsplash.com/photo-1600267204091-5c1ab8b10c02?w=2400&auto=format&fit=max&q=80",
+    "source_page": "https://unsplash.com/photos/cdMAU_x9mxY",
+    "license": "Unsplash License",
+    "author": "Sigmund"
+  },
+  {
+    "module": "projects",
+    "seeder_item": "Learning Management System",
+    "local_path": "database/seeders/assets/images/projects/learning_management_system.jpg",
+    "source_url": "https://images.unsplash.com/photo-1610484826967-09c5720778c7?w=2400&auto=format&fit=max&q=80",
+    "source_page": "https://unsplash.com/photos/Y8TiLvKnLeg",
+    "license": "Unsplash License",
+    "author": "Compare Fibre"
+  },
+  {
+    "module": "projects",
+    "seeder_item": "Mobile Habit Tracker",
+    "local_path": "database/seeders/assets/images/projects/mobile_habit_tracker.jpg",
+    "source_url": "https://images.unsplash.com/photo-1601972602237-8c79241e468b?w=2400&auto=format&fit=max&q=80",
+    "source_page": "https://unsplash.com/photos/bMTl6uFMONg",
+    "license": "Unsplash License",
+    "author": "abillion"
+  },
+  {
+    "module": "projects",
+    "seeder_item": "Portfolio Platform",
+    "local_path": "database/seeders/assets/images/projects/portfolio_platform.jpg",
+    "source_url": "https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=2400&auto=format&fit=max&q=80",
+    "source_page": "https://unsplash.com/photos/DtDlVpy-vvQ",
+    "license": "Unsplash License",
+    "author": "Lee Campbell"
+  }
+]

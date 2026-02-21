@@ -76,6 +76,18 @@ Installs dependencies, creates `.env` from `.env.example` if missing, generates 
 composer setup
 ```
 
+### Seed demo content
+
+Seeds deterministic demo data for local development (admin user, modules, CMS pages, and seed images):
+
+```sh
+php artisan db:seed
+```
+
+Default admin credentials: `admin@example.com` / `password` (`database/seeders/DatabaseSeeder.php`).
+
+See also: [`docs/backend/seeding.md`](docs/backend/seeding.md).
+
 ### Run dev stack
 
 Runs the PHP server, queue listener, Laravel Pail log tailing, and Vite in parallel (`composer.json`):
