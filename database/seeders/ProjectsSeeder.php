@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Modules\Images\Domain\Models\Image;
 use App\Modules\Projects\Domain\Models\Project;
 use App\Modules\Projects\Domain\Models\ProjectTranslation;
 use App\Modules\Skills\Domain\Models\Skill;
@@ -13,6 +14,8 @@ use Illuminate\Support\Facades\Schema;
 
 class ProjectsSeeder extends Seeder
 {
+    private const IMAGE_MANIFEST_PATH = 'database/seeders/assets/images/manifest.json';
+
     /**
      * Seed projects module base data and translations.
      */
@@ -21,11 +24,14 @@ class ProjectsSeeder extends Seeder
         // Keep this seeder deterministic: remove previous projects data first.
         if (Schema::hasTable('image_attachments')) {
             DB::table('image_attachments')
-                ->where('owner_type', Project::class)
+                // Owner type may be stored as morph alias or FQCN depending on context/history.
+                ->whereIn('owner_type', ['project', Project::class])
                 ->delete();
         }
 
         Project::query()->delete();
+
+        $imageFilenameByItem = $this->loadSeedImageFilenameMap('projects');
 
         $projects = [
             [
@@ -216,6 +222,7 @@ class ProjectsSeeder extends Seeder
 
             $this->seedProjectTranslations($project, $projectData['translations'] ?? []);
             $this->attachSkills($project, $projectData['skills'] ?? [], $skillIdByName);
+            $this->attachSeedImage($project, $imageFilenameByItem[$project->name] ?? null);
         }
     }
 
@@ -303,5 +310,77 @@ class ProjectsSeeder extends Seeder
 
         return json_encode($document, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
             ?: '{"root":{"children":[],"direction":null,"format":"","indent":0,"type":"root","version":1}}';
+    }
+
+    /**
+     * @return array<string,string> Map: seeder_item -> original filename
+     */
+    private function loadSeedImageFilenameMap(string $module): array
+    {
+        $path = base_path(self::IMAGE_MANIFEST_PATH);
+        if (!is_file($path)) {
+            return [];
+        }
+
+        $raw = file_get_contents($path);
+        if (!is_string($raw) || trim($raw) === '') {
+            return [];
+        }
+
+        $decoded = json_decode($raw, true);
+        if (!is_array($decoded)) {
+            return [];
+        }
+
+        $map = [];
+
+        foreach ($decoded as $entry) {
+            if (!is_array($entry)) {
+                continue;
+            }
+
+            if (($entry['module'] ?? null) !== $module) {
+                continue;
+            }
+
+            $item = $entry['seeder_item'] ?? null;
+            $localPath = $entry['local_path'] ?? null;
+
+            if (!is_string($item) || trim($item) === '') {
+                continue;
+            }
+
+            if (!is_string($localPath) || trim($localPath) === '') {
+                continue;
+            }
+
+            $map[trim($item)] = basename($localPath);
+        }
+
+        return $map;
+    }
+
+    private function attachSeedImage(Project $project, ?string $originalFilename): void
+    {
+        if (!is_string($originalFilename) || trim($originalFilename) === '') {
+            return;
+        }
+
+        $image = Image::query()
+            ->where('original_filename', trim($originalFilename))
+            ->first();
+
+        if (!$image) {
+            return;
+        }
+
+        // Slot is unused by projects; keep it null to match runtime behavior.
+        $project->images()->syncWithoutDetaching([
+            $image->id => [
+                'position' => 0,
+                'is_cover' => true,
+                'caption' => $image->caption ?? $project->name,
+            ],
+        ]);
     }
 }
