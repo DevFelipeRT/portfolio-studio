@@ -7,6 +7,7 @@ namespace Database\Seeders;
 use App\Modules\ContentManagement\Domain\Models\ContentSettings;
 use App\Modules\ContentManagement\Domain\Models\Page;
 use App\Modules\ContentManagement\Domain\Models\PageSection;
+use App\Modules\Images\Domain\Models\Image;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -448,20 +449,48 @@ class ContentManagementSeeder extends Seeder
      */
     private function seedSectionsForPage(Page $page, array $sections): void
     {
+        $heroImageId = Image::query()
+            ->where('original_filename', 'hero_primary.jpg')
+            ->value('id');
+
         foreach ($sections as $sectionData) {
-            PageSection::query()->create([
+            $data = $sectionData['data'];
+
+            if (
+                $sectionData['template_key'] === 'hero_primary'
+                && is_int($heroImageId)
+                && is_array($data)
+            ) {
+                $data['hero_image'] = $heroImageId;
+            }
+
+            $section = PageSection::query()->create([
                 'page_id' => $page->id,
                 'template_key' => $sectionData['template_key'],
                 'slot' => $sectionData['slot'],
                 'position' => $sectionData['position'],
                 'anchor' => $sectionData['anchor'],
                 'navigation_label' => $sectionData['navigation_label'],
-                'data' => $sectionData['data'],
+                'data' => $data,
                 'is_active' => true,
                 'visible_from' => null,
                 'visible_until' => null,
                 'locale' => $sectionData['locale'],
             ]);
+
+            if (
+                $sectionData['template_key'] === 'hero_primary'
+                && is_int($heroImageId)
+            ) {
+                $section->images()->syncWithoutDetaching([
+                    $heroImageId => [
+                        'slot' => 'hero_image',
+                        'position' => 0,
+                        'is_cover' => true,
+                        'caption' => 'Hero image',
+                    ],
+                ]);
+            }
         }
     }
 
