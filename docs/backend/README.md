@@ -36,7 +36,7 @@ Evidence: module layout under `app/Modules/*` and provider wiring in `app/Provid
 
 - Database: default connection is `mysql` via `DB_CONNECTION` (`config/database.php`).
 - Queue: default connection is `database` via `QUEUE_CONNECTION` (`config/queue.php`).
-- Local dev script runs web server + queue listener + log viewer + Vite concurrently (`composer.json`).
+- Local dev script can run web server + queue listener + log viewer and the Vite dev server (`composer.json`).
 
 ## Database seeding (local dev/demo)
 
