@@ -6,7 +6,7 @@ import {
   type WebsiteSettingsFormData,
 } from '@/modules/website-settings/core/forms';
 import type { WebsiteSettingsPageProps } from '@/modules/website-settings/core/types';
-import { WebsiteSettingsForm } from '@/modules/website-settings/ui/admin/WebsiteSettingsForm';
+import { WebsiteSettingsForm } from '@/modules/website-settings/ui/form/website-settings';
 import { Head, useForm, usePage } from '@inertiajs/react';
 import React from 'react';
 
