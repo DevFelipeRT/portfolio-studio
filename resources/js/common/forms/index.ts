@@ -10,4 +10,5 @@ export {
   getSelectErrorClassName,
   resolveFieldErrorMessage,
 } from './field';
+export { useFormSubmit } from './useFormSubmit';
 export type { FormErrors } from './types';
