@@ -8,7 +8,7 @@ import type {
   ContactChannel,
   ContactChannelTypeOption,
 } from '@/modules/contact-channels/core/types';
-import { ContactChannelForm } from '@/modules/contact-channels/ui/ContactChannelForm';
+import { ContactChannelForm } from '@/modules/contact-channels/ui/form/contact-channel';
 import { TranslationModal } from '@/modules/contact-channels/ui/TranslationModal';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import React from 'react';

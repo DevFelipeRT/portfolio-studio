@@ -6,7 +6,7 @@ Evidence:
 
 - Admin page registry: `resources/js/app/pages/contact-channels/pages.ts`
 - Admin pages: `resources/js/app/pages/contact-channels/admin/index/page.tsx`, `resources/js/app/pages/contact-channels/admin/create/page.tsx`, `resources/js/app/pages/contact-channels/admin/edit/page.tsx`
-- Admin UI components: `resources/js/modules/contact-channels/ui/ContactChannelForm.tsx`, `resources/js/modules/contact-channels/ui/TranslationModal.tsx`
+- Admin UI components: `resources/js/modules/contact-channels/ui/form/contact-channel/ContactChannelForm.tsx`, `resources/js/modules/contact-channels/ui/TranslationModal.tsx`
 - Translation API calls: `resources/js/modules/contact-channels/core/api/translations.ts`
 - CMS section registry + implementation: `resources/js/modules/contact-channels/sectionRegistryProvider.ts`, `resources/js/modules/contact-channels/ui/sections/ContactPrimarySection.tsx`, `resources/js/modules/contact-channels/ui/SocialLinksBar.tsx`
 - CMS template definition (data source binding): `resources/templates/contact-channels/contact_primary/contact_primary.php`
@@ -17,7 +17,7 @@ Evidence:
 Pages are registered under keys like `contact-channels/admin/Index` and rendered from the backend controller (`resources/js/app/pages/contact-channels/pages.ts`, `app/Modules/ContactChannels/Http/Controllers/Admin/ContactChannelController.php`).
 
 - Index lists channels and uses Inertia `Link` with `method="post"` to toggle active (`contact-channels.toggle-active`) and `method="delete"` to delete (`contact-channels.destroy`) (`resources/js/app/pages/contact-channels/admin/index/page.tsx`).
-- Create/edit pages use `ContactChannelForm` and submit to `contact-channels.store` / `contact-channels.update` (`resources/js/app/pages/contact-channels/admin/create/page.tsx`, `resources/js/app/pages/contact-channels/admin/edit/page.tsx`, `resources/js/modules/contact-channels/ui/ContactChannelForm.tsx`).
+- Create/edit pages use `ContactChannelForm` and submit to `contact-channels.store` / `contact-channels.update` (`resources/js/app/pages/contact-channels/admin/create/page.tsx`, `resources/js/app/pages/contact-channels/admin/edit/page.tsx`, `resources/js/modules/contact-channels/ui/form/contact-channel/ContactChannelForm.tsx`).
 
 ## Translations (modal UX)
 
