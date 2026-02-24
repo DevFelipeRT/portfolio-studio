@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { listExperienceTranslations } from '@/modules/experiences/core/api/translations';
 import type { ExperienceFormData } from '@/modules/experiences/core/forms';
 import type { Experience } from '@/modules/experiences/core/types';
-import { ExperienceForm } from '@/modules/experiences/ui/ExperienceForm';
+import { ExperienceForm } from '@/modules/experiences/ui/form/experience';
 import { TranslationModal } from '@/modules/experiences/ui/TranslationModal';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import React from 'react';

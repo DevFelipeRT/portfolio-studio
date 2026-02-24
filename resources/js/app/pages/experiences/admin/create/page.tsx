@@ -2,7 +2,7 @@ import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import { useSupportedLocales } from '@/common/i18n';
 import { useFormSubmit, type FormErrors } from '@/common/forms';
 import type { ExperienceFormData } from '@/modules/experiences/core/forms';
-import { ExperienceForm } from '@/modules/experiences/ui/ExperienceForm';
+import { ExperienceForm } from '@/modules/experiences/ui/form/experience';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import React from 'react';
 
