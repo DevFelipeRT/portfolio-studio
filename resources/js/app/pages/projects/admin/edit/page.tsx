@@ -9,7 +9,7 @@ import type {
   ProjectFormData,
 } from '@/modules/projects/core/forms';
 import type { Project, ProjectImage } from '@/modules/projects/core/types';
-import { ProjectForm } from '@/modules/projects/ui/ProjectForm';
+import { ProjectForm } from '@/modules/projects/ui/form/project';
 import { TranslationModal } from '@/modules/projects/ui/TranslationModal';
 import type { Skill } from '@/modules/skills/core/types';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
@@ -220,6 +220,7 @@ export default function Edit({ project, skills }: EditProjectProps) {
             data={data}
             errors={formErrors}
             processing={processing}
+            cancelHref={route('projects.index')}
             submitLabel="Save changes"
             supportedLocales={supportedLocales}
             localeDisabled={loadingTranslations || Boolean(localesLoadError)}

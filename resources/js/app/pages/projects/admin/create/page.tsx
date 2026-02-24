@@ -5,7 +5,7 @@ import type {
   ImageInput,
   ProjectFormData,
 } from '@/modules/projects/core/forms';
-import { ProjectForm } from '@/modules/projects/ui/ProjectForm';
+import { ProjectForm } from '@/modules/projects/ui/form/project';
 import type { Skill } from '@/modules/skills/core/types';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import React from 'react';
@@ -134,6 +134,7 @@ export default function Create({ skills }: CreateProjectProps) {
             data={data}
             errors={formErrors}
             processing={processing}
+            cancelHref={route('projects.index')}
             submitLabel="Save project"
             supportedLocales={supportedLocales}
             onSubmit={submit}
