@@ -1,4 +1,5 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import type { FormErrors } from '@/common/forms';
 import { useSupportedLocales } from '@/common/i18n';
 import { LocaleSwapDialog } from '@/common/LocaleSwapDialog';
 import { Button } from '@/components/ui/button';
@@ -9,8 +10,8 @@ import type {
 } from '@/modules/initiatives/core/forms';
 import type { Initiative } from '@/modules/initiatives/core/types';
 import { InitiativeForm } from '@/modules/initiatives/ui/InitiativeForm';
-import { TranslationModal } from '@/modules/initiatives/ui/TranslationModal';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { TranslationModal } from '@/modules/initiatives/ui/translation-modal/TranslationModal';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import React from 'react';
 
 interface EditInitiativeProps {
@@ -20,7 +21,7 @@ interface EditInitiativeProps {
 export default function Edit({ initiative }: EditInitiativeProps) {
   const supportedLocales = useSupportedLocales();
 
-  const { data, setData, post, processing, errors, transform } =
+  const { data, setData, post, processing, transform } =
     useForm<InitiativeFormData>({
       locale: initiative.locale,
       confirm_swap: false,
@@ -32,6 +33,9 @@ export default function Edit({ initiative }: EditInitiativeProps) {
       end_date: initiative.end_date ?? null,
       images: [],
     });
+  const { errors: formErrors } = usePage().props as {
+    errors: FormErrors<keyof InitiativeFormData>;
+  };
 
   function changeField<K extends keyof InitiativeFormData>(
     key: K,
@@ -94,9 +98,10 @@ export default function Edit({ initiative }: EditInitiativeProps) {
         current.images?.filter((image) => image.file instanceof File) ?? [];
 
       if (validImages.length === 0) {
-        const { images, ...rest } = current;
+        const next = { ...current };
+        delete (next as { images?: unknown }).images;
         return {
-          ...rest,
+          ...next,
           _method: 'put',
         } as unknown as InitiativeFormData;
       }
@@ -110,23 +115,10 @@ export default function Edit({ initiative }: EditInitiativeProps) {
 
     post(route('initiatives.update', initiative.id), {
       forceFormData: true,
+      preserveState: true,
       preserveScroll: true,
     });
   };
-
-  function normalizeError(
-    message: string | string[] | undefined,
-  ): string | null {
-    if (!message) {
-      return null;
-    }
-
-    if (Array.isArray(message)) {
-      return message.join(' ');
-    }
-
-    return message;
-  }
 
   const [translationOpen, setTranslationOpen] = React.useState(false);
   const [swapDialogOpen, setSwapDialogOpen] = React.useState(false);
@@ -152,7 +144,7 @@ export default function Edit({ initiative }: EditInitiativeProps) {
             items.map((item) => item.locale).filter(Boolean),
           );
         }
-      } catch (err) {
+      } catch {
         if (mounted) {
           setLocalesLoadError(
             'Unable to load translations for locale conflict checks.',
@@ -211,7 +203,7 @@ export default function Edit({ initiative }: EditInitiativeProps) {
             backRoute={route('initiatives.index')}
             existingImages={initiative.images ?? []}
             data={data}
-            errors={errors}
+            errors={formErrors}
             processing={processing}
             supportedLocales={supportedLocales}
             localeDisabled={loadingTranslations || Boolean(localesLoadError)}
@@ -222,7 +214,6 @@ export default function Edit({ initiative }: EditInitiativeProps) {
             onRemoveImageRow={removeImageRow}
             onUpdateImageAlt={updateImageAlt}
             onUpdateImageFile={updateImageFile}
-            normalizeError={normalizeError}
           />
 
           {localesLoadError && (

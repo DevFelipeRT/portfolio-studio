@@ -1,4 +1,5 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import type { FormErrors } from '@/common/forms';
 import {
   buildWebsiteSettingsFormData,
   syncLocaleMaps,
@@ -6,7 +7,7 @@ import {
 } from '@/modules/website-settings/core/forms';
 import type { WebsiteSettingsPageProps } from '@/modules/website-settings/core/types';
 import { WebsiteSettingsForm } from '@/modules/website-settings/ui/admin/WebsiteSettingsForm';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, usePage } from '@inertiajs/react';
 import React from 'react';
 
 export default function Edit({ settings, locales }: WebsiteSettingsPageProps) {
@@ -15,8 +16,11 @@ export default function Edit({ settings, locales }: WebsiteSettingsPageProps) {
     [settings, locales],
   );
 
-  const { data, setData, put, processing, errors } =
+  const { data, setData, put, processing } =
     useForm<WebsiteSettingsFormData>(initialData);
+  const { errors: formErrors } = usePage().props as {
+    errors: FormErrors;
+  };
 
   const handleChange = (
     field: keyof WebsiteSettingsFormData,
@@ -51,7 +55,7 @@ export default function Edit({ settings, locales }: WebsiteSettingsPageProps) {
         <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
           <WebsiteSettingsForm
             data={data}
-            errors={errors}
+            errors={formErrors}
             processing={processing}
             onChange={handleChange}
             onSubmit={handleSubmit}

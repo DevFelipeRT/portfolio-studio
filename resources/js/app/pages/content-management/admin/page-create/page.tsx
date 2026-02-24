@@ -1,14 +1,15 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import type { FormErrors } from '@/common/forms';
 import {
   PageForm,
   type PageFormData,
 } from '@/modules/content-management/features/page-management/page/PageForm';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, usePage } from '@inertiajs/react';
 import type { FormDataValues } from '@inertiajs/core';
 import React from 'react';
 
 export default function PageCreate() {
-  const { data, setData, post, processing, errors } = useForm<PageFormData>({
+  const { data, setData, post, processing } = useForm<PageFormData>({
     slug: '',
     internal_name: '',
     title: '',
@@ -19,6 +20,9 @@ export default function PageCreate() {
     is_published: false,
     is_indexable: true,
   });
+  const { errors: formErrors } = usePage().props as {
+    errors: FormErrors<keyof PageFormData>;
+  };
 
   const handleChange = <K extends keyof PageFormData>(
     field: K,
@@ -29,7 +33,10 @@ export default function PageCreate() {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
-    post(route('admin.content.pages.store'));
+    post(route('admin.content.pages.store'), {
+      preserveState: true,
+      preserveScroll: true,
+    });
   };
 
   return (
@@ -51,7 +58,7 @@ export default function PageCreate() {
         <PageForm
           mode="create"
           data={data}
-          errors={errors}
+          errors={formErrors}
           processing={processing}
           onChange={handleChange}
           onSubmit={handleSubmit}

@@ -1,4 +1,5 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import type { FormErrors } from '@/common/forms';
 import { useSupportedLocales } from '@/common/i18n';
 import type {
   ImageInput,
@@ -6,7 +7,7 @@ import type {
 } from '@/modules/projects/core/forms';
 import { ProjectForm } from '@/modules/projects/ui/ProjectForm';
 import type { Skill } from '@/modules/skills/core/types';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import React from 'react';
 
 interface CreateProjectProps {
@@ -15,7 +16,7 @@ interface CreateProjectProps {
 
 export default function Create({ skills }: CreateProjectProps) {
   const supportedLocales = useSupportedLocales();
-  const { data, setData, post, processing, errors } = useForm<ProjectFormData>({
+  const { data, setData, post, processing } = useForm<ProjectFormData>({
     locale: '',
     name: '',
     summary: '',
@@ -27,6 +28,9 @@ export default function Create({ skills }: CreateProjectProps) {
     skill_ids: [],
     images: [],
   });
+  const { errors: formErrors } = usePage().props as {
+    errors: FormErrors<keyof ProjectFormData>;
+  };
 
   function changeField<K extends keyof ProjectFormData>(
     key: K,
@@ -99,23 +103,10 @@ export default function Create({ skills }: CreateProjectProps) {
 
     post(route('projects.store'), {
       forceFormData: true,
+      preserveState: true,
       preserveScroll: true,
     });
   };
-
-  function normalizeError(
-    message: string | string[] | undefined,
-  ): string | null {
-    if (!message) {
-      return null;
-    }
-
-    if (Array.isArray(message)) {
-      return message.join(' ');
-    }
-
-    return message;
-  }
 
   return (
     <AuthenticatedLayout
@@ -141,7 +132,7 @@ export default function Create({ skills }: CreateProjectProps) {
             existingImages={[]}
             projectId={undefined}
             data={data}
-            errors={errors}
+            errors={formErrors}
             processing={processing}
             submitLabel="Save project"
             supportedLocales={supportedLocales}
@@ -152,7 +143,6 @@ export default function Create({ skills }: CreateProjectProps) {
             onRemoveImageRow={removeImageRow}
             onUpdateImageAlt={updateImageAlt}
             onUpdateImageFile={updateImageFile}
-            normalizeError={normalizeError}
           />
         </div>
       </div>

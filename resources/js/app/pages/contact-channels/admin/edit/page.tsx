@@ -1,4 +1,5 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import type { FormErrors } from '@/common/forms';
 import { LocaleSwapDialog } from '@/common/LocaleSwapDialog';
 import { Button } from '@/components/ui/button';
 import { listContactChannelTranslations } from '@/modules/contact-channels/core/api/translations';
@@ -9,7 +10,7 @@ import type {
 } from '@/modules/contact-channels/core/types';
 import { ContactChannelForm } from '@/modules/contact-channels/ui/ContactChannelForm';
 import { TranslationModal } from '@/modules/contact-channels/ui/TranslationModal';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import React from 'react';
 
 interface EditContactChannelProps {
@@ -27,12 +28,8 @@ export default function Edit({
   const [translationLocales, setTranslationLocales] = React.useState<string[]>(
     [],
   );
-  const [loadingTranslations, setLoadingTranslations] = React.useState(false);
-  const [localesLoadError, setLocalesLoadError] = React.useState<string | null>(
-    null,
-  );
 
-  const { data, setData, put, processing, errors } =
+  const { data, setData, put, processing } =
     useForm<ContactChannelFormData>({
       locale: channel.locale,
       confirm_swap: false,
@@ -42,13 +39,14 @@ export default function Edit({
       is_active: channel.is_active,
       sort_order: channel.sort_order,
     });
+  const { errors: formErrors } = usePage().props as {
+    errors: FormErrors<keyof ContactChannelFormData>;
+  };
 
   React.useEffect(() => {
     let mounted = true;
 
     const loadTranslations = async (): Promise<void> => {
-      setLoadingTranslations(true);
-      setLocalesLoadError(null);
       try {
         const items = await listContactChannelTranslations(channel.id);
         if (mounted) {
@@ -56,16 +54,8 @@ export default function Edit({
             items.map((item) => item.locale).filter(Boolean),
           );
         }
-      } catch (err) {
-        if (mounted) {
-          setLocalesLoadError(
-            'Unable to load translations for locale conflict checks.',
-          );
-        }
-      } finally {
-        if (mounted) {
-          setLoadingTranslations(false);
-        }
+      } catch {
+        // Locale conflict checks are optional in this flow.
       }
     };
 
@@ -78,7 +68,10 @@ export default function Edit({
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
-    put(route('contact-channels.update', channel.id));
+    put(route('contact-channels.update', channel.id), {
+      preserveState: true,
+      preserveScroll: true,
+    });
   };
 
   const handleChange = (
@@ -122,7 +115,7 @@ export default function Edit({
 
             <ContactChannelForm
               data={data}
-              errors={errors}
+              errors={formErrors}
               channelTypes={channelTypes}
               processing={processing}
               onChange={handleChange}

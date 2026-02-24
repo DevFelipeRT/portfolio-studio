@@ -1,16 +1,17 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import { useSupportedLocales } from '@/common/i18n';
+import type { FormErrors } from '@/common/forms';
 import type {
   InitiativeFormData,
   InitiativeImageInput,
 } from '@/modules/initiatives/core/forms';
 import { InitiativeForm } from '@/modules/initiatives/ui/InitiativeForm';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import React from 'react';
 
 export default function Create() {
   const supportedLocales = useSupportedLocales();
-  const { data, setData, post, processing, errors, transform } =
+  const { data, setData, post, processing, transform } =
     useForm<InitiativeFormData>({
       locale: '',
       name: '',
@@ -21,6 +22,9 @@ export default function Create() {
       end_date: null,
       images: [],
     });
+  const { errors: formErrors } = usePage().props as {
+    errors: FormErrors<keyof InitiativeFormData>;
+  };
 
   function changeField<K extends keyof InitiativeFormData>(
     key: K,
@@ -83,8 +87,9 @@ export default function Create() {
         current.images?.filter((image) => image.file instanceof File) ?? [];
 
       if (validImages.length === 0) {
-        const { images, ...rest } = current;
-        return rest as unknown as InitiativeFormData;
+        const next = { ...current };
+        delete (next as { images?: unknown }).images;
+        return next as InitiativeFormData;
       }
 
       return {
@@ -95,23 +100,10 @@ export default function Create() {
 
     post(route('initiatives.store'), {
       forceFormData: true,
+      preserveState: true,
       preserveScroll: true,
     });
   };
-
-  function normalizeError(
-    message: string | string[] | undefined,
-  ): string | null {
-    if (!message) {
-      return null;
-    }
-
-    if (Array.isArray(message)) {
-      return message.join(' ');
-    }
-
-    return message;
-  }
   return (
     <AuthenticatedLayout>
       <Head title="New initiative" />
@@ -132,7 +124,7 @@ export default function Create() {
             backRoute={route('initiatives.index')}
             existingImages={[]}
             data={data}
-            errors={errors}
+            errors={formErrors}
             processing={processing}
             supportedLocales={supportedLocales}
             onSubmit={submit}
@@ -141,7 +133,6 @@ export default function Create() {
             onRemoveImageRow={removeImageRow}
             onUpdateImageAlt={updateImageAlt}
             onUpdateImageFile={updateImageFile}
-            normalizeError={normalizeError}
           />
         </div>
       </div>

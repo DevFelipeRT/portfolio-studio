@@ -1,10 +1,11 @@
 // resources/js/Pages/Skills/Create.tsx
 
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import type { FormErrors } from '@/common/forms';
 import type { SkillFormData } from '@/modules/skills/core/forms';
 import type { SkillCategory } from '@/modules/skills/core/types';
 import { SkillForm } from '@/modules/skills/ui/SkillForm';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import React from 'react';
 
 interface CreateSkillProps {
@@ -12,15 +13,21 @@ interface CreateSkillProps {
 }
 
 export default function Create({ categories }: CreateSkillProps) {
-  const { data, setData, post, processing, errors } = useForm<SkillFormData>({
+  const { data, setData, post, processing } = useForm<SkillFormData>({
     name: '',
     locale: '',
     skill_category_id: '',
   });
+  const { errors: formErrors } = usePage().props as {
+    errors: FormErrors<keyof SkillFormData>;
+  };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
-    post(route('skills.store'));
+    post(route('skills.store'), {
+      preserveState: true,
+      preserveScroll: true,
+    });
   };
 
   const handleChange = (
@@ -51,7 +58,7 @@ export default function Create({ categories }: CreateSkillProps) {
 
           <SkillForm
             data={data}
-            errors={errors}
+            errors={formErrors}
             categories={categories}
             processing={processing}
             onChange={handleChange}

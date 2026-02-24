@@ -1,4 +1,5 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import type { FormErrors } from '@/common/forms';
 import { useSupportedLocales, useTranslation } from '@/common/i18n';
 import { LocaleSwapDialog } from '@/common/LocaleSwapDialog';
 import { Button } from '@/components/ui/button';
@@ -11,7 +12,7 @@ import type { Project, ProjectImage } from '@/modules/projects/core/types';
 import { ProjectForm } from '@/modules/projects/ui/ProjectForm';
 import { TranslationModal } from '@/modules/projects/ui/TranslationModal';
 import type { Skill } from '@/modules/skills/core/types';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import React from 'react';
 
 interface EditProjectProps {
@@ -31,7 +32,7 @@ export default function Edit({ project, skills }: EditProjectProps) {
     (skill: Skill) => skill.id,
   );
 
-  const { data, setData, post, processing, errors, transform } =
+  const { data, setData, post, processing, transform } =
     useForm<ProjectFormData>({
       locale: project.locale,
       confirm_swap: false,
@@ -45,6 +46,9 @@ export default function Edit({ project, skills }: EditProjectProps) {
       skill_ids: initialSkillIds,
       images: [],
     });
+  const { errors: formErrors } = usePage().props as {
+    errors: FormErrors<keyof ProjectFormData>;
+  };
 
   function changeField<K extends keyof ProjectFormData>(
     key: K,
@@ -122,23 +126,10 @@ export default function Edit({ project, skills }: EditProjectProps) {
 
     post(route('projects.update', project.id), {
       forceFormData: true,
+      preserveState: true,
       preserveScroll: true,
     });
   };
-
-  function normalizeError(
-    message: string | string[] | undefined,
-  ): string | null {
-    if (!message) {
-      return null;
-    }
-
-    if (Array.isArray(message)) {
-      return message.join(' ');
-    }
-
-    return message;
-  }
 
   const [translationOpen, setTranslationOpen] = React.useState(false);
   const [swapDialogOpen, setSwapDialogOpen] = React.useState(false);
@@ -164,7 +155,7 @@ export default function Edit({ project, skills }: EditProjectProps) {
             items.map((item) => item.locale).filter(Boolean),
           );
         }
-      } catch (err) {
+      } catch {
         if (mounted) {
           setLocalesLoadError(
             'Unable to load translations for locale conflict checks.',
@@ -227,7 +218,7 @@ export default function Edit({ project, skills }: EditProjectProps) {
             existingImages={existingImages}
             projectId={project.id}
             data={data}
-            errors={errors}
+            errors={formErrors}
             processing={processing}
             submitLabel="Save changes"
             supportedLocales={supportedLocales}
@@ -240,7 +231,6 @@ export default function Edit({ project, skills }: EditProjectProps) {
             onRemoveImageRow={removeImageRow}
             onUpdateImageAlt={updateImageAlt}
             onUpdateImageFile={updateImageFile}
-            normalizeError={normalizeError}
           />
 
           {localesLoadError && (

@@ -1,4 +1,5 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import type { FormErrors } from '@/common/forms';
 import { useTranslation } from '@/common/i18n';
 import { LocaleSwapDialog } from '@/common/LocaleSwapDialog';
 import { Button } from '@/components/ui/button';
@@ -6,8 +7,8 @@ import { listCourseTranslations } from '@/modules/courses/core/api/translations'
 import type { CourseFormData } from '@/modules/courses/core/forms';
 import type { Course } from '@/modules/courses/core/types';
 import CourseForm from '@/modules/courses/ui/CourseForm';
-import { TranslationModal } from '@/modules/courses/ui/TranslationModal';
-import { Head, Link, router, useForm } from '@inertiajs/react';
+import { TranslationModal } from '@/modules/courses/ui/translation-modal/TranslationModal';
+import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import { ChevronLeft } from 'lucide-react';
 import React from 'react';
 
@@ -25,7 +26,7 @@ interface EditCourseProps {
  */
 export default function Edit({ course, course_categories }: EditCourseProps) {
   const { translate: t } = useTranslation('courses');
-  const { data, setData, put, processing, errors } = useForm<CourseFormData>({
+  const { data, setData, put, processing } = useForm<CourseFormData>({
     locale: course.locale,
     confirm_swap: false,
     name: course.name,
@@ -37,13 +38,19 @@ export default function Edit({ course, course_categories }: EditCourseProps) {
     completed_at: course.completed_at ?? null,
     display: Boolean(course.display),
   });
+  const { errors: formErrors } = usePage().props as {
+    errors: FormErrors<keyof CourseFormData>;
+  };
 
   /**
    * Submits the updated course data to the backend.
    */
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
-    put(route('courses.update', course.id));
+    put(route('courses.update', course.id), {
+      preserveState: true,
+      preserveScroll: true,
+    });
   };
 
   /**
@@ -77,7 +84,7 @@ export default function Edit({ course, course_categories }: EditCourseProps) {
             items.map((item) => item.locale).filter(Boolean),
           );
         }
-      } catch (err) {
+      } catch {
         if (mounted) {
           setLocalesLoadError(
             'Unable to load translations for locale conflict checks.',
@@ -141,7 +148,7 @@ export default function Edit({ course, course_categories }: EditCourseProps) {
           <CourseForm
             data={data}
             setData={setData}
-            errors={errors}
+            errors={formErrors}
             processing={processing}
             categories={course_categories ?? {}}
             onSubmit={handleSubmit}

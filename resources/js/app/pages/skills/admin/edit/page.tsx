@@ -1,6 +1,7 @@
 // resources/js/Pages/Skills/Edit.tsx
 
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import type { FormErrors } from '@/common/forms';
 import { LocaleSwapDialog } from '@/common/LocaleSwapDialog';
 import { Button } from '@/components/ui/button';
 import { listSkillTranslations } from '@/modules/skills/core/api/translations';
@@ -8,7 +9,7 @@ import type { SkillFormData } from '@/modules/skills/core/forms';
 import type { Skill, SkillCategory } from '@/modules/skills/core/types';
 import { SkillForm } from '@/modules/skills/ui/SkillForm';
 import { TranslationModal } from '@/modules/skills/ui/TranslationModal';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import React from 'react';
 
 interface EditSkillProps {
@@ -23,23 +24,20 @@ export default function Edit({ skill, categories }: EditSkillProps) {
   const [translationLocales, setTranslationLocales] = React.useState<string[]>(
     [],
   );
-  const [loadingTranslations, setLoadingTranslations] = React.useState(false);
-  const [localesLoadError, setLocalesLoadError] = React.useState<string | null>(
-    null,
-  );
-  const { data, setData, put, processing, errors } = useForm<SkillFormData>({
+  const { data, setData, put, processing } = useForm<SkillFormData>({
     name: skill.name,
     locale: skill.locale,
     confirm_swap: false,
     skill_category_id: skill.skill_category_id ?? '',
   });
+  const { errors: formErrors } = usePage().props as {
+    errors: FormErrors<keyof SkillFormData>;
+  };
 
   React.useEffect(() => {
     let mounted = true;
 
     const loadTranslations = async (): Promise<void> => {
-      setLoadingTranslations(true);
-      setLocalesLoadError(null);
       try {
         const items = await listSkillTranslations(skill.id);
         if (mounted) {
@@ -47,16 +45,8 @@ export default function Edit({ skill, categories }: EditSkillProps) {
             items.map((item) => item.locale).filter(Boolean),
           );
         }
-      } catch (err) {
-        if (mounted) {
-          setLocalesLoadError(
-            'Unable to load translations for locale conflict checks.',
-          );
-        }
-      } finally {
-        if (mounted) {
-          setLoadingTranslations(false);
-        }
+      } catch {
+        // Locale conflict checks are optional in this flow.
       }
     };
 
@@ -69,7 +59,10 @@ export default function Edit({ skill, categories }: EditSkillProps) {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
-    put(route('skills.update', skill.id));
+    put(route('skills.update', skill.id), {
+      preserveState: true,
+      preserveScroll: true,
+    });
   };
 
   const handleChange = (
@@ -110,7 +103,7 @@ export default function Edit({ skill, categories }: EditSkillProps) {
 
             <SkillForm
               data={data}
-              errors={errors}
+              errors={formErrors}
               categories={categories}
               processing={processing}
               onChange={handleChange}
