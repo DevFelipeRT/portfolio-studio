@@ -1,5 +1,5 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
-import type { FormErrors } from '@/common/forms';
+import { useFormSubmit, type FormErrors } from '@/common/forms';
 import {
   buildWebsiteSettingsFormData,
   syncLocaleMaps,
@@ -16,8 +16,9 @@ export default function Edit({ settings, locales }: WebsiteSettingsPageProps) {
     [settings, locales],
   );
 
-  const { data, setData, put, processing } =
+  const { data, setData, put, processing, setDefaults } =
     useForm<WebsiteSettingsFormData>(initialData);
+  const submitForm = useFormSubmit();
   const { errors: formErrors } = usePage().props as {
     errors: FormErrors;
   };
@@ -37,8 +38,9 @@ export default function Edit({ settings, locales }: WebsiteSettingsPageProps) {
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
-    event.preventDefault();
-    put(route('website-settings.update'));
+    submitForm(event, put, route('website-settings.update'), {
+      onSuccess: () => setDefaults(),
+    });
   };
 
   return (
