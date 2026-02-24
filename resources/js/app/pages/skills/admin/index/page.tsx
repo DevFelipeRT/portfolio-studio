@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import type { Skill, SkillCategory } from '@/modules/skills/core/types';
-import { SkillsTable } from '@/modules/skills/ui/SkillsTable';
+import { SkillsTable } from '@/modules/skills/ui/table/SkillsTable';
 import { SkillCategoriesSection } from '@/modules/skills/ui/sections/SkillCategoriesSection';
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import { Head, Link, router } from '@inertiajs/react';

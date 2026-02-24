@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { listSkillTranslations } from '@/modules/skills/core/api/translations';
 import type { SkillFormData } from '@/modules/skills/core/forms';
 import type { Skill, SkillCategory } from '@/modules/skills/core/types';
-import { SkillForm } from '@/modules/skills/ui/SkillForm';
+import { SkillForm } from '@/modules/skills/ui/form/skill';
 import { TranslationModal } from '@/modules/skills/ui/TranslationModal';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import React from 'react';

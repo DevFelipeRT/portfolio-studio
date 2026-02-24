@@ -4,7 +4,7 @@ import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import { useFormSubmit, type FormErrors } from '@/common/forms';
 import type { SkillFormData } from '@/modules/skills/core/forms';
 import type { SkillCategory } from '@/modules/skills/core/types';
-import { SkillForm } from '@/modules/skills/ui/SkillForm';
+import { SkillForm } from '@/modules/skills/ui/form/skill';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import React from 'react';
 

@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { listSkillCategoryTranslations } from '@/modules/skills/core/api/translations';
 import type { SkillCategoryFormData } from '@/modules/skills/core/forms';
 import type { SkillCategory } from '@/modules/skills/core/types';
-import { SkillCategoryForm } from '@/modules/skills/ui/SkillCategoryForm';
+import { SkillCategoryForm } from '@/modules/skills/ui/form/skill-category';
 import { TranslationModal } from '@/modules/skills/ui/TranslationModal';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import React from 'react';
@@ -21,13 +21,12 @@ export default function Edit({ category }: EditSkillCategoryProps) {
   const [translationLocales, setTranslationLocales] = React.useState<string[]>(
     [],
   );
-  const { data, setData, put, processing } =
-    useForm<SkillCategoryFormData>({
-      name: category.name,
-      slug: category.slug ?? '',
-      locale: category.locale,
-      confirm_swap: false,
-    });
+  const { data, setData, put, processing } = useForm<SkillCategoryFormData>({
+    name: category.name,
+    slug: category.slug ?? '',
+    locale: category.locale,
+    confirm_swap: false,
+  });
   const { errors: formErrors } = usePage().props as {
     errors: FormErrors<keyof SkillCategoryFormData>;
   };

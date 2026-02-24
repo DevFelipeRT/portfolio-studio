@@ -6,7 +6,7 @@ Evidence:
 
 - Admin page registry: `resources/js/app/pages/skills/pages.ts`
 - Admin pages: `resources/js/app/pages/skills/admin/index/page.tsx`, `resources/js/app/pages/skills/admin/create/page.tsx`, `resources/js/app/pages/skills/admin/edit/page.tsx`, `resources/js/app/pages/skills/admin/skill-categories/create/page.tsx`, `resources/js/app/pages/skills/admin/skill-categories/edit/page.tsx`
-- Admin UI components: `resources/js/modules/skills/ui/SkillsTable.tsx`, `resources/js/modules/skills/ui/SkillForm.tsx`, `resources/js/modules/skills/ui/SkillCategoryForm.tsx`, `resources/js/modules/skills/ui/sections/SkillCategoriesSection.tsx`
+- Admin UI components: `resources/js/modules/skills/ui/table/SkillsTable.tsx`, `resources/js/modules/skills/ui/form/skill/SkillForm.tsx`, `resources/js/modules/skills/ui/form/skill-category/SkillCategoryForm.tsx`, `resources/js/modules/skills/ui/sections/SkillCategoriesSection.tsx`
 - Translation UX + API calls: `resources/js/modules/skills/ui/TranslationModal.tsx`, `resources/js/modules/skills/core/api/translations.ts`
 - CMS section registry + implementation: `resources/js/modules/skills/sectionRegistryProvider.ts`, `resources/js/modules/skills/ui/sections/TechStackPrimarySection.tsx`
 - CMS template definition (data source binding): `resources/templates/skills/skills_primary/skills_primary.php`
@@ -18,7 +18,7 @@ Pages are registered under keys like `skills/admin/Index` and rendered from the 
 ### Skills
 
 - Index lists skills and allows delete/edit actions (`resources/js/app/pages/skills/admin/index/page.tsx`).
-- Create and edit pages use `SkillForm` and submit to `skills.store` / `skills.update` (`resources/js/app/pages/skills/admin/create/page.tsx`, `resources/js/app/pages/skills/admin/edit/page.tsx`, `resources/js/modules/skills/ui/SkillForm.tsx`).
+- Create and edit pages use `SkillForm` and submit to `skills.store` / `skills.update` (`resources/js/app/pages/skills/admin/create/page.tsx`, `resources/js/app/pages/skills/admin/edit/page.tsx`, `resources/js/modules/skills/ui/form/skill/SkillForm.tsx`).
 
 ### Skill categories
 
