@@ -5,7 +5,7 @@ import type {
   InitiativeFormData,
   InitiativeImageInput,
 } from '@/modules/initiatives/core/forms';
-import { InitiativeForm } from '@/modules/initiatives/ui/InitiativeForm';
+import { InitiativeForm } from '@/modules/initiatives/ui/form/initiative';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import React from 'react';
 
@@ -118,7 +118,7 @@ export default function Create() {
 
           <InitiativeForm
             submitLabel="Save initiative"
-            backRoute={route('initiatives.index')}
+            cancelHref={route('initiatives.index')}
             existingImages={[]}
             data={data}
             errors={formErrors}

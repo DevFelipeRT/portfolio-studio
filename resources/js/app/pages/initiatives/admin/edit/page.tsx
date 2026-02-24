@@ -9,7 +9,7 @@ import type {
   InitiativeImageInput,
 } from '@/modules/initiatives/core/forms';
 import type { Initiative } from '@/modules/initiatives/core/types';
-import { InitiativeForm } from '@/modules/initiatives/ui/InitiativeForm';
+import { InitiativeForm } from '@/modules/initiatives/ui/form/initiative';
 import { TranslationModal } from '@/modules/initiatives/ui/translation-modal/TranslationModal';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import React from 'react';
@@ -200,7 +200,7 @@ export default function Edit({ initiative }: EditInitiativeProps) {
 
           <InitiativeForm
             submitLabel="Save changes"
-            backRoute={route('initiatives.index')}
+            cancelHref={route('initiatives.index')}
             existingImages={initiative.images ?? []}
             data={data}
             errors={formErrors}
