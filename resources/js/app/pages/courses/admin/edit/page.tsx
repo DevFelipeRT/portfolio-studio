@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { listCourseTranslations } from '@/modules/courses/core/api/translations';
 import type { CourseFormData } from '@/modules/courses/core/forms';
 import type { Course } from '@/modules/courses/core/types';
-import CourseForm from '@/modules/courses/ui/CourseForm';
+import { CourseForm } from '@/modules/courses/ui/form/course';
 import { TranslationModal } from '@/modules/courses/ui/translation-modal/TranslationModal';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import { ChevronLeft } from 'lucide-react';
@@ -56,9 +56,7 @@ export default function Edit({ course, course_categories }: EditCourseProps) {
   /**
    * Navigates back to the course index page.
    */
-  const handleCancel = (): void => {
-    router.visit(route('courses.index'));
-  };
+  const cancelHref = route('courses.index');
 
   const [translationOpen, setTranslationOpen] = React.useState(false);
   const [swapDialogOpen, setSwapDialogOpen] = React.useState(false);
@@ -147,12 +145,12 @@ export default function Edit({ course, course_categories }: EditCourseProps) {
 
           <CourseForm
             data={data}
-            setData={setData}
             errors={formErrors}
             processing={processing}
             categories={course_categories ?? {}}
+            onChange={setData}
             onSubmit={handleSubmit}
-            onCancel={handleCancel}
+            cancelHref={cancelHref}
             onLocaleChange={handleLocaleChange}
             localeDisabled={loadingTranslations || Boolean(localesLoadError)}
           />

@@ -1,7 +1,7 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import { useFormSubmit, type FormErrors } from '@/common/forms';
 import type { CourseFormData } from '@/modules/courses/core/forms';
-import CourseForm from '@/modules/courses/ui/CourseForm';
+import { CourseForm } from '@/modules/courses/ui/form/course';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import { ChevronLeft } from 'lucide-react';
 import React from 'react';
@@ -48,9 +48,7 @@ export default function Create({ course_categories }: CreateCourseProps) {
   /**
    * Navigates back to the course index page.
    */
-  const handleCancel = (): void => {
-    router.visit(route('courses.index'));
-  };
+  const cancelHref = route('courses.index');
 
   return (
     <AuthenticatedLayout
@@ -74,12 +72,12 @@ export default function Create({ course_categories }: CreateCourseProps) {
 
           <CourseForm
             data={data}
-            setData={setData}
             errors={formErrors}
             processing={processing}
             categories={course_categories ?? {}}
+            onChange={setData}
             onSubmit={handleSubmit}
-            onCancel={handleCancel}
+            cancelHref={cancelHref}
           />
         </div>
       </div>
