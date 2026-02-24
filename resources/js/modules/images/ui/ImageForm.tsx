@@ -1,7 +1,11 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import {
+    FormField,
+    FormErrorSummary,
+    collectErroredFieldLabels,
+} from '@/common/forms';
 import { Link, useForm } from '@inertiajs/react';
 import React from 'react';
 import type { Image } from '@/modules/images/core/types';
@@ -53,20 +57,12 @@ export function ImageForm({
 
     const { data, setData, post, put, processing, errors, transform } =
         useForm<ImageFormData>(initial);
-
-    const normalizeError = (
-        message: string | string[] | undefined,
-    ): string | null => {
-        if (!message) {
-            return null;
-        }
-
-        if (Array.isArray(message)) {
-            return message.join(' ');
-        }
-
-        return message;
-    };
+    const summaryFields = collectErroredFieldLabels(errors, [
+        { name: 'file', label: 'File' },
+        { name: 'image_title', label: 'Title' },
+        { name: 'alt_text', label: 'Alt text' },
+        { name: 'caption', label: 'Caption' },
+    ] as const);
 
     const handleFileChange = (
         event: React.ChangeEvent<HTMLInputElement>,
@@ -80,8 +76,8 @@ export function ImageForm({
 
         transform((current: ImageFormData) => {
             if (isEditMode) {
-                const { file, ...rest } = current;
-                return rest as unknown as ImageFormData;
+                const { alt_text, image_title, caption } = current;
+                return { alt_text, image_title, caption } as ImageFormData;
             }
 
             return current;
@@ -90,10 +86,12 @@ export function ImageForm({
         if (!isEditMode) {
             post(submitRoute, {
                 forceFormData: true,
+                preserveState: true,
                 preserveScroll: true,
             });
         } else {
             put(submitRoute, {
+                preserveState: true,
                 preserveScroll: true,
             });
         }
@@ -107,23 +105,32 @@ export function ImageForm({
             onSubmit={submit}
             className="bg-card space-y-8 rounded-lg border p-6 shadow-sm"
         >
+            <FormErrorSummary fields={summaryFields} />
+
             {mode === 'create' && (
                 <section className="space-y-4">
                     <h2 className="text-lg font-medium">Image file</h2>
 
-                    <div className="space-y-1.5">
-                        <Label htmlFor="image-file">File</Label>
-                        <Input
-                            id="image-file"
-                            type="file"
-                            accept="image/*"
-                            onChange={handleFileChange}
-                        />
-                        {errors.file && (
-                            <p className="text-destructive text-sm">
-                                {normalizeError(errors.file)}
-                            </p>
+                    <FormField
+                        name="file"
+                        errors={errors}
+                        htmlFor="image-file"
+                        label="File"
+                        required
+                        errorId="image-file-error"
+                    >
+                        {({ a11yAttributes, getInputClassName }) => (
+                            <Input
+                                id="image-file"
+                                type="file"
+                                accept="image/*"
+                                onChange={handleFileChange}
+                                className={getInputClassName()}
+                                {...a11yAttributes}
+                            />
                         )}
+                    </FormField>
+                    <div className="space-y-1.5">
                         <p className="text-muted-foreground text-xs">
                             Choose an image file to upload. Supported types will
                             be validated on the server.
@@ -195,19 +202,25 @@ export function ImageForm({
 
                 <div className="grid gap-4 md:grid-cols-2">
                     <div className="space-y-1.5">
-                        <Label htmlFor="image-title">Title</Label>
-                        <Input
-                            id="image-title"
-                            value={data.image_title}
-                            onChange={(event) =>
-                                setData('image_title', event.target.value)
-                            }
-                        />
-                        {errors.image_title && (
-                            <p className="text-destructive text-sm">
-                                {normalizeError(errors.image_title)}
-                            </p>
-                        )}
+                        <FormField
+                            name="image_title"
+                            errors={errors}
+                            htmlFor="image-title"
+                            label="Title"
+                            errorId="image-title-error"
+                        >
+                            {({ a11yAttributes, getInputClassName }) => (
+                                <Input
+                                    id="image-title"
+                                    value={data.image_title}
+                                    onChange={(event) =>
+                                        setData('image_title', event.target.value)
+                                    }
+                                    className={getInputClassName()}
+                                    {...a11yAttributes}
+                                />
+                            )}
+                        </FormField>
                         <p className="text-muted-foreground text-xs">
                             Optional title used when displaying the image in
                             more prominent contexts.
@@ -215,19 +228,26 @@ export function ImageForm({
                     </div>
 
                     <div className="space-y-1.5">
-                        <Label htmlFor="image-alt-text">Alt text</Label>
-                        <Input
-                            id="image-alt-text"
-                            value={data.alt_text}
-                            onChange={(event) =>
-                                setData('alt_text', event.target.value)
-                            }
-                        />
-                        {errors.alt_text && (
-                            <p className="text-destructive text-sm">
-                                {normalizeError(errors.alt_text)}
-                            </p>
-                        )}
+                        <FormField
+                            name="alt_text"
+                            errors={errors}
+                            htmlFor="image-alt-text"
+                            label="Alt text"
+                            required
+                            errorId="image-alt-text-error"
+                        >
+                            {({ a11yAttributes, getInputClassName }) => (
+                                <Input
+                                    id="image-alt-text"
+                                    value={data.alt_text}
+                                    onChange={(event) =>
+                                        setData('alt_text', event.target.value)
+                                    }
+                                    className={getInputClassName()}
+                                    {...a11yAttributes}
+                                />
+                            )}
+                        </FormField>
                         <p className="text-muted-foreground text-xs">
                             Short, descriptive text used for accessibility and
                             when the image cannot be displayed.
@@ -236,20 +256,26 @@ export function ImageForm({
                 </div>
 
                 <div className="space-y-1.5">
-                    <Label htmlFor="image-caption">Caption</Label>
-                    <Textarea
-                        id="image-caption"
-                        rows={3}
-                        value={data.caption}
-                        onChange={(event) =>
-                            setData('caption', event.target.value)
-                        }
-                    />
-                    {errors.caption && (
-                        <p className="text-destructive text-sm">
-                            {normalizeError(errors.caption)}
-                        </p>
-                    )}
+                    <FormField
+                        name="caption"
+                        errors={errors}
+                        htmlFor="image-caption"
+                        label="Caption"
+                        errorId="image-caption-error"
+                    >
+                        {({ a11yAttributes, getInputClassName }) => (
+                            <Textarea
+                                id="image-caption"
+                                rows={3}
+                                value={data.caption}
+                                onChange={(event) =>
+                                    setData('caption', event.target.value)
+                                }
+                                className={getInputClassName()}
+                                {...a11yAttributes}
+                            />
+                        )}
+                    </FormField>
                     <p className="text-muted-foreground text-xs">
                         Longer, optional description that may be shown below the
                         image in galleries or detail views.

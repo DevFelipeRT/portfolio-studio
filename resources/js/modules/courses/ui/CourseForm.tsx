@@ -2,11 +2,16 @@
 
 import { RichTextEditor } from '@/common/rich-text/RichTextEditor';
 import { useSupportedLocales, useTranslation } from '@/common/i18n';
+import {
+  FormField,
+  FormErrorSummary,
+  collectErroredFieldLabels,
+} from '@/common/forms';
+import type { FormErrors } from '@/common/forms';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DatePicker } from '@/components/ui/date-picker';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -16,28 +21,7 @@ import {
 } from '@/components/ui/select';
 import type { CourseFormData } from '@/modules/courses/core/forms';
 import { Loader2 } from 'lucide-react';
-import React, { HTMLAttributes } from 'react';
-
-/**
- * Standardized validation error renderer.
- */
-export function InputError({
-  message,
-  className = '',
-  ...props
-}: HTMLAttributes<HTMLParagraphElement> & { message?: string }) {
-  if (!message) return null;
-  return (
-    <p
-      {...props}
-      className={['text-destructive', 'text-sm', 'font-medium', className].join(
-        ' ',
-      )}
-    >
-      {message}
-    </p>
-  );
-}
+import React from 'react';
 
 /**
  * Course form data shape.
@@ -49,7 +33,7 @@ export function InputError({
 interface CourseFormProps {
   data: CourseFormData;
   setData: (key: keyof CourseFormData, value: string | null | boolean) => void;
-  errors: Partial<Record<keyof CourseFormData, string | string[]>>;
+  errors: FormErrors<keyof CourseFormData>;
   processing: boolean;
   categories: Record<string, string>;
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
@@ -76,177 +60,247 @@ export default function CourseForm({
   const { translate: t, locale } = useTranslation('courses');
   const supportedLocales = useSupportedLocales();
 
-  const normalizeError = (
-    message: string | string[] | undefined,
-  ): string | undefined => {
-    if (!message) return undefined;
-    return Array.isArray(message) ? message.join(' ') : message;
-  };
+  const summaryFields = collectErroredFieldLabels(errors, [
+    { name: 'locale', label: t('fields.locale.label') },
+    { name: 'name', label: t('fields.name.label') },
+    { name: 'institution', label: t('fields.institution.label') },
+    { name: 'category', label: t('fields.category.label') },
+    { name: 'summary', label: t('fields.summary.label') },
+    { name: 'description', label: t('fields.description.label') },
+    { name: 'started_at', label: t('fields.started_at.label') },
+    { name: 'completed_at', label: t('fields.completed_at.label') },
+    { name: 'display', label: t('fields.display.label') },
+  ] as const);
 
   return (
     <form
       onSubmit={onSubmit}
       className="bg-card space-y-8 rounded-lg border p-6 shadow-sm"
     >
+      <FormErrorSummary fields={summaryFields} />
+
       <section className="space-y-4">
         <h2 className="text-lg font-medium">{t('sections.details')}</h2>
 
-        <div className="space-y-1.5">
-          <Label htmlFor="locale">{t('fields.locale.label')}</Label>
-          <Select
-            value={data.locale}
-            onValueChange={(value) => {
-              if (onLocaleChange) {
-                onLocaleChange(value);
-                return;
-              }
-              setData('locale', value);
-            }}
-            disabled={processing || localeDisabled}
-          >
-            <SelectTrigger id="locale">
-              <SelectValue placeholder={t('fields.locale.placeholder')} />
-            </SelectTrigger>
-            <SelectContent>
-              {supportedLocales.map((locale) => (
-                <SelectItem key={locale} value={locale}>
-                  {locale}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <InputError message={normalizeError(errors.locale)} />
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="space-y-1.5">
-            <Label htmlFor="name">{t('fields.name.label')}</Label>
-            <Input
-              id="name"
-              value={data.name}
-              onChange={(e) => setData('name', e.target.value)}
-              placeholder={t('fields.name.placeholder')}
-              disabled={processing}
-            />
-            <InputError message={normalizeError(errors.name)} />
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="institution">{t('fields.institution.label')}</Label>
-            <Input
-              id="institution"
-              value={data.institution}
-              onChange={(e) => setData('institution', e.target.value)}
-              placeholder={t('fields.institution.placeholder')}
-              disabled={processing}
-            />
-            <InputError message={normalizeError(errors.institution)} />
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="category">{t('fields.category.label')}</Label>
+        <FormField
+          name="locale"
+          errors={errors}
+          htmlFor="locale"
+          label={t('fields.locale.label')}
+          required
+        >
+          {({ a11yAttributes, getSelectClassName }) => (
             <Select
-              value={data.category}
-              onValueChange={(value) => setData('category', value)}
-              disabled={processing}
+              value={data.locale}
+              onValueChange={(value) => {
+                if (onLocaleChange) {
+                  onLocaleChange(value);
+                  return;
+                }
+                setData('locale', value);
+              }}
+              disabled={processing || localeDisabled}
             >
-              <SelectTrigger id="category">
-                <SelectValue placeholder={t('fields.category.placeholder')} />
+              <SelectTrigger
+                id="locale"
+                className={getSelectClassName()}
+                {...a11yAttributes}
+              >
+                <SelectValue placeholder={t('fields.locale.placeholder')} />
               </SelectTrigger>
-
               <SelectContent>
-                {Object.entries(categories).map(([id, label]) => (
-                  <SelectItem key={id} value={id}>
-                    {label}
+                {supportedLocales.map((supportedLocale) => (
+                  <SelectItem key={supportedLocale} value={supportedLocale}>
+                    {supportedLocale}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
+          )}
+        </FormField>
 
-            <InputError message={normalizeError(errors.category)} />
-          </div>
+        <div className="grid gap-4 md:grid-cols-2">
+          <FormField
+            name="name"
+            errors={errors}
+            htmlFor="name"
+            label={t('fields.name.label')}
+            required
+          >
+            {({ a11yAttributes, getInputClassName }) => (
+              <Input
+                id="name"
+                value={data.name}
+                onChange={(event) => setData('name', event.target.value)}
+                placeholder={t('fields.name.placeholder')}
+                disabled={processing}
+                className={getInputClassName()}
+                {...a11yAttributes}
+              />
+            )}
+          </FormField>
+
+          <FormField
+            name="institution"
+            errors={errors}
+            htmlFor="institution"
+            label={t('fields.institution.label')}
+            required
+          >
+            {({ a11yAttributes, getInputClassName }) => (
+              <Input
+                id="institution"
+                value={data.institution}
+                onChange={(event) =>
+                  setData('institution', event.target.value)
+                }
+                placeholder={t('fields.institution.placeholder')}
+                disabled={processing}
+                className={getInputClassName()}
+                {...a11yAttributes}
+              />
+            )}
+          </FormField>
+
+          <FormField
+            name="category"
+            errors={errors}
+            htmlFor="category"
+            label={t('fields.category.label')}
+            required
+          >
+            {({ a11yAttributes, getSelectClassName }) => (
+              <Select
+                value={data.category}
+                onValueChange={(value) => setData('category', value)}
+                disabled={processing}
+              >
+                <SelectTrigger
+                  id="category"
+                  className={getSelectClassName()}
+                  {...a11yAttributes}
+                >
+                  <SelectValue placeholder={t('fields.category.placeholder')} />
+                </SelectTrigger>
+
+                <SelectContent>
+                  {Object.entries(categories).map(([id, label]) => (
+                    <SelectItem key={id} value={id}>
+                      {label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          </FormField>
         </div>
 
-        <div className="space-y-1.5">
-          <Label htmlFor="summary">{t('fields.summary.label')}</Label>
-          <Input
-            id="summary"
-            value={data.summary}
-            onChange={(e) => setData('summary', e.target.value)}
-            placeholder={t('fields.summary.placeholder')}
-            disabled={processing}
-          />
-          <InputError message={normalizeError(errors.summary)} />
-        </div>
+        <FormField
+          name="summary"
+          errors={errors}
+          htmlFor="summary"
+          label={t('fields.summary.label')}
+          required
+        >
+          {({ a11yAttributes, getInputClassName }) => (
+            <Input
+              id="summary"
+              value={data.summary}
+              onChange={(event) => setData('summary', event.target.value)}
+              placeholder={t('fields.summary.placeholder')}
+              disabled={processing}
+              className={getInputClassName()}
+              {...a11yAttributes}
+            />
+          )}
+        </FormField>
 
-        <div className="space-y-1.5">
-          <Label htmlFor="description">{t('fields.description.label')}</Label>
-          <RichTextEditor
-            id="description"
-            value={data.description}
-            onChange={(value) => setData('description', value)}
-          />
-          <InputError message={normalizeError(errors.description)} />
-        </div>
+        <FormField
+          name="description"
+          errors={errors}
+          htmlFor="description"
+          label={t('fields.description.label')}
+          required
+        >
+          {() => (
+            <RichTextEditor
+              id="description"
+              value={data.description}
+              onChange={(value) => setData('description', value)}
+            />
+          )}
+        </FormField>
       </section>
 
       <section className="space-y-4">
         <h2 className="text-lg font-medium">{t('sections.timeline')}</h2>
 
         <div className="grid gap-4 md:grid-cols-2">
-          <div className="space-y-1.5">
-            {/* Key is essential to force remount on locale change, preventing state race conditions. */}
-            <DatePicker
-              key={locale}
-              id="started_at"
-              label={t('fields.started_at.label')}
-              value={data.started_at}
-              onChange={(date) => setData('started_at', date)}
-              disabled={processing}
-              locale={locale}
-              supportedLocales={supportedLocales}
-            />
-            <InputError message={normalizeError(errors.started_at)} />
-          </div>
+          <FormField
+            name="started_at"
+            errors={errors}
+            htmlFor="started_at"
+            label={t('fields.started_at.label')}
+            required
+          >
+            {({ a11yAttributes, getInputClassName }) => (
+              <DatePicker
+                key={locale}
+                id="started_at"
+                value={data.started_at}
+                onChange={(date) => setData('started_at', date)}
+                disabled={processing}
+                locale={locale}
+                supportedLocales={supportedLocales}
+                className={getInputClassName()}
+                {...a11yAttributes}
+              />
+            )}
+          </FormField>
 
-          <div className="space-y-1.5">
-            {/* Key is essential to force remount on locale change, preventing state race conditions. */}
-            <DatePicker
-              key={locale}
-              id="completed_at"
-              label={t('fields.completed_at.label')}
-              value={data.completed_at}
-              onChange={(date) => setData('completed_at', date)}
-              className="bg-transparent"
-              disabled={processing}
-              locale={locale}
-              supportedLocales={supportedLocales}
-            />
-            <InputError message={normalizeError(errors.completed_at)} />
-          </div>
+          <FormField
+            name="completed_at"
+            errors={errors}
+            htmlFor="completed_at"
+            label={t('fields.completed_at.label')}
+          >
+            {({ a11yAttributes, getInputClassName }) => (
+              <DatePicker
+                key={locale}
+                id="completed_at"
+                value={data.completed_at}
+                onChange={(date) => setData('completed_at', date)}
+                disabled={processing}
+                locale={locale}
+                supportedLocales={supportedLocales}
+                className={getInputClassName()}
+                {...a11yAttributes}
+              />
+            )}
+          </FormField>
         </div>
       </section>
 
       <section className="space-y-4">
         <h2 className="text-lg font-medium">{t('sections.visibility')}</h2>
 
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="display"
-            checked={data.display}
-            onCheckedChange={(checked) => setData('display', !!checked)}
-            disabled={processing}
-          />
-
-          <label
-            htmlFor="display"
-            className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            {t('fields.display.label')}
-          </label>
-        </div>
-
-        <InputError message={normalizeError(errors.display)} />
+        <FormField
+          name="display"
+          errors={errors}
+          htmlFor="display"
+          label={t('fields.display.label')}
+          variant="inline"
+        >
+          {({ a11yAttributes }) => (
+            <Checkbox
+              id="display"
+              checked={data.display}
+              onCheckedChange={(checked) => setData('display', !!checked)}
+              disabled={processing}
+              {...a11yAttributes}
+            />
+          )}
+        </FormField>
       </section>
 
       <div className="flex items-center justify-end gap-3">

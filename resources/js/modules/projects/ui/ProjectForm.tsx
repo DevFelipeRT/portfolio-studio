@@ -1,7 +1,14 @@
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import {
+    FieldError,
+    FormField,
+    FormErrorSummary,
+    resolveFieldErrorMessage,
+    collectErroredFieldLabels,
+    type FormErrors,
+} from '@/common/forms';
 import {
     Select,
     SelectContent,
@@ -20,7 +27,7 @@ interface ProjectFormProps {
     skills: Skill[];
     existingImages: ProjectImage[];
     data: ProjectFormData;
-    errors: Record<string, string | string[]>;
+    errors: FormErrors<keyof ProjectFormData>;
     processing: boolean;
     submitLabel: string;
     supportedLocales: readonly string[];
@@ -40,7 +47,6 @@ interface ProjectFormProps {
         index: number,
         event: React.ChangeEvent<HTMLInputElement>,
     ) => void;
-    normalizeError: (message: string | string[] | undefined) => string | null;
 }
 
 /**
@@ -64,11 +70,24 @@ export function ProjectForm({
     onRemoveImageRow,
     onUpdateImageAlt,
     onUpdateImageFile,
-    normalizeError,
 }: ProjectFormProps) {
     const { translate: t } = useTranslation('projects');
     const hasExistingImages = existingImages.length > 0;
     const hasNewImages = data.images.length > 0;
+    const summaryFields = collectErroredFieldLabels(errors, [
+        { name: 'locale', label: t('fields.locale.label') },
+        { name: 'name', label: 'Name' },
+        { name: 'status', label: 'Status' },
+        { name: 'summary', label: 'Summary' },
+        { name: 'description', label: 'Description' },
+        { name: 'display', label: 'Display on landing' },
+        { name: 'repository_url', label: 'Repository URL' },
+        { name: 'live_url', label: 'Live URL' },
+        { name: 'skill_ids', label: 'Skills' },
+        { name: 'images', label: 'Images' },
+    ] as const);
+    const skillIdsError = resolveFieldErrorMessage(errors, 'skill_ids');
+    const imagesError = resolveFieldErrorMessage(errors, 'images');
 
     const handleLocaleChange = (value: string): void => {
         if (onChangeLocale) {
@@ -84,163 +103,188 @@ export function ProjectForm({
             onSubmit={onSubmit}
             className="bg-card space-y-8 rounded-lg border p-6 shadow-sm"
         >
+            <FormErrorSummary fields={summaryFields} />
+
             <section className="space-y-4">
                 <h2 className="text-lg font-medium">Basic information</h2>
 
-                <div className="space-y-1.5">
-                    <Label htmlFor="locale">{t('fields.locale.label')}</Label>
-                    <Select
-                        value={data.locale}
-                        onValueChange={handleLocaleChange}
-                        disabled={processing || localeDisabled}
-                    >
-                        <SelectTrigger id="locale">
-                            <SelectValue
-                                placeholder={t('fields.locale.placeholder')}
-                            />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {supportedLocales.map((locale) => (
-                                <SelectItem key={locale} value={locale}>
-                                    {locale}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                    {errors.locale && (
-                        <p className="text-destructive text-sm">
-                            {normalizeError(errors.locale)}
-                        </p>
+                <FormField
+                    name="locale"
+                    errors={errors}
+                    htmlFor="locale"
+                    label={t('fields.locale.label')}
+                    required
+                >
+                    {({ a11yAttributes, getSelectClassName }) => (
+                        <Select
+                            value={data.locale}
+                            onValueChange={handleLocaleChange}
+                            disabled={processing || localeDisabled}
+                        >
+                            <SelectTrigger
+                                id="locale"
+                                className={getSelectClassName()}
+                                {...a11yAttributes}
+                            >
+                                <SelectValue
+                                    placeholder={t('fields.locale.placeholder')}
+                                />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {supportedLocales.map((locale) => (
+                                    <SelectItem key={locale} value={locale}>
+                                        {locale}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                     )}
-                </div>
+                </FormField>
 
                 <div className="grid gap-4 md:grid-cols-2">
-                    <div className="space-y-1.5">
-                        <Label htmlFor="name">Name</Label>
-                        <Input
-                            id="name"
-                            value={data.name}
-                            onChange={(event) =>
-                                onChangeField('name', event.target.value)
-                            }
-                        />
-                        {errors.name && (
-                            <p className="text-destructive text-sm">
-                                {normalizeError(errors.name)}
-                            </p>
-                        )}
-                    </div>
-
-                    <div className="space-y-1.5">
-                        <Label htmlFor="status">Status</Label>
-                        <Input
-                            id="status"
-                            value={data.status}
-                            onChange={(event) =>
-                                onChangeField('status', event.target.value)
-                            }
-                            placeholder="Example: draft, published"
-                        />
-                        {errors.status && (
-                            <p className="text-destructive text-sm">
-                                {normalizeError(errors.status)}
-                            </p>
-                        )}
-                    </div>
-                </div>
-
-                <div className="space-y-1.5">
-                    <Label htmlFor="summary">Summary</Label>
-                    <Input
-                        id="summary"
-                        value={data.summary}
-                        onChange={(event) =>
-                            onChangeField(
-                                'summary',
-                                event.target.value,
-                            )
-                        }
-                    />
-                    {errors.summary && (
-                        <p className="text-destructive text-sm">
-                            {normalizeError(errors.summary)}
-                        </p>
-                    )}
-                </div>
-
-                <div className="space-y-1.5">
-                    <Label htmlFor="description">Description</Label>
-                    <RichTextEditor
-                        id="description"
-                        value={data.description}
-                        onChange={(value) =>
-                            onChangeField('description', value)
-                        }
-                    />
-                    {errors.description && (
-                        <p className="text-destructive text-sm">
-                            {normalizeError(errors.description)}
-                        </p>
-                    )}
-                </div>
-
-                <div className="flex items-center space-x-2">
-                    <Checkbox
-                        id="display"
-                        checked={data.display}
-                        onCheckedChange={(checked) =>
-                            onChangeField('display', !!checked)
-                        }
-                    />
-                    <label
-                        htmlFor="display"
-                        className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    <FormField
+                        name="name"
+                        errors={errors}
+                        htmlFor="name"
+                        label="Name"
+                        required
                     >
-                        Display on landing
-                    </label>
+                        {({ a11yAttributes, getInputClassName }) => (
+                            <Input
+                                id="name"
+                                value={data.name}
+                                onChange={(event) =>
+                                    onChangeField('name', event.target.value)
+                                }
+                                className={getInputClassName()}
+                                {...a11yAttributes}
+                            />
+                        )}
+                    </FormField>
+
+                    <FormField
+                        name="status"
+                        errors={errors}
+                        htmlFor="status"
+                        label="Status"
+                        required
+                    >
+                        {({ a11yAttributes, getInputClassName }) => (
+                            <Input
+                                id="status"
+                                value={data.status}
+                                onChange={(event) =>
+                                    onChangeField('status', event.target.value)
+                                }
+                                placeholder="Example: draft, published"
+                                className={getInputClassName()}
+                                {...a11yAttributes}
+                            />
+                        )}
+                    </FormField>
                 </div>
+
+                <FormField
+                    name="summary"
+                    errors={errors}
+                    htmlFor="summary"
+                    label="Summary"
+                    required
+                >
+                    {({ a11yAttributes, getInputClassName }) => (
+                        <Input
+                            id="summary"
+                            value={data.summary}
+                            onChange={(event) =>
+                                onChangeField('summary', event.target.value)
+                            }
+                            className={getInputClassName()}
+                            {...a11yAttributes}
+                        />
+                    )}
+                </FormField>
+
+                <FormField
+                    name="description"
+                    errors={errors}
+                    htmlFor="description"
+                    label="Description"
+                    required
+                >
+                    {() => (
+                        <RichTextEditor
+                            id="description"
+                            value={data.description}
+                            onChange={(value) => onChangeField('description', value)}
+                        />
+                    )}
+                </FormField>
+
+                <FormField
+                    name="display"
+                    errors={errors}
+                    htmlFor="display"
+                    label="Display on landing"
+                    variant="inline"
+                >
+                    {({ a11yAttributes }) => (
+                        <Checkbox
+                            id="display"
+                            checked={data.display}
+                            onCheckedChange={(checked) =>
+                                onChangeField('display', !!checked)
+                            }
+                            {...a11yAttributes}
+                        />
+                    )}
+                </FormField>
             </section>
 
             <section className="space-y-4">
                 <h2 className="text-lg font-medium">Links</h2>
 
                 <div className="grid gap-4 md:grid-cols-2">
-                    <div className="space-y-1.5">
-                        <Label htmlFor="repository_url">Repository URL</Label>
-                        <Input
-                            id="repository_url"
-                            value={data.repository_url}
-                            onChange={(event) =>
-                                onChangeField(
-                                    'repository_url',
-                                    event.target.value,
-                                )
-                            }
-                            placeholder="https://"
-                        />
-                        {errors.repository_url && (
-                            <p className="text-destructive text-sm">
-                                {normalizeError(errors.repository_url)}
-                            </p>
+                    <FormField
+                        name="repository_url"
+                        errors={errors}
+                        htmlFor="repository_url"
+                        label="Repository URL"
+                        errorId="repository-url-error"
+                    >
+                        {({ a11yAttributes, getInputClassName }) => (
+                            <Input
+                                id="repository_url"
+                                value={data.repository_url}
+                                onChange={(event) =>
+                                    onChangeField('repository_url', event.target.value)
+                                }
+                                placeholder="https://"
+                                className={getInputClassName()}
+                                {...a11yAttributes}
+                            />
                         )}
-                    </div>
+                    </FormField>
 
-                    <div className="space-y-1.5">
-                        <Label htmlFor="live_url">Live URL</Label>
-                        <Input
-                            id="live_url"
-                            value={data.live_url}
-                            onChange={(event) =>
-                                onChangeField('live_url', event.target.value)
-                            }
-                            placeholder="https://"
-                        />
-                        {errors.live_url && (
-                            <p className="text-destructive text-sm">
-                                {normalizeError(errors.live_url)}
-                            </p>
+                    <FormField
+                        name="live_url"
+                        errors={errors}
+                        htmlFor="live_url"
+                        label="Live URL"
+                        errorId="live-url-error"
+                    >
+                        {({ a11yAttributes, getInputClassName }) => (
+                            <Input
+                                id="live_url"
+                                value={data.live_url}
+                                onChange={(event) =>
+                                    onChangeField('live_url', event.target.value)
+                                }
+                                placeholder="https://"
+                                className={getInputClassName()}
+                                {...a11yAttributes}
+                            />
                         )}
-                    </div>
+                    </FormField>
                 </div>
             </section>
 
@@ -282,11 +326,7 @@ export function ProjectForm({
                     )}
                 </div>
 
-                {errors.skill_ids && (
-                    <p className="text-destructive text-sm">
-                        {normalizeError(errors.skill_ids)}
-                    </p>
-                )}
+                <FieldError id="skill-ids-error" message={skillIdsError} />
             </section>
 
             <section className="space-y-4">
@@ -372,40 +412,56 @@ export function ProjectForm({
                             </p>
                         )}
 
-                        {data.images.map((image, index) => (
+                        {data.images.map((image, index) => {
+                            return (
                             <div
                                 key={index}
                                 className="bg-background grid gap-3 rounded-md border p-3 md:grid-cols-[2fr,2fr,auto]"
                             >
-                                <div className="space-y-1.5">
-                                    <Label htmlFor={`image-file-${index}`}>
-                                        Image file
-                                    </Label>
-                                    <Input
-                                        id={`image-file-${index}`}
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={(event) =>
-                                            onUpdateImageFile(index, event)
-                                        }
-                                    />
-                                </div>
+                                <FormField
+                                    name={`images.${index}.file`}
+                                    errors={errors as FormErrors<string>}
+                                    htmlFor={`image-file-${index}`}
+                                    label="Image file"
+                                    required
+                                    errorId={`image-file-${index}-error`}
+                                >
+                                    {({ a11yAttributes, getInputClassName }) => (
+                                        <Input
+                                            id={`image-file-${index}`}
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={(event) =>
+                                                onUpdateImageFile(index, event)
+                                            }
+                                            className={getInputClassName()}
+                                            {...a11yAttributes}
+                                        />
+                                    )}
+                                </FormField>
 
-                                <div className="space-y-1.5">
-                                    <Label htmlFor={`image-alt-${index}`}>
-                                        Alt text (optional)
-                                    </Label>
-                                    <Input
-                                        id={`image-alt-${index}`}
-                                        value={image.alt ?? ''}
-                                        onChange={(event) =>
-                                            onUpdateImageAlt(
-                                                index,
-                                                event.target.value,
-                                            )
-                                        }
-                                    />
-                                </div>
+                                <FormField
+                                    name={`images.${index}.alt`}
+                                    errors={errors as FormErrors<string>}
+                                    htmlFor={`image-alt-${index}`}
+                                    label="Alt text (optional)"
+                                    errorId={`image-alt-${index}-error`}
+                                >
+                                    {({ a11yAttributes, getInputClassName }) => (
+                                        <Input
+                                            id={`image-alt-${index}`}
+                                            value={image.alt ?? ''}
+                                            onChange={(event) =>
+                                                onUpdateImageAlt(
+                                                    index,
+                                                    event.target.value,
+                                                )
+                                            }
+                                            className={getInputClassName()}
+                                            {...a11yAttributes}
+                                        />
+                                    )}
+                                </FormField>
 
                                 <div className="flex items-end justify-end">
                                     <Button
@@ -418,7 +474,8 @@ export function ProjectForm({
                                     </Button>
                                 </div>
                             </div>
-                        ))}
+                            );
+                        })}
 
                         <Button
                             type="button"
@@ -429,11 +486,7 @@ export function ProjectForm({
                             Add image
                         </Button>
 
-                        {errors.images && (
-                            <p className="text-destructive text-sm">
-                                {normalizeError(errors.images)}
-                            </p>
-                        )}
+                        <FieldError id="images-error" message={imagesError} />
                     </div>
                 </div>
             </section>

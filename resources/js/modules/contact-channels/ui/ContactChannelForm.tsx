@@ -1,7 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
     Select,
     SelectContent,
@@ -10,6 +9,12 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { useSupportedLocales } from '@/common/i18n';
+import {
+    FormField,
+    FormErrorSummary,
+    collectErroredFieldLabels,
+    type FormErrors,
+} from '@/common/forms';
 import type {
     ContactChannelFormData,
 } from '@/modules/contact-channels/core/forms';
@@ -19,13 +24,11 @@ import type {
 import { Link } from '@inertiajs/react';
 import React, { JSX } from 'react';
 
-type ContactChannelFormErrors = Record<string, string | string[] | undefined>;
-
 type ContactChannelFormAlignment = 'right' | 'split';
 
 interface ContactChannelFormProps {
     data: ContactChannelFormData;
-    errors: ContactChannelFormErrors;
+    errors: FormErrors<keyof ContactChannelFormData>;
     channelTypes: ContactChannelTypeOption[];
     processing: boolean;
     onChange(field: keyof ContactChannelFormData, value: string | number | boolean | ''): void;
@@ -51,20 +54,14 @@ export function ContactChannelForm({
     alignActions = 'right',
 }: ContactChannelFormProps) {
     const supportedLocales = useSupportedLocales();
-
-    const normalizeError = (
-        message: string | string[] | undefined,
-    ): string | null => {
-        if (!message) {
-            return null;
-        }
-
-        if (Array.isArray(message)) {
-            return message.join(' ');
-        }
-
-        return message;
-    };
+    const summaryFields = collectErroredFieldLabels(errors, [
+        { name: 'locale', label: 'Locale' },
+        { name: 'channel_type', label: 'Type' },
+        { name: 'label', label: 'Label' },
+        { name: 'value', label: 'Value' },
+        { name: 'sort_order', label: 'Order' },
+        { name: 'is_active', label: 'Active' },
+    ] as const);
 
     const renderActionsRight = (): JSX.Element => (
         <div className="flex items-center justify-end gap-3">
@@ -114,120 +111,155 @@ export function ContactChannelForm({
             onSubmit={onSubmit}
             className="bg-card space-y-6 rounded-lg border p-6 shadow-sm"
         >
-            <div className="space-y-1.5">
-                <Label htmlFor="locale">Locale</Label>
-                <Select
-                    value={data.locale}
-                    onValueChange={(value) => onChange('locale', value)}
-                    disabled={processing}
-                >
-                    <SelectTrigger id="locale">
-                        <SelectValue placeholder="Select a locale" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {supportedLocales.map((locale) => (
-                            <SelectItem key={locale} value={locale}>
-                                {locale}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-                {errors.locale && (
-                    <p className="text-destructive text-sm">
-                        {normalizeError(errors.locale as string | string[])}
-                    </p>
-                )}
-            </div>
+            <FormErrorSummary fields={summaryFields} />
 
-            <div className="space-y-1.5">
-                <Label htmlFor="channel-type">Type</Label>
-                <Select
-                    value={data.channel_type}
-                    onValueChange={(value) => onChange('channel_type', value)}
-                >
-                    <SelectTrigger id="channel-type">
-                        <SelectValue placeholder="Select a type" />
-                    </SelectTrigger>
-
-                    <SelectContent>
-                        {channelTypes.map((type) => (
-                            <SelectItem key={type.value} value={type.value}>
-                                {type.label}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-                {errors.channel_type && (
-                    <p className="text-destructive text-sm">
-                        {normalizeError(errors.channel_type as string | string[])}
-                    </p>
+            <FormField
+                name="locale"
+                errors={errors}
+                htmlFor="locale"
+                label="Locale"
+                required
+            >
+                {({ a11yAttributes, getSelectClassName }) => (
+                    <Select
+                        value={data.locale}
+                        onValueChange={(value) => onChange('locale', value)}
+                        disabled={processing}
+                    >
+                        <SelectTrigger
+                            id="locale"
+                            className={getSelectClassName()}
+                            {...a11yAttributes}
+                        >
+                            <SelectValue placeholder="Select a locale" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {supportedLocales.map((locale) => (
+                                <SelectItem key={locale} value={locale}>
+                                    {locale}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                 )}
-            </div>
+            </FormField>
 
-            <div className="space-y-1.5">
-                <Label htmlFor="label">Label</Label>
-                <Input
-                    id="label"
-                    value={data.label}
-                    onChange={(event) => onChange('label', event.target.value)}
-                    placeholder="Optional label"
-                />
-                {errors.label && (
-                    <p className="text-destructive text-sm">
-                        {normalizeError(errors.label as string | string[])}
-                    </p>
-                )}
-            </div>
+            <FormField
+                name="channel_type"
+                errors={errors}
+                htmlFor="channel-type"
+                label="Type"
+                required
+                errorId="channel-type-error"
+            >
+                {({ a11yAttributes, getSelectClassName }) => (
+                    <Select
+                        value={data.channel_type}
+                        onValueChange={(value) => onChange('channel_type', value)}
+                    >
+                        <SelectTrigger
+                            id="channel-type"
+                            className={getSelectClassName()}
+                            {...a11yAttributes}
+                        >
+                            <SelectValue placeholder="Select a type" />
+                        </SelectTrigger>
 
-            <div className="space-y-1.5">
-                <Label htmlFor="value">Value</Label>
-                <Input
-                    id="value"
-                    value={data.value}
-                    onChange={(event) => onChange('value', event.target.value)}
-                    placeholder="Email, phone number, handle, or URL"
-                />
-                {errors.value && (
-                    <p className="text-destructive text-sm">
-                        {normalizeError(errors.value as string | string[])}
-                    </p>
+                        <SelectContent>
+                            {channelTypes.map((type) => (
+                                <SelectItem key={type.value} value={type.value}>
+                                    {type.label}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                 )}
-            </div>
+            </FormField>
+
+            <FormField
+                name="label"
+                errors={errors}
+                htmlFor="label"
+                label="Label"
+            >
+                {({ a11yAttributes, getInputClassName }) => (
+                    <Input
+                        id="label"
+                        value={data.label}
+                        onChange={(event) => onChange('label', event.target.value)}
+                        placeholder="Optional label"
+                        className={getInputClassName()}
+                        {...a11yAttributes}
+                    />
+                )}
+            </FormField>
+
+            <FormField
+                name="value"
+                errors={errors}
+                htmlFor="value"
+                label="Value"
+                required
+            >
+                {({ a11yAttributes, getInputClassName }) => (
+                    <Input
+                        id="value"
+                        value={data.value}
+                        onChange={(event) => onChange('value', event.target.value)}
+                        placeholder="Email, phone number, handle, or URL"
+                        className={getInputClassName()}
+                        {...a11yAttributes}
+                    />
+                )}
+            </FormField>
 
             <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-1.5">
-                    <Label htmlFor="sort-order">Order</Label>
-                    <Input
-                        id="sort-order"
-                        type="number"
-                        min={0}
-                        value={data.sort_order}
-                        onChange={(event) =>
-                            onChange(
-                                'sort_order',
-                                event.target.value === ''
-                                    ? ''
-                                    : Number(event.target.value),
-                            )
-                        }
-                    />
-                    {errors.sort_order && (
-                        <p className="text-destructive text-sm">
-                            {normalizeError(errors.sort_order as string | string[])}
-                        </p>
+                <FormField
+                    name="sort_order"
+                    errors={errors}
+                    htmlFor="sort-order"
+                    label="Order"
+                    errorId="sort-order-error"
+                >
+                    {({ a11yAttributes, getInputClassName }) => (
+                        <Input
+                            id="sort-order"
+                            type="number"
+                            min={0}
+                            value={data.sort_order}
+                            onChange={(event) =>
+                                onChange(
+                                    'sort_order',
+                                    event.target.value === ''
+                                        ? ''
+                                        : Number(event.target.value),
+                                )
+                            }
+                            className={getInputClassName()}
+                            {...a11yAttributes}
+                        />
                     )}
-                </div>
+                </FormField>
 
-                <div className="flex items-center gap-3 pt-6">
-                    <Checkbox
-                        id="is-active"
-                        checked={data.is_active}
-                        onCheckedChange={(checked) =>
-                            onChange('is_active', Boolean(checked))
-                        }
-                    />
-                    <Label htmlFor="is-active">Active</Label>
-                </div>
+                <FormField
+                    name="is_active"
+                    errors={errors}
+                    htmlFor="is-active"
+                    label="Active"
+                    variant="inline"
+                    className="pt-6"
+                >
+                    {({ a11yAttributes }) => (
+                        <Checkbox
+                            id="is-active"
+                            checked={data.is_active}
+                            onCheckedChange={(checked) =>
+                                onChange('is_active', Boolean(checked))
+                            }
+                            {...a11yAttributes}
+                        />
+                    )}
+                </FormField>
             </div>
 
             {alignActions === 'split' ? renderActionsSplit() : renderActionsRight()}

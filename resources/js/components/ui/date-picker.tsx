@@ -2,7 +2,6 @@
 
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
-import { Label } from '@/components/ui/label';
 import {
     Popover,
     PopoverContent,
@@ -89,14 +88,15 @@ function useDynamicDateFnsLocale(
                     normalizedId === 'pt-br'
                         ? await import('date-fns/locale/pt-BR')
                         : await import('date-fns/locale/en-US');
-                const localeObj = (localeModule as any).default;
+                const localeObj = (localeModule as { default?: Locale })
+                    .default;
 
                 if (isMounted && localeObj) {
                     // Critical: Force a new object reference to trigger useMemo/re-render in consuming components.
                     setLocaleObj({ ...localeObj });
                     setLoadedCode(codeToUse);
                 }
-            } catch (error) {
+            } catch {
                 if (isMounted) {
                     setLocaleObj(FALLBACK_LOCALE_OBJ);
                     setLoadedCode(FALLBACK_LOCALE_CODE);
@@ -154,11 +154,11 @@ type DatePickerProps = {
             'mode' | 'selected' | 'onSelect'
         >
     >;
-    label?: string;
     placeholder?: string;
     disabled?: boolean;
-    required?: boolean;
     className?: string;
+    'aria-invalid'?: true;
+    'aria-describedby'?: string;
 };
 
 /**
@@ -173,11 +173,11 @@ export function DatePicker({
     locale = 'en-US',
     displayFormat = 'PPP',
     calendarProps,
-    label = 'Date',
     placeholder = 'Select date',
     disabled = false,
-    required = false,
     className,
+    'aria-invalid': ariaInvalid,
+    'aria-describedby': ariaDescribedBy,
 }: DatePickerProps) {
     const [open, setOpen] = React.useState(false);
 
@@ -204,68 +204,64 @@ export function DatePicker({
     };
 
     return (
-        <div className={cn('space-y-1.5', className)}>
-            <Label htmlFor={id}>
-                {label}
-                {required && <span className="text-destructive ml-0.5">*</span>}
-            </Label>
-
-            <div className="relative">
-                <Popover open={open} onOpenChange={setOpen}>
-                    <PopoverTrigger asChild>
-                        <Button
-                            id={id}
-                            type="button"
-                            variant="outline"
-                            disabled={disabled}
-                            data-empty={!selectedDate}
-                            aria-label={
-                                selectedDate
-                                    ? `Selected date: ${displayLabel}`
-                                    : 'Select date'
-                            }
-                            className={cn(
-                                'w-full justify-start bg-transparent text-left font-normal',
-                                !selectedDate && 'text-muted-foreground',
-                                selectedDate && !disabled && 'pr-9',
-                            )}
-                        >
-                            <CalendarIcon
-                                className="mr-2 h-4 w-4"
-                                aria-hidden="true"
-                            />
-                            <span className="truncate">{displayLabel}</span>
-                        </Button>
-                    </PopoverTrigger>
-
-                    <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                            mode="single"
-                            selected={selectedDate}
-                            onSelect={handleSelect}
-                            locale={localeObj}
-                            className="bg-popover rounded-md border shadow-md"
-                            classNames={{
-                                caption_label: 'text-sm font-medium capitalize',
-                            }}
-                            {...calendarProps}
+        <div className="relative">
+            <Popover open={open} onOpenChange={setOpen}>
+                <PopoverTrigger asChild>
+                    <Button
+                        id={id}
+                        type="button"
+                        variant="outline"
+                        disabled={disabled}
+                        data-empty={!selectedDate}
+                        aria-label={
+                            selectedDate
+                                ? `Selected date: ${displayLabel}`
+                                : 'Select date'
+                        }
+                        aria-invalid={ariaInvalid}
+                        aria-describedby={ariaDescribedBy}
+                        className={cn(
+                            'w-full justify-start bg-transparent text-left font-normal',
+                            !selectedDate && 'text-muted-foreground',
+                            selectedDate && !disabled && 'pr-9',
+                            className,
+                        )}
+                    >
+                        <CalendarIcon
+                            className="mr-2 h-4 w-4"
+                            aria-hidden="true"
                         />
-                    </PopoverContent>
-                </Popover>
+                        <span className="truncate">{displayLabel}</span>
+                    </Button>
+                </PopoverTrigger>
 
-                {selectedDate && !disabled && (
-                    <div className="absolute top-0 right-0 flex h-full items-center pr-2">
-                        <button
-                            type="button"
-                            onClick={handleClear}
-                            className="text-muted-foreground hover:text-foreground rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none"
-                            aria-label="Clear date"
-                        >
-                            <X className="h-4 w-4" />
-                        </button>
-                    </div>
-                )}
-            </div>
+                <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                        mode="single"
+                        selected={selectedDate}
+                        onSelect={handleSelect}
+                        locale={localeObj}
+                        className="bg-popover rounded-md border shadow-md"
+                        classNames={{
+                            caption_label: 'text-sm font-medium capitalize',
+                        }}
+                        {...calendarProps}
+                    />
+                </PopoverContent>
+            </Popover>
+
+            {selectedDate && !disabled && (
+                <div className="absolute top-0 right-0 flex h-full items-center pr-2">
+                    <button
+                        type="button"
+                        onClick={handleClear}
+                        className="text-muted-foreground hover:text-foreground rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none"
+                        aria-label="Clear date"
+                    >
+                        <X className="h-4 w-4" />
+                    </button>
+                </div>
+            )}
         </div>
     );
 }
