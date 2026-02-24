@@ -1,5 +1,5 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
-import type { FormErrors } from '@/common/forms';
+import { useFormSubmit, type FormErrors } from '@/common/forms';
 import { useSupportedLocales } from '@/common/i18n';
 import type {
   ImageInput,
@@ -14,20 +14,26 @@ interface CreateProjectProps {
   skills: Skill[];
 }
 
+const defaultProjectFormData: ProjectFormData = {
+  locale: '',
+  name: '',
+  summary: '',
+  description: '',
+  status: '',
+  repository_url: '',
+  live_url: '',
+  display: false,
+  skill_ids: [],
+  images: [],
+};
+
 export default function Create({ skills }: CreateProjectProps) {
   const supportedLocales = useSupportedLocales();
-  const { data, setData, post, processing } = useForm<ProjectFormData>({
-    locale: '',
-    name: '',
-    summary: '',
-    description: '',
-    status: '',
-    repository_url: '',
-    live_url: '',
-    display: false,
-    skill_ids: [],
-    images: [],
-  });
+  const { data, setData, post, processing } = useForm<ProjectFormData>(
+    'projects.create',
+    defaultProjectFormData,
+  );
+  const submitForm = useFormSubmit();
   const { errors: formErrors } = usePage().props as {
     errors: FormErrors<keyof ProjectFormData>;
   };
@@ -99,13 +105,7 @@ export default function Create({ skills }: CreateProjectProps) {
   }
 
   const submit = (event: React.FormEvent<HTMLFormElement>): void => {
-    event.preventDefault();
-
-    post(route('projects.store'), {
-      forceFormData: true,
-      preserveState: true,
-      preserveScroll: true,
-    });
+    submitForm(event, post, route('projects.store'), { forceFormData: true });
   };
 
   return (

@@ -48,11 +48,9 @@ final class PageController extends Controller
     /**
      * Displays the page creation form.
      */
-    public function create(): Response
+    public function create(Request $request): Response
     {
-        return Inertia::render('content-management/admin/PageCreate', [
-            // Additional data can be added later if needed.
-        ]);
+        return Inertia::render('content-management/admin/PageCreate');
     }
 
     /**

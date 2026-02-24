@@ -1,7 +1,7 @@
 // resources/js/Pages/Skills/Create.tsx
 
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
-import type { FormErrors } from '@/common/forms';
+import { useFormSubmit, type FormErrors } from '@/common/forms';
 import type { SkillFormData } from '@/modules/skills/core/forms';
 import type { SkillCategory } from '@/modules/skills/core/types';
 import { SkillForm } from '@/modules/skills/ui/SkillForm';
@@ -12,22 +12,24 @@ interface CreateSkillProps {
   categories: SkillCategory[];
 }
 
+const defaultSkillFormData: SkillFormData = {
+  name: '',
+  locale: '',
+  skill_category_id: '',
+};
+
 export default function Create({ categories }: CreateSkillProps) {
-  const { data, setData, post, processing } = useForm<SkillFormData>({
-    name: '',
-    locale: '',
-    skill_category_id: '',
-  });
+  const { data, setData, post, processing } = useForm<SkillFormData>(
+    'skills.create',
+    defaultSkillFormData,
+  );
+  const submitForm = useFormSubmit();
   const { errors: formErrors } = usePage().props as {
     errors: FormErrors<keyof SkillFormData>;
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
-    event.preventDefault();
-    post(route('skills.store'), {
-      preserveState: true,
-      preserveScroll: true,
-    });
+    submitForm(event, post, route('skills.store'));
   };
 
   const handleChange = (

@@ -1,5 +1,5 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
-import type { FormErrors } from '@/common/forms';
+import { useFormSubmit, type FormErrors } from '@/common/forms';
 import type { CourseFormData } from '@/modules/courses/core/forms';
 import CourseForm from '@/modules/courses/ui/CourseForm';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
@@ -16,18 +16,24 @@ interface CreateCourseProps {
 /**
  * Page component for registering a new course entry in the portfolio.
  */
+const defaultCourseFormData: CourseFormData = {
+  locale: '',
+  name: '',
+  institution: '',
+  category: '',
+  summary: '',
+  description: '',
+  started_at: null,
+  completed_at: null,
+  display: false,
+};
+
 export default function Create({ course_categories }: CreateCourseProps) {
-  const { data, setData, post, processing } = useForm<CourseFormData>({
-    locale: '',
-    name: '',
-    institution: '',
-    category: '',
-    summary: '',
-    description: '',
-    started_at: null,
-    completed_at: null,
-    display: false,
-  });
+  const { data, setData, post, processing } = useForm<CourseFormData>(
+    'courses.create',
+    defaultCourseFormData,
+  );
+  const submitForm = useFormSubmit();
   const { errors: formErrors } = usePage().props as {
     errors: FormErrors<keyof CourseFormData>;
   };
@@ -36,11 +42,7 @@ export default function Create({ course_categories }: CreateCourseProps) {
    * Submits the new course data to the backend.
    */
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
-    event.preventDefault();
-    post(route('courses.store'), {
-      preserveState: true,
-      preserveScroll: true,
-    });
+    submitForm(event, post, route('courses.store'));
   };
 
   /**

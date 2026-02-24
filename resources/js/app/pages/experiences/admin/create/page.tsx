@@ -1,6 +1,6 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import { useSupportedLocales } from '@/common/i18n';
-import type { FormErrors } from '@/common/forms';
+import { useFormSubmit, type FormErrors } from '@/common/forms';
 import type { ExperienceFormData } from '@/modules/experiences/core/forms';
 import { ExperienceForm } from '@/modules/experiences/ui/ExperienceForm';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
@@ -16,18 +16,24 @@ type ExperienceEditableField =
   | 'end_date'
   | 'display';
 
+const defaultExperienceFormData: ExperienceFormData = {
+  locale: '',
+  position: '',
+  company: '',
+  summary: '',
+  description: '',
+  start_date: '',
+  end_date: '',
+  display: false,
+};
+
 export default function Create() {
   const supportedLocales = useSupportedLocales();
-  const { data, setData, post, processing } = useForm<ExperienceFormData>({
-    locale: '',
-    position: '',
-    company: '',
-    summary: '',
-    description: '',
-    start_date: '',
-    end_date: '',
-    display: false,
-  });
+  const { data, setData, post, processing } = useForm<ExperienceFormData>(
+    'experiences.create',
+    defaultExperienceFormData,
+  );
+  const submitForm = useFormSubmit();
   const { errors: formErrors } = usePage().props as {
     errors: FormErrors<keyof ExperienceFormData>;
   };
@@ -37,11 +43,7 @@ export default function Create() {
   ) => void;
 
   const submit = (event: React.FormEvent<HTMLFormElement>): void => {
-    event.preventDefault();
-    post(route('experiences.store'), {
-      preserveState: true,
-      preserveScroll: true,
-    });
+    submitForm(event, post, route('experiences.store'));
   };
 
   return (

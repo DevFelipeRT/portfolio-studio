@@ -1,6 +1,6 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import { useSupportedLocales } from '@/common/i18n';
-import type { FormErrors } from '@/common/forms';
+import { useFormSubmit, type FormErrors } from '@/common/forms';
 import type {
   InitiativeFormData,
   InitiativeImageInput,
@@ -9,19 +9,22 @@ import { InitiativeForm } from '@/modules/initiatives/ui/InitiativeForm';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import React from 'react';
 
+const defaultInitiativeFormData: InitiativeFormData = {
+  locale: '',
+  name: '',
+  summary: '',
+  description: '',
+  display: false,
+  start_date: null,
+  end_date: null,
+  images: [],
+};
+
 export default function Create() {
   const supportedLocales = useSupportedLocales();
   const { data, setData, post, processing, transform } =
-    useForm<InitiativeFormData>({
-      locale: '',
-      name: '',
-      summary: '',
-      description: '',
-      display: false,
-      start_date: null,
-      end_date: null,
-      images: [],
-    });
+    useForm<InitiativeFormData>('initiatives.create', defaultInitiativeFormData);
+  const submitForm = useFormSubmit();
   const { errors: formErrors } = usePage().props as {
     errors: FormErrors<keyof InitiativeFormData>;
   };
@@ -80,8 +83,6 @@ export default function Create() {
   }
 
   const submit = (event: React.FormEvent<HTMLFormElement>): void => {
-    event.preventDefault();
-
     transform((current: InitiativeFormData) => {
       const validImages =
         current.images?.filter((image) => image.file instanceof File) ?? [];
@@ -98,11 +99,7 @@ export default function Create() {
       };
     });
 
-    post(route('initiatives.store'), {
-      forceFormData: true,
-      preserveState: true,
-      preserveScroll: true,
-    });
+    submitForm(event, post, route('initiatives.store'), { forceFormData: true });
   };
   return (
     <AuthenticatedLayout>
