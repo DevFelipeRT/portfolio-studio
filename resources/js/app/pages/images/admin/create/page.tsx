@@ -1,13 +1,36 @@
 // resources/js/Pages/Images/Create.tsx
 
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
-import { ImageForm } from '@/modules/images/ui/ImageForm';
-import { Head, Link } from '@inertiajs/react';
+import { useFormSubmit, type FormErrors } from '@/common/forms';
+import type { ImageFormData } from '@/modules/images/core/forms';
+import { ImageForm } from '@/modules/images/ui/form/image';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import React from 'react';
 
 /**
  * Page for creating a new image (upload + metadata).
  */
 export default function Create() {
+  const defaultValues: ImageFormData = {
+    file: null,
+    alt_text: '',
+    image_title: '',
+    caption: '',
+  };
+
+  const { data, setData, post, processing } = useForm<ImageFormData>(
+    'images.create',
+    defaultValues,
+  );
+  const submitForm = useFormSubmit();
+  const { errors: formErrors } = usePage().props as {
+    errors: FormErrors<keyof ImageFormData>;
+  };
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
+    submitForm(event, post, route('images.store'), { forceFormData: true });
+  };
+
   return (
     <AuthenticatedLayout>
       <Head title="New image" />
@@ -25,8 +48,14 @@ export default function Create() {
 
           <ImageForm
             mode="create"
-            submitRoute={route('images.store')}
-            backRoute={route('images.index')}
+            data={data}
+            errors={formErrors}
+            processing={processing}
+            cancelHref={route('images.index')}
+            cancelLabel="Back to images"
+            submitLabel="Save image"
+            onSubmit={handleSubmit}
+            onChange={(field, value) => setData(field, value as never)}
           />
         </div>
       </div>

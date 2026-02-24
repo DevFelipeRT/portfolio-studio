@@ -7,6 +7,7 @@ Evidence:
 - Page registry: `resources/js/app/pages/images/pages.ts`
 - Pages: `resources/js/app/pages/images/admin/*`
 - UI module: `resources/js/modules/images/*`
+  - Form: `resources/js/modules/images/ui/form/image/ImageForm.tsx`
 
 ## Page keys (Inertia)
 
@@ -37,4 +38,3 @@ Deletion is performed via `router.delete(route('images.destroy', image.id))` (`r
 ## Potentially-unused endpoint
 
 The backend provides `images.bulk-destroy` (`app/Modules/Images/Routes/admin.php`), but no frontend usage was found in `resources/js/**` at the time this doc was generated.
-
