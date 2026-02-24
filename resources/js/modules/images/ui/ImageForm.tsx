@@ -5,8 +5,9 @@ import {
     FormField,
     FormErrorSummary,
     collectErroredFieldLabels,
+    type FormErrors,
 } from '@/common/forms';
-import { Link, useForm } from '@inertiajs/react';
+import { Link, useForm, usePage } from '@inertiajs/react';
 import React from 'react';
 import type { Image } from '@/modules/images/core/types';
 
@@ -55,9 +56,14 @@ export function ImageForm({
               }
             : defaultValues;
 
-    const { data, setData, post, put, processing, errors, transform } =
+    const { data, setData, post, put, processing, transform } =
         useForm<ImageFormData>(initial);
-    const summaryFields = collectErroredFieldLabels(errors, [
+
+    const { errors: pageErrors } = usePage().props as {
+        errors: FormErrors<keyof ImageFormData>;
+    };
+
+    const summaryFields = collectErroredFieldLabels(pageErrors, [
         { name: 'file', label: 'File' },
         { name: 'image_title', label: 'Title' },
         { name: 'alt_text', label: 'Alt text' },
@@ -113,7 +119,7 @@ export function ImageForm({
 
                     <FormField
                         name="file"
-                        errors={errors}
+                        errors={pageErrors}
                         htmlFor="image-file"
                         label="File"
                         required
@@ -204,7 +210,7 @@ export function ImageForm({
                     <div className="space-y-1.5">
                         <FormField
                             name="image_title"
-                            errors={errors}
+                            errors={pageErrors}
                             htmlFor="image-title"
                             label="Title"
                             errorId="image-title-error"
@@ -230,7 +236,7 @@ export function ImageForm({
                     <div className="space-y-1.5">
                         <FormField
                             name="alt_text"
-                            errors={errors}
+                            errors={pageErrors}
                             htmlFor="image-alt-text"
                             label="Alt text"
                             required
@@ -258,7 +264,7 @@ export function ImageForm({
                 <div className="space-y-1.5">
                     <FormField
                         name="caption"
-                        errors={errors}
+                        errors={pageErrors}
                         htmlFor="image-caption"
                         label="Caption"
                         errorId="image-caption-error"
