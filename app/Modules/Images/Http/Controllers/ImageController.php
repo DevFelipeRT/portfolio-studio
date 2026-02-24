@@ -7,6 +7,7 @@ namespace App\Modules\Images\Http\Controllers;
 use App\Modules\Shared\Abstractions\Http\Controller;
 use App\Modules\Images\Domain\Models\Image;
 use App\Modules\Images\Application\Services\ImageService;
+use App\Modules\Images\Http\Mappers\ImageFormMapper;
 use App\Modules\Images\Http\Requests\Image\BulkDestroyImageRequest;
 use App\Modules\Images\Http\Requests\Image\UpdateImageRequest;
 use App\Modules\Images\Presentation\Mappers\ImageMapper;
@@ -109,12 +110,13 @@ class ImageController extends Controller
     /**
      * Show the form for editing the specified image and its global metadata.
      */
-    public function edit(Image $image): Response
+    public function edit(Request $request, Image $image): Response
     {
         $imageWithUsage = $this->imageService->loadUsage($image);
 
         return Inertia::render('images/admin/Edit', [
             'image' => $imageWithUsage,
+            'initial' => ImageFormMapper::fromEdit($imageWithUsage, []),
         ]);
     }
 

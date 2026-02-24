@@ -13,10 +13,12 @@ use App\Modules\Projects\Application\UseCases\UpdateProject\UpdateProject;
 use App\Modules\Projects\Application\Capabilities\CapabilitiesGateway;
 use App\Modules\Projects\Http\Requests\Project\StoreProjectRequest;
 use App\Modules\Projects\Http\Requests\Project\UpdateProjectRequest;
+use App\Modules\Projects\Http\Mappers\ProjectFormMapper;
 use App\Modules\Projects\Http\Mappers\ProjectInputMapper;
 use App\Modules\Projects\Presentation\Mappers\ProjectMapper;
 
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -74,15 +76,17 @@ class ProjectController extends Controller
     /**
      * Show the form for editing the specified project.
      */
-    public function edit(Project $project): Response
+    public function edit(Request $request, Project $project): Response
     {
         $project->load(['images', 'skills.category']);
 
         $skills = $this->capabilitiesGateway->resolve('skills.list.v1');
+        $projectData = ProjectMapper::toArray($project);
 
         return Inertia::render('projects/admin/Edit', [
-            'project' => ProjectMapper::toArray($project),
+            'project' => $projectData,
             'skills' => is_array($skills) ? $skills : [],
+            'initial' => ProjectFormMapper::fromEdit($projectData, []),
         ]);
     }
 

@@ -10,12 +10,14 @@ use App\Modules\Initiatives\Application\UseCases\CreateInitiative\CreateInitiati
 use App\Modules\Initiatives\Application\UseCases\DeleteInitiative\DeleteInitiative;
 use App\Modules\Initiatives\Application\UseCases\ListInitiatives\ListInitiatives;
 use App\Modules\Initiatives\Application\UseCases\UpdateInitiative\UpdateInitiative;
+use App\Modules\Initiatives\Http\Mappers\InitiativeFormMapper;
 use App\Modules\Initiatives\Http\Mappers\InitiativeInputMapper;
 use App\Modules\Initiatives\Http\Requests\Initiative\StoreInitiativeRequest;
 use App\Modules\Initiatives\Http\Requests\Initiative\UpdateInitiativeRequest;
 use App\Modules\Initiatives\Presentation\Mappers\InitiativeMapper;
 
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -70,12 +72,15 @@ class InitiativeController extends Controller
     /**
      * Show the form for editing an existing initiative.
      */
-    public function edit(Initiative $initiative): Response
+    public function edit(Request $request, Initiative $initiative): Response
     {
         $initiative->load(['images']);
 
+        $initiativeData = InitiativeMapper::toArray($initiative);
+
         return Inertia::render('initiatives/admin/Edit', [
-            'initiative' => InitiativeMapper::toArray($initiative),
+            'initiative' => $initiativeData,
+            'initial' => InitiativeFormMapper::fromEdit($initiativeData, []),
         ]);
     }
 
