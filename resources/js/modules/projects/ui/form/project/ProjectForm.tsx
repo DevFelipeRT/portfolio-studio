@@ -32,7 +32,7 @@ export function ProjectForm({
   onSubmit,
   onChangeField,
   onChangeLocale,
-  onToggleSkill,
+  onChangeSkillIds,
   onAddImageRow,
   onRemoveImageRow,
   onUpdateImageAlt,
@@ -123,7 +123,7 @@ export function ProjectForm({
         skills={skills}
         selectedIds={data.skill_ids}
         errors={errors}
-        onToggleSkill={onToggleSkill}
+        onChangeSkillIds={onChangeSkillIds}
       />
 
       <ImagesSection

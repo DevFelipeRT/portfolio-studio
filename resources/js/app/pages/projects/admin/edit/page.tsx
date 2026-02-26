@@ -60,17 +60,8 @@ export default function Edit({ project, skills }: EditProjectProps) {
     }));
   }
 
-  function toggleSkill(id: number): void {
-    setData((current: ProjectFormData) => {
-      const exists = current.skill_ids.includes(id);
-
-      return {
-        ...current,
-        skill_ids: exists
-          ? current.skill_ids.filter((item: number) => item !== id)
-          : [...current.skill_ids, id],
-      };
-    });
+  function changeSkillIds(ids: number[]): void {
+    changeField('skill_ids', ids);
   }
 
   function addImageRow(): void {
@@ -227,7 +218,7 @@ export default function Edit({ project, skills }: EditProjectProps) {
             onSubmit={submit}
             onChangeField={changeField}
             onChangeLocale={handleLocaleChange}
-            onToggleSkill={toggleSkill}
+            onChangeSkillIds={changeSkillIds}
             onAddImageRow={addImageRow}
             onRemoveImageRow={removeImageRow}
             onUpdateImageAlt={updateImageAlt}

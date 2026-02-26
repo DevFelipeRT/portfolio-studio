@@ -21,7 +21,7 @@ export interface ProjectFormProps {
     value: ProjectFormData[K],
   ): void;
   onChangeLocale?(locale: string): void;
-  onToggleSkill(id: number): void;
+  onChangeSkillIds(ids: number[]): void;
   onAddImageRow(): void;
   onRemoveImageRow(index: number): void;
   onUpdateImageAlt(index: number, value: string): void;
