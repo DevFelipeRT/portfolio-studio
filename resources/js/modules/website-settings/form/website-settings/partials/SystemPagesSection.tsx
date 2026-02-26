@@ -1,6 +1,6 @@
 import { FormField, type FormErrors } from '@/common/forms';
 import { Input } from '@/components/ui/input';
-import type { WebsiteSettingsSystemPages } from '@/modules/website-settings/core/types';
+import type { WebsiteSettingsSystemPages } from '@/modules/website-settings/types';
 
 interface SystemPagesSectionProps {
   errors: FormErrors;
@@ -8,7 +8,11 @@ interface SystemPagesSectionProps {
   onChange(pages: WebsiteSettingsSystemPages): void;
 }
 
-export function SystemPagesSection({ errors, pages, onChange }: SystemPagesSectionProps) {
+export function SystemPagesSection({
+  errors,
+  pages,
+  onChange,
+}: SystemPagesSectionProps) {
   return (
     <section className="space-y-6">
       <div>
@@ -89,4 +93,3 @@ export function SystemPagesSection({ errors, pages, onChange }: SystemPagesSecti
     </section>
   );
 }
-

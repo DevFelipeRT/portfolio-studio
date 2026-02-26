@@ -1,8 +1,8 @@
 import { FormField, type FormErrors } from '@/common/forms';
 import { Input } from '@/components/ui/input';
-import type { WebsiteSettingsFormData } from '@/modules/website-settings/core/forms';
+import type { WebsiteSettingsFormData } from '@/modules/website-settings/forms';
 
-import { LocalizedField } from '../LocalizedField';
+import { LocalizedField } from './LocalizedField';
 
 interface IdentitySectionProps {
   data: WebsiteSettingsFormData;
@@ -34,8 +34,8 @@ export function IdentitySection({
 
       {locales.length === 0 && (
         <p className="text-muted-foreground text-sm">
-          Nenhum locale encontrado no CMS. Crie uma página pública para habilitar
-          campos localizados.
+          Nenhum locale encontrado no CMS. Crie uma página pública para
+          habilitar campos localizados.
         </p>
       )}
 
@@ -44,7 +44,9 @@ export function IdentitySection({
         label="Nome do site"
         locales={locales}
         values={data.site_name}
-        onChange={(locale, value) => onLocaleMapChange('site_name', locale, value)}
+        onChange={(locale, value) =>
+          onLocaleMapChange('site_name', locale, value)
+        }
         errors={errors}
         placeholder="Nome do site"
       />
@@ -82,4 +84,3 @@ export function IdentitySection({
     </section>
   );
 }
-

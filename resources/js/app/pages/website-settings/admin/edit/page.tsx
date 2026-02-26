@@ -1,12 +1,12 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import { useFormSubmit, type FormErrors } from '@/common/forms';
+import type { WebsiteSettingsPageProps } from '@/modules/website-settings/types';
+import { WebsiteSettingsForm } from '@/modules/website-settings/form/website-settings';
 import {
   buildWebsiteSettingsFormData,
   syncLocaleMaps,
   type WebsiteSettingsFormData,
-} from '@/modules/website-settings/core/forms';
-import type { WebsiteSettingsPageProps } from '@/modules/website-settings/core/types';
-import { WebsiteSettingsForm } from '@/modules/website-settings/ui/form/website-settings';
+} from '@/modules/website-settings/forms';
 import { Head, useForm, usePage } from '@inertiajs/react';
 import React from 'react';
 

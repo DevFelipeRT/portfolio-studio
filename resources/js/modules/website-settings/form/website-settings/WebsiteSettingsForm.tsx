@@ -1,15 +1,13 @@
-import { FormErrorSummary, type FormErrors } from '@/common/forms';
-import type { WebsiteSettingsFormData } from '@/modules/website-settings/core/forms';
+import { Form, FormActions, type FormErrors } from '@/common/forms';
 import React from 'react';
 
 import { getErrorSummaryFields } from './errorSummaryFields';
-import { WebsiteSettingsFormActions } from './partials/WebsiteSettingsFormActions';
-import { IdentitySection } from './partials/sections/IdentitySection';
-import { InstitutionalLinksSection } from './partials/sections/InstitutionalLinksSection';
-import { LocalesSection } from './partials/sections/LocalesSection';
-import { ScopesSection } from './partials/sections/ScopesSection';
-import { SeoSection } from './partials/sections/SeoSection';
-import { SystemPagesSection } from './partials/sections/SystemPagesSection';
+import { IdentitySection } from './partials/IdentitySection';
+import { InstitutionalLinksSection } from './partials/InstitutionalLinksSection';
+import { LocalesSection } from './partials/LocalesSection';
+import { ScopesSection } from './partials/ScopesSection';
+import { SeoSection } from './partials/SeoSection';
+import { SystemPagesSection } from './partials/SystemPagesSection';
 import type { WebsiteSettingsFormProps } from './types';
 
 export function WebsiteSettingsForm({
@@ -58,7 +56,9 @@ export function WebsiteSettingsForm({
     Object.keys(data.site_name).forEach((locale) => set.add(locale));
     Object.keys(data.site_description).forEach((locale) => set.add(locale));
     Object.keys(data.default_meta_title).forEach((locale) => set.add(locale));
-    Object.keys(data.default_meta_description).forEach((locale) => set.add(locale));
+    Object.keys(data.default_meta_description).forEach((locale) =>
+      set.add(locale),
+    );
 
     return Array.from(set).filter(Boolean);
   }, [
@@ -79,12 +79,12 @@ export function WebsiteSettingsForm({
         : [];
 
   return (
-    <form
+    <Form
       onSubmit={onSubmit}
-      className="bg-card space-y-10 rounded-lg border p-6 shadow-sm"
+      errors={errors as FormErrors}
+      className="space-y-10"
+      errorSummaryFields={summaryFields}
     >
-      <FormErrorSummary fields={summaryFields} />
-
       <IdentitySection
         data={data}
         errors={errors as FormErrors}
@@ -118,7 +118,9 @@ export function WebsiteSettingsForm({
         errors={errors as FormErrors}
         publicEnabled={data.public_scope_enabled}
         privateEnabled={data.private_scope_enabled}
-        onPublicEnabledChange={(value) => onChange('public_scope_enabled', value)}
+        onPublicEnabledChange={(value) =>
+          onChange('public_scope_enabled', value)
+        }
         onPrivateEnabledChange={(value) =>
           onChange('private_scope_enabled', value)
         }
@@ -136,13 +138,12 @@ export function WebsiteSettingsForm({
         onChange={(links) => onChange('institutional_links', links)}
       />
 
-      <WebsiteSettingsFormActions
+      <FormActions
         cancelHref={cancelHref}
         processing={processing}
         cancelLabel="Cancelar"
         submitLabel="Salvar alterações"
       />
-    </form>
+    </Form>
   );
 }
-

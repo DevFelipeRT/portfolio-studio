@@ -1,7 +1,7 @@
 import { FormField, type FormErrors } from '@/common/forms';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import type { WebsiteSettingsLink } from '@/modules/website-settings/core/types';
+import type { WebsiteSettingsLink } from '@/modules/website-settings/types';
 
 interface InstitutionalLinksSectionProps {
   errors: FormErrors;
@@ -45,7 +45,9 @@ export function InstitutionalLinksSection({
 
       <div className="space-y-4">
         {links.length === 0 && (
-          <p className="text-muted-foreground text-sm">Nenhum link cadastrado.</p>
+          <p className="text-muted-foreground text-sm">
+            Nenhum link cadastrado.
+          </p>
         )}
         {links.map((link, index) => (
           <div
@@ -109,4 +111,3 @@ export function InstitutionalLinksSection({
     </section>
   );
 }
-

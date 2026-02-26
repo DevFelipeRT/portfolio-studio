@@ -1,9 +1,9 @@
 import { FormField, type FormErrors } from '@/common/forms';
-import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import type { WebsiteSettingsFormData } from '@/modules/website-settings/core/forms';
+import { Input } from '@/components/ui/input';
+import type { WebsiteSettingsFormData } from '@/modules/website-settings/forms';
 
-import { LocalizedField } from '../LocalizedField';
+import { LocalizedField } from './LocalizedField';
 
 interface SeoSectionProps {
   data: WebsiteSettingsFormData;
@@ -43,7 +43,9 @@ export function SeoSection({
           <Input
             id="canonical_base_url"
             value={data.canonical_base_url}
-            onChange={(event) => onChange('canonical_base_url', event.target.value)}
+            onChange={(event) =>
+              onChange('canonical_base_url', event.target.value)
+            }
             placeholder="https://meusite.com"
             className={getInputClassName()}
             {...a11yAttributes}
@@ -66,7 +68,9 @@ export function SeoSection({
             <Input
               id="meta_title_template"
               value={data.meta_title_template}
-              onChange={(event) => onChange('meta_title_template', event.target.value)}
+              onChange={(event) =>
+                onChange('meta_title_template', event.target.value)
+              }
               placeholder="{page_title} | {owner} | {site}"
               className={getInputClassName()}
               {...a11yAttributes}
@@ -80,7 +84,9 @@ export function SeoSection({
         label="Meta title padrão"
         locales={locales}
         values={data.default_meta_title}
-        onChange={(locale, value) => onLocaleMapChange('default_meta_title', locale, value)}
+        onChange={(locale, value) =>
+          onLocaleMapChange('default_meta_title', locale, value)
+        }
         errors={errors}
         placeholder="Título padrão"
       />
@@ -274,4 +280,3 @@ export function SeoSection({
     </section>
   );
 }
-

@@ -1,7 +1,6 @@
 import { FormField, type FormErrors } from '@/common/forms';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import React from 'react';
 
 type LocalizedFieldType = 'input' | 'textarea';
 
