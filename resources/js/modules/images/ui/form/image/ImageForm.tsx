@@ -1,12 +1,12 @@
-import { FormErrorSummary } from '@/common/forms';
+import {
+  Form,
+  FormActions,
+} from '@/common/forms';
 
 import { getErrorSummaryFields } from './errorSummaryFields';
-import { ImageFormActions } from './partials/ImageFormActions';
-import { AltTextField } from './partials/fields/AltTextField';
-import { CaptionField } from './partials/fields/CaptionField';
-import { FileField } from './partials/fields/FileField';
-import { ImageTitleField } from './partials/fields/ImageTitleField';
-import { CurrentImageSection } from './partials/sections/CurrentImageSection';
+import { CurrentImageSection } from './partials/CurrentImageSection';
+import { MetadataSection } from './partials/MetadataSection';
+import { SelectImageFileSection } from './partials/SelectImageFileSection';
 import type { ImageFormProps } from './types';
 
 /**
@@ -28,87 +28,38 @@ export function ImageForm({
   const summaryFields = getErrorSummaryFields(errors);
 
   return (
-    <form
+    <Form
       onSubmit={onSubmit}
-      className="bg-card space-y-8 rounded-lg border p-6 shadow-sm"
+      errors={errors}
+      variant="spacious"
+      errorSummaryFields={summaryFields}
     >
-      <FormErrorSummary fields={summaryFields} />
 
       {mode === 'create' && (
-        <section className="space-y-4">
-          <h2 className="text-lg font-medium">Image file</h2>
-
-          <FileField
-            errors={errors}
-            onChange={(event) => {
-              const file = event.target.files?.[0] ?? null;
-              onChange('file', file);
-            }}
-          />
-
-          <div className="space-y-1.5">
-            <p className="text-muted-foreground text-xs">
-              Choose an image file to upload. Supported types will be validated
-              on the server.
-            </p>
-          </div>
-        </section>
+        <SelectImageFileSection
+          errors={errors}
+          onChange={(file) => onChange('file', file)}
+        />
       )}
 
       {mode === 'edit' && image && <CurrentImageSection image={image} />}
 
-      <section className="space-y-4">
-        <h2 className="text-lg font-medium">Metadata</h2>
+      <MetadataSection
+        data={data}
+        errors={errors}
+        processing={processing}
+        onChange={onChange}
+      />
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="space-y-1.5">
-            <ImageTitleField
-              value={data.image_title}
-              errors={errors}
-              processing={processing}
-              onChange={(value) => onChange('image_title', value)}
-            />
-            <p className="text-muted-foreground text-xs">
-              Optional title used when displaying the image in more prominent
-              contexts.
-            </p>
-          </div>
-
-          <div className="space-y-1.5">
-            <AltTextField
-              value={data.alt_text}
-              errors={errors}
-              processing={processing}
-              onChange={(value) => onChange('alt_text', value)}
-            />
-            <p className="text-muted-foreground text-xs">
-              Short, descriptive text used for accessibility and when the image
-              cannot be displayed.
-            </p>
-          </div>
-        </div>
-
-        <div className="space-y-1.5">
-          <CaptionField
-            value={data.caption}
-            errors={errors}
-            processing={processing}
-            onChange={(value) => onChange('caption', value)}
-          />
-          <p className="text-muted-foreground text-xs">
-            Longer, optional description that may be shown below the image in
-            galleries or detail views.
-          </p>
-        </div>
-      </section>
-
-      <ImageFormActions
+      <FormActions
+        as="section"
+        borderedTop
+        align="split"
         cancelHref={cancelHref}
         cancelLabel={cancelLabel}
         submitLabel={submitLabel}
         processing={processing}
       />
-    </form>
+    </Form>
   );
 }
-

@@ -1,13 +1,13 @@
-import { FormErrorSummary } from '@/common/forms';
+import {
+  Form,
+  FormActions,
+  FormHeader,
+  type FormErrors,
+} from '@/common/forms';
+import { CheckboxField, SelectField, TextInputField } from '@/common/forms';
+import { useSupportedLocales } from '@/common/i18n';
 
 import { getErrorSummaryFields } from './errorSummaryFields';
-import { ContactChannelFormActions } from './partials/ContactChannelFormActions';
-import { ChannelTypeField } from './partials/fields/ChannelTypeField';
-import { IsActiveField } from './partials/fields/IsActiveField';
-import { LabelField } from './partials/fields/LabelField';
-import { LocaleField } from './partials/fields/LocaleField';
-import { SortOrderField } from './partials/fields/SortOrderField';
-import { ValueField } from './partials/fields/ValueField';
 import type { ContactChannelFormProps } from './types';
 
 export function ContactChannelForm({
@@ -24,67 +24,100 @@ export function ContactChannelForm({
   alignActions = 'right',
 }: ContactChannelFormProps) {
   const summaryFields = getErrorSummaryFields(errors);
+  const supportedLocales = useSupportedLocales();
 
   return (
-    <form
-      onSubmit={onSubmit}
-      className="bg-card space-y-6 rounded-lg border p-6 shadow-sm"
-    >
-      <FormErrorSummary fields={summaryFields} />
+    <Form onSubmit={onSubmit} errors={errors} errorSummaryFields={summaryFields}>
 
-      <LocaleField
-        value={data.locale}
-        errors={errors}
-        processing={processing}
-        onChange={(value) => onChange('locale', value)}
+      <FormHeader
+        className="min-h-6"
+        title={<h2 className="sr-only">Translations</h2>}
+        localeFieldProps={{
+          value: data.locale,
+          locales: supportedLocales,
+          disabled: processing,
+          errorId: 'contact-channel-locale-error',
+          errors: errors as FormErrors<string>,
+          onChange: (value) => onChange('locale', value),
+        }}
       />
 
-      <ChannelTypeField
+      <SelectField
+        name="channel_type"
+        id="channel-type"
         value={data.channel_type}
         errors={errors}
-        channelTypes={channelTypes}
-        processing={processing}
+        label="Type"
+        required
+        disabled={processing}
+        placeholder="Select a type"
+        errorId="channel-type-error"
+        options={channelTypes.map((type) => ({
+          value: type.value,
+          label: type.label,
+        }))}
         onChange={(value) => onChange('channel_type', value)}
       />
 
-      <LabelField
+      <TextInputField
+        name="label"
+        id="label"
         value={data.label}
         errors={errors}
-        processing={processing}
+        label="Label"
+        placeholder="Optional label"
+        disabled={processing}
         onChange={(value) => onChange('label', value)}
       />
 
-      <ValueField
+      <TextInputField
+        name="value"
+        id="value"
         value={data.value}
         errors={errors}
-        processing={processing}
+        label="Value"
+        required
+        placeholder="Email, phone number, handle, or URL"
+        disabled={processing}
         onChange={(value) => onChange('value', value)}
       />
 
       <div className="grid gap-4 md:grid-cols-2">
-        <SortOrderField
+        <TextInputField
+          name="sort_order"
+          id="sort-order"
           value={data.sort_order}
           errors={errors}
-          processing={processing}
-          onChange={(value) => onChange('sort_order', value)}
+          label="Order"
+          type="number"
+          min={0}
+          disabled={processing}
+          errorId="sort-order-error"
+          onChange={(value) =>
+            onChange('sort_order', value === '' ? '' : Number(value))
+          }
         />
 
-        <IsActiveField
+        <CheckboxField
+          name="is_active"
+          id="is-active"
           value={data.is_active}
           errors={errors}
-          processing={processing}
+          label="Active"
+          disabled={processing}
+          className="pt-6"
           onChange={(value) => onChange('is_active', value)}
         />
       </div>
 
-      <ContactChannelFormActions
+      <FormActions
         cancelHref={cancelHref}
         submitLabel={submitLabel}
         processing={processing}
         deleteHref={deleteHref}
         deleteLabel={deleteLabel}
-        alignActions={alignActions}
+        align={alignActions}
       />
-    </form>
+    </Form>
   );
 }

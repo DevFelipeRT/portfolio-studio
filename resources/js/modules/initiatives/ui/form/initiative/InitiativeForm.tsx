@@ -1,16 +1,20 @@
-import { FormErrorSummary } from '@/common/forms';
+import {
+  Form,
+  FormActions,
+  FormHeader,
+  type FormErrors,
+} from '@/common/forms';
+import {
+  CheckboxField,
+  DatePickerField,
+  RichTextField,
+  TextareaField,
+  TextInputField,
+} from '@/common/forms';
 
 import { getErrorSummaryFields } from './errorSummaryFields';
-import { InitiativeFormActions } from './partials/InitiativeFormActions';
-import { DescriptionField } from './partials/fields/DescriptionField';
-import { DisplayField } from './partials/fields/DisplayField';
-import { EndDateField } from './partials/fields/EndDateField';
-import { LocaleField } from './partials/fields/LocaleField';
-import { NameField } from './partials/fields/NameField';
-import { StartDateField } from './partials/fields/StartDateField';
-import { SummaryField } from './partials/fields/SummaryField';
-import { ExistingImagesSection } from './partials/sections/ExistingImagesSection';
-import { ImagesSection } from './partials/sections/ImagesSection';
+import { ExistingImagesSection } from './partials/ExistingImagesSection';
+import { ImagesSection } from './partials/ImagesSection';
 import type { InitiativeFormProps } from './types';
 
 /**
@@ -36,67 +40,95 @@ export function InitiativeForm({
   const summaryFields = getErrorSummaryFields(errors);
 
   return (
-    <form
+    <Form
       onSubmit={onSubmit}
-      className="bg-card space-y-8 rounded-lg border p-6 shadow-sm"
+      errors={errors}
+      variant="spacious"
+      errorSummaryFields={summaryFields}
     >
-      <FormErrorSummary fields={summaryFields} />
 
       <section className="space-y-4">
-        <h2 className="text-lg font-medium">Basic information</h2>
-
-        <LocaleField
-          value={data.locale}
-          errors={errors}
-          processing={processing}
-          supportedLocales={supportedLocales}
-          localeDisabled={localeDisabled}
-          onChange={(value) => {
-            if (onChangeLocale) {
-              onChangeLocale(value);
-              return;
-            }
-            onChangeField('locale', value);
+        <FormHeader
+          title={<h2 className="text-lg font-medium">Basic information</h2>}
+          localeFieldProps={{
+            value: data.locale,
+            locales: supportedLocales,
+            disabled: processing || localeDisabled,
+            errorId: 'initiative-locale-error',
+            errors: errors as FormErrors<string>,
+            onChange: (value) => {
+              if (onChangeLocale) {
+                onChangeLocale(value);
+                return;
+              }
+              onChangeField('locale', value);
+            },
           }}
         />
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <NameField
+        <div className="grid gap-4 md:grid-cols-4">
+          <TextInputField
+            name="name"
+            id="name"
             value={data.name}
             errors={errors}
+            label="Name"
+            required
             onChange={(value) => onChangeField('name', value)}
+            className="col-span-2"
           />
 
-          <StartDateField
+          <DatePickerField
+            name="start_date"
+            id="start_date"
             value={data.start_date}
             errors={errors}
+            label="Start date"
+            required
+            placeholder="Select a date"
+            errorId="start-date-error"
             onChange={(value) => onChangeField('start_date', value)}
           />
-        </div>
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <SummaryField
-            value={data.summary}
-            errors={errors}
-            onChange={(value) => onChangeField('summary', value)}
-          />
-
-          <EndDateField
+          <DatePickerField
+            name="end_date"
+            id="end_date"
             value={data.end_date}
             errors={errors}
+            label="End date"
+            placeholder="Select a date"
+            errorId="end-date-error"
             onChange={(value) => onChangeField('end_date', value)}
           />
         </div>
 
-        <DescriptionField
+        <TextareaField
+          name="summary"
+          id="summary"
+          value={data.summary}
+          errors={errors}
+          label="Summary"
+          required
+          rows={3}
+          onChange={(value) => onChangeField('summary', value)}
+        />
+
+        <RichTextField
+          name="description"
+          id="description"
           value={data.description}
           errors={errors}
+          label="Description"
+          required
           onChange={(value) => onChangeField('description', value)}
         />
 
-        <DisplayField
+        <CheckboxField
+          name="display"
+          id="display"
           value={data.display}
           errors={errors}
+          label="Display on landing"
           onChange={(value) => onChangeField('display', value)}
         />
       </section>
@@ -112,12 +144,11 @@ export function InitiativeForm({
         onUpdateImageFile={onUpdateImageFile}
       />
 
-      <InitiativeFormActions
+      <FormActions
         cancelHref={cancelHref}
-        processing={processing}
         submitLabel={submitLabel}
+        processing={processing}
       />
-    </form>
+    </Form>
   );
 }
-

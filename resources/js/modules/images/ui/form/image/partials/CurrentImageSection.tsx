@@ -1,6 +1,6 @@
 import type { Image } from '@/modules/images/core/types';
 
-import { formatDimensions, formatFileSize } from '../../logic';
+import { formatDimensions, formatFileSize } from '../utils';
 
 interface CurrentImageSectionProps {
   image: Image;
@@ -60,4 +60,3 @@ export function CurrentImageSection({ image }: CurrentImageSectionProps) {
     </section>
   );
 }
-

@@ -1,10 +1,13 @@
-import { FormErrorSummary } from '@/common/forms';
+import {
+  Form,
+  FormActions,
+  FormHeader,
+  type FormErrors,
+} from '@/common/forms';
+import { TextInputField } from '@/common/forms';
+import { useSupportedLocales } from '@/common/i18n';
 
 import { getErrorSummaryFields } from './errorSummaryFields';
-import { SkillCategoryFormActions } from './partials/SkillCategoryFormActions';
-import { LocaleField } from './partials/fields/LocaleField';
-import { NameField } from './partials/fields/NameField';
-import { SlugField } from './partials/fields/SlugField';
 import type { SkillCategoryFormProps } from './types';
 
 /**
@@ -23,44 +26,55 @@ export function SkillCategoryForm({
   alignActions = 'right',
 }: SkillCategoryFormProps) {
   const summaryFields = getErrorSummaryFields(errors);
+  const supportedLocales = useSupportedLocales();
 
   return (
-    <form
-      onSubmit={onSubmit}
-      className="bg-card space-y-6 rounded-lg border p-6 shadow-sm"
-    >
-      <FormErrorSummary fields={summaryFields} />
+    <Form onSubmit={onSubmit} errors={errors} errorSummaryFields={summaryFields}>
 
-      <LocaleField
-        value={data.locale}
-        errors={errors}
-        processing={processing}
-        onChange={(value) => onChange('locale', value)}
+      <FormHeader
+        className="min-h-6"
+        title={<h2 className="sr-only">Translations</h2>}
+        localeFieldProps={{
+          value: data.locale,
+          locales: supportedLocales,
+          disabled: processing,
+          errorId: 'skill-category-locale-error',
+          errors: errors as FormErrors<string>,
+          onChange: (value) => onChange('locale', value),
+        }}
       />
 
-      <NameField
+      <TextInputField
+        name="name"
+        id="name"
         value={data.name}
         errors={errors}
-        processing={processing}
+        label="Name"
+        required
+        disabled={processing}
         autoFocus
         onChange={(value) => onChange('name', value)}
       />
 
-      <SlugField
+      <TextInputField
+        name="slug"
+        id="slug"
         value={data.slug}
         errors={errors}
-        processing={processing}
+        label="Slug"
+        placeholder="Leave blank to auto-generate"
+        disabled={processing}
         onChange={(value) => onChange('slug', value)}
       />
 
-      <SkillCategoryFormActions
+      <FormActions
         cancelHref={cancelHref}
         submitLabel={submitLabel}
         processing={processing}
         deleteHref={deleteHref}
         deleteLabel={deleteLabel}
-        alignActions={alignActions}
+        align={alignActions}
       />
-    </form>
+    </Form>
   );
 }

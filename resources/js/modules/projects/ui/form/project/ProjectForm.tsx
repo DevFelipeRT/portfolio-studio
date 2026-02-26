@@ -1,18 +1,20 @@
-import { FormErrorSummary } from '@/common/forms';
+import {
+  Form,
+  FormActions,
+  FormHeader,
+  type FormErrors,
+} from '@/common/forms';
+import {
+  CheckboxField,
+  RichTextField,
+  TextareaField,
+  TextInputField,
+} from '@/common/forms';
 import { useTranslation } from '@/common/i18n';
 
 import { getErrorSummaryFields } from './errorSummaryFields';
-import { ProjectFormActions } from './partials/ProjectFormActions';
-import { DescriptionField } from './partials/fields/DescriptionField';
-import { DisplayField } from './partials/fields/DisplayField';
-import { LiveUrlField } from './partials/fields/LiveUrlField';
-import { LocaleField } from './partials/fields/LocaleField';
-import { NameField } from './partials/fields/NameField';
-import { RepositoryUrlField } from './partials/fields/RepositoryUrlField';
-import { StatusField } from './partials/fields/StatusField';
-import { SummaryField } from './partials/fields/SummaryField';
-import { ImagesSection } from './partials/sections/ImagesSection';
-import { SkillsSection } from './partials/sections/SkillsSection';
+import { ImagesSection } from './partials/ImagesSection';
+import { SkillsSection } from './partials/SkillsSection';
 import type { ProjectFormProps } from './types';
 
 /**
@@ -42,61 +44,82 @@ export function ProjectForm({
   const summaryFields = getErrorSummaryFields(errors, t);
 
   return (
-    <form
+    <Form
       onSubmit={onSubmit}
-      className="bg-card space-y-8 rounded-lg border p-6 shadow-sm"
+      errors={errors}
+      variant="spacious"
+      errorSummaryFields={summaryFields}
     >
-      <FormErrorSummary fields={summaryFields} />
 
       <section className="space-y-4">
-        <h2 className="text-lg font-medium">Basic information</h2>
-
-        <LocaleField
-          value={data.locale}
-          errors={errors}
-          processing={processing}
-          supportedLocales={supportedLocales}
-          localeDisabled={localeDisabled}
-          label={t('fields.locale.label')}
-          placeholder={t('fields.locale.placeholder')}
-          onChange={(value) => {
-            if (onChangeLocale) {
-              onChangeLocale(value);
-              return;
-            }
-            onChangeField('locale', value);
+        <FormHeader
+          title={<h2 className="text-lg font-medium">Basic information</h2>}
+          localeFieldProps={{
+            value: data.locale,
+            locales: supportedLocales,
+            disabled: processing || localeDisabled,
+            errorId: 'project-locale-error',
+            errors: errors as FormErrors<string>,
+            onChange: (value) => {
+              if (onChangeLocale) {
+                onChangeLocale(value);
+                return;
+              }
+              onChangeField('locale', value);
+            },
           }}
         />
 
         <div className="grid gap-4 md:grid-cols-2">
-          <NameField
+          <TextInputField
+            name="name"
+            id="name"
             value={data.name}
             errors={errors}
+            label="Name"
+            required
             onChange={(value) => onChangeField('name', value)}
           />
 
-          <StatusField
+          <TextInputField
+            name="status"
+            id="status"
             value={data.status}
             errors={errors}
+            label="Status"
+            required
+            placeholder="Example: draft, published"
             onChange={(value) => onChangeField('status', value)}
           />
         </div>
 
-        <SummaryField
+        <TextareaField
+          name="summary"
+          id="summary"
           value={data.summary}
           errors={errors}
+          label="Summary"
+          required
+          rows={3}
           onChange={(value) => onChangeField('summary', value)}
         />
 
-        <DescriptionField
+        <RichTextField
+          name="description"
+          id="description"
           value={data.description}
           errors={errors}
+          label="Description"
+          required
           onChange={(value) => onChangeField('description', value)}
         />
 
-        <DisplayField
+        <CheckboxField
+          name="display"
+          id="display"
           value={data.display}
           errors={errors}
+          label="Display on landing"
           onChange={(value) => onChangeField('display', value)}
         />
       </section>
@@ -105,15 +128,21 @@ export function ProjectForm({
         <h2 className="text-lg font-medium">Links</h2>
 
         <div className="grid gap-4 md:grid-cols-2">
-          <RepositoryUrlField
+          <TextInputField
+            name="repository_url"
+            id="repository_url"
             value={data.repository_url}
             errors={errors}
+            label="Repository URL"
             onChange={(value) => onChangeField('repository_url', value)}
           />
 
-          <LiveUrlField
+          <TextInputField
+            name="live_url"
+            id="live_url"
             value={data.live_url}
             errors={errors}
+            label="Live URL"
             onChange={(value) => onChangeField('live_url', value)}
           />
         </div>
@@ -137,12 +166,14 @@ export function ProjectForm({
         onUpdateImageFile={onUpdateImageFile}
       />
 
-      <ProjectFormActions
-        processing={processing}
-        submitLabel={submitLabel}
+      <FormActions
         cancelHref={cancelHref}
+        submitLabel={submitLabel}
+        processing={processing}
+        align="split"
         deleteHref={projectId ? route('projects.destroy', projectId) : undefined}
+        showDeleteWhen="always"
       />
-    </form>
+    </Form>
   );
 }

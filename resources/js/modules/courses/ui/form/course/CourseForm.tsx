@@ -1,21 +1,32 @@
 'use client';
 
-import { FormErrorSummary } from '@/common/forms';
+import {
+  CheckboxField,
+  DatePickerField,
+  Form,
+  FormActions,
+  FormHeader,
+  RichTextField,
+  SelectField,
+  TextareaField,
+  TextInputField,
+  type FormErrors,
+} from '@/common/forms';
 import { useSupportedLocales, useTranslation } from '@/common/i18n';
 import type { CourseFormData } from '@/modules/courses/core/forms';
-
 import { getErrorSummaryFields } from './errorSummaryFields';
-import { CourseFormActions } from './partials/CourseFormActions';
-import { CategoryField } from './partials/fields/CategoryField';
-import { CompletedAtField } from './partials/fields/CompletedAtField';
-import { DescriptionField } from './partials/fields/DescriptionField';
-import { DisplayField } from './partials/fields/DisplayField';
-import { InstitutionField } from './partials/fields/InstitutionField';
-import { LocaleField } from './partials/fields/LocaleField';
-import { NameField } from './partials/fields/NameField';
-import { StartedAtField } from './partials/fields/StartedAtField';
-import { SummaryField } from './partials/fields/SummaryField';
-import type { CourseFormProps } from './types';
+
+export interface CourseFormProps {
+  data: CourseFormData;
+  errors: FormErrors<keyof CourseFormData>;
+  processing: boolean;
+  categories: Record<string, string>;
+  onChange(key: keyof CourseFormData, value: string | null | boolean): void;
+  onSubmit(event: React.FormEvent<HTMLFormElement>): void;
+  cancelHref: string;
+  onLocaleChange?(locale: string): void;
+  localeDisabled?: boolean;
+}
 
 /**
  * CourseForm component. All user-facing strings are provided by the i18n hook.
@@ -46,69 +57,90 @@ export function CourseForm({
   };
 
   return (
-    <form
+    <Form
       onSubmit={onSubmit}
-      className="bg-card space-y-8 rounded-lg border p-6 shadow-sm"
+      errors={errors}
+      variant="spacious"
+      errorSummaryFields={summaryFields}
     >
-      <FormErrorSummary fields={summaryFields} />
-
       <section className="space-y-4">
-        <h2 className="text-lg font-medium">{t('sections.details')}</h2>
-
-        <LocaleField
-          value={data.locale}
-          errors={errors}
-          processing={processing}
-          disabled={localeDisabled}
-          label={t('fields.locale.label')}
-          placeholder={t('fields.locale.placeholder')}
-          supportedLocales={supportedLocales}
-          onChange={handleLocaleValueChange}
+        <FormHeader
+          title={
+            <h2 className="text-lg font-medium">{t('sections.details')}</h2>
+          }
+          localeFieldProps={{
+            value: data.locale,
+            locales: supportedLocales,
+            disabled: processing || localeDisabled,
+            errorId: 'course-locale-error',
+            errors: errors as FormErrors<string>,
+            onChange: handleLocaleValueChange,
+          }}
         />
 
         <div className="grid gap-4 md:grid-cols-2">
-          <NameField
+          <TextInputField
+            name="name"
+            id="name"
             value={data.name}
             errors={errors}
-            processing={processing}
             label={t('fields.name.label')}
             placeholder={t('fields.name.placeholder')}
+            disabled={processing}
+            required
+            className="md:col-span-2"
             onChange={(value) => onChange('name', value)}
           />
 
-          <InstitutionField
+          <TextInputField
+            name="institution"
+            id="institution"
             value={data.institution}
             errors={errors}
-            processing={processing}
             label={t('fields.institution.label')}
             placeholder={t('fields.institution.placeholder')}
+            disabled={processing}
             onChange={(value) => onChange('institution', value)}
           />
 
-          <CategoryField
+          <SelectField
+            name="category"
+            id="category"
             value={data.category}
             errors={errors}
-            processing={processing}
             label={t('fields.category.label')}
             placeholder={t('fields.category.placeholder')}
-            categories={categories}
+            disabled={processing}
+            required
+            options={Object.entries(categories).map(([id, categoryLabel]) => ({
+              value: id,
+              label: categoryLabel,
+            }))}
             onChange={(value) => onChange('category', value)}
           />
         </div>
 
-        <SummaryField
+        <TextareaField
+          name="summary"
+          id="summary"
           value={data.summary}
           errors={errors}
-          processing={processing}
           label={t('fields.summary.label')}
           placeholder={t('fields.summary.placeholder')}
+          disabled={processing}
+          required
+          rows={3}
           onChange={(value) => onChange('summary', value)}
         />
 
-        <DescriptionField
+        <RichTextField
+          name="description"
+          id="description"
           value={data.description}
           errors={errors}
           label={t('fields.description.label')}
+          required
+          disabled={processing}
           onChange={(value) => onChange('description', value)}
         />
       </section>
@@ -117,23 +149,30 @@ export function CourseForm({
         <h2 className="text-lg font-medium">{t('sections.timeline')}</h2>
 
         <div className="grid gap-4 md:grid-cols-2">
-          <StartedAtField
+          <DatePickerField
+            name="started_at"
+            id="started_at"
             value={data.started_at}
             errors={errors}
-            processing={processing}
+            label={t('fields.started_at.label')}
+            required
+            disabled={processing}
+            remountKey={locale}
             locale={locale}
             supportedLocales={supportedLocales}
-            label={t('fields.started_at.label')}
             onChange={(value) => onChange('started_at', value)}
           />
 
-          <CompletedAtField
+          <DatePickerField
+            name="completed_at"
+            id="completed_at"
             value={data.completed_at}
             errors={errors}
-            processing={processing}
+            label={t('fields.completed_at.label')}
+            disabled={processing}
+            remountKey={locale}
             locale={locale}
             supportedLocales={supportedLocales}
-            label={t('fields.completed_at.label')}
             onChange={(value) => onChange('completed_at', value)}
           />
         </div>
@@ -142,23 +181,27 @@ export function CourseForm({
       <section className="space-y-4">
         <h2 className="text-lg font-medium">{t('sections.visibility')}</h2>
 
-        <DisplayField
+        <CheckboxField
+          name="display"
+          id="display"
           value={data.display}
           errors={errors}
-          processing={processing}
           label={t('fields.display.label')}
+          disabled={processing}
           onChange={(value) => onChange('display', value)}
         />
       </section>
 
-      <CourseFormActions
+      <FormActions
         cancelHref={cancelHref}
-        processing={processing}
         cancelLabel={t('actions.cancel')}
-        saveLabel={t('actions.save')}
-        savingLabel={t('actions.saving')}
+        submitLabel={t('actions.save')}
+        processing={processing}
+        cancelVariant="ghostButton"
+        disableCancelWhenProcessing
+        submittingLabel={t('actions.saving')}
+        showSpinnerWhenProcessing
       />
-    </form>
+    </Form>
   );
 }
-

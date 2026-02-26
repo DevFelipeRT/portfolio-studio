@@ -3,8 +3,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import {
+    Form,
     FormField,
-    FormErrorSummary,
     collectErroredFieldLabels,
 } from '@/common/forms';
 import type { FormErrors } from '@/common/forms';
@@ -65,12 +65,9 @@ export function PageForm({
         { name: 'is_published', label: 'Published' },
         { name: 'is_indexable', label: 'Indexable' },
     ] as const);
+
     return (
-        <form
-            onSubmit={onSubmit}
-            className="bg-card space-y-6 rounded-lg border p-6 shadow-sm"
-        >
-            <FormErrorSummary fields={summaryFields} />
+        <Form onSubmit={onSubmit} errors={errors} errorSummaryFields={summaryFields}>
 
             <div className="flex flex-col gap-1">
                 <h2 className="text-lg font-semibold tracking-tight">
@@ -286,6 +283,6 @@ export function PageForm({
                     {mode === 'create' ? 'Create page' : 'Save changes'}
                 </Button>
             </div>
-        </form>
+        </Form>
     );
 }

@@ -1,10 +1,13 @@
-import { FormErrorSummary } from '@/common/forms';
+import {
+  Form,
+  FormActions,
+  FormHeader,
+  type FormErrors,
+} from '@/common/forms';
+import { SelectField, TextInputField } from '@/common/forms';
+import { useSupportedLocales } from '@/common/i18n';
 
 import { getErrorSummaryFields } from './errorSummaryFields';
-import { SkillFormActions } from './partials/SkillFormActions';
-import { LocaleField } from './partials/fields/LocaleField';
-import { NameField } from './partials/fields/NameField';
-import { SkillCategoryField } from './partials/fields/SkillCategoryField';
 import type { SkillFormProps } from './types';
 
 /**
@@ -24,45 +27,68 @@ export function SkillForm({
   alignActions = 'right',
 }: SkillFormProps) {
   const summaryFields = getErrorSummaryFields(errors);
+  const supportedLocales = useSupportedLocales();
 
   return (
-    <form
-      onSubmit={onSubmit}
-      className="bg-card space-y-6 rounded-lg border p-6 shadow-sm"
-    >
-      <FormErrorSummary fields={summaryFields} />
+    <Form onSubmit={onSubmit} errors={errors} errorSummaryFields={summaryFields}>
 
-      <LocaleField
-        value={data.locale}
-        errors={errors}
-        processing={processing}
-        onChange={(value) => onChange('locale', value)}
+      <FormHeader
+        className="min-h-6"
+        title={<h2 className="sr-only">Translations</h2>}
+        localeFieldProps={{
+          value: data.locale,
+          locales: supportedLocales,
+          disabled: processing,
+          errorId: 'skill-locale-error',
+          errors: errors as FormErrors<string>,
+          onChange: (value) => onChange('locale', value),
+        }}
       />
 
-      <NameField
+      <TextInputField
+        name="name"
+        id="name"
         value={data.name}
         errors={errors}
-        processing={processing}
+        label="Name"
+        required
+        disabled={processing}
         autoFocus
         onChange={(value) => onChange('name', value)}
       />
 
-      <SkillCategoryField
-        value={data.skill_category_id}
+      <SelectField
+        name="skill_category_id"
+        id="category"
+        value={data.skill_category_id === '' ? '__none__' : String(data.skill_category_id)}
         errors={errors}
-        categories={categories}
-        processing={processing}
-        onChange={(value) => onChange('skill_category_id', value)}
+        label="Category"
+        placeholder="Select a category"
+        disabled={processing}
+        errorId="skill-category-id-error"
+        options={[
+          { value: '__none__', label: 'Uncategorized' },
+          ...categories.map((category) => ({
+            value: String(category.id),
+            label: category.name,
+          })),
+        ]}
+        onChange={(nextValue) =>
+          onChange(
+            'skill_category_id',
+            nextValue === '__none__' ? '' : Number(nextValue),
+          )
+        }
       />
 
-      <SkillFormActions
+      <FormActions
         cancelHref={cancelHref}
         submitLabel={submitLabel}
         processing={processing}
         deleteHref={deleteHref}
         deleteLabel={deleteLabel}
-        alignActions={alignActions}
+        align={alignActions}
       />
-    </form>
+    </Form>
   );
 }
