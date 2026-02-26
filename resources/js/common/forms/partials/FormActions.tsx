@@ -7,9 +7,8 @@ import { Link } from '@inertiajs/react';
 import { Loader2 } from 'lucide-react';
 import type { ReactNode } from 'react';
 
-type FormActionsAlign = 'right' | 'split';
 type CancelVariant = 'link' | 'ghostButton';
-type DeleteVisibility = 'always' | 'splitOnly';
+type DeleteVisibility = 'always' | 'never';
 type ContainerElement = 'div' | 'section';
 
 type FormActionsProps = {
@@ -17,7 +16,6 @@ type FormActionsProps = {
   submitLabel: ReactNode;
   processing?: boolean;
   cancelLabel?: ReactNode;
-  align?: FormActionsAlign;
   deleteHref?: string;
   deleteLabel?: ReactNode;
   showDeleteWhen?: DeleteVisibility;
@@ -35,10 +33,9 @@ export function FormActions({
   submitLabel,
   processing = false,
   cancelLabel,
-  align = 'right',
   deleteHref,
   deleteLabel,
-  showDeleteWhen = 'splitOnly',
+  showDeleteWhen = 'always',
   cancelVariant = 'link',
   disableCancelWhenProcessing = false,
   submittingLabel,
@@ -54,15 +51,12 @@ export function FormActions({
   const resolvedDeleteLabel =
     deleteLabel ?? translate('actions.delete', 'Delete');
 
-  const isSplit = align === 'split';
-  const showDelete =
-    Boolean(deleteHref) && (showDeleteWhen === 'always' || isSplit);
+  const showDelete = Boolean(deleteHref) && showDeleteWhen === 'always';
 
   const Container = as;
 
   const containerClassName = cn(
-    'flex items-center gap-3',
-    isSplit ? 'justify-between' : 'justify-end',
+    'flex flex-col-reverse items-center gap-3 sm:flex-row sm:items-center sm:justify-end',
     borderedTop ? 'border-t pt-4' : null,
     className,
   );
@@ -87,7 +81,7 @@ export function FormActions({
     );
 
   const submitControl = (
-    <Button type="submit" disabled={processing}>
+    <Button type="submit" disabled={processing} className="w-full sm:w-auto">
       {processing && submittingLabel ? (
         <>
           {showSpinnerWhenProcessing ? (
@@ -101,34 +95,20 @@ export function FormActions({
     </Button>
   );
 
-  if (isSplit) {
-    return (
-      <Container className={containerClassName}>
-        {cancelControl}
-
-        <div className="flex items-center gap-3">
-          {showDelete ? (
-            <Link
-              href={deleteHref!}
-              method="delete"
-              as="button"
-              className="text-destructive text-sm hover:underline"
-            >
-              {resolvedDeleteLabel}
-            </Link>
-          ) : null}
-
-          {submitControl}
-        </div>
-      </Container>
-    );
-  }
-
   return (
     <Container className={containerClassName}>
       {cancelControl}
+      {showDelete ? (
+        <Link
+          href={deleteHref!}
+          method="delete"
+          as="button"
+          className="text-destructive text-sm hover:underline"
+        >
+          {resolvedDeleteLabel}
+        </Link>
+      ) : null}
       {submitControl}
     </Container>
   );
 }
-
