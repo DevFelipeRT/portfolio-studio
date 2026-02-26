@@ -1,9 +1,7 @@
 'use client';
 
-import { NAMESPACES } from '@/common/i18n/config/namespaces';
-import { LanguageSelector } from '@/common/i18n/ui/LanguageSelector';
+import { LanguageSelector } from '@/common/i18n/LanguageSelector';
 import { useSetLocale } from '@/common/i18n/react/hooks/useSetLocale';
-import { useTranslation } from '@/common/i18n/react/hooks/useTranslation';
 import { usePage } from '@inertiajs/react';
 
 type LocalizationProps = {
@@ -33,7 +31,6 @@ export function PublicLanguageSelectorContainer({
   cookieName,
   maxAgeDays = 30,
 }: PublicLanguageSelectorContainerProps) {
-  const { translate, locale: activeLocale } = useTranslation(NAMESPACES.common);
   const page = usePage().props as SharedProps;
 
   const localization = page.localization ?? {};
@@ -50,45 +47,11 @@ export function PublicLanguageSelectorContainer({
     reloadDelayMs: 400,
   });
 
-  const ariaLabel = translate(
-    'languageSwitcher.ariaLabel',
-    `Change language (current: ${activeLocale})`,
-    { locale: activeLocale },
-  );
-
-  const menuLabel = translate('languageSwitcher.label', 'Language');
-
   return (
     <LanguageSelector
-      activeLocale={activeLocale}
       locales={supportedLocales}
-      ariaLabel={ariaLabel}
-      menuLabel={menuLabel}
       onSelect={setLocaleAndPersist}
-      formatLabel={formatLocaleLabel}
-      formatShortLabel={formatLocaleShortLabel}
+      variant="short"
     />
   );
-}
-
-function formatLocaleLabel(code: string): string {
-  switch (code) {
-    case 'pt_BR':
-      return 'Português (Brasil)';
-    case 'en':
-      return 'English';
-    default:
-      return code;
-  }
-}
-
-function formatLocaleShortLabel(code: string): string {
-  switch (code) {
-    case 'pt_BR':
-      return 'pt_BR';
-    case 'en':
-      return 'en';
-    default:
-      return code;
-  }
 }

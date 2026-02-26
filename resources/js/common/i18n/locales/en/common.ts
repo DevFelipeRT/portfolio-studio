@@ -137,6 +137,9 @@ const common: TranslationTree = {
 
     form: {
         submit: 'Submit',
+        errorSummary: {
+            title: 'Please fix the highlighted fields and try again.',
+        },
         reset: 'Reset form',
         clear: 'Clear fields',
         optionalHint: 'Optional field',
