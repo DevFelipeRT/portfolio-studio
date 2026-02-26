@@ -50,7 +50,7 @@ export function FormField<FieldName extends string>({
 }: FormFieldProps<FieldName>) {
   const error = resolveFieldErrorMessage(errors, name);
   const hasError = Boolean(error);
-  const a11yAttributes = getFieldA11yAttributes(error, errorId);
+  const a11yAttributes = getFieldA11yAttributes(error, errorId, required);
 
   const content =
     typeof children === 'function'

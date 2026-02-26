@@ -6,13 +6,22 @@ import type { FieldA11yAttributes } from '@/common/forms/types';
 export function getFieldA11yAttributes(
   error: string | null,
   errorId: string,
+  required = false,
 ): FieldA11yAttributes {
+  const attributes: FieldA11yAttributes = {};
+
+  if (required) {
+    attributes['aria-required'] = true;
+  }
+
   if (!error) {
-    return {};
+    return attributes;
   }
 
   return {
+    ...attributes,
     'aria-invalid': true,
     'aria-describedby': errorId,
+    'aria-errormessage': errorId,
   };
 }

@@ -19,7 +19,12 @@ export function FieldError({
   }
 
   return (
-    <p id={id} className={cn('text-destructive text-sm font-medium', className)}>
+    <p
+      id={id}
+      role="alert"
+      aria-atomic="true"
+      className={cn('text-destructive text-sm font-medium', className)}
+    >
       {message}
     </p>
   );

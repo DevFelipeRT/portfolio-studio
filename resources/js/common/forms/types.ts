@@ -35,4 +35,6 @@ export type ErrorSummary<FieldName extends string = string> =
 export type FieldA11yAttributes = {
   'aria-invalid'?: true;
   'aria-describedby'?: string;
+  'aria-errormessage'?: string;
+  'aria-required'?: true;
 };
