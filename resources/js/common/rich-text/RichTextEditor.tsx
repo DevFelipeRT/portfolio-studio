@@ -13,7 +13,7 @@ import { MarkdownShortcutPlugin } from '@lexical/react/LexicalMarkdownShortcutPl
 import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
 import type { EditorState, LexicalEditor } from 'lexical';
-import type { JSX } from 'react';
+import type { ComponentPropsWithoutRef, JSX } from 'react';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import {
   defaultRichTextAutoLinkMatchers,
@@ -35,6 +35,7 @@ interface RichTextEditorProps {
   showToolbar?: boolean;
   editable?: boolean;
   namespace?: string;
+  contentEditableProps?: ComponentPropsWithoutRef<typeof ContentEditable>;
 }
 
 export function RichTextEditor({
@@ -48,9 +49,12 @@ export function RichTextEditor({
   showToolbar = true,
   editable = true,
   namespace = 'CommonRichText',
+  contentEditableProps,
 }: RichTextEditorProps): JSX.Element {
   const lastEmittedValueRef = useRef(value);
   const editorId = useMemo(() => `${id}-lexical-editor`, [id]);
+  const { className: contentEditableClassName, ...restContentEditableProps } =
+    contentEditableProps ?? {};
 
   const initialConfig = useMemo(() => {
     return {
@@ -88,7 +92,9 @@ export function RichTextEditor({
                 className={cn(
                   'min-h-[160px] text-sm leading-relaxed focus:outline-none',
                   editorClassName,
+                  contentEditableClassName,
                 )}
+                {...restContentEditableProps}
               />
             }
             placeholder={
