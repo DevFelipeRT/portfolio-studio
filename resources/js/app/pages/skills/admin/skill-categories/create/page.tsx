@@ -59,7 +59,6 @@ export default function Create() {
             onSubmit={handleSubmit}
             cancelHref={route('skills.index')}
             submitLabel="Save"
-            alignActions="right"
           />
         </div>
       </div>

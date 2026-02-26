@@ -170,7 +170,6 @@ export function ProjectForm({
         cancelHref={cancelHref}
         submitLabel={submitLabel}
         processing={processing}
-        align="split"
         deleteHref={projectId ? route('projects.destroy', projectId) : undefined}
         showDeleteWhen="always"
       />

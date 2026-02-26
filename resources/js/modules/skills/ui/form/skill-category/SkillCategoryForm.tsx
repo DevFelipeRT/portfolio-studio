@@ -23,7 +23,6 @@ export function SkillCategoryForm({
   submitLabel,
   deleteHref,
   deleteLabel = 'Delete',
-  alignActions = 'right',
 }: SkillCategoryFormProps) {
   const summaryFields = getErrorSummaryFields(errors);
   const supportedLocales = useSupportedLocales();
@@ -73,7 +72,7 @@ export function SkillCategoryForm({
         processing={processing}
         deleteHref={deleteHref}
         deleteLabel={deleteLabel}
-        align={alignActions}
+        showDeleteWhen="always"
       />
     </Form>
   );

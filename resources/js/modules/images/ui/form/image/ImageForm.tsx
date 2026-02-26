@@ -54,7 +54,6 @@ export function ImageForm({
       <FormActions
         as="section"
         borderedTop
-        align="split"
         cancelHref={cancelHref}
         cancelLabel={cancelLabel}
         submitLabel={submitLabel}

@@ -2,8 +2,6 @@ import type { FormErrors } from '@/common/forms';
 import type { SkillCategoryFormData } from '@/modules/skills/core/forms';
 import type React from 'react';
 
-export type SkillCategoryFormAlignment = 'right' | 'split';
-
 export interface SkillCategoryFormProps {
   data: SkillCategoryFormData;
   errors: FormErrors<keyof SkillCategoryFormData>;
@@ -14,6 +12,4 @@ export interface SkillCategoryFormProps {
   submitLabel: string;
   deleteHref?: string;
   deleteLabel?: string;
-  alignActions?: SkillCategoryFormAlignment;
 }
-

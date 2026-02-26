@@ -69,7 +69,6 @@ export default function Create({ channelTypes }: CreateContactChannelProps) {
             onSubmit={handleSubmit}
             cancelHref={route('contact-channels.index')}
             submitLabel="Save"
-            alignActions="right"
           />
         </div>
       </div>

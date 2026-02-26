@@ -3,8 +3,6 @@ import type { ContactChannelFormData } from '@/modules/contact-channels/core/for
 import type { ContactChannelTypeOption } from '@/modules/contact-channels/core/types';
 import type React from 'react';
 
-export type ContactChannelFormAlignment = 'right' | 'split';
-
 export interface ContactChannelFormProps {
   data: ContactChannelFormData;
   errors: FormErrors<keyof ContactChannelFormData>;
@@ -19,6 +17,4 @@ export interface ContactChannelFormProps {
   submitLabel: string;
   deleteHref?: string;
   deleteLabel?: string;
-  alignActions?: ContactChannelFormAlignment;
 }
-

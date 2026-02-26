@@ -21,7 +21,6 @@ export function ContactChannelForm({
   submitLabel,
   deleteHref,
   deleteLabel = 'Delete',
-  alignActions = 'right',
 }: ContactChannelFormProps) {
   const summaryFields = getErrorSummaryFields(errors);
   const supportedLocales = useSupportedLocales();
@@ -116,7 +115,7 @@ export function ContactChannelForm({
         processing={processing}
         deleteHref={deleteHref}
         deleteLabel={deleteLabel}
-        align={alignActions}
+        showDeleteWhen="always"
       />
     </Form>
   );

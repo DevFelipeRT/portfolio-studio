@@ -110,7 +110,6 @@ export default function Edit({ category }: EditSkillCategoryProps) {
               submitLabel="Save changes"
               deleteHref={route('skill-categories.destroy', category.id)}
               deleteLabel="Delete"
-              alignActions="split"
             />
 
             <div className="mt-4 flex justify-end">

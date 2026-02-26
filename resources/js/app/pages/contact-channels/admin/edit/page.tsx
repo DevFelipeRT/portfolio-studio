@@ -124,7 +124,6 @@ export default function Edit({
               submitLabel="Save changes"
               deleteHref={route('contact-channels.destroy', channel.id)}
               deleteLabel="Delete"
-              alignActions="split"
             />
 
             <div className="mt-4 flex justify-end">

@@ -24,7 +24,6 @@ export function SkillForm({
   submitLabel,
   deleteHref,
   deleteLabel = 'Delete',
-  alignActions = 'right',
 }: SkillFormProps) {
   const summaryFields = getErrorSummaryFields(errors);
   const supportedLocales = useSupportedLocales();
@@ -87,7 +86,7 @@ export function SkillForm({
         processing={processing}
         deleteHref={deleteHref}
         deleteLabel={deleteLabel}
-        align={alignActions}
+        showDeleteWhen="always"
       />
     </Form>
   );

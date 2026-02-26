@@ -67,7 +67,6 @@ export default function Create({ categories }: CreateSkillProps) {
             onSubmit={handleSubmit}
             cancelHref={route('skills.index')}
             submitLabel="Save"
-            alignActions="right"
           />
         </div>
       </div>
