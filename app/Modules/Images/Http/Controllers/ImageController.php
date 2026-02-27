@@ -115,7 +115,7 @@ class ImageController extends Controller
         $imageWithUsage = $this->imageService->loadUsage($image);
 
         return Inertia::render('images/admin/Edit', [
-            'image' => $imageWithUsage,
+            'image' => ImageMapper::toArray($imageWithUsage),
             'initial' => ImageFormMapper::fromEdit($imageWithUsage, []),
         ]);
     }
