@@ -6,6 +6,7 @@ import type React from 'react';
 export interface InitiativeFormProps {
   submitLabel: string;
   cancelHref: string;
+  initiativeId?: number;
   existingImages: InitiativeImage[];
   data: InitiativeFormData;
   errors: FormErrors<keyof InitiativeFormData>;
@@ -26,4 +27,3 @@ export interface InitiativeFormProps {
     event: React.ChangeEvent<HTMLInputElement>,
   ): void;
 }
-

@@ -13,7 +13,6 @@ import {
 } from '@/common/forms';
 
 import { getErrorSummaryFields } from './errorSummaryFields';
-import { ExistingImagesSection } from './partials/ExistingImagesSection';
 import { ImagesSection } from './partials/ImagesSection';
 import type { InitiativeFormProps } from './types';
 
@@ -23,6 +22,7 @@ import type { InitiativeFormProps } from './types';
 export function InitiativeForm({
   submitLabel,
   cancelHref,
+  initiativeId,
   existingImages,
   data,
   errors,
@@ -133,9 +133,9 @@ export function InitiativeForm({
         />
       </section>
 
-      <ExistingImagesSection images={existingImages} />
-
       <ImagesSection
+        initiativeId={initiativeId}
+        existingImages={existingImages}
         images={data.images}
         errors={errors}
         onAddImageRow={onAddImageRow}

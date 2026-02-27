@@ -201,6 +201,7 @@ export default function Edit({ initiative }: EditInitiativeProps) {
           <InitiativeForm
             submitLabel="Save changes"
             cancelHref={route('initiatives.index')}
+            initiativeId={initiative.id}
             existingImages={initiative.images ?? []}
             data={data}
             errors={formErrors}
