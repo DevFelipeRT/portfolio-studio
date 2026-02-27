@@ -1,11 +1,4 @@
-import { FormField, type FormErrors } from '@/common/forms';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { SelectField, type FormErrors } from '@/common/forms';
 
 interface LocalesSectionProps {
   errors: FormErrors;
@@ -35,60 +28,37 @@ export function LocalesSection({
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <FormField
+        <SelectField
           name="default_locale"
+          id="default_locale"
+          value={defaultLocale}
           errors={errors}
-          htmlFor="default_locale"
           label="Locale padrão"
-        >
-          {({ a11yAttributes, getSelectClassName }) => (
-            <Select value={defaultLocale} onValueChange={onDefaultLocaleChange}>
-              <SelectTrigger
-                id="default_locale"
-                className={getSelectClassName()}
-                {...a11yAttributes}
-              >
-                <SelectValue placeholder="Selecione" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="auto">Automático</SelectItem>
-                {localeCandidates.map((locale) => (
-                  <SelectItem key={locale} value={locale}>
-                    {locale}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
-        </FormField>
+          placeholder="Selecione"
+          options={[
+            { value: 'auto', label: 'Automático' },
+            ...localeCandidates.map((locale) => ({
+              value: locale,
+              label: locale,
+            })),
+          ]}
+          onChange={onDefaultLocaleChange}
+        />
 
-        <FormField
+        <SelectField
           name="fallback_locale"
+          id="fallback_locale"
+          value={fallbackLocale}
           errors={errors}
-          htmlFor="fallback_locale"
           label="Locale fallback"
-        >
-          {({ a11yAttributes, getSelectClassName }) => (
-            <Select value={fallbackLocale} onValueChange={onFallbackLocaleChange}>
-              <SelectTrigger
-                id="fallback_locale"
-                className={getSelectClassName()}
-                {...a11yAttributes}
-              >
-                <SelectValue placeholder="Selecione" />
-              </SelectTrigger>
-              <SelectContent>
-                {localeCandidates.map((locale) => (
-                  <SelectItem key={locale} value={locale}>
-                    {locale}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
-        </FormField>
+          placeholder="Selecione"
+          options={localeCandidates.map((locale) => ({
+            value: locale,
+            label: locale,
+          }))}
+          onChange={onFallbackLocaleChange}
+        />
       </div>
     </section>
   );
 }
-

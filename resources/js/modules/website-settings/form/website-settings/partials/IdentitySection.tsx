@@ -1,5 +1,4 @@
-import { FormField, type FormErrors } from '@/common/forms';
-import { Input } from '@/components/ui/input';
+import { TextInputField, type FormErrors } from '@/common/forms';
 import type { WebsiteSettingsFormData } from '@/modules/website-settings/forms';
 
 import { LocalizedField } from './LocalizedField';
@@ -64,23 +63,15 @@ export function IdentitySection({
         type="textarea"
       />
 
-      <FormField
+      <TextInputField
         name="owner_name"
+        id="owner_name"
+        value={data.owner_name}
         errors={errors}
-        htmlFor="owner_name"
         label="Responsável / Owner"
-      >
-        {({ a11yAttributes, getInputClassName }) => (
-          <Input
-            id="owner_name"
-            value={data.owner_name}
-            onChange={(event) => onOwnerNameChange(event.target.value)}
-            placeholder="Nome do responsável"
-            className={getInputClassName()}
-            {...a11yAttributes}
-          />
-        )}
-      </FormField>
+        placeholder="Nome do responsável"
+        onChange={onOwnerNameChange}
+      />
     </section>
   );
 }

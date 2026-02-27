@@ -1,5 +1,4 @@
-import { FormField, type FormErrors } from '@/common/forms';
-import { Checkbox } from '@/components/ui/checkbox';
+import { CheckboxField, type FormErrors } from '@/common/forms';
 
 interface ScopesSectionProps {
   errors: FormErrors;
@@ -26,36 +25,25 @@ export function ScopesSection({
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <FormField
+        <CheckboxField
           name="public_scope_enabled"
+          id="public_scope_enabled"
+          value={publicEnabled}
           errors={errors}
-          htmlFor="public_scope_enabled"
           label="Escopo público"
-          variant="inline"
           className="flex items-center gap-3 rounded-md border p-4"
-        >
-          <Checkbox
-            id="public_scope_enabled"
-            checked={publicEnabled}
-            onCheckedChange={(value) => onPublicEnabledChange(Boolean(value))}
-          />
-        </FormField>
-        <FormField
+          onChange={onPublicEnabledChange}
+        />
+        <CheckboxField
           name="private_scope_enabled"
+          id="private_scope_enabled"
+          value={privateEnabled}
           errors={errors}
-          htmlFor="private_scope_enabled"
           label="Escopo privado"
-          variant="inline"
           className="flex items-center gap-3 rounded-md border p-4"
-        >
-          <Checkbox
-            id="private_scope_enabled"
-            checked={privateEnabled}
-            onCheckedChange={(value) => onPrivateEnabledChange(Boolean(value))}
-          />
-        </FormField>
+          onChange={onPrivateEnabledChange}
+        />
       </div>
     </section>
   );
 }
-

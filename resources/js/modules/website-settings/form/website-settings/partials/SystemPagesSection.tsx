@@ -1,5 +1,4 @@
-import { FormField, type FormErrors } from '@/common/forms';
-import { Input } from '@/components/ui/input';
+import { TextInputField, type FormErrors } from '@/common/forms';
 import type { WebsiteSettingsSystemPages } from '@/modules/website-settings/types';
 
 interface SystemPagesSectionProps {
@@ -23,72 +22,48 @@ export function SystemPagesSection({
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <FormField
+        <TextInputField
           name="system_pages.not_found"
+          id="system_pages_not_found"
+          value={pages.not_found ?? ''}
           errors={errors}
-          htmlFor="system_pages_not_found"
           label="404"
-        >
-          {({ a11yAttributes, getInputClassName }) => (
-            <Input
-              id="system_pages_not_found"
-              value={pages.not_found ?? ''}
-              onChange={(event) =>
-                onChange({
-                  ...pages,
-                  not_found: event.target.value,
-                })
-              }
-              placeholder="slug-404"
-              className={getInputClassName()}
-              {...a11yAttributes}
-            />
-          )}
-        </FormField>
-        <FormField
+          placeholder="slug-404"
+          onChange={(value) =>
+            onChange({
+              ...pages,
+              not_found: value,
+            })
+          }
+        />
+        <TextInputField
           name="system_pages.maintenance"
+          id="system_pages_maintenance"
+          value={pages.maintenance ?? ''}
           errors={errors}
-          htmlFor="system_pages_maintenance"
           label="Manutenção"
-        >
-          {({ a11yAttributes, getInputClassName }) => (
-            <Input
-              id="system_pages_maintenance"
-              value={pages.maintenance ?? ''}
-              onChange={(event) =>
-                onChange({
-                  ...pages,
-                  maintenance: event.target.value,
-                })
-              }
-              placeholder="slug-manutencao"
-              className={getInputClassName()}
-              {...a11yAttributes}
-            />
-          )}
-        </FormField>
-        <FormField
+          placeholder="slug-manutencao"
+          onChange={(value) =>
+            onChange({
+              ...pages,
+              maintenance: value,
+            })
+          }
+        />
+        <TextInputField
           name="system_pages.policies"
+          id="system_pages_policies"
+          value={pages.policies ?? ''}
           errors={errors}
-          htmlFor="system_pages_policies"
           label="Políticas"
-        >
-          {({ a11yAttributes, getInputClassName }) => (
-            <Input
-              id="system_pages_policies"
-              value={pages.policies ?? ''}
-              onChange={(event) =>
-                onChange({
-                  ...pages,
-                  policies: event.target.value,
-                })
-              }
-              placeholder="slug-politicas"
-              className={getInputClassName()}
-              {...a11yAttributes}
-            />
-          )}
-        </FormField>
+          placeholder="slug-politicas"
+          onChange={(value) =>
+            onChange({
+              ...pages,
+              policies: value,
+            })
+          }
+        />
       </div>
     </section>
   );

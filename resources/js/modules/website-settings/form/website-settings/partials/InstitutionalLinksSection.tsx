@@ -1,6 +1,5 @@
-import { FormField, type FormErrors } from '@/common/forms';
+import { TextInputField, type FormErrors } from '@/common/forms';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import type { WebsiteSettingsLink } from '@/modules/website-settings/types';
 
 interface InstitutionalLinksSectionProps {
@@ -54,44 +53,24 @@ export function InstitutionalLinksSection({
             key={`link-${index}`}
             className="grid gap-3 rounded-md border p-4 md:grid-cols-[1fr_2fr_auto]"
           >
-            <FormField
+            <TextInputField
               name={`institutional_links.${index}.label`}
+              id={`link-label-${index}`}
+              value={link.label ?? ''}
               errors={errors}
-              htmlFor={`link-label-${index}`}
               label="Label"
-            >
-              {({ a11yAttributes, getInputClassName }) => (
-                <Input
-                  id={`link-label-${index}`}
-                  value={link.label ?? ''}
-                  onChange={(event) =>
-                    handleLinkChange(index, 'label', event.target.value)
-                  }
-                  placeholder="Suporte"
-                  className={getInputClassName()}
-                  {...a11yAttributes}
-                />
-              )}
-            </FormField>
-            <FormField
+              placeholder="Suporte"
+              onChange={(value) => handleLinkChange(index, 'label', value)}
+            />
+            <TextInputField
               name={`institutional_links.${index}.url`}
+              id={`link-url-${index}`}
+              value={link.url ?? ''}
               errors={errors}
-              htmlFor={`link-url-${index}`}
               label="URL"
-            >
-              {({ a11yAttributes, getInputClassName }) => (
-                <Input
-                  id={`link-url-${index}`}
-                  value={link.url ?? ''}
-                  onChange={(event) =>
-                    handleLinkChange(index, 'url', event.target.value)
-                  }
-                  placeholder="https://meusite.com/suporte"
-                  className={getInputClassName()}
-                  {...a11yAttributes}
-                />
-              )}
-            </FormField>
+              placeholder="https://meusite.com/suporte"
+              onChange={(value) => handleLinkChange(index, 'url', value)}
+            />
             <div className="flex items-end">
               <Button
                 type="button"
