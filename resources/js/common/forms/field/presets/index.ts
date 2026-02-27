@@ -6,3 +6,4 @@ export { SelectField } from './SelectField';
 export { TextareaField } from './TextareaField';
 export { TextInputField } from './TextInputField';
 export { FormLocaleField } from './FormLocaleField';
+export { ImageField } from './ImageField';

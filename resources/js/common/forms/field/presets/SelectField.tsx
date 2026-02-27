@@ -22,6 +22,7 @@ type SelectFieldProps<FieldName extends string> = {
   value: string;
   errors: FormErrors<FieldName>;
   label: ReactNode;
+  hint?: ReactNode;
   required?: boolean;
   placeholder?: string;
   disabled?: boolean;
@@ -37,6 +38,7 @@ export function SelectField<FieldName extends string>({
   value,
   errors,
   label,
+  hint,
   required = false,
   placeholder,
   disabled = false,
@@ -51,7 +53,9 @@ export function SelectField<FieldName extends string>({
       errors={errors}
       htmlFor={id}
       label={label}
+      hint={hint}
       required={required}
+      disabled={disabled}
       className={className}
       errorId={errorId}
     >

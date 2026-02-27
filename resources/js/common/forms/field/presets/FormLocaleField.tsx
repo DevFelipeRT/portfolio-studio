@@ -1,7 +1,7 @@
 import { FieldError } from '@/common/forms/field/error/FieldError';
+import { useFormLocaleField } from '@/common/forms/field/useFormLocaleField';
 import type { FormErrors } from '@/common/forms/types';
 import { LanguageSelector } from '@/common/i18n/LanguageSelector';
-import { useFormLocaleField } from '../../hooks/useFormLocaleField';
 
 export type FormLocaleFieldProps = {
   value: string;

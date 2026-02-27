@@ -11,6 +11,7 @@ type DatePickerFieldProps<FieldName extends string> = {
   value: string | null;
   errors: FormErrors<FieldName>;
   label: ReactNode;
+  hint?: ReactNode;
   required?: boolean;
   placeholder?: string;
   disabled?: boolean;
@@ -28,6 +29,7 @@ export function DatePickerField<FieldName extends string>({
   value,
   errors,
   label,
+  hint,
   required = false,
   placeholder,
   disabled = false,
@@ -44,7 +46,9 @@ export function DatePickerField<FieldName extends string>({
       errors={errors}
       htmlFor={id}
       label={label}
+      hint={hint}
       required={required}
+      disabled={disabled}
       errorId={errorId}
       className={className}
     >

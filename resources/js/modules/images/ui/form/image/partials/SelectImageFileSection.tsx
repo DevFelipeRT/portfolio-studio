@@ -19,6 +19,7 @@ export function SelectImageFileSection({
         id="image-file"
         errors={errors}
         label="File"
+        placeholder="Select file"
         required
         accept="image/*"
         errorId="image-file-error"

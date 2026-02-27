@@ -3,6 +3,7 @@
 import { FormField } from '@/common/forms/field/FormField';
 import type { FormErrors } from '@/common/forms/types';
 import { RichTextEditor } from '@/common/rich-text/RichTextEditor';
+import { cn } from '@/lib/utils';
 import type { ReactNode } from 'react';
 
 type RichTextFieldProps<FieldName extends string> = {
@@ -11,6 +12,7 @@ type RichTextFieldProps<FieldName extends string> = {
   value: string;
   errors: FormErrors<FieldName>;
   label: ReactNode;
+  hint?: ReactNode;
   required?: boolean;
   placeholder?: string;
   disabled?: boolean;
@@ -25,6 +27,7 @@ export function RichTextField<FieldName extends string>({
   value,
   errors,
   label,
+  hint,
   required = false,
   placeholder,
   disabled = false,
@@ -38,17 +41,22 @@ export function RichTextField<FieldName extends string>({
       errors={errors}
       htmlFor={`${id}-lexical-editor`}
       label={label}
+      hint={hint}
       required={required}
+      disabled={disabled}
       errorId={errorId}
       className={className}
     >
-      {({ a11yAttributes }) => (
+      {({ a11yAttributes, hasError }) => (
         <RichTextEditor
           id={id}
           value={value}
           onChange={onChange}
           placeholder={placeholder}
           editable={!disabled}
+          contentWrapperClassName={cn(
+            hasError && 'border-destructive focus-within:ring-destructive',
+          )}
           contentEditableProps={a11yAttributes}
         />
       )}
