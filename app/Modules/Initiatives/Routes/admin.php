@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Modules\Initiatives\Http\Controllers\InitiativeController;
+use App\Modules\Initiatives\Http\Controllers\InitiativeImageController;
 use App\Modules\Initiatives\Http\Controllers\InitiativeTranslationController;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +15,13 @@ Route::prefix('admin')
         Route::resource('initiatives', InitiativeController::class)
             ->except(['show'])
             ->names('initiatives');
+
+        /**
+         * Initiative images management.
+         */
+        Route::resource('initiatives.images', InitiativeImageController::class)
+            ->only(['destroy'])
+            ->names('initiatives.images');
 
         /**
          * Initiative translations management.

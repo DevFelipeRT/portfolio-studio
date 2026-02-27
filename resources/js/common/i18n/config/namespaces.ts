@@ -5,6 +5,7 @@ import { Namespace } from '../core/types';
  */
 export const NAMESPACES = {
     common: 'common' as Namespace,
+    i18n: 'i18n' as Namespace,
     layout: 'layout' as Namespace,
     home: 'home' as Namespace,
     experience: 'experience' as Namespace,

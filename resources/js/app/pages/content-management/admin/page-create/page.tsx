@@ -1,24 +1,34 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import { useFormSubmit, type FormErrors } from '@/common/forms';
 import {
   PageForm,
   type PageFormData,
 } from '@/modules/content-management/features/page-management/page/PageForm';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, usePage } from '@inertiajs/react';
 import type { FormDataValues } from '@inertiajs/core';
 import React from 'react';
 
+const defaultPageFormData: PageFormData = {
+  slug: '',
+  internal_name: '',
+  title: '',
+  meta_title: '',
+  meta_description: '',
+  layout_key: '',
+  locale: '',
+  is_published: false,
+  is_indexable: true,
+};
+
 export default function PageCreate() {
-  const { data, setData, post, processing, errors } = useForm<PageFormData>({
-    slug: '',
-    internal_name: '',
-    title: '',
-    meta_title: '',
-    meta_description: '',
-    layout_key: '',
-    locale: '',
-    is_published: false,
-    is_indexable: true,
-  });
+  const { data, setData, post, processing, reset } = useForm<PageFormData>(
+    'admin.content.pages.create',
+    defaultPageFormData,
+  );
+  const { errors: formErrors } = usePage().props as {
+    errors: FormErrors<keyof PageFormData>;
+  };
+  const submitForm = useFormSubmit();
 
   const handleChange = <K extends keyof PageFormData>(
     field: K,
@@ -28,8 +38,9 @@ export default function PageCreate() {
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
-    event.preventDefault();
-    post(route('admin.content.pages.store'));
+    submitForm(event, post, route('admin.content.pages.store'), {
+      onSuccess: () => reset(),
+    });
   };
 
   return (
@@ -51,7 +62,7 @@ export default function PageCreate() {
         <PageForm
           mode="create"
           data={data}
-          errors={errors}
+          errors={formErrors}
           processing={processing}
           onChange={handleChange}
           onSubmit={handleSubmit}

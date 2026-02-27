@@ -24,9 +24,39 @@ type SharedProps = {
   auth: {
     user: AuthUser | null;
   };
-  errors: Record<string, string>;
+  errors: Record<string, unknown>;
   status?: string | null;
 };
+
+const GLOBAL_ERROR_KEYS = new Set(['global', 'message', 'error', 'server']);
+
+function collectGlobalErrorMessages(errors: Record<string, unknown>): string[] {
+  return Object.entries(errors).flatMap(([key, value]) => {
+    if (!GLOBAL_ERROR_KEYS.has(key)) {
+      return [];
+    }
+
+    if (typeof value === 'string') {
+      return value.trim().length > 0 ? [value] : [];
+    }
+
+    if (Array.isArray(value)) {
+      return value
+        .filter((item): item is string => typeof item === 'string')
+        .map((item) => item.trim())
+        .filter((item) => item.length > 0);
+    }
+
+    if (!value || typeof value !== 'object') {
+      return [];
+    }
+
+    return Object.values(value as Record<string, unknown>)
+      .filter((item): item is string => typeof item === 'string')
+      .map((item) => item.trim())
+      .filter((item) => item.length > 0);
+  });
+}
 
 function mapConfigToNavigationItems(
   items: NavigationConfigNode[],
@@ -102,7 +132,8 @@ export default function Authenticated({
     (key, fallback) => translateFromLayout(key, fallback),
   );
 
-  const hasErrors = !!errors && Object.keys(errors).length > 0;
+  const globalErrorMessages = collectGlobalErrorMessages(errors ?? {});
+  const hasGlobalErrors = globalErrorMessages.length > 0;
 
   useEffect(() => {
     if (!status) {
@@ -159,21 +190,17 @@ export default function Authenticated({
           )}
 
           <div className="mx-auto max-w-7xl grow px-4 sm:px-6 lg:px-8">
-            {hasErrors && (
+            {hasGlobalErrors && (
               <div className="mb-4">
                 <Alert variant="destructive">
                   <AlertTitle>
                     {translateFromLayout(
-                      'validation.title',
-                      'There were some problems with your submission.',
+                      'errors.title',
+                      'Something went wrong.',
                     )}
                   </AlertTitle>
                   <AlertDescription>
-                    <ul className="list-disc space-y-1 pl-5 text-sm">
-                      {Object.entries(errors).map(([field, message]) => (
-                        <li key={field}>{message}</li>
-                      ))}
-                    </ul>
+                    <p className="text-sm">{globalErrorMessages.join(' ')}</p>
                   </AlertDescription>
                 </Alert>
               </div>

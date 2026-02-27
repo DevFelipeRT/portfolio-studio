@@ -1,32 +1,42 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import { useFormSubmit, type FormErrors } from '@/common/forms';
 import { useSupportedLocales } from '@/common/i18n';
 import type {
   ImageInput,
   ProjectFormData,
 } from '@/modules/projects/core/forms';
-import { ProjectForm } from '@/modules/projects/ui/ProjectForm';
+import { ProjectForm } from '@/modules/projects/ui/form/project';
 import type { Skill } from '@/modules/skills/core/types';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import React from 'react';
 
 interface CreateProjectProps {
   skills: Skill[];
 }
 
+const defaultProjectFormData: ProjectFormData = {
+  locale: '',
+  name: '',
+  summary: '',
+  description: '',
+  status: '',
+  repository_url: '',
+  live_url: '',
+  display: false,
+  skill_ids: [],
+  images: [],
+};
+
 export default function Create({ skills }: CreateProjectProps) {
   const supportedLocales = useSupportedLocales();
-  const { data, setData, post, processing, errors } = useForm<ProjectFormData>({
-    locale: '',
-    name: '',
-    summary: '',
-    description: '',
-    status: '',
-    repository_url: '',
-    live_url: '',
-    display: false,
-    skill_ids: [],
-    images: [],
-  });
+  const { data, setData, post, processing } = useForm<ProjectFormData>(
+    'projects.create',
+    defaultProjectFormData,
+  );
+  const submitForm = useFormSubmit();
+  const { errors: formErrors } = usePage().props as {
+    errors: FormErrors<keyof ProjectFormData>;
+  };
 
   function changeField<K extends keyof ProjectFormData>(
     key: K,
@@ -38,17 +48,8 @@ export default function Create({ skills }: CreateProjectProps) {
     }));
   }
 
-  function toggleSkill(id: number): void {
-    setData((current: ProjectFormData) => {
-      const exists = current.skill_ids.includes(id);
-
-      return {
-        ...current,
-        skill_ids: exists
-          ? current.skill_ids.filter((item: number) => item !== id)
-          : [...current.skill_ids, id],
-      };
-    });
+  function changeSkillIds(ids: number[]): void {
+    changeField('skill_ids', ids);
   }
 
   function addImageRow(): void {
@@ -95,27 +96,8 @@ export default function Create({ skills }: CreateProjectProps) {
   }
 
   const submit = (event: React.FormEvent<HTMLFormElement>): void => {
-    event.preventDefault();
-
-    post(route('projects.store'), {
-      forceFormData: true,
-      preserveScroll: true,
-    });
+    submitForm(event, post, route('projects.store'), { forceFormData: true });
   };
-
-  function normalizeError(
-    message: string | string[] | undefined,
-  ): string | null {
-    if (!message) {
-      return null;
-    }
-
-    if (Array.isArray(message)) {
-      return message.join(' ');
-    }
-
-    return message;
-  }
 
   return (
     <AuthenticatedLayout
@@ -141,18 +123,18 @@ export default function Create({ skills }: CreateProjectProps) {
             existingImages={[]}
             projectId={undefined}
             data={data}
-            errors={errors}
+            errors={formErrors}
             processing={processing}
+            cancelHref={route('projects.index')}
             submitLabel="Save project"
             supportedLocales={supportedLocales}
             onSubmit={submit}
             onChangeField={changeField}
-            onToggleSkill={toggleSkill}
+            onChangeSkillIds={changeSkillIds}
             onAddImageRow={addImageRow}
             onRemoveImageRow={removeImageRow}
             onUpdateImageAlt={updateImageAlt}
             onUpdateImageFile={updateImageFile}
-            normalizeError={normalizeError}
           />
         </div>
       </div>

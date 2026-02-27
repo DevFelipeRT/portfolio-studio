@@ -1,12 +1,13 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import type { FormErrors } from '@/common/forms';
 import { LocaleSwapDialog } from '@/common/LocaleSwapDialog';
 import { Button } from '@/components/ui/button';
 import { listSkillCategoryTranslations } from '@/modules/skills/core/api/translations';
 import type { SkillCategoryFormData } from '@/modules/skills/core/forms';
 import type { SkillCategory } from '@/modules/skills/core/types';
-import { SkillCategoryForm } from '@/modules/skills/ui/SkillCategoryForm';
+import { SkillCategoryForm } from '@/modules/skills/ui/form/skill-category';
 import { TranslationModal } from '@/modules/skills/ui/TranslationModal';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import React from 'react';
 
 interface EditSkillCategoryProps {
@@ -20,24 +21,20 @@ export default function Edit({ category }: EditSkillCategoryProps) {
   const [translationLocales, setTranslationLocales] = React.useState<string[]>(
     [],
   );
-  const [loadingTranslations, setLoadingTranslations] = React.useState(false);
-  const [localesLoadError, setLocalesLoadError] = React.useState<string | null>(
-    null,
-  );
-  const { data, setData, put, processing, errors } =
-    useForm<SkillCategoryFormData>({
-      name: category.name,
-      slug: category.slug ?? '',
-      locale: category.locale,
-      confirm_swap: false,
-    });
+  const { data, setData, put, processing } = useForm<SkillCategoryFormData>({
+    name: category.name,
+    slug: category.slug ?? '',
+    locale: category.locale,
+    confirm_swap: false,
+  });
+  const { errors: formErrors } = usePage().props as {
+    errors: FormErrors<keyof SkillCategoryFormData>;
+  };
 
   React.useEffect(() => {
     let mounted = true;
 
     const loadTranslations = async (): Promise<void> => {
-      setLoadingTranslations(true);
-      setLocalesLoadError(null);
       try {
         const items = await listSkillCategoryTranslations(category.id);
         if (mounted) {
@@ -45,16 +42,8 @@ export default function Edit({ category }: EditSkillCategoryProps) {
             items.map((item) => item.locale).filter(Boolean),
           );
         }
-      } catch (err) {
-        if (mounted) {
-          setLocalesLoadError(
-            'Unable to load translations for locale conflict checks.',
-          );
-        }
-      } finally {
-        if (mounted) {
-          setLoadingTranslations(false);
-        }
+      } catch {
+        // Locale conflict checks are optional in this flow.
       }
     };
 
@@ -67,7 +56,10 @@ export default function Edit({ category }: EditSkillCategoryProps) {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
-    put(route('skill-categories.update', category.id));
+    put(route('skill-categories.update', category.id), {
+      preserveState: true,
+      preserveScroll: true,
+    });
   };
 
   const handleChange = (
@@ -110,7 +102,7 @@ export default function Edit({ category }: EditSkillCategoryProps) {
 
             <SkillCategoryForm
               data={data}
-              errors={errors}
+              errors={formErrors}
               processing={processing}
               onChange={handleChange}
               onSubmit={handleSubmit}
@@ -118,7 +110,6 @@ export default function Edit({ category }: EditSkillCategoryProps) {
               submitLabel="Save changes"
               deleteHref={route('skill-categories.destroy', category.id)}
               deleteLabel="Delete"
-              alignActions="split"
             />
 
             <div className="mt-4 flex justify-end">

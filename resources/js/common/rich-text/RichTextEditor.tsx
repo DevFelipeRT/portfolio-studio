@@ -13,7 +13,7 @@ import { MarkdownShortcutPlugin } from '@lexical/react/LexicalMarkdownShortcutPl
 import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
 import type { EditorState, LexicalEditor } from 'lexical';
-import type { JSX } from 'react';
+import type { ComponentPropsWithoutRef, JSX } from 'react';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import {
   defaultRichTextAutoLinkMatchers,
@@ -30,11 +30,13 @@ interface RichTextEditorProps {
   onChange: (value: string) => void;
   placeholder?: string;
   className?: string;
+  contentWrapperClassName?: string;
   editorClassName?: string;
   toolbarClassName?: string;
   showToolbar?: boolean;
   editable?: boolean;
   namespace?: string;
+  contentEditableProps?: ComponentPropsWithoutRef<typeof ContentEditable>;
 }
 
 export function RichTextEditor({
@@ -43,14 +45,18 @@ export function RichTextEditor({
   onChange,
   placeholder = 'Start typing rich text content...',
   className,
+  contentWrapperClassName,
   editorClassName,
   toolbarClassName,
   showToolbar = true,
   editable = true,
   namespace = 'CommonRichText',
+  contentEditableProps,
 }: RichTextEditorProps): JSX.Element {
   const lastEmittedValueRef = useRef(value);
   const editorId = useMemo(() => `${id}-lexical-editor`, [id]);
+  const { className: contentEditableClassName, ...restContentEditableProps } =
+    contentEditableProps ?? {};
 
   const initialConfig = useMemo(() => {
     return {
@@ -80,7 +86,13 @@ export function RichTextEditor({
     <div className={cn('space-y-3', className)}>
       <LexicalComposer key={editorId} initialConfig={initialConfig}>
         {showToolbar && <RichTextToolbar className={toolbarClassName} />}
-        <div className="border-input bg-background focus-within:ring-ring relative rounded-md border px-3 py-2 shadow-sm focus-within:ring-1">
+        <div
+          className={cn(
+            'border-input bg-background focus-within:ring-ring relative rounded-md border px-3 py-2 shadow-sm focus-within:ring-1',
+            !editable && 'opacity-50',
+            contentWrapperClassName,
+          )}
+        >
           <RichTextPlugin
             contentEditable={
               <ContentEditable
@@ -88,7 +100,9 @@ export function RichTextEditor({
                 className={cn(
                   'min-h-[160px] text-sm leading-relaxed focus:outline-none',
                   editorClassName,
+                  contentEditableClassName,
                 )}
+                {...restContentEditableProps}
               />
             }
             placeholder={

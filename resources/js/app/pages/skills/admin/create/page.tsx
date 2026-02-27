@@ -1,26 +1,35 @@
 // resources/js/Pages/Skills/Create.tsx
 
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import { useFormSubmit, type FormErrors } from '@/common/forms';
 import type { SkillFormData } from '@/modules/skills/core/forms';
 import type { SkillCategory } from '@/modules/skills/core/types';
-import { SkillForm } from '@/modules/skills/ui/SkillForm';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { SkillForm } from '@/modules/skills/ui/form/skill';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import React from 'react';
 
 interface CreateSkillProps {
   categories: SkillCategory[];
 }
 
+const defaultSkillFormData: SkillFormData = {
+  name: '',
+  locale: '',
+  skill_category_id: '',
+};
+
 export default function Create({ categories }: CreateSkillProps) {
-  const { data, setData, post, processing, errors } = useForm<SkillFormData>({
-    name: '',
-    locale: '',
-    skill_category_id: '',
-  });
+  const { data, setData, post, processing } = useForm<SkillFormData>(
+    'skills.create',
+    defaultSkillFormData,
+  );
+  const submitForm = useFormSubmit();
+  const { errors: formErrors } = usePage().props as {
+    errors: FormErrors<keyof SkillFormData>;
+  };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
-    event.preventDefault();
-    post(route('skills.store'));
+    submitForm(event, post, route('skills.store'));
   };
 
   const handleChange = (
@@ -51,14 +60,13 @@ export default function Create({ categories }: CreateSkillProps) {
 
           <SkillForm
             data={data}
-            errors={errors}
+            errors={formErrors}
             categories={categories}
             processing={processing}
             onChange={handleChange}
             onSubmit={handleSubmit}
             cancelHref={route('skills.index')}
             submitLabel="Save"
-            alignActions="right"
           />
         </div>
       </div>

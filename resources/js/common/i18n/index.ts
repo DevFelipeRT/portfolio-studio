@@ -1,4 +1,4 @@
 export * from './config/namespaces';
 export * from './react';
-export * from './ui';
+export { LanguageSelector } from './LanguageSelector';
 export { catalogProvider, createI18nEnvironment } from './setup';

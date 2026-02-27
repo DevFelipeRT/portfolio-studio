@@ -13,6 +13,7 @@ use App\Modules\Skills\Application\UseCases\ListSkillCategories\ListSkillCategor
 use App\Modules\Skills\Application\UseCases\ListSkills\ListSkills;
 use App\Modules\Skills\Application\UseCases\UpdateSkill\UpdateSkill;
 use App\Modules\Skills\Domain\Models\Skill;
+use App\Modules\Skills\Http\Mappers\SkillFormMapper;
 use App\Modules\Skills\Http\Mappers\SkillInputMapper;
 use App\Modules\Skills\Http\Requests\Skill\StoreSkillRequest;
 use App\Modules\Skills\Http\Requests\Skill\UpdateSkillRequest;
@@ -20,6 +21,7 @@ use App\Modules\Skills\Presentation\Mappers\SkillCategoryMapper;
 use App\Modules\Skills\Presentation\Mappers\SkillMapper;
 
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -79,7 +81,7 @@ class SkillController extends Controller
     /**
      * Show the form for editing the specified skill.
      */
-    public function edit(Skill $skill): Response
+    public function edit(Request $request, Skill $skill): Response
     {
         $skill->loadMissing('category');
         $categories = $this->listSkillCategories->handle();
@@ -90,10 +92,12 @@ class SkillController extends Controller
         }
 
         $skillDto = SkillDto::fromModel($skill, null, $categoryDto);
+        $skillData = SkillMapper::map($skillDto);
 
         return Inertia::render('skills/admin/Edit', [
-            'skill' => SkillMapper::map($skillDto),
+            'skill' => $skillData,
             'categories' => SkillCategoryMapper::collection($categories),
+            'initial' => SkillFormMapper::fromEdit($skillData, []),
         ]);
     }
 

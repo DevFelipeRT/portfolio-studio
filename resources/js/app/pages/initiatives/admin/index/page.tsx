@@ -6,9 +6,9 @@ import { useMemo, useState } from 'react';
 
 import type { Initiative } from '@/modules/initiatives/core/types';
 import { InitiativeHeader } from '@/modules/initiatives/ui/InitiativeHeader';
-import { InitiativeOverlay } from '@/modules/initiatives/ui/InitiativeOverlay';
+import { InitiativeOverlay } from '@/modules/initiatives/ui/overlay/InitiativeOverlay';
 import { InitiativesEmptyState } from '@/modules/initiatives/ui/InitiativesEmptyState';
-import { InitiativesTable } from '@/modules/initiatives/ui/InitiativesTable';
+import { InitiativesTable } from '@/modules/initiatives/ui/table/InitiativesTable';
 
 interface InitiativesIndexProps {
   initiatives: Initiative[];

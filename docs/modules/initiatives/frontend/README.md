@@ -6,7 +6,7 @@ Evidence:
 
 - Admin page registry: `resources/js/app/pages/initiatives/pages.ts`
 - Admin pages: `resources/js/app/pages/initiatives/admin/index/page.tsx`, `resources/js/app/pages/initiatives/admin/create/page.tsx`, `resources/js/app/pages/initiatives/admin/edit/page.tsx`
-- Admin UI components: `resources/js/modules/initiatives/ui/InitiativesTable.tsx`, `resources/js/modules/initiatives/ui/InitiativeOverlay.tsx`, `resources/js/modules/initiatives/ui/InitiativeForm.tsx`
+- Admin UI components: `resources/js/modules/initiatives/ui/InitiativesTable.tsx`, `resources/js/modules/initiatives/ui/InitiativeOverlay.tsx`, `resources/js/modules/initiatives/ui/form/initiative/InitiativeForm.tsx`
 - Translations: `resources/js/modules/initiatives/ui/TranslationModal.tsx`, `resources/js/modules/initiatives/core/api/translations.ts`
 - CMS section registry + implementation: `resources/js/modules/initiatives/sectionRegistryProvider.ts`, `resources/js/modules/initiatives/ui/sections/InitiativeHighlightListSection.tsx`
 - CMS template definition (data source binding): `resources/templates/initiatives/initiative_highlight_list/initiative_highlight_list.php`
@@ -22,7 +22,7 @@ Pages are registered under keys like `initiatives/admin/Index` and rendered from
 
 ### Images on initiatives
 
-Existing images are displayed on the edit form, and new images can be submitted as part of create/update (`resources/js/modules/initiatives/ui/InitiativeForm.tsx`, `app/Modules/Initiatives/Http/Requests/Initiative/UpdateInitiativeRequest.php`).
+Existing images are displayed on the edit form, and new images can be submitted as part of create/update (`resources/js/modules/initiatives/ui/form/initiative/InitiativeForm.tsx`, `app/Modules/Initiatives/Http/Requests/Initiative/UpdateInitiativeRequest.php`).
 
 No frontend interaction was found for deleting or editing existing images individually; updates replace the image collection when an `images[]` payload is submitted (`app/Modules/Initiatives/Application/UseCases/UpdateInitiative/UpdateInitiative.php`).
 
@@ -39,4 +39,3 @@ This module contributes a public section component to the Content Management ren
 - Registry: `initiative_highlight_list` → `InitiativeHighlightListSection` (`resources/js/modules/initiatives/sectionRegistryProvider.ts`)
 - Template data source: `initiatives.visible.v1` injected into section field `initiatives` and parameter-mapped from `max_items` → `limit` (`resources/templates/initiatives/initiative_highlight_list/initiative_highlight_list.php`)
 - Renderer reads `initiatives` from section data and optionally applies `max_items` / `maxItems` client-side (`resources/js/modules/initiatives/ui/sections/InitiativeHighlightListSection.tsx`)
-

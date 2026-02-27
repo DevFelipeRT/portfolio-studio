@@ -1,20 +1,26 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import type { FormErrors } from '@/common/forms';
 import type { SkillCategoryFormData } from '@/modules/skills/core/forms';
-import { SkillCategoryForm } from '@/modules/skills/ui/SkillCategoryForm';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { SkillCategoryForm } from '@/modules/skills/ui/form/skill-category';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import React from 'react';
 
 export default function Create() {
-  const { data, setData, post, processing, errors } =
-    useForm<SkillCategoryFormData>({
-      name: '',
-      slug: '',
-      locale: '',
-    });
+  const { data, setData, post, processing } = useForm<SkillCategoryFormData>({
+    name: '',
+    slug: '',
+    locale: '',
+  });
+  const { errors: formErrors } = usePage().props as {
+    errors: FormErrors<keyof SkillCategoryFormData>;
+  };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
-    post(route('skill-categories.store'));
+    post(route('skill-categories.store'), {
+      preserveState: true,
+      preserveScroll: true,
+    });
   };
 
   const handleChange = (
@@ -47,13 +53,12 @@ export default function Create() {
 
           <SkillCategoryForm
             data={data}
-            errors={errors}
+            errors={formErrors}
             processing={processing}
             onChange={handleChange}
             onSubmit={handleSubmit}
             cancelHref={route('skills.index')}
             submitLabel="Save"
-            alignActions="right"
           />
         </div>
       </div>

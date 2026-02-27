@@ -6,7 +6,7 @@ Evidence:
 
 - Admin page registry: `resources/js/app/pages/projects/pages.ts`
 - Admin pages: `resources/js/app/pages/projects/admin/index/page.tsx`, `resources/js/app/pages/projects/admin/create/page.tsx`, `resources/js/app/pages/projects/admin/edit/page.tsx`
-- Project admin UI: `resources/js/modules/projects/ui/ProjectForm.tsx`, `resources/js/modules/projects/ui/ProjectImageCarousel.tsx`
+- Project admin UI: `resources/js/modules/projects/ui/form/project/ProjectForm.tsx`, `resources/js/modules/projects/ui/ProjectImageCarousel.tsx`
 - Translations: `resources/js/modules/projects/ui/TranslationModal.tsx`, `resources/js/modules/projects/core/api/translations.ts`
 - CMS section registry + implementation: `resources/js/modules/projects/sectionRegistryProvider.ts`, `resources/js/modules/projects/ui/sections/ProjectHighlightListSection.tsx`
 - CMS template definition (data source binding): `resources/templates/projects/project_highlight_list/project_highlight_list.php`
@@ -21,11 +21,11 @@ Pages are registered under keys like `projects/admin/Index` and rendered from th
 
 ### Skills on projects
 
-The form allows associating skills to a project via `skill_ids` (`resources/js/modules/projects/ui/ProjectForm.tsx`, `app/Modules/Projects/Http/Requests/Project/UpdateProjectRequest.php`).
+The form allows associating skills to a project via `skill_ids` (`resources/js/modules/projects/ui/form/project/ProjectForm.tsx`, `app/Modules/Projects/Http/Requests/Project/UpdateProjectRequest.php`).
 
 ### Images on projects
 
-- Existing images (from the backend payload) can be deleted via `projects.images.destroy` (`resources/js/modules/projects/ui/ProjectForm.tsx`, `app/Modules/Projects/Routes/admin.php`).
+- Existing images (from the backend payload) can be deleted via `projects.images.destroy` (`resources/js/modules/projects/ui/form/project/ProjectForm.tsx`, `app/Modules/Projects/Routes/admin.php`).
 - New images are collected client-side and submitted as part of the create/update request using `forceFormData` (`resources/js/app/pages/projects/admin/create/page.tsx`, `resources/js/app/pages/projects/admin/edit/page.tsx`).
 
 ## Translations (modal UX)
@@ -43,4 +43,3 @@ This module contributes a public section component to the Content Management ren
 - Renderer reads `projects` from section data and optionally applies `max_items` / `maxItems` client-side (`resources/js/modules/projects/ui/sections/ProjectHighlightListSection.tsx`)
 
 Note: the template defines fields such as `project_ids` and `highlight_only`, but only `max_items` is mapped to a capability parameter in the template definition (`resources/templates/projects/project_highlight_list/project_highlight_list.php`). Any additional filtering is not evidenced in the frontend section component.
-

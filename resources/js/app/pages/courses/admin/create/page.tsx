@@ -1,7 +1,8 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import { useFormSubmit, type FormErrors } from '@/common/forms';
 import type { CourseFormData } from '@/modules/courses/core/forms';
-import CourseForm from '@/modules/courses/ui/CourseForm';
-import { Head, Link, router, useForm } from '@inertiajs/react';
+import { CourseForm } from '@/modules/courses/ui/form/course';
+import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import { ChevronLeft } from 'lucide-react';
 import React from 'react';
 
@@ -15,33 +16,39 @@ interface CreateCourseProps {
 /**
  * Page component for registering a new course entry in the portfolio.
  */
+const defaultCourseFormData: CourseFormData = {
+  locale: '',
+  name: '',
+  institution: '',
+  category: '',
+  summary: '',
+  description: '',
+  started_at: null,
+  completed_at: null,
+  display: false,
+};
+
 export default function Create({ course_categories }: CreateCourseProps) {
-  const { data, setData, post, processing, errors } = useForm<CourseFormData>({
-    locale: '',
-    name: '',
-    institution: '',
-    category: '',
-    summary: '',
-    description: '',
-    started_at: null,
-    completed_at: null,
-    display: false,
-  });
+  const { data, setData, post, processing } = useForm<CourseFormData>(
+    'courses.create',
+    defaultCourseFormData,
+  );
+  const submitForm = useFormSubmit();
+  const { errors: formErrors } = usePage().props as {
+    errors: FormErrors<keyof CourseFormData>;
+  };
 
   /**
    * Submits the new course data to the backend.
    */
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
-    event.preventDefault();
-    post(route('courses.store'));
+    submitForm(event, post, route('courses.store'));
   };
 
   /**
    * Navigates back to the course index page.
    */
-  const handleCancel = (): void => {
-    router.visit(route('courses.index'));
-  };
+  const cancelHref = route('courses.index');
 
   return (
     <AuthenticatedLayout
@@ -65,12 +72,12 @@ export default function Create({ course_categories }: CreateCourseProps) {
 
           <CourseForm
             data={data}
-            setData={setData}
-            errors={errors}
+            errors={formErrors}
             processing={processing}
             categories={course_categories ?? {}}
+            onChange={setData}
             onSubmit={handleSubmit}
-            onCancel={handleCancel}
+            cancelHref={cancelHref}
           />
         </div>
       </div>

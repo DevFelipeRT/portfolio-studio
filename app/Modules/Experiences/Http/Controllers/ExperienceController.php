@@ -12,10 +12,12 @@ use App\Modules\Experiences\Application\UseCases\ListExperiences\ListExperiences
 use App\Modules\Experiences\Application\UseCases\UpdateExperience\UpdateExperience;
 use App\Modules\Experiences\Http\Requests\Experience\StoreExperienceRequest;
 use App\Modules\Experiences\Http\Requests\Experience\UpdateExperienceRequest;
+use App\Modules\Experiences\Http\Mappers\ExperienceFormMapper;
 use App\Modules\Experiences\Http\Mappers\ExperienceInputMapper;
 use App\Modules\Experiences\Presentation\Mappers\ExperienceMapper;
 
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -68,10 +70,14 @@ class ExperienceController extends Controller
     /**
      * Show the form for editing the specified experience.
      */
-    public function edit(Experience $experience): Response
+    public function edit(Request $request, Experience $experience): Response
     {
+        $experienceData = ExperienceMapper::toArray($experience);
+        $initial = ExperienceFormMapper::fromEdit($experienceData, []);
+
         return Inertia::render('experiences/admin/Edit', [
-            'experience' => ExperienceMapper::toArray($experience),
+            'experience' => $experienceData,
+            'initial' => $initial,
         ]);
     }
 

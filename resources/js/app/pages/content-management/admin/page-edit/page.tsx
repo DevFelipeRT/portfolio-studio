@@ -1,4 +1,5 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import type { FormErrors } from '@/common/forms';
 import { Button } from '@/components/ui/button';
 import {
   PageForm,
@@ -27,7 +28,7 @@ import type {
 } from '@/modules/content-management/types';
 import { defaultStringNormalizer } from '@/modules/content-management/utils/strings';
 import type { FormDataValues } from '@inertiajs/core';
-import { Head, router, useForm } from '@inertiajs/react';
+import { Head, router, useForm, usePage } from '@inertiajs/react';
 import { Trash2 } from 'lucide-react';
 import React from 'react';
 
@@ -44,7 +45,7 @@ export default function PageEdit({
   sections,
   availableTemplates,
 }: PageEditViewModelProps) {
-  const { data, setData, put, processing, errors } = useForm<PageFormData>({
+  const { data, setData, put, processing } = useForm<PageFormData>({
     slug: page.slug,
     internal_name: page.internal_name,
     title: page.title,
@@ -55,6 +56,9 @@ export default function PageEdit({
     is_published: page.is_published,
     is_indexable: page.is_indexable,
   });
+  const { errors: formErrors } = usePage().props as {
+    errors: FormErrors<keyof PageFormData>;
+  };
 
   const createDialog = useCreateSectionDialogController();
   const editDialog = useEditSectionDialogController();
@@ -82,7 +86,10 @@ export default function PageEdit({
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
-    put(route('admin.content.pages.update', page.id));
+    put(route('admin.content.pages.update', page.id), {
+      preserveState: true,
+      preserveScroll: true,
+    });
   };
 
   const handleDeletePage = (): void => {
@@ -165,7 +172,7 @@ export default function PageEdit({
           mode="edit"
           page={page}
           data={data}
-          errors={errors}
+          errors={formErrors}
           processing={processing}
           onChange={handleChange}
           onSubmit={handleSubmit}

@@ -1,26 +1,33 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import { useSupportedLocales } from '@/common/i18n';
+import { useFormSubmit, type FormErrors } from '@/common/forms';
 import type {
   InitiativeFormData,
   InitiativeImageInput,
 } from '@/modules/initiatives/core/forms';
-import { InitiativeForm } from '@/modules/initiatives/ui/InitiativeForm';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { InitiativeForm } from '@/modules/initiatives/ui/form/initiative';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import React from 'react';
+
+const defaultInitiativeFormData: InitiativeFormData = {
+  locale: '',
+  name: '',
+  summary: '',
+  description: '',
+  display: false,
+  start_date: null,
+  end_date: null,
+  images: [],
+};
 
 export default function Create() {
   const supportedLocales = useSupportedLocales();
-  const { data, setData, post, processing, errors, transform } =
-    useForm<InitiativeFormData>({
-      locale: '',
-      name: '',
-      summary: '',
-      description: '',
-      display: false,
-      start_date: null,
-      end_date: null,
-      images: [],
-    });
+  const { data, setData, post, processing, transform } =
+    useForm<InitiativeFormData>('initiatives.create', defaultInitiativeFormData);
+  const submitForm = useFormSubmit();
+  const { errors: formErrors } = usePage().props as {
+    errors: FormErrors<keyof InitiativeFormData>;
+  };
 
   function changeField<K extends keyof InitiativeFormData>(
     key: K,
@@ -76,15 +83,14 @@ export default function Create() {
   }
 
   const submit = (event: React.FormEvent<HTMLFormElement>): void => {
-    event.preventDefault();
-
     transform((current: InitiativeFormData) => {
       const validImages =
         current.images?.filter((image) => image.file instanceof File) ?? [];
 
       if (validImages.length === 0) {
-        const { images, ...rest } = current;
-        return rest as unknown as InitiativeFormData;
+        const next = { ...current };
+        delete (next as { images?: unknown }).images;
+        return next as InitiativeFormData;
       }
 
       return {
@@ -93,25 +99,8 @@ export default function Create() {
       };
     });
 
-    post(route('initiatives.store'), {
-      forceFormData: true,
-      preserveScroll: true,
-    });
+    submitForm(event, post, route('initiatives.store'), { forceFormData: true });
   };
-
-  function normalizeError(
-    message: string | string[] | undefined,
-  ): string | null {
-    if (!message) {
-      return null;
-    }
-
-    if (Array.isArray(message)) {
-      return message.join(' ');
-    }
-
-    return message;
-  }
   return (
     <AuthenticatedLayout>
       <Head title="New initiative" />
@@ -129,10 +118,10 @@ export default function Create() {
 
           <InitiativeForm
             submitLabel="Save initiative"
-            backRoute={route('initiatives.index')}
+            cancelHref={route('initiatives.index')}
             existingImages={[]}
             data={data}
-            errors={errors}
+            errors={formErrors}
             processing={processing}
             supportedLocales={supportedLocales}
             onSubmit={submit}
@@ -141,7 +130,6 @@ export default function Create() {
             onRemoveImageRow={removeImageRow}
             onUpdateImageAlt={updateImageAlt}
             onUpdateImageFile={updateImageFile}
-            normalizeError={normalizeError}
           />
         </div>
       </div>

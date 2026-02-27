@@ -3,7 +3,7 @@ import type { Course } from '@/modules/courses/core/types';
 import { CourseOverlay } from '@/modules/courses/ui/CourseOverlay';
 import { CoursesEmptyState } from '@/modules/courses/ui/CoursesEmptyState';
 import { CoursesHeader } from '@/modules/courses/ui/CoursesHeader';
-import { CoursesTable } from '@/modules/courses/ui/CoursesTable';
+import { CoursesTable } from '@/modules/courses/ui/table/CoursesTable';
 import { Head } from '@inertiajs/react';
 import React from 'react';
 

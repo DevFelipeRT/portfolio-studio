@@ -1,8 +1,9 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import type { FormErrors } from '@/common/forms';
 import type { ContactChannelFormData } from '@/modules/contact-channels/core/forms';
 import type { ContactChannelTypeOption } from '@/modules/contact-channels/core/types';
-import { ContactChannelForm } from '@/modules/contact-channels/ui/ContactChannelForm';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { ContactChannelForm } from '@/modules/contact-channels/ui/form/contact-channel';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import React from 'react';
 
 interface CreateContactChannelProps {
@@ -10,7 +11,7 @@ interface CreateContactChannelProps {
 }
 
 export default function Create({ channelTypes }: CreateContactChannelProps) {
-  const { data, setData, post, processing, errors } =
+  const { data, setData, post, processing } =
     useForm<ContactChannelFormData>({
       locale: '',
       channel_type: channelTypes[0]?.value ?? '',
@@ -19,10 +20,16 @@ export default function Create({ channelTypes }: CreateContactChannelProps) {
       is_active: true,
       sort_order: 0,
     });
+  const { errors: formErrors } = usePage().props as {
+    errors: FormErrors<keyof ContactChannelFormData>;
+  };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
-    post(route('contact-channels.store'));
+    post(route('contact-channels.store'), {
+      preserveState: true,
+      preserveScroll: true,
+    });
   };
 
   const handleChange = (
@@ -55,14 +62,13 @@ export default function Create({ channelTypes }: CreateContactChannelProps) {
 
           <ContactChannelForm
             data={data}
-            errors={errors}
+            errors={formErrors}
             channelTypes={channelTypes}
             processing={processing}
             onChange={handleChange}
             onSubmit={handleSubmit}
             cancelHref={route('contact-channels.index')}
             submitLabel="Save"
-            alignActions="right"
           />
         </div>
       </div>

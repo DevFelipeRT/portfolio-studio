@@ -13,6 +13,7 @@ use App\Modules\Courses\Application\UseCases\ListCourses\ListCourses;
 use App\Modules\Courses\Application\UseCases\UpdateCourse\UpdateCourse;
 use App\Modules\Courses\Http\Requests\Course\StoreCourseRequest;
 use App\Modules\Courses\Http\Requests\Course\UpdateCourseRequest;
+use App\Modules\Courses\Http\Mappers\CourseFormMapper;
 use App\Modules\Courses\Http\Mappers\CourseInputMapper;
 use App\Modules\Courses\Presentation\Mappers\CourseMapper;
 
@@ -100,10 +101,13 @@ class CourseController extends Controller
     /**
      * Show the form for editing the specified course.
      */
-    public function edit(Course $course): Response
+    public function edit(Request $request, Course $course): Response
     {
+        $courseData = CourseMapper::toArray($course);
+
         return Inertia::render('courses/admin/Edit', [
-            'course' => CourseMapper::toArray($course),
+            'course' => $courseData,
+            'initial' => CourseFormMapper::fromEdit($courseData, []),
             'course_categories' => CourseCategories::options(),
         ]);
     }

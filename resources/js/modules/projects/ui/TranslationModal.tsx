@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
@@ -413,10 +414,11 @@ export function TranslationModal({
               </div>
 
               <div className="space-y-1.5">
-                <Input
+                <Textarea
                   value={newSummary}
                   onChange={(event) => setNewSummary(event.target.value)}
                   placeholder={t('translations.placeholders.summary')}
+                  rows={3}
                 />
               </div>
 
@@ -479,7 +481,7 @@ export function TranslationModal({
 
                 <div className="space-y-1.5">
                   <Label>{t('translations.fields.summary')}</Label>
-                  <Input
+                  <Textarea
                     value={activeTranslation.draftSummary ?? ''}
                     onChange={(event) =>
                       setTranslations((current) =>
@@ -493,6 +495,7 @@ export function TranslationModal({
                         ),
                       )
                     }
+                    rows={3}
                   />
                 </div>
               </div>
