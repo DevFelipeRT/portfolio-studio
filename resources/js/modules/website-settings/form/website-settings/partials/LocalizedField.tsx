@@ -1,6 +1,9 @@
-import { FormField, type FormErrors } from '@/common/forms';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import {
+  CollectionField,
+  TextInputField,
+  TextareaField,
+  type FormErrors,
+} from '@/common/forms';
 
 type LocalizedFieldType = 'input' | 'textarea';
 
@@ -35,46 +38,45 @@ export function LocalizedField({
           <p className="text-muted-foreground text-xs">{description}</p>
         )}
       </div>
-      <div className="grid gap-3 md:grid-cols-2">
-        {locales.map((locale) => {
+      <CollectionField
+        name={id}
+        items={locales}
+        errors={errors as FormErrors<string>}
+        className="grid gap-3 md:grid-cols-2"
+        renderItem={(locale) => {
           const fieldId = `${id}-${locale}`;
+          const localeLabel = (
+            <span className="text-xs uppercase">{locale}</span>
+          );
 
-          return (
-            <FormField
+          return type === 'textarea' ? (
+            <TextareaField
               key={fieldId}
               name={`${id}.${locale}`}
-              errors={errors}
-              htmlFor={fieldId}
-              label={<span className="text-xs uppercase">{locale}</span>}
+              id={fieldId}
+              value={values[locale] ?? ''}
+              errors={errors as FormErrors<string>}
+              label={localeLabel}
               errorId={`${fieldId}-error`}
-            >
-              {({ a11yAttributes, getInputClassName }) =>
-                type === 'textarea' ? (
-                  <Textarea
-                    id={fieldId}
-                    value={values[locale] ?? ''}
-                    onChange={(event) => onChange(locale, event.target.value)}
-                    placeholder={placeholder}
-                    rows={3}
-                    className={getInputClassName()}
-                    {...a11yAttributes}
-                  />
-                ) : (
-                  <Input
-                    id={fieldId}
-                    value={values[locale] ?? ''}
-                    onChange={(event) => onChange(locale, event.target.value)}
-                    placeholder={placeholder}
-                    className={getInputClassName()}
-                    {...a11yAttributes}
-                  />
-                )
-              }
-            </FormField>
+              placeholder={placeholder}
+              rows={3}
+              onChange={(value) => onChange(locale, value)}
+            />
+          ) : (
+            <TextInputField
+              key={fieldId}
+              name={`${id}.${locale}`}
+              id={fieldId}
+              value={values[locale] ?? ''}
+              errors={errors as FormErrors<string>}
+              label={localeLabel}
+              errorId={`${fieldId}-error`}
+              placeholder={placeholder}
+              onChange={(value) => onChange(locale, value)}
+            />
           );
-        })}
-      </div>
+        }}
+      />
     </div>
   );
 }
-

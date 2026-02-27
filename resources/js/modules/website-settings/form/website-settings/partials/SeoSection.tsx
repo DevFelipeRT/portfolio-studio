@@ -1,6 +1,4 @@
-import { FormField, type FormErrors } from '@/common/forms';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Input } from '@/components/ui/input';
+import { CheckboxField, TextInputField, type FormErrors } from '@/common/forms';
 import type { WebsiteSettingsFormData } from '@/modules/website-settings/forms';
 
 import { LocalizedField } from './LocalizedField';
@@ -33,51 +31,32 @@ export function SeoSection({
         </p>
       </div>
 
-      <FormField
+      <TextInputField
         name="canonical_base_url"
+        id="canonical_base_url"
+        value={data.canonical_base_url}
         errors={errors}
-        htmlFor="canonical_base_url"
         label="Canonical base URL"
-      >
-        {({ a11yAttributes, getInputClassName }) => (
-          <Input
-            id="canonical_base_url"
-            value={data.canonical_base_url}
-            onChange={(event) =>
-              onChange('canonical_base_url', event.target.value)
-            }
-            placeholder="https://meusite.com"
-            className={getInputClassName()}
-            {...a11yAttributes}
-          />
-        )}
-      </FormField>
+        placeholder="https://meusite.com"
+        onChange={(value) => onChange('canonical_base_url', value)}
+      />
 
-      <FormField
+      <TextInputField
         name="meta_title_template"
+        id="meta_title_template"
+        value={data.meta_title_template}
         errors={errors}
-        htmlFor="meta_title_template"
         label="Template de title"
-      >
-        {({ a11yAttributes, getInputClassName }) => (
-          <div className="space-y-1.5">
-            <p className="text-muted-foreground text-xs">
-              Tags suportadas: {`{page_title}`}, {`{owner}`}, {`{site}`},{' '}
-              {`{locale}`}.
-            </p>
-            <Input
-              id="meta_title_template"
-              value={data.meta_title_template}
-              onChange={(event) =>
-                onChange('meta_title_template', event.target.value)
-              }
-              placeholder="{page_title} | {owner} | {site}"
-              className={getInputClassName()}
-              {...a11yAttributes}
-            />
-          </div>
-        )}
-      </FormField>
+        hint={
+          <>
+            Tags suportadas: <code>{'{page_title}'}</code>,{' '}
+            <code>{'{owner}'}</code>, <code>{'{site}'}</code>,{' '}
+            <code>{'{locale}'}</code>.
+          </>
+        }
+        placeholder="{page_title} | {owner} | {site}"
+        onChange={(value) => onChange('meta_title_template', value)}
+      />
 
       <LocalizedField
         id="default_meta_title"
@@ -105,177 +84,121 @@ export function SeoSection({
       />
 
       <div className="grid gap-4 md:grid-cols-3">
-        <FormField
+        <TextInputField
           name="default_meta_image_id"
+          id="default_meta_image_id"
+          value={data.default_meta_image_id}
           errors={errors}
-          htmlFor="default_meta_image_id"
           label="Meta image ID"
-        >
-          {({ a11yAttributes, getInputClassName }) => (
-            <Input
-              id="default_meta_image_id"
-              type="number"
-              min={1}
-              value={data.default_meta_image_id}
-              onChange={(event) =>
-                onChange(
-                  'default_meta_image_id',
-                  event.target.value === '' ? '' : Number(event.target.value),
-                )
-              }
-              className={getInputClassName()}
-              {...a11yAttributes}
-            />
-          )}
-        </FormField>
+          type="number"
+          min={1}
+          onChange={(value) =>
+            onChange('default_meta_image_id', value === '' ? '' : Number(value))
+          }
+        />
 
-        <FormField
+        <TextInputField
           name="default_og_image_id"
+          id="default_og_image_id"
+          value={data.default_og_image_id}
           errors={errors}
-          htmlFor="default_og_image_id"
           label="OG image ID"
-        >
-          {({ a11yAttributes, getInputClassName }) => (
-            <Input
-              id="default_og_image_id"
-              type="number"
-              min={1}
-              value={data.default_og_image_id}
-              onChange={(event) =>
-                onChange(
-                  'default_og_image_id',
-                  event.target.value === '' ? '' : Number(event.target.value),
-                )
-              }
-              className={getInputClassName()}
-              {...a11yAttributes}
-            />
-          )}
-        </FormField>
+          type="number"
+          min={1}
+          onChange={(value) =>
+            onChange('default_og_image_id', value === '' ? '' : Number(value))
+          }
+        />
 
-        <FormField
+        <TextInputField
           name="default_twitter_image_id"
+          id="default_twitter_image_id"
+          value={data.default_twitter_image_id}
           errors={errors}
-          htmlFor="default_twitter_image_id"
           label="Twitter image ID"
-        >
-          {({ a11yAttributes, getInputClassName }) => (
-            <Input
-              id="default_twitter_image_id"
-              type="number"
-              min={1}
-              value={data.default_twitter_image_id}
-              onChange={(event) =>
-                onChange(
-                  'default_twitter_image_id',
-                  event.target.value === '' ? '' : Number(event.target.value),
-                )
-              }
-              className={getInputClassName()}
-              {...a11yAttributes}
-            />
-          )}
-        </FormField>
+          type="number"
+          min={1}
+          onChange={(value) =>
+            onChange(
+              'default_twitter_image_id',
+              value === '' ? '' : Number(value),
+            )
+          }
+        />
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <FormField
-          name="robots.public.index"
+        <CheckboxField
+          name="robots.public"
           errors={errors}
-          htmlFor="robots-public-index"
           label="Robots público"
-          errorId="robots-public-index-error"
+          hint="Configuração global para páginas públicas."
           className="space-y-3 rounded-md border p-4"
-        >
-          {({ a11yAttributes }) => (
-            <div {...a11yAttributes}>
-              <p className="text-muted-foreground text-xs">
-                Configuração global para páginas públicas.
-              </p>
-              <div className="flex items-center gap-3">
-                <Checkbox
-                  id="robots-public-index"
-                  checked={data.robots.public.index}
-                  onCheckedChange={(value) =>
-                    onChange('robots', {
-                      ...data.robots,
-                      public: {
-                        ...data.robots.public,
-                        index: Boolean(value),
-                      },
-                    })
-                  }
-                />
-                <span className="text-sm leading-none font-medium">Index</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Checkbox
-                  id="robots-public-follow"
-                  checked={data.robots.public.follow}
-                  onCheckedChange={(value) =>
-                    onChange('robots', {
-                      ...data.robots,
-                      public: {
-                        ...data.robots.public,
-                        follow: Boolean(value),
-                      },
-                    })
-                  }
-                />
-                <span className="text-sm leading-none font-medium">Follow</span>
-              </div>
-            </div>
-          )}
-        </FormField>
+          items={[
+            {
+              id: 'robots-public-index',
+              label: 'Index',
+              value: data.robots.public.index,
+              onChange: (value) =>
+                onChange('robots', {
+                  ...data.robots,
+                  public: {
+                    ...data.robots.public,
+                    index: value,
+                  },
+                }),
+            },
+            {
+              id: 'robots-public-follow',
+              label: 'Follow',
+              value: data.robots.public.follow,
+              onChange: (value) =>
+                onChange('robots', {
+                  ...data.robots,
+                  public: {
+                    ...data.robots.public,
+                    follow: value,
+                  },
+                }),
+            },
+          ]}
+        />
 
-        <FormField
-          name="robots.private.index"
+        <CheckboxField
+          name="robots.private"
           errors={errors}
-          htmlFor="robots-private-index"
           label="Robots privado"
-          errorId="robots-private-index-error"
+          hint="Configuração global para páginas privadas."
           className="space-y-3 rounded-md border p-4"
-        >
-          {({ a11yAttributes }) => (
-            <div {...a11yAttributes}>
-              <p className="text-muted-foreground text-xs">
-                Configuração global para páginas privadas.
-              </p>
-              <div className="flex items-center gap-3">
-                <Checkbox
-                  id="robots-private-index"
-                  checked={data.robots.private.index}
-                  onCheckedChange={(value) =>
-                    onChange('robots', {
-                      ...data.robots,
-                      private: {
-                        ...data.robots.private,
-                        index: Boolean(value),
-                      },
-                    })
-                  }
-                />
-                <span className="text-sm leading-none font-medium">Index</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Checkbox
-                  id="robots-private-follow"
-                  checked={data.robots.private.follow}
-                  onCheckedChange={(value) =>
-                    onChange('robots', {
-                      ...data.robots,
-                      private: {
-                        ...data.robots.private,
-                        follow: Boolean(value),
-                      },
-                    })
-                  }
-                />
-                <span className="text-sm leading-none font-medium">Follow</span>
-              </div>
-            </div>
-          )}
-        </FormField>
+          items={[
+            {
+              id: 'robots-private-index',
+              label: 'Index',
+              value: data.robots.private.index,
+              onChange: (value) =>
+                onChange('robots', {
+                  ...data.robots,
+                  private: {
+                    ...data.robots.private,
+                    index: value,
+                  },
+                }),
+            },
+            {
+              id: 'robots-private-follow',
+              label: 'Follow',
+              value: data.robots.private.follow,
+              onChange: (value) =>
+                onChange('robots', {
+                  ...data.robots,
+                  private: {
+                    ...data.robots.private,
+                    follow: value,
+                  },
+                }),
+            },
+          ]}
+        />
       </div>
     </section>
   );

@@ -1,4 +1,4 @@
-import { TextInputField, type FormErrors } from '@/common/forms';
+import { CollectionField, TextInputField, type FormErrors } from '@/common/forms';
 import { Button } from '@/components/ui/button';
 import type { WebsiteSettingsLink } from '@/modules/website-settings/types';
 
@@ -42,13 +42,21 @@ export function InstitutionalLinksSection({
         </p>
       </div>
 
-      <div className="space-y-4">
-        {links.length === 0 && (
+      <CollectionField
+        name="institutional_links"
+        items={links}
+        errors={errors as FormErrors<string>}
+        emptyState={
           <p className="text-muted-foreground text-sm">
             Nenhum link cadastrado.
           </p>
-        )}
-        {links.map((link, index) => (
+        }
+        actions={
+          <Button type="button" variant="outline" onClick={handleAddLink}>
+            Adicionar link
+          </Button>
+        }
+        renderItem={(link, index) => (
           <div
             key={`link-${index}`}
             className="grid gap-3 rounded-md border p-4 md:grid-cols-[1fr_2fr_auto]"
@@ -81,12 +89,8 @@ export function InstitutionalLinksSection({
               </Button>
             </div>
           </div>
-        ))}
-
-        <Button type="button" variant="outline" onClick={handleAddLink}>
-          Adicionar link
-        </Button>
-      </div>
+        )}
+      />
     </section>
   );
 }
