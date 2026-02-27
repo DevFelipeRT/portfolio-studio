@@ -30,6 +30,7 @@ interface RichTextEditorProps {
   onChange: (value: string) => void;
   placeholder?: string;
   className?: string;
+  contentWrapperClassName?: string;
   editorClassName?: string;
   toolbarClassName?: string;
   showToolbar?: boolean;
@@ -44,6 +45,7 @@ export function RichTextEditor({
   onChange,
   placeholder = 'Start typing rich text content...',
   className,
+  contentWrapperClassName,
   editorClassName,
   toolbarClassName,
   showToolbar = true,
@@ -84,7 +86,13 @@ export function RichTextEditor({
     <div className={cn('space-y-3', className)}>
       <LexicalComposer key={editorId} initialConfig={initialConfig}>
         {showToolbar && <RichTextToolbar className={toolbarClassName} />}
-        <div className="border-input bg-background focus-within:ring-ring relative rounded-md border px-3 py-2 shadow-sm focus-within:ring-1">
+        <div
+          className={cn(
+            'border-input bg-background focus-within:ring-ring relative rounded-md border px-3 py-2 shadow-sm focus-within:ring-1',
+            !editable && 'opacity-50',
+            contentWrapperClassName,
+          )}
+        >
           <RichTextPlugin
             contentEditable={
               <ContentEditable

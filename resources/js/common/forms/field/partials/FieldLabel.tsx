@@ -1,11 +1,12 @@
 'use client';
 
 import { useFormsTranslation } from '@/common/forms/hooks/useFormsTranslation';
-import { Label } from '@/components/ui/label';
+import { FieldLabel as ShadcnFieldLabel } from '@/components/ui/field';
+import { cn } from '@/lib/utils';
 import type { ReactNode } from 'react';
 
 interface FormLabelProps {
-  htmlFor: string;
+  htmlFor?: string;
   required?: boolean;
   children: ReactNode;
   className?: string;
@@ -24,7 +25,10 @@ export function FieldLabel({
   const requiredLabel = translate('labels.required', 'Required');
 
   return (
-    <Label htmlFor={htmlFor} className={className}>
+    <ShadcnFieldLabel
+      htmlFor={htmlFor}
+      className={cn(className)}
+    >
       {children}
       {required && (
         <>
@@ -34,6 +38,6 @@ export function FieldLabel({
           <span className="sr-only"> ({requiredLabel})</span>
         </>
       )}
-    </Label>
+    </ShadcnFieldLabel>
   );
 }

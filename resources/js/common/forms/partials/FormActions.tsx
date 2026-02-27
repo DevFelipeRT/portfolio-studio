@@ -56,9 +56,15 @@ export function FormActions({
   const Container = as;
 
   const containerClassName = cn(
-    'flex flex-col-reverse items-center gap-3 sm:flex-row sm:items-center sm:justify-end',
+    'flex flex-col-reverse items-center gap-3 sm:flex-row sm:items-center',
+    showDelete ? 'sm:justify-between' : 'sm:justify-end',
     borderedTop ? 'border-t pt-4' : null,
     className,
+  );
+
+  const rightGroupClassName = cn(
+    'flex flex-col-reverse items-center gap-3 sm:flex-row sm:items-center sm:justify-end',
+    'w-full sm:w-auto',
   );
 
   const cancelControl =
@@ -97,7 +103,6 @@ export function FormActions({
 
   return (
     <Container className={containerClassName}>
-      {cancelControl}
       {showDelete ? (
         <Link
           href={deleteHref!}
@@ -108,7 +113,11 @@ export function FormActions({
           {resolvedDeleteLabel}
         </Link>
       ) : null}
-      {submitControl}
+
+      <div className={rightGroupClassName}>
+        {cancelControl}
+        {submitControl}
+      </div>
     </Container>
   );
 }

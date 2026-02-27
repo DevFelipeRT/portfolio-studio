@@ -7,11 +7,20 @@ export function getFieldA11yAttributes(
   error: string | null,
   errorId: string,
   required = false,
+  hintId?: string,
 ): FieldA11yAttributes {
   const attributes: FieldA11yAttributes = {};
 
   if (required) {
     attributes['aria-required'] = true;
+  }
+
+  const describedBy = [hintId, error ? errorId : null]
+    .filter(Boolean)
+    .join(' ');
+
+  if (describedBy) {
+    attributes['aria-describedby'] = describedBy;
   }
 
   if (!error) {
@@ -21,7 +30,6 @@ export function getFieldA11yAttributes(
   return {
     ...attributes,
     'aria-invalid': true,
-    'aria-describedby': errorId,
     'aria-errormessage': errorId,
   };
 }

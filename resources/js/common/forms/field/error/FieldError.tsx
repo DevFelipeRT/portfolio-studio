@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils';
+import { FieldError as ShadcnFieldError } from '@/components/ui/field';
 
 interface FieldErrorProps {
   id?: string;
@@ -19,13 +19,8 @@ export function FieldError({
   }
 
   return (
-    <p
-      id={id}
-      role="alert"
-      aria-atomic="true"
-      className={cn('text-destructive text-sm font-medium', className)}
-    >
+    <ShadcnFieldError id={id} className={className}>
       {message}
-    </p>
+    </ShadcnFieldError>
   );
 }
