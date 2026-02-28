@@ -1,13 +1,13 @@
 'use client';
 
 import { NAMESPACES } from '@/common/i18n/config/namespaces';
-import type { Namespace, TranslationParams } from '@/common/i18n/core/types';
+import type { Namespace, PlaceholderValues } from '@/common/i18n/core/types';
 import { I18nContext } from '@/common/i18n/react/I18nContext';
 import { useContext } from 'react';
 
 type TranslationFunction = {
-  (key: string, params?: TranslationParams): string;
-  (key: string, fallback: string, params?: TranslationParams): string;
+  (key: string, params?: PlaceholderValues): string;
+  (key: string, fallback: string, params?: PlaceholderValues): string;
 };
 
 type UseFormsTranslationResult = {
@@ -26,10 +26,10 @@ export function useFormsTranslation(
 
   const translate: TranslationFunction = (
     key: string,
-    secondArgument?: TranslationParams | string,
-    thirdArgument?: TranslationParams,
+    secondArgument?: PlaceholderValues | string,
+    thirdArgument?: PlaceholderValues,
   ): string => {
-    let parameters: TranslationParams | undefined;
+    let parameters: PlaceholderValues | undefined;
     let fallbackText: string | undefined;
 
     if (typeof secondArgument === 'string') {
@@ -61,4 +61,3 @@ export function useFormsTranslation(
     translate,
   };
 }
-

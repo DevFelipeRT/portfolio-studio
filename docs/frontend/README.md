@@ -54,6 +54,8 @@ Note: the frontend currently doesn’t read `props.ziggy` directly (it relies on
 
 Localization metadata (locale + supported locales) is shared to the client via the Inertia middleware, and frontend i18n code lives under `resources/js/common/i18n/`. Evidence: `app/Modules/Inertia/Http/Middleware/HandleInertiaRequests.php`, `resources/js/common/i18n/`.
 
+Translation catalogs are loaded lazily via Vite `import.meta.glob` and follow the convention `.../locales/<locale>/<namespace>.ts`. Namespaces are intentionally free-form (modules may organize them however they want, e.g. `forms`, `table`, `list`) as long as they follow that folder/file naming convention. Evidence: `resources/js/common/i18n/core/translatorProvider.ts`, `resources/js/common/i18n/setup.ts`.
+
 Build config keeps locale catalogs code-split by locale. Evidence: `vite.config.js`.
 
 ## Common admin UX patterns

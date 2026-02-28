@@ -1,173 +1,39 @@
-import { NAMESPACES } from './config/namespaces';
-import { createLocaleResolver } from './core/localeResolver';
-import { createTranslationResolver } from './core/translationResolver';
+import { createLocaleResolver } from './core/locale';
+import type { Locale } from './core/types';
 import {
-    Locale,
-    Namespace,
-    NamespacedCatalog,
-    TranslationTree,
-} from './core/types';
-
-const namespaceValues = Object.values(NAMESPACES);
-const KNOWN_NAMESPACES = new Set<string>(namespaceValues);
+    createTranslatorProviderFromLoaders,
+    type MissingPathInfo,
+    type TranslatorFactoryConfig,
+    type TranslatorProvider,
+    type TranslationModuleLoaders,
+} from './core/translation';
 
 /**
- * Loads translation modules on-demand to avoid bundling every locale into the
- * initial JavaScript payload.
+ * Default app-wide translation loaders.
  *
- * Assumes a structure of:
+ * Structure convention:
  * - ./locales/{locale}/{namespace}.ts
  * - ../../modules/<any>/locales/{locale}/{namespace}.ts
  */
 const translationModuleLoaders = {
     ...import.meta.glob('./locales/*/*.ts'),
     ...import.meta.glob('../../modules/**/locales/*/*.ts'),
-} as Record<string, () => Promise<{ default: TranslationTree }>>;
-
-type TranslationModuleMeta = {
-    locale: Locale;
-    namespace: Namespace;
-};
-
-function parseTranslationModulePath(
-    modulePath: string,
-): TranslationModuleMeta | null {
-    const parts = modulePath.split('/');
-    const fileName = parts.pop();
-    const folderName = parts.pop();
-
-    if (!fileName || !folderName) {
-        return null;
-    }
-
-    const namespace = fileName.replace('.ts', '');
-    const locale = folderName;
-
-    if (!KNOWN_NAMESPACES.has(namespace)) {
-        if (import.meta.env.DEV) {
-            // eslint-disable-next-line no-console
-            console.warn(
-                `[i18n] Skipped unknown namespace "${namespace}" found in ${modulePath}`,
-            );
-        }
-        return null;
-    }
-
-    return {
-        locale: locale as Locale,
-        namespace: namespace as Namespace,
-    };
-}
-
-type LocaleLoaderEntry = {
-    namespace: Namespace;
-    loader: () => Promise<{ default: TranslationTree }>;
-};
-
-const loadersByLocale = new Map<Locale, LocaleLoaderEntry[]>();
-const namespacesByLocale = new Map<Locale, Set<Namespace>>();
-
-Object.entries(translationModuleLoaders).forEach(([modulePath, loader]) => {
-    const meta = parseTranslationModulePath(modulePath);
-    if (!meta) {
-        return;
-    }
-
-    const entries = loadersByLocale.get(meta.locale) ?? [];
-    entries.push({ namespace: meta.namespace, loader });
-    loadersByLocale.set(meta.locale, entries);
-
-    const namespaces = namespacesByLocale.get(meta.locale) ?? new Set<Namespace>();
-    namespaces.add(meta.namespace);
-    namespacesByLocale.set(meta.locale, namespaces);
-});
-
-const supportedLocales = Object.freeze(Array.from(loadersByLocale.keys()));
-const loadedCatalogs: Partial<Record<Locale, NamespacedCatalog>> = {};
-const localeLoadPromises = new Map<Locale, Promise<void>>();
-
-async function preloadLocale(locale: Locale): Promise<void> {
-    if (loadedCatalogs[locale]) {
-        return;
-    }
-
-    const inFlight = localeLoadPromises.get(locale);
-    if (inFlight) {
-        return inFlight;
-    }
-
-    const entries = loadersByLocale.get(locale) ?? [];
-
-    const promise = Promise.all(
-        entries.map(async ({ namespace, loader }) => {
-            const mod = await loader();
-            return [namespace, mod.default] as const;
-        }),
-    )
-        .then((pairs) => {
-            const catalog: NamespacedCatalog = {} as NamespacedCatalog;
-            pairs.forEach(([namespace, tree]) => {
-                catalog[namespace] = tree;
-            });
-            loadedCatalogs[locale] = catalog;
-        })
-        .finally(() => {
-            localeLoadPromises.delete(locale);
-        });
-
-    localeLoadPromises.set(locale, promise);
-    return promise;
-}
+} as TranslationModuleLoaders;
 
 /**
- * Catalog provider that serves translations from an in-memory cache populated via
- * `preloadLocale`. Translation lookup stays synchronous.
+ * Default app-wide provider, backed by Vite glob loaders.
+ *
+ * Domains that want a different internal namespace organization can create their
+ * own provider via `createTranslatorProviderFromLoaders(...)`.
  */
-export type PreloadableCatalogProvider = ReturnType<typeof createCatalogProvider> & {
-    preloadLocale(locale: Locale): Promise<void>;
-};
+export const translatorProvider: TranslatorProvider =
+    createTranslatorProviderFromLoaders(translationModuleLoaders);
 
-function createCatalogProvider() {
-    return {
-        getSupportedLocales(): readonly Locale[] {
-            return supportedLocales;
-        },
-        getNamespaces(locale: Locale): readonly Namespace[] {
-            const namespaces = namespacesByLocale.get(locale);
-            if (!namespaces) {
-                return [];
-            }
-            return Array.from(namespaces);
-        },
-        getCatalog(locale: Locale, namespace: Namespace): TranslationTree | null {
-            const catalog = loadedCatalogs[locale];
-            if (!catalog) {
-                if (import.meta.env.DEV) {
-                    // eslint-disable-next-line no-console
-                    console.warn(
-                        `[i18n] Catalog for locale "${locale}" is not loaded yet.`,
-                    );
-                }
-                return null;
-            }
-
-            const tree = catalog[namespace];
-            if (!tree && import.meta.env.DEV) {
-                // eslint-disable-next-line no-console
-                console.warn(
-                    `[i18n] Missing catalog for locale "${locale}" and namespace "${namespace}".`,
-                );
-            }
-
-            return tree ?? null;
-        },
-    };
-}
-
-export const catalogProvider: PreloadableCatalogProvider = Object.assign(
-    createCatalogProvider(),
-    { preloadLocale },
-);
+/**
+ * Back-compat export: the provider also implements the catalog methods used by
+ * the previous API surface.
+ */
+export const catalogProvider = translatorProvider;
 
 export type RuntimeLocalizationConfig = {
     supportedLocales?: unknown;
@@ -220,11 +86,9 @@ function normalizeRuntimeConfig(
 }
 
 /**
- * Instantiates the locale and translation resolvers based on runtime configuration.
+ * Instantiates the locale resolver and a configured Translator based on runtime configuration.
  */
-export function createI18nEnvironment(
-    runtimeConfig: RuntimeLocalizationConfig,
-) {
+export function createI18nEnvironment(runtimeConfig: RuntimeLocalizationConfig) {
     const normalized = normalizeRuntimeConfig(runtimeConfig);
 
     const localeResolver = createLocaleResolver({
@@ -232,22 +96,23 @@ export function createI18nEnvironment(
         defaultLocale: normalized.defaultLocale,
     });
 
-    const translationResolver = createTranslationResolver({
-        catalogProvider,
+    const translatorConfig: TranslatorFactoryConfig = {
         fallbackLocale: normalized.fallbackLocale,
-        onMissingKey(info) {
+        onMissingKey(info: MissingPathInfo) {
             if (import.meta.env.DEV) {
                 // eslint-disable-next-line no-console
                 console.warn(
-                    `[i18n] Missing key "${info.namespace}.${info.key}" for locale "${info.locale}".`,
+                    `[i18n] Missing key "${info.namespace}.${info.path}" for locale "${info.locale}".`,
                 );
             }
         },
-    });
+    };
+
+    const translator = translatorProvider.createTranslator(translatorConfig);
 
     return {
         localeResolver,
-        translationResolver,
-        catalogProvider,
+        translator,
+        translatorProvider,
     };
 }

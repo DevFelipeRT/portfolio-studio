@@ -1,12 +1,12 @@
 'use client';
 
 import { useContext } from 'react';
-import type { Namespace, TranslationParams } from '../../core/types';
+import type { Namespace, PlaceholderValues } from '../../core/types';
 import { I18nContext } from '../I18nContext';
 
 type TranslationFunction = {
-    (key: string, params?: TranslationParams): string;
-    (key: string, fallback: string, params?: TranslationParams): string;
+    (key: string, params?: PlaceholderValues): string;
+    (key: string, fallback: string, params?: PlaceholderValues): string;
 };
 
 export interface UseTranslationResult {
@@ -36,10 +36,10 @@ export function useTranslation(namespace?: Namespace): UseTranslationResult {
 
     const translateWithNamespace: TranslationFunction = (
         key: string,
-        secondArgument?: TranslationParams | string,
-        thirdArgument?: TranslationParams,
+        secondArgument?: PlaceholderValues | string,
+        thirdArgument?: PlaceholderValues,
     ): string => {
-        let parameters: TranslationParams | undefined;
+        let parameters: PlaceholderValues | undefined;
         let fallbackText: string | undefined;
 
         if (typeof secondArgument === 'string') {

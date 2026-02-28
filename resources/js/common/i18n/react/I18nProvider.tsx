@@ -1,18 +1,18 @@
 'use client';
 
 import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { LocaleResolver } from '../core/localeResolver';
-import type { TranslationResolver } from '../core/translationResolver';
-import type { Locale, Namespace, TranslationParams } from '../core/types';
+import type { LocaleResolver } from '../core/locale';
+import type { Translator } from '../core/translation';
+import type { Locale, Namespace, PlaceholderValues } from '../core/types';
 import { I18nContext } from './I18nContext';
 
 type I18nProviderProps = {
     children: ReactNode;
     initialLocale: string | null;
     localeResolver: LocaleResolver;
-    translationResolver: TranslationResolver;
+    translator: Translator;
     fallbackLocale?: string | null;
-    catalogProvider?: {
+    translatorProvider?: {
         preloadLocale?(locale: Locale): Promise<void>;
     };
     loadingFallback?: ReactNode;
@@ -33,9 +33,9 @@ export function I18nProvider({
     children,
     initialLocale,
     localeResolver,
-    translationResolver,
+    translator,
     fallbackLocale = null,
-    catalogProvider,
+    translatorProvider,
     loadingFallback = null,
     loadingOverlay = null,
     loadingOverlayDelayMs = 250,
@@ -76,7 +76,7 @@ export function I18nProvider({
     useEffect(() => {
         let cancelled = false;
 
-        const preload = catalogProvider?.preloadLocale;
+        const preload = translatorProvider?.preloadLocale;
         if (typeof preload !== 'function') {
             setIsCatalogReady(true);
             setHasLoadedOnce(true);
@@ -148,7 +148,7 @@ export function I18nProvider({
     }, [
         activeLocale,
         pendingLocale,
-        catalogProvider,
+        translatorProvider,
         resolvedFallbackLocale,
         hasLoadedOnce,
         loadingFallback,
@@ -168,15 +168,15 @@ export function I18nProvider({
     );
 
     const translate = useCallback(
-        (key: string, params?: TranslationParams, namespace?: Namespace) => {
-            return translationResolver.translate(
+        (key: string, params?: PlaceholderValues, namespace?: Namespace) => {
+            return translator.translate(
                 activeLocale,
                 namespace,
                 key,
                 params,
             );
         },
-        [activeLocale, translationResolver],
+        [activeLocale, translator],
     );
 
     const contextValue = useMemo(
