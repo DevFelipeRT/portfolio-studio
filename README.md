@@ -140,6 +140,9 @@ This repository includes GitHub Actions workflows under [`.github/workflows/`](.
   - Runs `npm ci` + `npm run build` and force-pushes `public/build` into a `frontend-dist` branch.
 - Frontend deploy from `frontend-dist`: [`.github/workflows/frontend-deploy.yml`](.github/workflows/frontend-deploy.yml)
   - Uses `rsync` over SSH to upload `public/build` to the server.
+  - Deploy target:
+    - If `TARGET_DIR` ends with `/public`, uploads into `${TARGET_DIR}/build/`.
+    - Otherwise, uploads into `${TARGET_DIR}/public/build/` (Laravel app root).
   - Requires secrets: `SSH_PRIVATE_KEY`, `KNOWN_HOSTS`, `HOST`, `PORT`, `USERNAME`, `TARGET_DIR`.
 
 ## Documentation map
