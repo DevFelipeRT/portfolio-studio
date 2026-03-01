@@ -43,7 +43,18 @@ jobs:
         run: |
           set -euo pipefail
 
+          # Historically, TARGET_DIR has been used inconsistently:
+          # - some setups point it at the Laravel app root (expects /public/build)
+          # - others point it at the webroot (…/public) (expects /build)
+          #
+          # Keep backward compatibility by detecting the intent from the path.
+          if [[ "${TARGET_DIR%/}" == */public ]]; then
+            DEST_DIR="${TARGET_DIR%/}/build/"
+          else
+            DEST_DIR="${TARGET_DIR%/}/public/build/"
+          fi
+
           rsync -az --delete \
             -e "ssh -p ${PORT} -o StrictHostKeyChecking=yes" \
             public/build/ \
-            "${USERNAME}@${HOST}:${TARGET_DIR%/}/build/"
+            "${USERNAME}@${HOST}:${DEST_DIR}"
