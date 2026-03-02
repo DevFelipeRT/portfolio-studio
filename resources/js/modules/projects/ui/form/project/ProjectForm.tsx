@@ -10,7 +10,7 @@ import {
   TextareaField,
   TextInputField,
 } from '@/common/forms';
-import { useTranslation } from '@/common/i18n';
+import { useProjectsTranslation, PROJECTS_NAMESPACES } from '@/modules/projects/i18n';
 
 import { getErrorSummaryFields } from './errorSummaryFields';
 import { ImagesSection } from './partials/ImagesSection';
@@ -40,8 +40,11 @@ export function ProjectForm({
   onUpdateImageAlt,
   onUpdateImageFile,
 }: ProjectFormProps) {
-  const { translate: t } = useTranslation('projects');
-  const summaryFields = getErrorSummaryFields(errors, t);
+  const { translate: tSections } = useProjectsTranslation(
+    PROJECTS_NAMESPACES.sections,
+  );
+  const { translate: tForm } = useProjectsTranslation(PROJECTS_NAMESPACES.form);
+  const summaryFields = getErrorSummaryFields(errors, tForm);
 
   return (
     <Form
@@ -50,10 +53,13 @@ export function ProjectForm({
       variant="spacious"
       errorSummaryFields={summaryFields}
     >
-
       <section className="space-y-4">
         <FormHeader
-          title={<h2 className="text-lg font-medium">Basic information</h2>}
+          title={
+            <h2 className="text-lg font-medium">
+              {tSections('basicInformation')}
+            </h2>
+          }
           localeFieldProps={{
             value: data.locale,
             locales: supportedLocales,
@@ -76,7 +82,7 @@ export function ProjectForm({
             id="name"
             value={data.name}
             errors={errors}
-            label="Name"
+            label={tForm('fields.name.label')}
             required
             onChange={(value) => onChangeField('name', value)}
           />
@@ -86,9 +92,9 @@ export function ProjectForm({
             id="status"
             value={data.status}
             errors={errors}
-            label="Status"
+            label={tForm('fields.status.label')}
             required
-            placeholder="Example: draft, published"
+            placeholder={tForm('fields.status.placeholder')}
             onChange={(value) => onChangeField('status', value)}
           />
         </div>
@@ -98,7 +104,7 @@ export function ProjectForm({
           id="summary"
           value={data.summary}
           errors={errors}
-          label="Summary"
+          label={tForm('fields.summary.label')}
           required
           rows={3}
           onChange={(value) => onChangeField('summary', value)}
@@ -109,7 +115,7 @@ export function ProjectForm({
           id="description"
           value={data.description}
           errors={errors}
-          label="Description"
+          label={tForm('fields.description.label')}
           required
           onChange={(value) => onChangeField('description', value)}
         />
@@ -119,13 +125,13 @@ export function ProjectForm({
           id="display"
           value={data.display}
           errors={errors}
-          label="Display on landing"
+          label={tForm('fields.display.label')}
           onChange={(value) => onChangeField('display', value)}
         />
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-lg font-medium">Links</h2>
+        <h2 className="text-lg font-medium">{tSections('links')}</h2>
 
         <div className="grid gap-4 md:grid-cols-2">
           <TextInputField
@@ -133,7 +139,7 @@ export function ProjectForm({
             id="repository_url"
             value={data.repository_url}
             errors={errors}
-            label="Repository URL"
+            label={tForm('fields.repository_url.label')}
             onChange={(value) => onChangeField('repository_url', value)}
           />
 
@@ -142,7 +148,7 @@ export function ProjectForm({
             id="live_url"
             value={data.live_url}
             errors={errors}
-            label="Live URL"
+            label={tForm('fields.live_url.label')}
             onChange={(value) => onChangeField('live_url', value)}
           />
         </div>
