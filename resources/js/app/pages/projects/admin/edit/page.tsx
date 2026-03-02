@@ -1,6 +1,6 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import type { FormErrors } from '@/common/forms';
-import { useSupportedLocales, useTranslation } from '@/common/i18n';
+import { useSupportedLocales } from '@/common/i18n';
 import { LocaleSwapDialog } from '@/common/LocaleSwapDialog';
 import { Button } from '@/components/ui/button';
 import { listProjectTranslations } from '@/modules/projects/core/api/translations';
@@ -9,6 +9,11 @@ import type {
   ProjectFormData,
 } from '@/modules/projects/core/forms';
 import type { Project, ProjectImage } from '@/modules/projects/core/types';
+import {
+  ProjectsI18nProvider,
+  useProjectsTranslation,
+} from '@/modules/projects/i18n';
+import { PROJECTS_NAMESPACES } from '@/modules/projects/i18n';
 import { ProjectForm } from '@/modules/projects/ui/form/project';
 import { TranslationModal } from '@/modules/projects/ui/TranslationModal';
 import type { Skill } from '@/modules/skills/core/types';
@@ -24,7 +29,6 @@ interface EditProjectProps {
  * Edit project page that wires Inertia form state to the reusable ProjectForm.
  */
 export default function Edit({ project, skills }: EditProjectProps) {
-  const { translate: t } = useTranslation('projects');
   const supportedLocales = useSupportedLocales();
   const existingImages: ProjectImage[] = project.images ?? [];
 
@@ -178,92 +182,173 @@ export default function Edit({ project, skills }: EditProjectProps) {
   };
 
   return (
-    <AuthenticatedLayout
-      header={
-        <h1 className="text-xl leading-tight font-semibold">Edit project</h1>
-      }
-    >
-      <Head title={`Edit project: ${project.name}`} />
+    <ProjectsI18nProvider>
+      <AuthenticatedLayout header={<EditProjectHeader />}>
+        <Head title={`Edit project: ${project.name}`} />
 
-      <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="overflow-hidden">
-          <div className="mb-4 flex items-center justify-between gap-3">
-            <Link
-              href={route('projects.index')}
-              className="text-muted-foreground hover:text-foreground text-sm"
-            >
-              Back to projects
-            </Link>
-
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => setTranslationOpen(true)}
-            >
-              {t('translations.manage')}
-            </Button>
-          </div>
-
-          <ProjectForm
-            skills={skills}
-            existingImages={existingImages}
-            projectId={project.id}
-            data={data}
-            errors={formErrors}
-            processing={processing}
-            cancelHref={route('projects.index')}
-            submitLabel="Save changes"
-            supportedLocales={supportedLocales}
-            localeDisabled={loadingTranslations || Boolean(localesLoadError)}
-            onSubmit={submit}
-            onChangeField={changeField}
-            onChangeLocale={handleLocaleChange}
-            onChangeSkillIds={changeSkillIds}
-            onAddImageRow={addImageRow}
-            onRemoveImageRow={removeImageRow}
-            onUpdateImageAlt={updateImageAlt}
-            onUpdateImageFile={updateImageFile}
-          />
-
-          {localesLoadError && (
-            <p className="text-muted-foreground mt-3 text-xs">
-              {localesLoadError}
-            </p>
-          )}
-        </div>
-      </div>
-
-      <TranslationModal
-        open={translationOpen}
-        onClose={() => setTranslationOpen(false)}
-        projectId={project.id}
-        projectLabel={project.name}
-        baseLocale={data.locale}
-      />
-
-      {pendingLocale && (
-        <LocaleSwapDialog
-          open={swapDialogOpen}
-          currentLocale={data.locale}
-          nextLocale={pendingLocale}
-          onConfirmSwap={() => {
-            setData('confirm_swap', true);
-            setData('locale', pendingLocale);
-            setSwapDialogOpen(false);
-            setPendingLocale(null);
-          }}
-          onConfirmNoSwap={() => {
-            setData('confirm_swap', false);
-            setData('locale', pendingLocale);
-            setSwapDialogOpen(false);
-            setPendingLocale(null);
-          }}
-          onCancel={() => {
-            setSwapDialogOpen(false);
-            setPendingLocale(null);
-          }}
+        <EditProjectContent
+          project={project}
+          skills={skills}
+          existingImages={existingImages}
+          supportedLocales={supportedLocales}
+          data={data}
+          formErrors={formErrors}
+          processing={processing}
+          localesLoadError={localesLoadError}
+          loadingTranslations={loadingTranslations}
+          onSubmit={submit}
+          onChangeField={changeField}
+          onChangeLocale={handleLocaleChange}
+          onChangeSkillIds={changeSkillIds}
+          onAddImageRow={addImageRow}
+          onRemoveImageRow={removeImageRow}
+          onUpdateImageAlt={updateImageAlt}
+          onUpdateImageFile={updateImageFile}
+          onOpenTranslations={() => setTranslationOpen(true)}
         />
-      )}
-    </AuthenticatedLayout>
+
+        <TranslationModal
+          open={translationOpen}
+          onClose={() => setTranslationOpen(false)}
+          projectId={project.id}
+          projectLabel={project.name}
+          baseLocale={data.locale}
+        />
+
+        {pendingLocale && (
+          <LocaleSwapDialog
+            open={swapDialogOpen}
+            currentLocale={data.locale}
+            nextLocale={pendingLocale}
+            onConfirmSwap={() => {
+              setData('confirm_swap', true);
+              setData('locale', pendingLocale);
+              setSwapDialogOpen(false);
+              setPendingLocale(null);
+            }}
+            onConfirmNoSwap={() => {
+              setData('confirm_swap', false);
+              setData('locale', pendingLocale);
+              setSwapDialogOpen(false);
+              setPendingLocale(null);
+            }}
+            onCancel={() => {
+              setSwapDialogOpen(false);
+              setPendingLocale(null);
+            }}
+          />
+        )}
+      </AuthenticatedLayout>
+    </ProjectsI18nProvider>
+  );
+}
+
+function EditProjectHeader() {
+  const { translate: tActions } = useProjectsTranslation(
+    PROJECTS_NAMESPACES.actions,
+  );
+  return (
+    <h1 className="text-xl leading-tight font-semibold">
+      {tActions('editProject')}
+    </h1>
+  );
+}
+
+type EditProjectContentProps = {
+  project: Project;
+  skills: Skill[];
+  existingImages: ProjectImage[];
+  supportedLocales: string[];
+  data: ProjectFormData;
+  formErrors: FormErrors<keyof ProjectFormData>;
+  processing: boolean;
+  localesLoadError: string | null;
+  loadingTranslations: boolean;
+  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+  onChangeField: <K extends keyof ProjectFormData>(
+    key: K,
+    value: ProjectFormData[K],
+  ) => void;
+  onChangeLocale: (locale: string) => void;
+  onChangeSkillIds: (ids: number[]) => void;
+  onAddImageRow: () => void;
+  onRemoveImageRow: (index: number) => void;
+  onUpdateImageAlt: (index: number, value: string) => void;
+  onUpdateImageFile: (
+    index: number,
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => void;
+  onOpenTranslations: () => void;
+};
+
+function EditProjectContent({
+  project,
+  skills,
+  existingImages,
+  supportedLocales,
+  data,
+  formErrors,
+  processing,
+  localesLoadError,
+  loadingTranslations,
+  onSubmit,
+  onChangeField,
+  onChangeLocale,
+  onChangeSkillIds,
+  onAddImageRow,
+  onRemoveImageRow,
+  onUpdateImageAlt,
+  onUpdateImageFile,
+  onOpenTranslations,
+}: EditProjectContentProps) {
+  const { translate: tActions } = useProjectsTranslation(
+    PROJECTS_NAMESPACES.actions,
+  );
+  const { translate: tTranslations } = useProjectsTranslation(
+    PROJECTS_NAMESPACES.translations,
+  );
+
+  return (
+    <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="overflow-hidden">
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <Link
+            href={route('projects.index')}
+            className="text-muted-foreground hover:text-foreground text-sm"
+          >
+            {tActions('backToIndex')}
+          </Link>
+
+          <Button type="button" variant="secondary" onClick={onOpenTranslations}>
+            {tTranslations('manage')}
+          </Button>
+        </div>
+
+        <ProjectForm
+          skills={skills}
+          existingImages={existingImages}
+          projectId={project.id}
+          data={data}
+          errors={formErrors}
+          processing={processing}
+          cancelHref={route('projects.index')}
+          submitLabel={tActions('saveChanges')}
+          supportedLocales={supportedLocales}
+          localeDisabled={loadingTranslations || Boolean(localesLoadError)}
+          onSubmit={onSubmit}
+          onChangeField={onChangeField}
+          onChangeLocale={onChangeLocale}
+          onChangeSkillIds={onChangeSkillIds}
+          onAddImageRow={onAddImageRow}
+          onRemoveImageRow={onRemoveImageRow}
+          onUpdateImageAlt={onUpdateImageAlt}
+          onUpdateImageFile={onUpdateImageFile}
+        />
+
+        {localesLoadError && (
+          <p className="text-muted-foreground mt-3 text-xs">{localesLoadError}</p>
+        )}
+      </div>
+    </div>
   );
 }
