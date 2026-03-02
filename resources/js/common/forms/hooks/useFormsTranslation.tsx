@@ -1,6 +1,6 @@
 'use client';
 
-import { NAMESPACES } from '@/common/i18n/config/namespaces';
+import { I18N_NAMESPACES } from '@/common/i18n';
 import type { Namespace, PlaceholderValues } from '@/common/i18n/core/types';
 import { I18nContext } from '@/common/i18n/react/I18nContext';
 import { useContext } from 'react';
@@ -20,7 +20,7 @@ type UseFormsTranslationResult = {
  * (e.g. in isolated form stories/tests). Falls back to the provided fallback text.
  */
 export function useFormsTranslation(
-  namespace: Namespace = NAMESPACES.common,
+  namespace: Namespace = I18N_NAMESPACES.form,
 ): UseFormsTranslationResult {
   const context = useContext(I18nContext);
 
