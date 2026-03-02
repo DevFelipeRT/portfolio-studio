@@ -3,7 +3,8 @@
 import ApplicationLogo from '@/app/layouts/partials/application-logo/ApplicationLogo';
 import { ModeToggle } from '@/app/layouts/partials/theme/ModeToggle';
 import { UserMenu } from '@/app/layouts/partials/UserMenu';
-import { SystemLanguageSelectorContainer, useTranslation } from '@/common/i18n';
+import { LocaleSwitcher } from '@/common/i18n';
+import { useLayoutsTranslation } from '@/app/layouts/i18n';
 import { Link, usePage } from '@inertiajs/react';
 import { PropsWithChildren } from 'react';
 
@@ -29,14 +30,19 @@ type SharedProps = {
  * The header is sticky at the top to remain persistent while scrolling.
  */
 export default function Header({ children }: PropsWithChildren) {
+  return <HeaderI18nContent>{children}</HeaderI18nContent>;
+}
+
+function HeaderI18nContent({ children }: PropsWithChildren) {
   const { auth } = usePage().props as SharedProps;
   const user = auth.user;
 
-  const { translate } = useTranslation('layout');
+  const { translate: tHeader } = useLayoutsTranslation('header');
+  const { translate: tNavigation } = useLayoutsTranslation('navigation');
 
-  const headerLabel = translate('header.landmarkLabel', 'Application header');
+  const headerLabel = tHeader('landmarkLabel', 'Application header');
 
-  const homeLabel = translate('header.brand.homeLabel', 'Go to home page');
+  const homeLabel = tHeader('brand.homeLabel', 'Go to home page');
 
   return (
     <header
@@ -60,10 +66,7 @@ export default function Header({ children }: PropsWithChildren) {
         <div
           className="order-3 flex items-center justify-center gap-4 md:order-2 md:flex-[2]"
           role="navigation"
-          aria-label={translate(
-            'header.navigation.primaryLabel',
-            'Primary navigation',
-          )}
+          aria-label={tNavigation('primaryLabel', 'Primary navigation')}
         >
           {children}
         </div>
@@ -71,7 +74,7 @@ export default function Header({ children }: PropsWithChildren) {
         {/* Mode toggle + user menu (desktop) */}
         <div className="order-2 flex flex-1 items-center justify-end gap-3 md:order-3">
           <ModeToggle />
-          <SystemLanguageSelectorContainer />
+          <LocaleSwitcher />
           {user && (
             <div className="hidden md:flex">
               <UserMenu user={user} variant="icon" />
