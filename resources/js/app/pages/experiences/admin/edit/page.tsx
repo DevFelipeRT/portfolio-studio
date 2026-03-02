@@ -174,7 +174,7 @@ type EditExperienceI18nContentProps = {
   data: ExperienceFormData;
   formErrors: FormErrors<keyof ExperienceFormData>;
   processing: boolean;
-  supportedLocales: string[];
+  supportedLocales: readonly string[];
   localesLoadError: string | null;
   loadingTranslations: boolean;
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;

@@ -73,7 +73,7 @@ type CreateExperienceI18nContentProps = {
   data: ExperienceFormData;
   formErrors: FormErrors<keyof ExperienceFormData>;
   processing: boolean;
-  supportedLocales: string[];
+  supportedLocales: readonly string[];
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
   onChange: <K extends ExperienceEditableField>(
     field: K,

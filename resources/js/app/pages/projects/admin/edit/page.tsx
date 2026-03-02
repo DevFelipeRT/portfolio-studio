@@ -258,7 +258,7 @@ type EditProjectContentProps = {
   project: Project;
   skills: Skill[];
   existingImages: ProjectImage[];
-  supportedLocales: string[];
+  supportedLocales: readonly string[];
   data: ProjectFormData;
   formErrors: FormErrors<keyof ProjectFormData>;
   processing: boolean;

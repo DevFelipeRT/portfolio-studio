@@ -141,7 +141,7 @@ function CreateProjectHeader() {
 
 type CreateProjectContentProps = {
   skills: Skill[];
-  supportedLocales: string[];
+  supportedLocales: readonly string[];
   data: ProjectFormData;
   formErrors: FormErrors<keyof ProjectFormData>;
   processing: boolean;
