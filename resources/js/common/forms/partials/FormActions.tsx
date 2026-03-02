@@ -1,6 +1,7 @@
 'use client';
 
 import { useFormsTranslation } from '@/common/forms/hooks/useFormsTranslation';
+import { I18N_NAMESPACES } from '@/common/i18n';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Link } from '@inertiajs/react';
@@ -44,12 +45,10 @@ export function FormActions({
   as = 'div',
   className,
 }: FormActionsProps) {
-  const { translate } = useFormsTranslation();
+  const { translate } = useFormsTranslation(I18N_NAMESPACES.actions);
 
-  const resolvedCancelLabel =
-    cancelLabel ?? translate('actions.cancel', 'Cancel');
-  const resolvedDeleteLabel =
-    deleteLabel ?? translate('actions.delete', 'Delete');
+  const resolvedCancelLabel = cancelLabel ?? translate('cancel', 'Cancel');
+  const resolvedDeleteLabel = deleteLabel ?? translate('delete', 'Delete');
 
   const showDelete = Boolean(deleteHref) && showDeleteWhen === 'always';
 

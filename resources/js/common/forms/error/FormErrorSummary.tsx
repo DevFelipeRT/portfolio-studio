@@ -1,6 +1,7 @@
 'use client';
 
 import { useFormsTranslation } from '@/common/forms/hooks/useFormsTranslation';
+import { I18N_NAMESPACES } from '@/common/i18n';
 import type { ErrorSummary } from '@/common/forms/types';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { cn } from '@/lib/utils';
@@ -23,7 +24,7 @@ export function FormErrorSummary({
   className,
   ...props
 }: FormErrorSummaryProps) {
-  const { translate } = useFormsTranslation();
+  const { translate } = useFormsTranslation(I18N_NAMESPACES.form);
 
   if (fields.length === 0) {
     return null;
@@ -32,7 +33,7 @@ export function FormErrorSummary({
   const resolvedTitle =
     title ??
     translate(
-      'form.errorSummary.title',
+      'errorSummary.title',
       'Please fix the highlighted fields and try again.',
     );
 
