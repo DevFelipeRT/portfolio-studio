@@ -8,6 +8,11 @@ import type {
   ContactChannel,
   ContactChannelTypeOption,
 } from '@/modules/contact-channels/core/types';
+import {
+  ContactChannelsI18nProvider,
+  useContactChannelsTranslation,
+} from '@/modules/contact-channels/i18n';
+import { CONTACT_CHANNELS_NAMESPACES } from '@/modules/contact-channels/i18n';
 import { ContactChannelForm } from '@/modules/contact-channels/ui/form/contact-channel';
 import { TranslationModal } from '@/modules/contact-channels/ui/TranslationModal';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
@@ -92,85 +97,134 @@ export default function Edit({
   };
 
   return (
+    <ContactChannelsI18nProvider>
+      <AuthenticatedLayout header={<EditContactChannelHeader />}>
+        <EditContactChannelContent
+          channel={channel}
+          channelTypes={channelTypes}
+          data={data}
+          formErrors={formErrors}
+          processing={processing}
+          onChange={handleChange}
+          onSubmit={handleSubmit}
+          onOpenTranslations={() => setShowTranslations(true)}
+        />
+
+        <TranslationModal
+          open={showTranslations}
+          onClose={() => setShowTranslations(false)}
+          contactChannelId={channel.id}
+          entityLabel={channel.label ?? channel.channel_type}
+          baseLocale={data.locale}
+        />
+
+        {pendingLocale && (
+          <LocaleSwapDialog
+            open={swapDialogOpen}
+            currentLocale={data.locale}
+            nextLocale={pendingLocale}
+            onConfirmSwap={() => {
+              setData('confirm_swap', true);
+              setData('locale', pendingLocale);
+              setSwapDialogOpen(false);
+              setPendingLocale(null);
+            }}
+            onConfirmNoSwap={() => {
+              setData('confirm_swap', false);
+              setData('locale', pendingLocale);
+              setSwapDialogOpen(false);
+              setPendingLocale(null);
+            }}
+            onCancel={() => {
+              setSwapDialogOpen(false);
+              setPendingLocale(null);
+            }}
+          />
+        )}
+      </AuthenticatedLayout>
+    </ContactChannelsI18nProvider>
+  );
+}
+
+function EditContactChannelHeader() {
+  const { translate: tActions } = useContactChannelsTranslation(
+    CONTACT_CHANNELS_NAMESPACES.actions,
+  );
+  return (
+    <h1 className="text-xl leading-tight font-semibold">
+      {tActions('editChannel')}
+    </h1>
+  );
+}
+
+type EditContactChannelContentProps = {
+  channel: ContactChannel;
+  channelTypes: ContactChannelTypeOption[];
+  data: ContactChannelFormData;
+  formErrors: FormErrors<keyof ContactChannelFormData>;
+  processing: boolean;
+  onChange: (
+    field: keyof ContactChannelFormData,
+    value: string | number | boolean | '',
+  ) => void;
+  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+  onOpenTranslations: () => void;
+};
+
+function EditContactChannelContent({
+  channel,
+  channelTypes,
+  data,
+  formErrors,
+  processing,
+  onChange,
+  onSubmit,
+  onOpenTranslations,
+}: EditContactChannelContentProps) {
+  const { translate: tActions } = useContactChannelsTranslation(
+    CONTACT_CHANNELS_NAMESPACES.actions,
+  );
+
+  return (
     <>
-      <AuthenticatedLayout
-        header={
-          <h1 className="text-xl leading-tight font-semibold">
-            Edit contact channel
-          </h1>
-        }
-      >
-        <Head title={`Edit contact channel`} />
+      <Head title={tActions('editChannel')} />
 
-        <div className="overflow-hidden">
-          <div className="mx-auto max-w-xl px-4 py-8 sm:px-6 lg:px-8">
-            <div className="mb-4">
-              <Link
-                href={route('contact-channels.index')}
-                className="text-muted-foreground hover:text-foreground text-sm"
-              >
-                Back to contact channels
-              </Link>
-            </div>
+      <div className="overflow-hidden">
+        <div className="mx-auto max-w-xl px-4 py-8 sm:px-6 lg:px-8">
+          <div className="mb-4">
+            <Link
+              href={route('contact-channels.index')}
+              className="text-muted-foreground hover:text-foreground text-sm"
+            >
+              {tActions('backToIndex')}
+            </Link>
+          </div>
 
-            <ContactChannelForm
-              data={data}
-              errors={formErrors}
-              channelTypes={channelTypes}
-              processing={processing}
-              onChange={handleChange}
-              onSubmit={handleSubmit}
-              cancelHref={route('contact-channels.index')}
-              submitLabel="Save changes"
-              deleteHref={route('contact-channels.destroy', channel.id)}
-              deleteLabel="Delete"
-            />
+          <ContactChannelForm
+            data={data}
+            errors={formErrors}
+            channelTypes={channelTypes}
+            processing={processing}
+            onChange={onChange}
+            onSubmit={onSubmit}
+            cancelHref={route('contact-channels.index')}
+            submitLabel={tActions('saveChanges')}
+            deleteHref={route('contact-channels.destroy', channel.id)}
+            deleteLabel={tActions('delete')}
+          />
 
-            <div className="mt-4 flex justify-end">
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                onClick={() => setShowTranslations(true)}
-              >
-                Manage translations
-              </Button>
-            </div>
+          <div className="mt-4 flex justify-end">
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={onOpenTranslations}
+            >
+              {tActions('manageTranslations')}
+            </Button>
           </div>
         </div>
-      </AuthenticatedLayout>
-
-      <TranslationModal
-        open={showTranslations}
-        onClose={() => setShowTranslations(false)}
-        contactChannelId={channel.id}
-        entityLabel={channel.label ?? channel.channel_type}
-        baseLocale={data.locale}
-      />
-
-      {pendingLocale && (
-        <LocaleSwapDialog
-          open={swapDialogOpen}
-          currentLocale={data.locale}
-          nextLocale={pendingLocale}
-          onConfirmSwap={() => {
-            setData('confirm_swap', true);
-            setData('locale', pendingLocale);
-            setSwapDialogOpen(false);
-            setPendingLocale(null);
-          }}
-          onConfirmNoSwap={() => {
-            setData('confirm_swap', false);
-            setData('locale', pendingLocale);
-            setSwapDialogOpen(false);
-            setPendingLocale(null);
-          }}
-          onCancel={() => {
-            setSwapDialogOpen(false);
-            setPendingLocale(null);
-          }}
-        />
-      )}
+      </div>
     </>
   );
 }

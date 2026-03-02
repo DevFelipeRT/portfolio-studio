@@ -1,46 +1,62 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import type { ContactChannel } from '@/modules/contact-channels/core/types';
+import {
+  ContactChannelsI18nProvider,
+  useContactChannelsTranslation,
+} from '@/modules/contact-channels/i18n';
+import { CONTACT_CHANNELS_NAMESPACES } from '@/modules/contact-channels/i18n';
 import { Head, Link } from '@inertiajs/react';
 
 interface ContactChannelsIndexProps {
   channels: ContactChannel[];
 }
 
-const typeLabels: Record<string, string> = {
-  email: 'Email',
-  phone: 'Phone',
-  whatsapp: 'WhatsApp',
-  linkedin: 'LinkedIn',
-  github: 'GitHub',
-  custom: 'Custom',
-};
-
 export default function Index({ channels }: ContactChannelsIndexProps) {
+  return (
+    <ContactChannelsI18nProvider>
+      <ContactChannelsIndexI18nContent channels={channels} />
+    </ContactChannelsI18nProvider>
+  );
+}
+
+function ContactChannelsIndexI18nContent({ channels }: ContactChannelsIndexProps) {
   const hasChannels = channels.length > 0;
+  const { translate: tActions } = useContactChannelsTranslation(
+    CONTACT_CHANNELS_NAMESPACES.actions,
+  );
+  const { translate: tForm } = useContactChannelsTranslation(
+    CONTACT_CHANNELS_NAMESPACES.form,
+  );
+  const { translate: tContactChannels } =
+    useContactChannelsTranslation(CONTACT_CHANNELS_NAMESPACES.contactChannels);
+
+  const typeLabel = (channelType: string): string => {
+    return tContactChannels(`socials.${channelType}.label`, channelType);
+  };
 
   const labelFor = (channel: ContactChannel): string => {
     if (channel.channel_type === 'custom' && channel.label) {
       return channel.label;
     }
 
-    return typeLabels[channel.channel_type] ?? channel.channel_type;
+    return typeLabel(channel.channel_type);
   };
 
   return (
     <AuthenticatedLayout
       header={
         <h1 className="text-xl leading-tight font-semibold">
-          Contact channels
+          {tForm('sections.managementTitle')}
         </h1>
       }
     >
-      <Head title="Contact channels" />
+      <Head title={tForm('sections.managementTitle')} />
 
       <div className="overflow-hidden">
         <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-muted-foreground mt-1 text-sm">
-              Manage the contact channels displayed on your website.
+              {tForm('help.managementSubtitle')}
             </p>
           </div>
 
@@ -48,13 +64,13 @@ export default function Index({ channels }: ContactChannelsIndexProps) {
             href={route('contact-channels.create')}
             className="bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-ring inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium shadow-sm transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
           >
-            New channel
+            {tActions('newChannel')}
           </Link>
         </div>
 
         {!hasChannels && (
           <p className="text-muted-foreground text-sm">
-            No contact channels configured yet.
+            {tForm('emptyState.index')}
           </p>
         )}
 
@@ -64,22 +80,22 @@ export default function Index({ channels }: ContactChannelsIndexProps) {
               <thead className="bg-muted/60">
                 <tr>
                   <th className="text-muted-foreground px-4 py-3 text-left font-medium">
-                    Type
+                    {tForm('columns.type')}
                   </th>
                   <th className="text-muted-foreground px-4 py-3 text-left font-medium">
-                    Label
+                    {tForm('columns.label')}
                   </th>
                   <th className="text-muted-foreground px-4 py-3 text-left font-medium">
-                    Value
+                    {tForm('columns.value')}
                   </th>
                   <th className="text-muted-foreground px-4 py-3 text-left font-medium">
-                    Active
+                    {tForm('columns.active')}
                   </th>
                   <th className="text-muted-foreground px-4 py-3 text-left font-medium">
-                    Order
+                    {tForm('columns.order')}
                   </th>
                   <th className="text-muted-foreground px-4 py-3 text-right font-medium">
-                    Actions
+                    {tForm('columns.actions')}
                   </th>
                 </tr>
               </thead>
@@ -88,14 +104,14 @@ export default function Index({ channels }: ContactChannelsIndexProps) {
                 {channels.map((channel) => (
                   <tr key={channel.id}>
                     <td className="px-4 py-3 align-top">
-                      {typeLabels[channel.channel_type] ?? channel.channel_type}
+                      {typeLabel(channel.channel_type)}
                     </td>
                     <td className="px-4 py-3 align-top">{labelFor(channel)}</td>
                     <td className="text-muted-foreground px-4 py-3 align-top text-xs">
                       {channel.value}
                     </td>
                     <td className="px-4 py-3 align-top text-xs">
-                      {channel.is_active ? 'Yes' : 'No'}
+                      {channel.is_active ? tActions('yes') : tActions('no')}
                     </td>
                     <td className="px-4 py-3 align-top text-xs">
                       {channel.sort_order}
@@ -106,7 +122,7 @@ export default function Index({ channels }: ContactChannelsIndexProps) {
                           href={route('contact-channels.edit', channel.id)}
                           className="text-primary font-medium hover:underline"
                         >
-                          Edit
+                          {tActions('edit')}
                         </Link>
 
                         <Link
@@ -121,7 +137,9 @@ export default function Index({ channels }: ContactChannelsIndexProps) {
                           }}
                           className="text-muted-foreground font-medium hover:underline"
                         >
-                          {channel.is_active ? 'Deactivate' : 'Activate'}
+                          {channel.is_active
+                            ? tActions('deactivate')
+                            : tActions('activate')}
                         </Link>
 
                         <Link
@@ -130,7 +148,7 @@ export default function Index({ channels }: ContactChannelsIndexProps) {
                           as="button"
                           className="text-destructive font-medium hover:underline"
                         >
-                          Delete
+                          {tActions('delete')}
                         </Link>
                       </div>
                     </td>
