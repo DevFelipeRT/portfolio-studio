@@ -1,5 +1,4 @@
-import { NAMESPACES } from '@/common/i18n/config/namespaces';
-import { useTranslation } from '@/common/i18n/react/hooks/useTranslation';
+import { useLayoutsTranslation } from '@/app/layouts/i18n';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useIsMobile } from '@/hooks/useMobile';
 import { useMemo } from 'react';
@@ -49,12 +48,9 @@ export default function Navigation({ items, onClose }: NavigationProps) {
 
   const { handleSectionNavigate } = useSectionNavigation(setActiveSectionId);
 
-  const { translate: translateFromLayout } = useTranslation(NAMESPACES.layout);
+  const { translate: tNavigation } = useLayoutsTranslation('navigation');
 
-  const primaryNavigationLabel = translateFromLayout(
-    'header.navigation.primaryLabel',
-    'Primary navigation',
-  );
+  const primaryNavigationLabel = tNavigation('primaryLabel', 'Primary navigation');
 
   const isSectionIdentityActive = (identity: string): boolean => {
     return hasSections && activeSectionId === identity;
