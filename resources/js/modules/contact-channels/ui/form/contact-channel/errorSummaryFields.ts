@@ -3,14 +3,14 @@ import type { ContactChannelFormData } from '@/modules/contact-channels/core/for
 
 export function getErrorSummaryFields(
   errors: FormErrors<keyof ContactChannelFormData>,
+  t: (key: string) => string,
 ) {
   return collectErroredFieldLabels(errors, [
-    { name: 'locale', label: 'Locale' },
-    { name: 'channel_type', label: 'Type' },
-    { name: 'label', label: 'Label' },
-    { name: 'value', label: 'Value' },
-    { name: 'sort_order', label: 'Order' },
-    { name: 'is_active', label: 'Active' },
+    { name: 'locale', label: t('fields.locale.label') },
+    { name: 'channel_type', label: t('fields.channel_type.label') },
+    { name: 'label', label: t('fields.label.label') },
+    { name: 'value', label: t('fields.value.label') },
+    { name: 'sort_order', label: t('fields.sort_order.label') },
+    { name: 'is_active', label: t('fields.is_active.label') },
   ] as const);
 }
-
