@@ -57,7 +57,7 @@ export default defineConfig(({ mode, command }) => {
             // Otherwise, bundling them into the i18n/core chunk defeats code-splitting.
             const normalizedId = id.split(path.sep).join('/');
             const localeCatalogMatch = normalizedId.match(
-              /resources\/js\/(?:common\/i18n\/locales|modules\/.+?\/locales)\/([^/]+)\/[^/]+\.ts$/,
+              /resources\/js\/.+?\/i18n\/locales\/([^/]+)\/[^/]+\.ts$/,
             );
             if (localeCatalogMatch) {
               return `i18n-${localeCatalogMatch[1]}`;
