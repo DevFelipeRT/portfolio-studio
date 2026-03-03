@@ -8,7 +8,7 @@ import {
   type NavigationItem,
 } from '@/app/navigation';
 import { useNavigationSheet } from '@/app/navigation/useNavigationSheet';
-import { LayoutsI18nProvider, useLayoutsTranslation } from '@/app/layouts/i18n';
+import { useLayoutsTranslation } from '@/app/layouts/i18n';
 import { useIsMobile } from '@/hooks/useMobile';
 import { usePage } from '@inertiajs/react';
 import { PropsWithChildren } from 'react';
@@ -30,11 +30,9 @@ export default function PublicLayout({
   navigationItems,
 }: PublicLayoutProps) {
   return (
-    <LayoutsI18nProvider>
-      <PublicLayoutI18nContent navigationItems={navigationItems}>
-        {children}
-      </PublicLayoutI18nContent>
-    </LayoutsI18nProvider>
+    <PublicLayoutI18nContent navigationItems={navigationItems}>
+      {children}
+    </PublicLayoutI18nContent>
   );
 }
 

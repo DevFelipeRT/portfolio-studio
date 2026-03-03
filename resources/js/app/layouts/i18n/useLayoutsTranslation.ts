@@ -1,9 +1,9 @@
 'use client';
 
-import { useContext, useEffect } from 'react';
+import { useContext } from 'react';
 import { I18nContext, type PlaceholderValues } from '@/common/i18n';
 import type { Locale, Namespace } from '@/common/i18n/core/types';
-import { layoutsTranslator, layoutsTranslatorProvider } from './environment';
+import { layoutsTranslator } from './environment';
 
 type TranslationFunction = {
   (key: string, params?: PlaceholderValues): string;
@@ -26,10 +26,6 @@ export function useLayoutsTranslation(
   }
 
   const { locale, setLocale } = context;
-
-  useEffect(() => {
-    void layoutsTranslatorProvider.preloadLocale(locale as Locale);
-  }, [locale]);
 
   const translateWithNamespace: TranslationFunction = (
     key: string,
@@ -68,4 +64,3 @@ export function useLayoutsTranslation(
     setLocale,
   };
 }
-

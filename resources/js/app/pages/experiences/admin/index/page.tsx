@@ -139,3 +139,5 @@ export default function Index({ experiences }: ExperiencesIndexProps) {
     </AuthenticatedLayout>
   );
 }
+
+Index.i18n = ['experiences'];

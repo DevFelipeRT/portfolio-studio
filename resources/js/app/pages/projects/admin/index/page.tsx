@@ -1,6 +1,5 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import {
-  ProjectsI18nProvider,
   PROJECTS_NAMESPACES,
   useProjectsTranslation,
 } from '@/modules/projects/i18n';
@@ -13,11 +12,7 @@ interface ProjectsIndexProps {
 }
 
 export default function Index({ projects }: ProjectsIndexProps) {
-  return (
-    <ProjectsI18nProvider>
-      <ProjectsIndexI18nContent projects={projects} />
-    </ProjectsI18nProvider>
-  );
+  return <ProjectsIndexI18nContent projects={projects} />;
 }
 
 function ProjectsIndexI18nContent({ projects }: ProjectsIndexProps) {
@@ -172,3 +167,5 @@ function ProjectsIndexI18nContent({ projects }: ProjectsIndexProps) {
     </AuthenticatedLayout>
   );
 }
+
+Index.i18n = ['projects'];

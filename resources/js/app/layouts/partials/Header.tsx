@@ -82,11 +82,12 @@ function HeaderI18nContent({ children }: PropsWithChildren) {
           <ModeToggle />
           <LocaleSwitcher
             localization={props.localization}
-            reload={(pathname) => {
-              router.visit(pathname, {
-                method: 'get',
-                preserveState: true,
-                preserveScroll: true,
+            reload={() => {
+              router.reload({
+                replace: true,
+                headers: {
+                  'Cache-Control': 'no-cache',
+                },
               });
             }}
           />

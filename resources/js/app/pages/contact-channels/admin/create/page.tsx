@@ -2,10 +2,7 @@ import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import type { FormErrors } from '@/common/forms';
 import type { ContactChannelFormData } from '@/modules/contact-channels/core/forms';
 import type { ContactChannelTypeOption } from '@/modules/contact-channels/core/types';
-import {
-  ContactChannelsI18nProvider,
-  useContactChannelsTranslation,
-} from '@/modules/contact-channels/i18n';
+import { useContactChannelsTranslation } from '@/modules/contact-channels/i18n';
 import { CONTACT_CHANNELS_NAMESPACES } from '@/modules/contact-channels/i18n';
 import { ContactChannelForm } from '@/modules/contact-channels/ui/form/contact-channel';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
@@ -45,20 +42,20 @@ export default function Create({ channelTypes }: CreateContactChannelProps) {
   };
 
   return (
-    <ContactChannelsI18nProvider>
-      <AuthenticatedLayout header={<CreateContactChannelHeader />}>
-        <CreateContactChannelContent
-          channelTypes={channelTypes}
-          data={data}
-          formErrors={formErrors}
-          processing={processing}
-          onChange={handleChange}
-          onSubmit={handleSubmit}
-        />
-      </AuthenticatedLayout>
-    </ContactChannelsI18nProvider>
+    <AuthenticatedLayout header={<CreateContactChannelHeader />}>
+      <CreateContactChannelContent
+        channelTypes={channelTypes}
+        data={data}
+        formErrors={formErrors}
+        processing={processing}
+        onChange={handleChange}
+        onSubmit={handleSubmit}
+      />
+    </AuthenticatedLayout>
   );
 }
+
+Create.i18n = ['contact-channels'];
 
 function CreateContactChannelHeader() {
   const { translate: tActions } = useContactChannelsTranslation(

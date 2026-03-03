@@ -2,10 +2,7 @@ import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import { useSupportedLocales } from '@/common/i18n';
 import { useFormSubmit, type FormErrors } from '@/common/forms';
 import type { ExperienceFormData } from '@/modules/experiences/core/forms';
-import {
-  ExperiencesI18nProvider,
-  useExperiencesTranslation,
-} from '@/modules/experiences/i18n';
+import { useExperiencesTranslation } from '@/modules/experiences/i18n';
 import { EXPERIENCES_NAMESPACES } from '@/modules/experiences/i18n';
 import { ExperienceForm } from '@/modules/experiences/ui/form/experience';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
@@ -52,22 +49,22 @@ export default function Create() {
   };
 
   return (
-    <AuthenticatedLayout>
+      <AuthenticatedLayout>
       <Head title="New experience" />
 
-      <ExperiencesI18nProvider>
-        <CreateExperienceI18nContent
-          data={data}
-          formErrors={formErrors}
-          processing={processing}
-          supportedLocales={supportedLocales}
-          onSubmit={submit}
-          onChange={setExperienceData}
-        />
-      </ExperiencesI18nProvider>
+      <CreateExperienceI18nContent
+        data={data}
+        formErrors={formErrors}
+        processing={processing}
+        supportedLocales={supportedLocales}
+        onSubmit={submit}
+        onChange={setExperienceData}
+      />
     </AuthenticatedLayout>
   );
 }
+
+Create.i18n = ['experiences'];
 
 type CreateExperienceI18nContentProps = {
   data: ExperienceFormData;
