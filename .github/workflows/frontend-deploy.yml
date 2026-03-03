@@ -35,30 +35,42 @@ jobs:
         with:
           ref: "frontend-dist"
 
-      - name: Ensure public/build exists
+      - name: Resolve build source directory
+        id: build_src
         run: |
           set -euo pipefail
 
+          pick() {
+            echo "source_dir=$1" >> "${GITHUB_OUTPUT}"
+          }
+
+          # Preferred layout (from frontend-dist checkout)
           if [ -d "public/build" ]; then
+            pick "public/build"
             exit 0
           fi
 
-          # download-artifact may extract into a directory named after the artifact.
+          # Common artifact layout: extracted directly into workspace root
+          if [ -f "manifest.json" ] && [ -d "assets" ]; then
+            pick "."
+            exit 0
+          fi
+
+          # Artifact extracted into a directory named after the artifact
           if [ -d "public-build/public/build" ]; then
-            mkdir -p public
-            mv "public-build/public/build" "public/build"
+            pick "public-build/public/build"
             exit 0
           fi
 
-          if [ -d "public-build" ]; then
-            mkdir -p public/build
-            shopt -s dotglob
-            mv public-build/* public/build/ || true
+          if [ -f "public-build/manifest.json" ] && [ -d "public-build/assets" ]; then
+            pick "public-build"
             exit 0
           fi
 
-          echo "public/build not found after checkout/download."
+          echo "Unable to locate Vite build output (expected public/build or manifest+assets)."
+          echo "Workspace listing:"
           ls -la
+          echo "Directory tree:"
           find . -maxdepth 4 -type d -print
           exit 1
 
@@ -80,6 +92,7 @@ jobs:
           PORT: ${{ secrets.PORT }}
           USERNAME: ${{ secrets.USERNAME }}
           TARGET_DIR: ${{ secrets.TARGET_DIR }}
+          SOURCE_DIR: ${{ steps.build_src.outputs.source_dir }}
         run: |
           set -euo pipefail
 
@@ -96,5 +109,5 @@ jobs:
 
           rsync -az --delete \
             -e "ssh -p ${PORT} -o StrictHostKeyChecking=yes" \
-            public/build/ \
+            "${SOURCE_DIR%/}/" \
             "${USERNAME}@${HOST}:${DEST_DIR}"
