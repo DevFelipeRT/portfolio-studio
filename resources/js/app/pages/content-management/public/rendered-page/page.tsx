@@ -3,11 +3,13 @@ import PublicLayout from '@/app/layouts/PublicLayout';
 import {
   buildNavigationItems,
   buildPageRenderingContext,
+  deriveI18nScopeFromSections,
   PageRenderingContextProvider,
   sectionSlotLayoutManager,
 } from '@/modules/content-management/features/page-rendering';
 import type {
   PageRenderViewModelProps,
+  PageSectionDto,
   TemplateDefinitionDto,
 } from '@/modules/content-management/types';
 import { defaultStringNormalizer } from '@/modules/content-management/utils/strings';
@@ -62,3 +64,13 @@ export default function RenderedPage({
     </PublicLayout>
   );
 }
+
+RenderedPage.getI18nScope = (props) => {
+  const sections = (props as unknown as { sections?: PageSectionDto[] }).sections;
+  if (!Array.isArray(sections)) {
+    return [];
+  }
+
+  const active = sections.filter((section) => section.is_active);
+  return deriveI18nScopeFromSections(active);
+};
