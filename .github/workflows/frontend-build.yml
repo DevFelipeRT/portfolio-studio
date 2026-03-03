@@ -23,6 +23,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
+      actions: write
       contents: write
 
     steps:
@@ -42,6 +43,13 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      - name: Upload public/build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: public-build
+          path: public/build
+          if-no-files-found: error
 
       - name: Publish public/build to frontend-dist
         env:
