@@ -1,7 +1,14 @@
-import { I18nProvider, createI18nEnvironment } from '@/common/i18n';
+import {
+  I18nProvider,
+  createI18nEnvironment,
+} from '@/common/i18n';
 import type { ReactNode } from 'react';
 import type { InertiaPageProps } from '../../types';
 import { resolveInitialLocale } from './locale';
+import type { Locale } from '@/common/i18n/core/types';
+import type { I18nPreloader } from '@/common/i18n';
+
+export type WithI18nProviderOptions = { i18nPreloader?: I18nPreloader | null };
 
 /**
  * Wraps arbitrary content in the application's I18n provider configured from
@@ -10,6 +17,7 @@ import { resolveInitialLocale } from './locale';
 export function wrapWithI18nProvider(
   props: InertiaPageProps,
   content: ReactNode,
+  options: WithI18nProviderOptions = {},
 ): ReactNode {
   const currentLocale = resolveInitialLocale(props) ?? null;
   const localizationConfig = props.localization || {};
@@ -20,13 +28,25 @@ export function wrapWithI18nProvider(
     fallbackLocale: localizationConfig.fallbackLocale,
   });
 
+  const i18nPreloader = options.i18nPreloader ?? null;
+
+  const combinedTranslatorProvider = {
+    preloadLocale: async (locale: Locale) => {
+      await Promise.all([
+        translatorProvider.preloadLocale?.(locale),
+        i18nPreloader?.preloadLocale?.(locale),
+      ]);
+    },
+  };
+
   return (
     <I18nProvider
       initialLocale={currentLocale}
       localeResolver={localeResolver}
       translator={translator}
       fallbackLocale={localizationConfig.fallbackLocale ?? null}
-      translatorProvider={translatorProvider}
+      translatorProvider={combinedTranslatorProvider}
+      loadingOverlayDelayMs={-1}
     >
       {content}
     </I18nProvider>
