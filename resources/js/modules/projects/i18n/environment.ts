@@ -1,5 +1,6 @@
 import {
   createTranslatorProviderFromLoaders,
+  createI18nRegistry,
   type TranslationModuleLoaders,
 } from '@/common/i18n';
 
@@ -13,3 +14,4 @@ export const projectsTranslatorProvider = createTranslatorProviderFromLoaders(
 
 export const projectsTranslator = projectsTranslatorProvider.createTranslator({});
 
+createI18nRegistry().register('projects', projectsTranslatorProvider);
