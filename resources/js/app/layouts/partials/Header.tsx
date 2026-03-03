@@ -5,7 +5,7 @@ import { ModeToggle } from '@/app/layouts/partials/theme/ModeToggle';
 import { UserMenu } from '@/app/layouts/partials/UserMenu';
 import { LocaleSwitcher } from '@/common/i18n';
 import { useLayoutsTranslation } from '@/app/layouts/i18n';
-import { Link, usePage } from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
 import { PropsWithChildren } from 'react';
 
 type AuthUser = {
@@ -17,6 +17,12 @@ type AuthUser = {
 type SharedProps = {
   auth: {
     user: AuthUser | null;
+  };
+  localization?: {
+    cookieName?: string;
+    apiEndpoint?: string;
+    persistClientCookie?: boolean;
+    supportedLocales?: string[];
   };
 };
 
@@ -34,8 +40,8 @@ export default function Header({ children }: PropsWithChildren) {
 }
 
 function HeaderI18nContent({ children }: PropsWithChildren) {
-  const { auth } = usePage().props as SharedProps;
-  const user = auth.user;
+  const props = usePage().props as SharedProps;
+  const user = props.auth.user;
 
   const { translate: tHeader } = useLayoutsTranslation('header');
   const { translate: tNavigation } = useLayoutsTranslation('navigation');
@@ -74,7 +80,16 @@ function HeaderI18nContent({ children }: PropsWithChildren) {
         {/* Mode toggle + user menu (desktop) */}
         <div className="order-2 flex flex-1 items-center justify-end gap-3 md:order-3">
           <ModeToggle />
-          <LocaleSwitcher />
+          <LocaleSwitcher
+            localization={props.localization}
+            reload={(pathname) => {
+              router.visit(pathname, {
+                method: 'get',
+                preserveState: true,
+                preserveScroll: true,
+              });
+            }}
+          />
           {user && (
             <div className="hidden md:flex">
               <UserMenu user={user} variant="icon" />
