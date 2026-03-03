@@ -1,9 +1,9 @@
 'use client';
 
-import { useContext, useEffect } from 'react';
+import { useContext } from 'react';
 import { I18nContext, type PlaceholderValues } from '@/common/i18n';
 import type { Locale, Namespace } from '@/common/i18n/core/types';
-import { coursesTranslator, coursesTranslatorProvider } from './environment';
+import { coursesTranslator } from './environment';
 
 type TranslationFunction = {
   (key: string, params?: PlaceholderValues): string;
@@ -28,10 +28,6 @@ export function useCoursesTranslation(
   }
 
   const { locale, setLocale } = context;
-
-  useEffect(() => {
-    void coursesTranslatorProvider.preloadLocale(locale as Locale);
-  }, [locale]);
 
   const translateWithNamespace: TranslationFunction = (
     key: string,

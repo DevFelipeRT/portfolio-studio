@@ -6,10 +6,7 @@ import { Button } from '@/components/ui/button';
 import { listExperienceTranslations } from '@/modules/experiences/core/api/translations';
 import type { ExperienceFormData } from '@/modules/experiences/core/forms';
 import type { Experience } from '@/modules/experiences/core/types';
-import {
-  ExperiencesI18nProvider,
-  useExperiencesTranslation,
-} from '@/modules/experiences/i18n';
+import { useExperiencesTranslation } from '@/modules/experiences/i18n';
 import { EXPERIENCES_NAMESPACES } from '@/modules/experiences/i18n';
 import { ExperienceForm } from '@/modules/experiences/ui/form/experience';
 import { TranslationModal } from '@/modules/experiences/ui/TranslationModal';
@@ -115,32 +112,30 @@ export default function Edit({ experience }: EditExperienceProps) {
   };
 
   return (
-    <AuthenticatedLayout>
+      <AuthenticatedLayout>
       <Head title="Edit experience" />
 
-      <ExperiencesI18nProvider>
-        <EditExperienceI18nContent
-          experience={experience}
-          data={data}
-          formErrors={formErrors}
-          processing={processing}
-          supportedLocales={supportedLocales}
-          localesLoadError={localesLoadError}
-          loadingTranslations={loadingTranslations}
-          onSubmit={submit}
-          onChange={setExperienceData}
-          onLocaleChange={handleLocaleChange}
-          onOpenTranslations={() => setTranslationOpen(true)}
-        />
+      <EditExperienceI18nContent
+        experience={experience}
+        data={data}
+        formErrors={formErrors}
+        processing={processing}
+        supportedLocales={supportedLocales}
+        localesLoadError={localesLoadError}
+        loadingTranslations={loadingTranslations}
+        onSubmit={submit}
+        onChange={setExperienceData}
+        onLocaleChange={handleLocaleChange}
+        onOpenTranslations={() => setTranslationOpen(true)}
+      />
 
-        <TranslationModal
-          open={translationOpen}
-          onClose={() => setTranslationOpen(false)}
-          experienceId={experience.id}
-          experienceLabel={`${experience.position} - ${experience.company ?? ''}`}
-          baseLocale={data.locale}
-        />
-      </ExperiencesI18nProvider>
+      <TranslationModal
+        open={translationOpen}
+        onClose={() => setTranslationOpen(false)}
+        experienceId={experience.id}
+        experienceLabel={`${experience.position} - ${experience.company ?? ''}`}
+        baseLocale={data.locale}
+      />
 
       {pendingLocale && (
         <LocaleSwapDialog
@@ -168,6 +163,8 @@ export default function Edit({ experience }: EditExperienceProps) {
     </AuthenticatedLayout>
   );
 }
+
+Edit.i18n = ['experiences'];
 
 type EditExperienceI18nContentProps = {
   experience: Experience;

@@ -114,13 +114,22 @@ class HandleInertiaRequests extends Middleware
             return false;
         }
 
-        $name = $route->getName();
+        $middlewares = $route->gatherMiddleware();
 
-        if (!is_string($name) || $name === '') {
-            return false;
+        foreach ($middlewares as $middleware) {
+            if (!is_string($middleware) || $middleware === '') {
+                continue;
+            }
+
+            // Any authenticated route should use the system locale pipeline.
+            // For all other routes (guest-accessible/public website), use the
+            // public website locale pipeline.
+            if ($middleware === 'auth' || str_starts_with($middleware, 'auth:')) {
+                return false;
+            }
         }
 
-        return $name === 'home' || str_starts_with($name, 'content.');
+        return true;
     }
 
     private function resolvePublicLocale(

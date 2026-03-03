@@ -6,7 +6,6 @@ import { listCourseTranslations } from '@/modules/courses/core/api/translations'
 import type { CourseFormData } from '@/modules/courses/core/forms';
 import type { Course } from '@/modules/courses/core/types';
 import {
-  CoursesI18nProvider,
   COURSES_NAMESPACES,
   useCoursesTranslation,
 } from '@/modules/courses/i18n';
@@ -126,29 +125,27 @@ export default function Edit({ course, course_categories }: EditCourseProps) {
     >
       <Head title={`Edit - ${data.name}`} />
 
-      <CoursesI18nProvider>
-        <EditCourseI18nContent
-          data={data}
-          formErrors={formErrors}
-          processing={processing}
-          categories={course_categories ?? {}}
-          cancelHref={cancelHref}
-          loadingTranslations={loadingTranslations}
-          localesLoadError={localesLoadError}
-          onChange={setData}
-          onSubmit={handleSubmit}
-          onLocaleChange={handleLocaleChange}
-          onOpenTranslations={() => setTranslationOpen(true)}
-        />
+      <EditCourseI18nContent
+        data={data}
+        formErrors={formErrors}
+        processing={processing}
+        categories={course_categories ?? {}}
+        cancelHref={cancelHref}
+        loadingTranslations={loadingTranslations}
+        localesLoadError={localesLoadError}
+        onChange={setData}
+        onSubmit={handleSubmit}
+        onLocaleChange={handleLocaleChange}
+        onOpenTranslations={() => setTranslationOpen(true)}
+      />
 
-        <TranslationModal
-          open={translationOpen}
-          onClose={() => setTranslationOpen(false)}
-          courseId={course.id}
-          courseLabel={course.name}
-          baseLocale={data.locale}
-        />
-      </CoursesI18nProvider>
+      <TranslationModal
+        open={translationOpen}
+        onClose={() => setTranslationOpen(false)}
+        courseId={course.id}
+        courseLabel={course.name}
+        baseLocale={data.locale}
+      />
 
       {pendingLocale && (
         <LocaleSwapDialog
@@ -176,6 +173,8 @@ export default function Edit({ course, course_categories }: EditCourseProps) {
     </AuthenticatedLayout>
   );
 }
+
+Edit.i18n = ['courses'];
 
 type EditCourseI18nContentProps = {
   data: CourseFormData;

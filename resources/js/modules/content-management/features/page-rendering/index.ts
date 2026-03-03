@@ -35,4 +35,5 @@ export {
 export { SectionHeader } from '@/modules/content-management/features/page-rendering/template/components/partials/SectionHeader';
 
 export { buildNavigationItems } from '@/modules/content-management/features/page-rendering/navigation';
+export { deriveI18nScopeFromSections } from '@/modules/content-management/features/page-rendering/i18nScope';
 // Sorting is an internal implementation detail of page-rendering.

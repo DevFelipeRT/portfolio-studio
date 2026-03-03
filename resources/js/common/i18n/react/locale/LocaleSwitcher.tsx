@@ -21,6 +21,7 @@ type LocaleSwitcherProps = {
   persistClientCookie?: boolean;
   maxAgeDays?: number;
   reloadDelayMs?: number;
+  applyLocaleState?: boolean;
   variant?: 'auto' | 'label' | 'short' | 'labelAndShort' | 'ghost';
   disabled?: boolean;
 };
@@ -39,6 +40,7 @@ export function LocaleSwitcher({
   persistClientCookie,
   maxAgeDays = 30,
   reloadDelayMs = 400,
+  applyLocaleState,
   variant = 'short',
   disabled = false,
 }: LocaleSwitcherProps) {
@@ -58,6 +60,7 @@ export function LocaleSwitcher({
     persistClientCookie: resolvedPersistClientCookie,
     reload,
     reloadDelayMs,
+    ...(applyLocaleState === undefined ? {} : { applyLocaleState }),
   });
 
   return (

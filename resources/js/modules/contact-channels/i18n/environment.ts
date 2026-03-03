@@ -1,5 +1,6 @@
 import {
   createTranslatorProviderFromLoaders,
+  createI18nRegistry,
   type TranslationModuleLoaders,
 } from '@/common/i18n';
 
@@ -13,3 +14,7 @@ export const contactChannelsTranslatorProvider =
 export const contactChannelsTranslator =
   contactChannelsTranslatorProvider.createTranslator({});
 
+createI18nRegistry().register(
+  'contact-channels',
+  contactChannelsTranslatorProvider,
+);

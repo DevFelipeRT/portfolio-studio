@@ -1,9 +1,6 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import type { ContactChannel } from '@/modules/contact-channels/core/types';
-import {
-  ContactChannelsI18nProvider,
-  useContactChannelsTranslation,
-} from '@/modules/contact-channels/i18n';
+import { useContactChannelsTranslation } from '@/modules/contact-channels/i18n';
 import { CONTACT_CHANNELS_NAMESPACES } from '@/modules/contact-channels/i18n';
 import { Head, Link } from '@inertiajs/react';
 
@@ -12,11 +9,7 @@ interface ContactChannelsIndexProps {
 }
 
 export default function Index({ channels }: ContactChannelsIndexProps) {
-  return (
-    <ContactChannelsI18nProvider>
-      <ContactChannelsIndexI18nContent channels={channels} />
-    </ContactChannelsI18nProvider>
-  );
+  return <ContactChannelsIndexI18nContent channels={channels} />;
 }
 
 function ContactChannelsIndexI18nContent({ channels }: ContactChannelsIndexProps) {
@@ -162,3 +155,5 @@ function ContactChannelsIndexI18nContent({ channels }: ContactChannelsIndexProps
     </AuthenticatedLayout>
   );
 }
+
+Index.i18n = ['contact-channels'];

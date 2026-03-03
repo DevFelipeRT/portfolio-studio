@@ -5,10 +5,7 @@ import type {
   ImageInput,
   ProjectFormData,
 } from '@/modules/projects/core/forms';
-import {
-  ProjectsI18nProvider,
-  useProjectsTranslation,
-} from '@/modules/projects/i18n';
+import { useProjectsTranslation } from '@/modules/projects/i18n';
 import { PROJECTS_NAMESPACES } from '@/modules/projects/i18n';
 import { ProjectForm } from '@/modules/projects/ui/form/project';
 import type { Skill } from '@/modules/skills/core/types';
@@ -105,28 +102,28 @@ export default function Create({ skills }: CreateProjectProps) {
   };
 
   return (
-    <ProjectsI18nProvider>
-      <AuthenticatedLayout header={<CreateProjectHeader />}>
-        <Head title="New project" />
+    <AuthenticatedLayout header={<CreateProjectHeader />}>
+      <Head title="New project" />
 
-        <CreateProjectContent
-          skills={skills}
-          supportedLocales={supportedLocales}
-          data={data}
-          formErrors={formErrors}
-          processing={processing}
-          onSubmit={submit}
-          onChangeField={changeField}
-          onChangeSkillIds={changeSkillIds}
-          onAddImageRow={addImageRow}
-          onRemoveImageRow={removeImageRow}
-          onUpdateImageAlt={updateImageAlt}
-          onUpdateImageFile={updateImageFile}
-        />
-      </AuthenticatedLayout>
-    </ProjectsI18nProvider>
+      <CreateProjectContent
+        skills={skills}
+        supportedLocales={supportedLocales}
+        data={data}
+        formErrors={formErrors}
+        processing={processing}
+        onSubmit={submit}
+        onChangeField={changeField}
+        onChangeSkillIds={changeSkillIds}
+        onAddImageRow={addImageRow}
+        onRemoveImageRow={removeImageRow}
+        onUpdateImageAlt={updateImageAlt}
+        onUpdateImageFile={updateImageFile}
+      />
+    </AuthenticatedLayout>
   );
 }
+
+Create.i18n = ['projects'];
 
 function CreateProjectHeader() {
   const { translate: tActions } = useProjectsTranslation(

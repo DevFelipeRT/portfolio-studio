@@ -10,6 +10,9 @@ import eslintConfigPrettier from "eslint-config-prettier";
 
 export default [
   {
+    ignores: ["**/*.md"],
+  },
+  {
     languageOptions: { globals: globals.browser },
     settings: { react: { version: "detect" } },
   },

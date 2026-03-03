@@ -8,10 +8,7 @@ import type {
   ContactChannel,
   ContactChannelTypeOption,
 } from '@/modules/contact-channels/core/types';
-import {
-  ContactChannelsI18nProvider,
-  useContactChannelsTranslation,
-} from '@/modules/contact-channels/i18n';
+import { useContactChannelsTranslation } from '@/modules/contact-channels/i18n';
 import { CONTACT_CHANNELS_NAMESPACES } from '@/modules/contact-channels/i18n';
 import { ContactChannelForm } from '@/modules/contact-channels/ui/form/contact-channel';
 import { TranslationModal } from '@/modules/contact-channels/ui/TranslationModal';
@@ -97,54 +94,54 @@ export default function Edit({
   };
 
   return (
-    <ContactChannelsI18nProvider>
-      <AuthenticatedLayout header={<EditContactChannelHeader />}>
-        <EditContactChannelContent
-          channel={channel}
-          channelTypes={channelTypes}
-          data={data}
-          formErrors={formErrors}
-          processing={processing}
-          onChange={handleChange}
-          onSubmit={handleSubmit}
-          onOpenTranslations={() => setShowTranslations(true)}
-        />
+    <AuthenticatedLayout header={<EditContactChannelHeader />}>
+      <EditContactChannelContent
+        channel={channel}
+        channelTypes={channelTypes}
+        data={data}
+        formErrors={formErrors}
+        processing={processing}
+        onChange={handleChange}
+        onSubmit={handleSubmit}
+        onOpenTranslations={() => setShowTranslations(true)}
+      />
 
-        <TranslationModal
-          open={showTranslations}
-          onClose={() => setShowTranslations(false)}
-          contactChannelId={channel.id}
-          entityLabel={channel.label ?? channel.channel_type}
-          baseLocale={data.locale}
-        />
+      <TranslationModal
+        open={showTranslations}
+        onClose={() => setShowTranslations(false)}
+        contactChannelId={channel.id}
+        entityLabel={channel.label ?? channel.channel_type}
+        baseLocale={data.locale}
+      />
 
-        {pendingLocale && (
-          <LocaleSwapDialog
-            open={swapDialogOpen}
-            currentLocale={data.locale}
-            nextLocale={pendingLocale}
-            onConfirmSwap={() => {
-              setData('confirm_swap', true);
-              setData('locale', pendingLocale);
-              setSwapDialogOpen(false);
-              setPendingLocale(null);
-            }}
-            onConfirmNoSwap={() => {
-              setData('confirm_swap', false);
-              setData('locale', pendingLocale);
-              setSwapDialogOpen(false);
-              setPendingLocale(null);
-            }}
-            onCancel={() => {
-              setSwapDialogOpen(false);
-              setPendingLocale(null);
-            }}
-          />
-        )}
-      </AuthenticatedLayout>
-    </ContactChannelsI18nProvider>
+      {pendingLocale && (
+        <LocaleSwapDialog
+          open={swapDialogOpen}
+          currentLocale={data.locale}
+          nextLocale={pendingLocale}
+          onConfirmSwap={() => {
+            setData('confirm_swap', true);
+            setData('locale', pendingLocale);
+            setSwapDialogOpen(false);
+            setPendingLocale(null);
+          }}
+          onConfirmNoSwap={() => {
+            setData('confirm_swap', false);
+            setData('locale', pendingLocale);
+            setSwapDialogOpen(false);
+            setPendingLocale(null);
+          }}
+          onCancel={() => {
+            setSwapDialogOpen(false);
+            setPendingLocale(null);
+          }}
+        />
+      )}
+    </AuthenticatedLayout>
   );
 }
+
+Edit.i18n = ['contact-channels'];
 
 function EditContactChannelHeader() {
   const { translate: tActions } = useContactChannelsTranslation(

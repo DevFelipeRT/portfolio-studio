@@ -1,11 +1,10 @@
 'use client';
 
-import { useContext, useEffect } from 'react';
+import { useContext } from 'react';
 import { I18nContext, type PlaceholderValues } from '@/common/i18n';
 import type { Locale, Namespace } from '@/common/i18n/core/types';
 import {
   contactChannelsTranslator,
-  contactChannelsTranslatorProvider,
 } from './environment';
 
 type TranslationFunction = {
@@ -31,10 +30,6 @@ export function useContactChannelsTranslation(
   }
 
   const { locale, setLocale } = context;
-
-  useEffect(() => {
-    void contactChannelsTranslatorProvider.preloadLocale(locale as Locale);
-  }, [locale]);
 
   const translateWithNamespace: TranslationFunction = (
     key: string,
@@ -73,4 +68,3 @@ export function useContactChannelsTranslation(
     setLocale,
   };
 }
-

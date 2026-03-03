@@ -2,6 +2,7 @@ import { CoursesHighlightGridSection } from '@/modules/courses/ui/sections/Cours
 import type { SectionComponentRegistry } from '@/modules/content-management/features/page-rendering';
 
 export const coursesSectionRegistryProvider = {
+    i18n: ['courses'],
     getSectionRegistry(): SectionComponentRegistry {
         return {
             courses_highlight_grid: CoursesHighlightGridSection,

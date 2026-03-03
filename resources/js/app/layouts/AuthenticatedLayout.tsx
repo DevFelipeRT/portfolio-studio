@@ -9,7 +9,7 @@ import {
 } from '@/app/navigation';
 import type { NavigationConfigNode } from '@/app/navigation/types';
 import { useNavigationSheet } from '@/app/navigation/useNavigationSheet';
-import { LayoutsI18nProvider, useLayoutsTranslation } from '@/app/layouts/i18n';
+import { useLayoutsTranslation } from '@/app/layouts/i18n';
 import { I18N_NAMESPACES, useTranslation } from '@/common/i18n';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Toaster } from '@/components/ui/sonner';
@@ -120,11 +120,7 @@ export default function Authenticated({
   header,
   children,
 }: PropsWithChildren<{ header?: ReactNode }>) {
-  return (
-    <LayoutsI18nProvider>
-      <AuthenticatedI18nContent header={header}>{children}</AuthenticatedI18nContent>
-    </LayoutsI18nProvider>
-  );
+  return <AuthenticatedI18nContent header={header}>{children}</AuthenticatedI18nContent>;
 }
 
 function AuthenticatedI18nContent({

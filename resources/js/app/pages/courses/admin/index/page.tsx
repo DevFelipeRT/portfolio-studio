@@ -72,3 +72,5 @@ export default function Index({ courses }: CoursesIndexProps) {
     </AuthenticatedLayout>
   );
 }
+
+Index.i18n = ['courses'];

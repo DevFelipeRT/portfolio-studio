@@ -33,3 +33,33 @@ The Inertia setup initializes a runtime state snapshot derived from initial shar
 
 The runtime wraps content in the application i18n provider configured from Inertia shared props (`props.localization`) (`resources/js/app/inertia/page/utils/WithI18nProvider.tsx`).
 
+## i18n scoping (preload)
+
+The app preloads translation catalogs via the React `I18nProvider` gate. To avoid preloading every module on every page, pages can declare which i18n contributions they need:
+
+- Static scope: `Page.i18n = ['projects', 'courses']`
+- Dynamic scope: `Page.getI18nScope = (props) => ['contact-channels']` (useful for CMS/section-driven pages)
+
+The scope is collected in the page decorator (`resources/js/app/inertia/page/PageComponent.tsx`) and turned into a scoped preloader via the i18n registry:
+
+- Registry factory: `createI18nRegistry()` (`resources/js/common/i18n/registry/createI18nRegistry.ts`)
+- Scope → preloader: `preloaderFor(scopeIds)`
+
+### Conventions for modules/layouts
+
+Module and layout i18n preloaders are resolved on-demand through registry definitions:
+
+- `resources/js/modules/<id>/i18n/definition.ts` should call:
+  - `createI18nRegistry().define('<id>', () => import('./environment'))`
+- `resources/js/modules/<id>/i18n/environment.ts` should call:
+  - `createI18nRegistry().register('<id>', <translatorProvider>)`
+
+Layouts follow the same pattern under `resources/js/app/layouts/i18n/`.
+
+For dynamic CMS sections, section providers can expose a minimal `i18n` metadata list so page-rendering can derive scope from `sections`:
+
+- Example: `resources/js/modules/contact-channels/sectionRegistryProvider.ts`
+
+### Known issues
+
+See `resources/js/common/i18n/KNOWN_ISSUES.md` for tradeoffs such as module translators being used before catalogs preload when the UI is non-blocking.

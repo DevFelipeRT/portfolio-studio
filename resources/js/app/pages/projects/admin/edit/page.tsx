@@ -9,10 +9,7 @@ import type {
   ProjectFormData,
 } from '@/modules/projects/core/forms';
 import type { Project, ProjectImage } from '@/modules/projects/core/types';
-import {
-  ProjectsI18nProvider,
-  useProjectsTranslation,
-} from '@/modules/projects/i18n';
+import { useProjectsTranslation } from '@/modules/projects/i18n';
 import { PROJECTS_NAMESPACES } from '@/modules/projects/i18n';
 import { ProjectForm } from '@/modules/projects/ui/form/project';
 import { TranslationModal } from '@/modules/projects/ui/TranslationModal';
@@ -182,66 +179,66 @@ export default function Edit({ project, skills }: EditProjectProps) {
   };
 
   return (
-    <ProjectsI18nProvider>
-      <AuthenticatedLayout header={<EditProjectHeader />}>
-        <Head title={`Edit project: ${project.name}`} />
+    <AuthenticatedLayout header={<EditProjectHeader />}>
+      <Head title={`Edit project: ${project.name}`} />
 
-        <EditProjectContent
-          project={project}
-          skills={skills}
-          existingImages={existingImages}
-          supportedLocales={supportedLocales}
-          data={data}
-          formErrors={formErrors}
-          processing={processing}
-          localesLoadError={localesLoadError}
-          loadingTranslations={loadingTranslations}
-          onSubmit={submit}
-          onChangeField={changeField}
-          onChangeLocale={handleLocaleChange}
-          onChangeSkillIds={changeSkillIds}
-          onAddImageRow={addImageRow}
-          onRemoveImageRow={removeImageRow}
-          onUpdateImageAlt={updateImageAlt}
-          onUpdateImageFile={updateImageFile}
-          onOpenTranslations={() => setTranslationOpen(true)}
+      <EditProjectContent
+        project={project}
+        skills={skills}
+        existingImages={existingImages}
+        supportedLocales={supportedLocales}
+        data={data}
+        formErrors={formErrors}
+        processing={processing}
+        localesLoadError={localesLoadError}
+        loadingTranslations={loadingTranslations}
+        onSubmit={submit}
+        onChangeField={changeField}
+        onChangeLocale={handleLocaleChange}
+        onChangeSkillIds={changeSkillIds}
+        onAddImageRow={addImageRow}
+        onRemoveImageRow={removeImageRow}
+        onUpdateImageAlt={updateImageAlt}
+        onUpdateImageFile={updateImageFile}
+        onOpenTranslations={() => setTranslationOpen(true)}
+      />
+
+      <TranslationModal
+        open={translationOpen}
+        onClose={() => setTranslationOpen(false)}
+        projectId={project.id}
+        projectLabel={project.name}
+        baseLocale={data.locale}
+      />
+
+      {pendingLocale && (
+        <LocaleSwapDialog
+          open={swapDialogOpen}
+          currentLocale={data.locale}
+          nextLocale={pendingLocale}
+          onConfirmSwap={() => {
+            setData('confirm_swap', true);
+            setData('locale', pendingLocale);
+            setSwapDialogOpen(false);
+            setPendingLocale(null);
+          }}
+          onConfirmNoSwap={() => {
+            setData('confirm_swap', false);
+            setData('locale', pendingLocale);
+            setSwapDialogOpen(false);
+            setPendingLocale(null);
+          }}
+          onCancel={() => {
+            setSwapDialogOpen(false);
+            setPendingLocale(null);
+          }}
         />
-
-        <TranslationModal
-          open={translationOpen}
-          onClose={() => setTranslationOpen(false)}
-          projectId={project.id}
-          projectLabel={project.name}
-          baseLocale={data.locale}
-        />
-
-        {pendingLocale && (
-          <LocaleSwapDialog
-            open={swapDialogOpen}
-            currentLocale={data.locale}
-            nextLocale={pendingLocale}
-            onConfirmSwap={() => {
-              setData('confirm_swap', true);
-              setData('locale', pendingLocale);
-              setSwapDialogOpen(false);
-              setPendingLocale(null);
-            }}
-            onConfirmNoSwap={() => {
-              setData('confirm_swap', false);
-              setData('locale', pendingLocale);
-              setSwapDialogOpen(false);
-              setPendingLocale(null);
-            }}
-            onCancel={() => {
-              setSwapDialogOpen(false);
-              setPendingLocale(null);
-            }}
-          />
-        )}
-      </AuthenticatedLayout>
-    </ProjectsI18nProvider>
+      )}
+    </AuthenticatedLayout>
   );
 }
+
+Edit.i18n = ['projects'];
 
 function EditProjectHeader() {
   const { translate: tActions } = useProjectsTranslation(
