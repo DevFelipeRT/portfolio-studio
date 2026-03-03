@@ -1,8 +1,6 @@
-export { useGetLocale } from './hooks/useGetLocale';
-export { useSetLocale } from './hooks/useSetLocale';
-export { useSupportedLocales } from './hooks/useSupportedLocales';
-export { useTranslation } from './hooks/useTranslation';
 export { I18nContext } from './I18nContext';
-export { I18nProvider } from './I18nProvider';
 export { LanguageSelector } from './LanguageSelector';
-export { LocaleSwitcher } from './LocaleSwitcher';
+export { useGetLocale, useSetLocale, useSupportedLocales } from './locale';
+export { LocaleSwitcher } from './locale';
+export { I18nProvider } from './provider';
+export { useTranslation } from './useTranslation';
