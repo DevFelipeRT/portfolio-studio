@@ -2,8 +2,9 @@
 
 import { Moon, Sun } from 'lucide-react';
 
+import { useTheme } from '@/app/layouts/partials/theme/ThemeProvider';
 import { I18N_NAMESPACES } from '@/common/i18n';
-import { useTranslation } from '@/common/i18n/react/hooks/useTranslation';
+import { useTranslation } from '@/common/i18n/react/useTranslation';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -12,7 +13,6 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useTheme } from '@/app/layouts/partials/theme/ThemeProvider';
 
 /**
  * ModeToggle renders an accessible theme switcher backed by the global

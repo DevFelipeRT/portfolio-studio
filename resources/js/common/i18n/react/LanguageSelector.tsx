@@ -1,5 +1,5 @@
 import { I18N_NAMESPACES } from '@/common/i18n';
-import { useTranslation } from '@/common/i18n/react/hooks/useTranslation';
+import { useTranslation } from '@/common/i18n/react/useTranslation';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -81,7 +81,9 @@ export function LanguageSelector({
       default:
         return (
           <>
-            <span className="hidden xs:inline sm:hidden">{triggerShortLabel}</span>
+            <span className="xs:inline hidden sm:hidden">
+              {triggerShortLabel}
+            </span>
             <span className="hidden sm:inline">{triggerLongLabel}</span>
           </>
         );
