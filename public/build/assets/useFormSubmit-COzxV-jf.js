@@ -1,0 +1,1 @@
+import{w as p}from"./vendor-core-TKFHctjE.js";function E(r={}){const e=r.preserveState??!0,o=r.preserveScroll??!0,l=r.scrollToTopOnError??!0,t=r.scrollBehavior??"smooth";return p.useCallback((s,a,n,c={})=>{s.preventDefault();const u=c.onError;a(n,{preserveState:e,preserveScroll:o,...c,onError:(...v)=>{u?.(...v),l&&window.scrollTo({top:0,behavior:t})}})},[o,e,t,l])}export{E as u};
