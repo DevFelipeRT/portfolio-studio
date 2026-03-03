@@ -42,7 +42,8 @@ export function MessagesRow({
     onToggleSeen,
     onDelete,
 }: MessagesRowProps) {
-    const whenLabel = formatWhen(message.created_at);
+    const isMobile = useIsMobile();
+    const whenLabel = formatWhen(message.created_at, isMobile);
 
     function handleRowClick(): void {
         onRowClick(message);
@@ -228,7 +229,7 @@ function truncate(text: string, maxLength: number): string {
     return `${trimmed.slice(0, maxLength - 1)}…`;
 }
 
-function formatWhen(value: string): string {
+function formatWhen(value: string, isMobile: boolean): string {
     const date = new Date(value);
 
     if (Number.isNaN(date.getTime())) {
@@ -241,8 +242,6 @@ function formatWhen(value: string): string {
         date.getFullYear() === now.getFullYear() &&
         date.getMonth() === now.getMonth() &&
         date.getDate() === now.getDate();
-
-    const isMobile = useIsMobile();
 
     if (isSameDay) {
         return date.toLocaleTimeString(undefined, {

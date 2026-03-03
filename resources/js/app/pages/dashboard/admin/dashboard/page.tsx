@@ -16,7 +16,7 @@ export default function Dashboard() {
       <Head title="Dashboard" />
 
       <div className="space-y-6">
-        <div className="text-muted-foreground text-sm">You're logged in!</div>
+        <div className="text-muted-foreground text-sm">You&apos;re logged in!</div>
 
         <section className="bg-muted/40 space-y-4 rounded-md border p-6">
           <div>

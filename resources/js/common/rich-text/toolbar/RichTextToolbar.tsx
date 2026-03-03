@@ -1,4 +1,3 @@
-import { Separator } from '@/components/ui/separator';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import type { JSX } from 'react';
 import { BlockTypeGroup } from './partials/BlockTypeGroup';

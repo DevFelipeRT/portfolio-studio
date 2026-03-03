@@ -29,7 +29,8 @@ export function SkillsRow({
     onEdit,
     onDelete,
 }: SkillsRowProps) {
-    const updatedLabel = formatUpdatedAt(skill.updated_at);
+    const isMobile = useIsMobile();
+    const updatedLabel = formatUpdatedAt(skill.updated_at, isMobile);
     const categoryLabel = skill.category?.name ?? 'Uncategorized';
 
     function handleEdit(event: React.MouseEvent): void {
@@ -111,7 +112,10 @@ export function SkillsRow({
     );
 }
 
-function formatUpdatedAt(value: string | null | undefined): string {
+function formatUpdatedAt(
+    value: string | null | undefined,
+    isMobile: boolean,
+): string {
     if (!value) {
         return '—';
     }
@@ -128,8 +132,6 @@ function formatUpdatedAt(value: string | null | undefined): string {
         date.getFullYear() === now.getFullYear() &&
         date.getMonth() === now.getMonth() &&
         date.getDate() === now.getDate();
-
-    const isMobile = useIsMobile();
 
     if (isSameDay) {
         return date.toLocaleTimeString(undefined, {

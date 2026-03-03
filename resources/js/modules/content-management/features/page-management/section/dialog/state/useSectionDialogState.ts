@@ -239,12 +239,13 @@ export function useSectionDialogState({
       setNavigationGroup(stashed?.navigationGroup ?? base.navigationGroup);
       setSlot(resolveSlotOnTemplateChange(slot, template));
     },
-    [
-      buildTemplateDataLossWarning,
-      selectedTemplate,
-      setTemplateData,
-      setNavigationGroup,
-      setSelectedTemplateKey,
+	    [
+	      buildTemplateDataLossWarning,
+	      base.navigationGroup,
+	      selectedTemplate,
+	      setTemplateData,
+	      setNavigationGroup,
+	      setSelectedTemplateKey,
       setSlot,
       slot,
       templateData,

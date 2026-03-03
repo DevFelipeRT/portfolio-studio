@@ -34,9 +34,9 @@ export const defaultRichTextTheme = {
         ul: 'ml-6 list-disc space-y-1',
         listitem: 'leading-relaxed',
         listitemChecked:
-            'relative list-none pl-6 before:absolute before:left-0 before:top-1 before:h-4 before:w-4 before:rounded-sm before:border before:border-muted-foreground/60 before:bg-primary before:content-[\" \"] after:absolute after:left-[0.3rem] after:top-[0.5rem] after:h-1.5 after:w-2.5 after:-rotate-45 after:border-b-2 after:border-l-2 after:border-background after:content-[\" \"]',
+            'relative list-none pl-6 before:absolute before:left-0 before:top-1 before:h-4 before:w-4 before:rounded-sm before:border before:border-muted-foreground/60 before:bg-primary before:content-[" "] after:absolute after:left-[0.3rem] after:top-[0.5rem] after:h-1.5 after:w-2.5 after:-rotate-45 after:border-b-2 after:border-l-2 after:border-background after:content-[" "]',
         listitemUnchecked:
-            'relative list-none pl-6 before:absolute before:left-0 before:top-1 before:h-4 before:w-4 before:rounded-sm before:border before:border-muted-foreground/60 before:bg-transparent before:content-[\" \"]',
+            'relative list-none pl-6 before:absolute before:left-0 before:top-1 before:h-4 before:w-4 before:rounded-sm before:border before:border-muted-foreground/60 before:bg-transparent before:content-[" "]',
     },
   link: 'text-primary underline underline-offset-4',
   text: {
