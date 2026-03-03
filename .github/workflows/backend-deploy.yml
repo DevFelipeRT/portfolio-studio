@@ -23,6 +23,7 @@ concurrency:
 
 jobs:
   deploy:
+    timeout-minutes: 30
     runs-on: ubuntu-latest
     environment: production
     permissions:
@@ -91,6 +92,11 @@ jobs:
           PUBLIC_DIR="${TARGET_DIR%/}"
           APP_DIR_OVERRIDE="${APP_DIR:-}"
 
+          if [ -z "${PUBLIC_DIR}" ] || [ "${PUBLIC_DIR}" = "/" ]; then
+            echo "Refusing to deploy: TARGET_DIR is empty or '/'."
+            exit 1
+          fi
+
           ssh -p "${PORT}" -o StrictHostKeyChecking=yes "${USERNAME}@${HOST}" "
             set -e
 
@@ -137,6 +143,11 @@ jobs:
               else
                 composer dump-autoload -o
               fi
+            fi
+
+            if [ ! -f artisan ]; then
+              echo 'artisan not found in resolved app dir.'
+              exit 1
             fi
 
             if [ \"\${MIGRATIONS_CHANGED}\" = 'true' ]; then

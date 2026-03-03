@@ -9,6 +9,7 @@ concurrency:
 
 jobs:
   optimize:
+    timeout-minutes: 20
     runs-on: ubuntu-latest
     environment: production
     permissions: {}
@@ -39,6 +40,11 @@ jobs:
           PUBLIC_DIR="${TARGET_DIR%/}"
           APP_DIR_OVERRIDE="${APP_DIR:-}"
 
+          if [ -z "${PUBLIC_DIR}" ] || [ "${PUBLIC_DIR}" = "/" ]; then
+            echo "Refusing to run: TARGET_DIR is empty or '/'."
+            exit 1
+          fi
+
           ssh -p "${PORT}" -o StrictHostKeyChecking=yes "${USERNAME}@${HOST}" "
             set -e
 
@@ -61,6 +67,11 @@ jobs:
             fi
 
             cd \"\${RESOLVED_APP_DIR}\"
+
+            if [ ! -f artisan ]; then
+              echo 'artisan not found in resolved app dir.'
+              exit 1
+            fi
 
             if command -v composer >/dev/null 2>&1; then
               composer dump-autoload -o
