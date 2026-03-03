@@ -2,6 +2,11 @@ import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import type { FormErrors } from '@/common/forms';
 import type { ContactChannelFormData } from '@/modules/contact-channels/core/forms';
 import type { ContactChannelTypeOption } from '@/modules/contact-channels/core/types';
+import {
+  ContactChannelsI18nProvider,
+  useContactChannelsTranslation,
+} from '@/modules/contact-channels/i18n';
+import { CONTACT_CHANNELS_NAMESPACES } from '@/modules/contact-channels/i18n';
 import { ContactChannelForm } from '@/modules/contact-channels/ui/form/contact-channel';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import React from 'react';
@@ -40,14 +45,59 @@ export default function Create({ channelTypes }: CreateContactChannelProps) {
   };
 
   return (
-    <AuthenticatedLayout
-      header={
-        <h1 className="text-xl leading-tight font-semibold">
-          New contact channel
-        </h1>
-      }
-    >
-      <Head title="New contact channel" />
+    <ContactChannelsI18nProvider>
+      <AuthenticatedLayout header={<CreateContactChannelHeader />}>
+        <CreateContactChannelContent
+          channelTypes={channelTypes}
+          data={data}
+          formErrors={formErrors}
+          processing={processing}
+          onChange={handleChange}
+          onSubmit={handleSubmit}
+        />
+      </AuthenticatedLayout>
+    </ContactChannelsI18nProvider>
+  );
+}
+
+function CreateContactChannelHeader() {
+  const { translate: tActions } = useContactChannelsTranslation(
+    CONTACT_CHANNELS_NAMESPACES.actions,
+  );
+  return (
+    <h1 className="text-xl leading-tight font-semibold">
+      {tActions('newChannel')}
+    </h1>
+  );
+}
+
+type CreateContactChannelContentProps = {
+  channelTypes: ContactChannelTypeOption[];
+  data: ContactChannelFormData;
+  formErrors: FormErrors<keyof ContactChannelFormData>;
+  processing: boolean;
+  onChange: (
+    field: keyof ContactChannelFormData,
+    value: string | number | boolean | '',
+  ) => void;
+  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+};
+
+function CreateContactChannelContent({
+  channelTypes,
+  data,
+  formErrors,
+  processing,
+  onChange,
+  onSubmit,
+}: CreateContactChannelContentProps) {
+  const { translate: tActions } = useContactChannelsTranslation(
+    CONTACT_CHANNELS_NAMESPACES.actions,
+  );
+
+  return (
+    <>
+      <Head title={tActions('newChannel')} />
 
       <div className="overflow-hidden">
         <div className="mx-auto max-w-xl px-4 py-8 sm:px-6 lg:px-8">
@@ -56,7 +106,7 @@ export default function Create({ channelTypes }: CreateContactChannelProps) {
               href={route('contact-channels.index')}
               className="text-muted-foreground hover:text-foreground text-sm"
             >
-              Back to contact channels
+              {tActions('backToIndex')}
             </Link>
           </div>
 
@@ -65,13 +115,13 @@ export default function Create({ channelTypes }: CreateContactChannelProps) {
             errors={formErrors}
             channelTypes={channelTypes}
             processing={processing}
-            onChange={handleChange}
-            onSubmit={handleSubmit}
+            onChange={onChange}
+            onSubmit={onSubmit}
             cancelHref={route('contact-channels.index')}
-            submitLabel="Save"
+            submitLabel={tActions('save')}
           />
         </div>
       </div>
-    </AuthenticatedLayout>
+    </>
   );
 }

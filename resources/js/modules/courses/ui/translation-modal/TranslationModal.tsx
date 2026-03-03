@@ -18,7 +18,7 @@ import {
   updateCourseTranslation,
 } from '@/modules/courses/core/api/translations';
 import type { CourseTranslationItem } from '@/modules/courses/core/types';
-import { useTranslation } from '@/common/i18n';
+import { useCoursesTranslation, COURSES_NAMESPACES } from '@/modules/courses/i18n';
 import { Loader2, Plus, Trash2 } from 'lucide-react';
 import React from 'react';
 import {
@@ -60,7 +60,9 @@ export function TranslationModal({
   courseLabel,
   baseLocale,
 }: TranslationModalProps) {
-  const { translate: t } = useTranslation('courses');
+  const { translate: t } = useCoursesTranslation(
+    COURSES_NAMESPACES.translations,
+  );
   const [supportedLocales, setSupportedLocales] = React.useState<string[]>([]);
   const [translations, setTranslations] = React.useState<EditableTranslation[]>(
     [],
@@ -163,12 +165,12 @@ export function TranslationModal({
 
   const handleCreate = async (): Promise<void> => {
     if (!newLocale) {
-      setError(t('translations.errors.localeRequired'));
+      setError(t('errors.localeRequired'));
       return;
     }
 
     if (!hasNewContent()) {
-      setError(t('translations.errors.atLeastOne'));
+      setError(t('errors.atLeastOne'));
       return;
     }
 
@@ -216,7 +218,7 @@ export function TranslationModal({
       summary.trim() === '' &&
       description.trim() === ''
     ) {
-      setError(t('translations.errors.atLeastOne'));
+      setError(t('errors.atLeastOne'));
       return;
     }
 
@@ -259,7 +261,7 @@ export function TranslationModal({
   };
 
   const handleDelete = async (item: EditableTranslation): Promise<void> => {
-    if (!window.confirm(t('translations.confirmDelete', { locale: item.locale }))) {
+    if (!window.confirm(t('confirmDelete', { locale: item.locale }))) {
       return;
     }
 
@@ -295,17 +297,17 @@ export function TranslationModal({
         }
       }}
       maxWidthClassName="max-w-3xl"
-      title={t('translations.title')}
+      title={t('title')}
       description={
         <>
-          {t('translations.subtitle')}{' '}
+          {t('subtitle')}{' '}
           <span className="font-medium text-foreground">{courseLabel}</span>.
         </>
       }
       headerAction={null}
       footer={
         <Button variant="secondary" onClick={handleClose} disabled={saving}>
-          {t('translations.actions.close')}
+          {t('actions.close')}
         </Button>
       }
     >
@@ -320,25 +322,25 @@ export function TranslationModal({
           {loading ? (
             <div className="text-muted-foreground flex items-center gap-2 text-sm">
               <Loader2 className="h-4 w-4 animate-spin" />
-              {t('translations.loading')}
+              {t('loading')}
             </div>
           ) : view === 'list' ? (
             <div className="space-y-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <Label>{t('translations.existing')}</Label>
+                <Label>{t('existing')}</Label>
                 <Button
                   size="sm"
                   onClick={openAddPanel}
                   disabled={saving || availableLocales.length === 0}
                 >
                   <Plus className="mr-2 h-4 w-4" />
-                  {t('translations.add')}
+                  {t('add')}
                 </Button>
               </div>
 
               {translations.length === 0 ? (
                 <p className="text-muted-foreground text-sm">
-                  {t('translations.empty')}
+                  {t('empty')}
                 </p>
               ) : (
                 <div className="space-y-2">
@@ -360,7 +362,7 @@ export function TranslationModal({
                           ) : null}
                         </div>
                         <span className="text-muted-foreground text-xs">
-                          {t('translations.actions.edit')}
+                          {t('actions.edit')}
                         </span>
                       </button>
                       <Button
@@ -381,16 +383,16 @@ export function TranslationModal({
             <div className="space-y-4">
               <div className="flex items-center gap-2">
                 <Button size="sm" variant="ghost" onClick={() => setView('list')}>
-                  {t('translations.actions.back')}
+                  {t('actions.back')}
                 </Button>
-                <Label>{t('translations.add')}</Label>
+                <Label>{t('add')}</Label>
               </div>
 
               <div className="grid gap-3 md:grid-cols-2">
                 <div className="space-y-1.5">
                   <Select value={newLocale} onValueChange={setNewLocale}>
                     <SelectTrigger>
-                      <SelectValue placeholder={t('translations.fields.locale')} />
+                      <SelectValue placeholder={t('fields.locale')} />
                     </SelectTrigger>
                     <SelectContent>
                       {availableLocales.map((locale) => (
@@ -406,7 +408,7 @@ export function TranslationModal({
                   <Input
                     value={newName}
                     onChange={(event) => setNewName(event.target.value)}
-                    placeholder={t('translations.placeholders.name')}
+                    placeholder={t('placeholders.name')}
                   />
                 </div>
               </div>
@@ -415,12 +417,12 @@ export function TranslationModal({
                 <Input
                   value={newInstitution}
                   onChange={(event) => setNewInstitution(event.target.value)}
-                  placeholder={t('translations.placeholders.institution')}
+                  placeholder={t('placeholders.institution')}
                 />
                 <Textarea
                   value={newSummary}
                   onChange={(event) => setNewSummary(event.target.value)}
-                  placeholder={t('translations.placeholders.summary')}
+                  placeholder={t('placeholders.summary')}
                   rows={3}
                 />
               </div>
@@ -429,7 +431,7 @@ export function TranslationModal({
                 id="course-translation-new"
                 value={newDescription}
                 onChange={setNewDescription}
-                placeholder={t('translations.placeholders.description')}
+                placeholder={t('placeholders.description')}
               />
 
               <div className="flex flex-wrap items-center gap-2">
@@ -439,11 +441,11 @@ export function TranslationModal({
                   disabled={saving || availableLocales.length === 0}
                 >
                   <Plus className="mr-2 h-4 w-4" />
-                  {t('translations.actions.add')}
+                  {t('actions.add')}
                 </Button>
                 {availableLocales.length === 0 && (
                   <p className="text-muted-foreground text-xs">
-                    {t('translations.allCovered')}
+                    {t('allCovered')}
                   </p>
                 )}
               </div>
@@ -452,14 +454,14 @@ export function TranslationModal({
             <div className="space-y-4">
               <div className="flex items-center gap-2">
                 <Button size="sm" variant="ghost" onClick={() => setView('list')}>
-                  {t('translations.actions.back')}
+                  {t('actions.back')}
                 </Button>
                 <Label>{activeTranslation.locale}</Label>
               </div>
 
               <div className="grid gap-3 md:grid-cols-2">
                 <div className="space-y-1.5">
-                  <Label>{t('translations.fields.name')}</Label>
+                  <Label>{t('fields.name')}</Label>
                   <Input
                     value={activeTranslation.draftName ?? ''}
                     onChange={(event) =>
@@ -475,7 +477,7 @@ export function TranslationModal({
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label>{t('translations.fields.institution')}</Label>
+                  <Label>{t('fields.institution')}</Label>
                   <Input
                     value={activeTranslation.draftInstitution ?? ''}
                     onChange={(event) =>
@@ -495,7 +497,7 @@ export function TranslationModal({
               </div>
 
               <div className="space-y-1.5">
-                <Label>{t('translations.fields.summary')}</Label>
+                <Label>{t('fields.summary')}</Label>
                 <Textarea
                   value={activeTranslation.draftSummary ?? ''}
                   onChange={(event) =>
@@ -512,7 +514,7 @@ export function TranslationModal({
               </div>
 
               <div className="space-y-1.5">
-                <Label>{t('translations.fields.description')}</Label>
+                <Label>{t('fields.description')}</Label>
                 <RichTextEditor
                   id={`course-translation-${activeTranslation.locale}`}
                   value={activeTranslation.draftDescription ?? ''}
@@ -525,7 +527,7 @@ export function TranslationModal({
                       ),
                     )
                   }
-                  placeholder={t('translations.placeholders.description')}
+                  placeholder={t('placeholders.description')}
                 />
               </div>
 
@@ -536,7 +538,7 @@ export function TranslationModal({
                   onClick={() => handleUpdate(activeTranslation)}
                   disabled={saving}
                 >
-                  {t('translations.actions.save')}
+                  {t('actions.save')}
                 </Button>
               </div>
             </div>

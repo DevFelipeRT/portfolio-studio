@@ -2,8 +2,9 @@
 
 import { Moon, Sun } from 'lucide-react';
 
-import { NAMESPACES } from '@/common/i18n/config/namespaces';
-import { useTranslation } from '@/common/i18n/react/hooks/useTranslation';
+import { useTheme } from '@/app/layouts/partials/theme/ThemeProvider';
+import { I18N_NAMESPACES } from '@/common/i18n';
+import { useTranslation } from '@/common/i18n/react/useTranslation';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -12,7 +13,6 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useTheme } from '@/app/layouts/partials/theme/ThemeProvider';
 
 /**
  * ModeToggle renders an accessible theme switcher backed by the global
@@ -20,14 +20,14 @@ import { useTheme } from '@/app/layouts/partials/theme/ThemeProvider';
  */
 export function ModeToggle() {
   const { theme, setTheme } = useTheme();
-  const { translate } = useTranslation(NAMESPACES.common);
+  const { translate } = useTranslation(I18N_NAMESPACES.themeToggle);
 
   const currentTheme = theme ?? 'system';
 
-  const triggerLabel = translate('themeToggle.label', 'Theme');
-  const lightLabel = translate('themeToggle.light', 'Light');
-  const darkLabel = translate('themeToggle.dark', 'Dark');
-  const systemLabel = translate('themeToggle.system', 'System');
+  const triggerLabel = translate('label', 'Theme');
+  const lightLabel = translate('light', 'Light');
+  const darkLabel = translate('dark', 'Dark');
+  const systemLabel = translate('system', 'System');
 
   const handleThemeChange = (value: string): void => {
     if (value === 'light' || value === 'dark' || value === 'system') {

@@ -1,4 +1,9 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import {
+  ProjectsI18nProvider,
+  PROJECTS_NAMESPACES,
+  useProjectsTranslation,
+} from '@/modules/projects/i18n';
 import type { Project } from '@/modules/projects/core/types';
 import type { Skill } from '@/modules/skills/core/types';
 import { Head, Link } from '@inertiajs/react';
@@ -8,7 +13,22 @@ interface ProjectsIndexProps {
 }
 
 export default function Index({ projects }: ProjectsIndexProps) {
+  return (
+    <ProjectsI18nProvider>
+      <ProjectsIndexI18nContent projects={projects} />
+    </ProjectsI18nProvider>
+  );
+}
+
+function ProjectsIndexI18nContent({ projects }: ProjectsIndexProps) {
   const hasProjects = projects.length > 0;
+  const { translate: tSections } = useProjectsTranslation(
+    PROJECTS_NAMESPACES.sections,
+  );
+  const { translate: tForm } = useProjectsTranslation(PROJECTS_NAMESPACES.form);
+  const { translate: tActions } = useProjectsTranslation(
+    PROJECTS_NAMESPACES.actions,
+  );
 
   const skills = (project: Project): Skill[] => {
     return project.skills ?? [];
@@ -26,59 +46,59 @@ export default function Index({ projects }: ProjectsIndexProps) {
     <AuthenticatedLayout
       header={
         <h1 className="text-xl leading-tight font-semibold">
-          Project management
+          {tSections('managementTitle')}
         </h1>
       }
     >
-      <Head title="Projects" />
+        <Head title="Projects" />
 
-      <div className="overflow-hidden">
-        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-muted-foreground mt-1 text-sm">
-              Manage the projects displayed on your portfolio landing page.
-            </p>
+        <div className="overflow-hidden">
+          <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-muted-foreground mt-1 text-sm">
+                {tForm('help.managementSubtitle')}
+              </p>
+            </div>
+
+            <Link
+              href={route('projects.create')}
+              className="bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-ring inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium shadow-sm transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+            >
+              {tActions('newProject')}
+            </Link>
           </div>
 
-          <Link
-            href={route('projects.create')}
-            className="bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-ring inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium shadow-sm transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
-          >
-            New project
-          </Link>
-        </div>
+          {!hasProjects && (
+            <p className="text-muted-foreground text-sm">
+              {tForm('emptyState.index')}
+            </p>
+          )}
 
-        {!hasProjects && (
-          <p className="text-muted-foreground text-sm">
-            No projects have been created yet.
-          </p>
-        )}
-
-        {hasProjects && (
-          <div className="bg-card overflow-hidden rounded-lg border">
-            <table className="min-w-full divide-y text-sm">
-              <thead className="bg-muted/60">
-                <tr>
-                  <th className="text-muted-foreground px-4 py-3 text-left font-medium">
-                    Name
-                  </th>
-                  <th className="text-muted-foreground px-4 py-3 text-left font-medium">
-                    Status
-                  </th>
-                  <th className="text-muted-foreground px-4 py-3 text-left font-medium">
-                    Display on landing
-                  </th>
-                  <th className="text-muted-foreground px-4 py-3 text-left font-medium">
-                    Skills
-                  </th>
-                  <th className="text-muted-foreground px-4 py-3 text-left font-medium">
-                    Updated at
-                  </th>
-                  <th className="text-muted-foreground px-4 py-3 text-right font-medium">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
+          {hasProjects && (
+            <div className="bg-card overflow-hidden rounded-lg border">
+              <table className="min-w-full divide-y text-sm">
+                <thead className="bg-muted/60">
+                  <tr>
+                    <th className="text-muted-foreground px-4 py-3 text-left font-medium">
+                      {tForm('fields.name.label')}
+                    </th>
+                    <th className="text-muted-foreground px-4 py-3 text-left font-medium">
+                      {tForm('fields.status.label')}
+                    </th>
+                    <th className="text-muted-foreground px-4 py-3 text-left font-medium">
+                      {tForm('fields.display.label')}
+                    </th>
+                    <th className="text-muted-foreground px-4 py-3 text-left font-medium">
+                      {tForm('fields.skill_ids.label')}
+                    </th>
+                    <th className="text-muted-foreground px-4 py-3 text-left font-medium">
+                      {tForm('fields.updated_at.label')}
+                    </th>
+                    <th className="text-muted-foreground px-4 py-3 text-right font-medium">
+                      {tForm('fields.actions.label')}
+                    </th>
+                  </tr>
+                </thead>
 
               <tbody className="divide-y">
                 {projects.map((project) => (
@@ -95,13 +115,13 @@ export default function Index({ projects }: ProjectsIndexProps) {
                     </td>
 
                     <td className="text-muted-foreground px-4 py-3 align-top text-xs">
-                      {project.display ? 'Yes' : 'No'}
+                      {project.display ? tActions('yes') : tActions('no')}
                     </td>
 
                     <td className="text-muted-foreground px-4 py-3 align-top text-xs">
                       {skills(project).length === 0 && (
                         <span className="text-muted-foreground/70">
-                          No skills
+                          {tForm('fields.skill_ids.emptyInline')}
                         </span>
                       )}
 
@@ -129,7 +149,7 @@ export default function Index({ projects }: ProjectsIndexProps) {
                           href={route('projects.edit', project.id)}
                           className="text-primary font-medium hover:underline"
                         >
-                          Edit
+                          {tActions('edit')}
                         </Link>
 
                         <Link
@@ -138,7 +158,7 @@ export default function Index({ projects }: ProjectsIndexProps) {
                           as="button"
                           className="text-destructive font-medium hover:underline"
                         >
-                          Delete
+                          {tActions('delete')}
                         </Link>
                       </div>
                     </td>

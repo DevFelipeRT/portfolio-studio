@@ -1,10 +1,10 @@
-import { NAMESPACES, useTranslation } from '@/common/i18n';
+import { useLayoutsTranslation } from '@/app/layouts/i18n';
 
 export default function Footer() {
-  const { translate } = useTranslation(NAMESPACES.layout);
+  const { translate } = useLayoutsTranslation('footer');
 
-  const madeByLabel = translate('footer.madeBy', '');
-  const rightsLabel = translate('footer.rights', 'All rights reserved');
+  const madeByLabel = translate('madeBy', 'Made by Felipe Ruiz Terrazas.');
+  const rightsLabel = translate('rights', 'All rights reserved');
 
   return (
     <footer className="bg-background border-border text-muted-foreground border-t py-4 text-sm">

@@ -9,7 +9,8 @@ import {
 } from '@/app/navigation';
 import type { NavigationConfigNode } from '@/app/navigation/types';
 import { useNavigationSheet } from '@/app/navigation/useNavigationSheet';
-import { NAMESPACES, useTranslation } from '@/common/i18n';
+import { LayoutsI18nProvider, useLayoutsTranslation } from '@/app/layouts/i18n';
+import { I18N_NAMESPACES, useTranslation } from '@/common/i18n';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Toaster } from '@/components/ui/sonner';
 import { navigationConfig } from '@/config/navigation';
@@ -119,17 +120,31 @@ export default function Authenticated({
   header,
   children,
 }: PropsWithChildren<{ header?: ReactNode }>) {
+  return (
+    <LayoutsI18nProvider>
+      <AuthenticatedI18nContent header={header}>{children}</AuthenticatedI18nContent>
+    </LayoutsI18nProvider>
+  );
+}
+
+function AuthenticatedI18nContent({
+  header,
+  children,
+}: PropsWithChildren<{ header?: ReactNode }>) {
   const page = usePage();
   const { auth, errors, status } = page.props as SharedProps;
   const { url } = page;
-  const { translate: translateFromLayout } = useTranslation(NAMESPACES.layout);
-  const { translate: translateFromCommon } = useTranslation(NAMESPACES.common);
+  const { translate: translateFeedback } = useTranslation(I18N_NAMESPACES.feedback);
+  const { translate: translateState } = useTranslation(I18N_NAMESPACES.state);
   const isMobile = useIsMobile();
   const { isSheetOpen, setIsSheetOpen } = useNavigationSheet(url);
 
+  const { translate: translateFromNavigation } =
+    useLayoutsTranslation('navigation');
+
   const navItems: NavigationItem[] = mapConfigToNavigationItems(
     navigationConfig,
-    (key, fallback) => translateFromLayout(key, fallback),
+    (key, fallback) => translateFromNavigation(key, fallback),
   );
 
   const globalErrorMessages = collectGlobalErrorMessages(errors ?? {});
@@ -144,19 +159,18 @@ export default function Authenticated({
       return;
     }
 
-    const messageKey = `flash.${status}`;
-    const message = translateFromLayout(messageKey, status);
+    const message = translateFeedback(status, status);
 
     toast.success(message);
-  }, [status, translateFromLayout]);
+  }, [status, translateFeedback]);
 
-  const openNavigationLabel = translateFromCommon(
-    'navigation.openMenu',
+  const openNavigationLabel = translateFromNavigation(
+    'openMenu',
     'Open navigation menu',
   );
 
-  const mobileNavigationTitle = translateFromLayout(
-    'header.navigation.mobileTitle',
+  const mobileNavigationTitle = translateFromNavigation(
+    'mobileTitle',
     'Navigation',
   );
 
@@ -167,18 +181,18 @@ export default function Authenticated({
           {!isMobile ? (
             <Navigation items={navItems} />
           ) : (
-            <MobileSidebar
-              isOpen={isSheetOpen}
-              setIsOpen={setIsSheetOpen}
-              openNavigationLabel={openNavigationLabel}
-              mobileNavigationTitle={mobileNavigationTitle}
-              user={auth.user}
-            >
-              <Navigation
-                items={navItems}
-                onClose={() => setIsSheetOpen(false)}
-              />
-            </MobileSidebar>
+              <MobileSidebar
+                isOpen={isSheetOpen}
+                setIsOpen={setIsSheetOpen}
+                openNavigationLabel={openNavigationLabel}
+                mobileNavigationTitle={mobileNavigationTitle}
+                user={auth.user}
+              >
+                <Navigation
+                  items={navItems}
+                  onClose={() => setIsSheetOpen(false)}
+                />
+              </MobileSidebar>
           )}
         </Header>
 
@@ -194,10 +208,7 @@ export default function Authenticated({
               <div className="mb-4">
                 <Alert variant="destructive">
                   <AlertTitle>
-                    {translateFromLayout(
-                      'errors.title',
-                      'Something went wrong.',
-                    )}
+                    {translateState('error', 'Something went wrong.')}
                   </AlertTitle>
                   <AlertDescription>
                     <p className="text-sm">{globalErrorMessages.join(' ')}</p>

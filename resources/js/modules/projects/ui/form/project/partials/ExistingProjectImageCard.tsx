@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { useProjectsTranslation, PROJECTS_NAMESPACES } from '@/modules/projects/i18n';
 import { Link } from '@inertiajs/react';
 
 interface ExistingProjectImageCardModel {
@@ -18,6 +19,9 @@ export function ExistingProjectImageCard({
   image,
   projectId,
 }: ExistingProjectImageCardProps) {
+  const { translate: tActions } = useProjectsTranslation(
+    PROJECTS_NAMESPACES.actions,
+  );
   return (
     <Card className="border-border/70 flex h-full flex-col gap-3 rounded-lg shadow-sm transition-shadow hover:shadow">
       <CardContent className="flex flex-1 flex-col gap-3 p-4">
@@ -53,7 +57,7 @@ export function ExistingProjectImageCard({
                 method="delete"
                 as="button"
               >
-                Delete image
+                {tActions('deleteImage')}
               </Link>
             </Button>
           </div>

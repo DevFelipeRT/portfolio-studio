@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import type { ProjectFormData } from '@/modules/projects/core/forms';
+import { useProjectsTranslation, PROJECTS_NAMESPACES } from '@/modules/projects/i18n';
 import type React from 'react';
 
 interface SelectImageCardProps {
@@ -22,6 +23,9 @@ export function SelectImageCard({
   onAltChange,
   onRemove,
 }: SelectImageCardProps) {
+  const { translate: tActions } = useProjectsTranslation(
+    PROJECTS_NAMESPACES.actions,
+  );
   const hasPreview = Boolean(image.file);
 
   return (
@@ -47,7 +51,7 @@ export function SelectImageCard({
       <CardFooter className="p-4 pt-0">
         <div className="flex w-full justify-end">
           <Button type="button" variant="ghost" size="sm" onClick={onRemove}>
-            Remove
+            {tActions('remove')}
           </Button>
         </div>
       </CardFooter>

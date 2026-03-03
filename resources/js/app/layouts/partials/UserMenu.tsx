@@ -4,8 +4,7 @@ import { Link, usePage } from '@inertiajs/react';
 import { CircleUser, LayoutGrid, LogOut, MoreVertical } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-import { NAMESPACES } from '@/common/i18n/config/namespaces';
-import { useTranslation } from '@/common/i18n/react/hooks/useTranslation';
+import { useLayoutsTranslation } from '@/app/layouts/i18n';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -64,12 +63,12 @@ export function UserMenu({ user, variant = 'full' }: UserMenuProps) {
   const { url } = usePage();
   const [isOpen, setIsOpen] = useState(false);
 
-  const { translate } = useTranslation(NAMESPACES.layout);
+  const { translate } = useLayoutsTranslation('userMenu');
 
-  const openUserMenuLabel = translate('userMenu.openLabel', 'Open user menu');
-  const dashboardLabel = translate('userMenu.dashboard', 'Dashboard');
-  const profileLabel = translate('userMenu.profile', 'Profile');
-  const logoutLabel = translate('userMenu.logout', 'Log out');
+  const openUserMenuLabel = translate('openLabel', 'Open user menu');
+  const dashboardLabel = translate('dashboard', 'Dashboard');
+  const profileLabel = translate('profile', 'Profile');
+  const logoutLabel = translate('logout', 'Log out');
 
   const userInitials = user.name
     .split(' ')

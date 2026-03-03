@@ -6,6 +6,8 @@ import {
 } from '@/common/forms';
 import { CheckboxField, SelectField, TextInputField } from '@/common/forms';
 import { useSupportedLocales } from '@/common/i18n';
+import { useContactChannelsTranslation } from '@/modules/contact-channels/i18n';
+import { CONTACT_CHANNELS_NAMESPACES } from '@/modules/contact-channels/i18n';
 
 import { getErrorSummaryFields } from './errorSummaryFields';
 import type { ContactChannelFormProps } from './types';
@@ -20,17 +22,24 @@ export function ContactChannelForm({
   cancelHref,
   submitLabel,
   deleteHref,
-  deleteLabel = 'Delete',
+  deleteLabel,
 }: ContactChannelFormProps) {
-  const summaryFields = getErrorSummaryFields(errors);
+  const { translate: tForm } = useContactChannelsTranslation(
+    CONTACT_CHANNELS_NAMESPACES.form,
+  );
+  const { translate: tActions } = useContactChannelsTranslation(
+    CONTACT_CHANNELS_NAMESPACES.actions,
+  );
+  const summaryFields = getErrorSummaryFields(errors, tForm);
   const supportedLocales = useSupportedLocales();
+  const resolvedDeleteLabel = deleteLabel ?? tActions('delete');
 
   return (
     <Form onSubmit={onSubmit} errors={errors} errorSummaryFields={summaryFields}>
 
       <FormHeader
         className="min-h-6"
-        title={<h2 className="sr-only">Translations</h2>}
+        title={<h2 className="sr-only">{tForm('sections.managementTitle')}</h2>}
         localeFieldProps={{
           value: data.locale,
           locales: supportedLocales,
@@ -46,10 +55,10 @@ export function ContactChannelForm({
         id="channel-type"
         value={data.channel_type}
         errors={errors}
-        label="Type"
+        label={tForm('fields.channel_type.label')}
         required
         disabled={processing}
-        placeholder="Select a type"
+        placeholder={tForm('fields.channel_type.placeholder')}
         errorId="channel-type-error"
         options={channelTypes.map((type) => ({
           value: type.value,
@@ -63,8 +72,8 @@ export function ContactChannelForm({
         id="label"
         value={data.label}
         errors={errors}
-        label="Label"
-        placeholder="Optional label"
+        label={tForm('fields.label.label')}
+        placeholder={tForm('fields.label.placeholder')}
         disabled={processing}
         onChange={(value) => onChange('label', value)}
       />
@@ -74,9 +83,9 @@ export function ContactChannelForm({
         id="value"
         value={data.value}
         errors={errors}
-        label="Value"
+        label={tForm('fields.value.label')}
         required
-        placeholder="Email, phone number, handle, or URL"
+        placeholder={tForm('fields.value.placeholder')}
         disabled={processing}
         onChange={(value) => onChange('value', value)}
       />
@@ -87,7 +96,7 @@ export function ContactChannelForm({
           id="sort-order"
           value={data.sort_order}
           errors={errors}
-          label="Order"
+          label={tForm('fields.sort_order.label')}
           type="number"
           min={0}
           disabled={processing}
@@ -102,7 +111,7 @@ export function ContactChannelForm({
           id="is-active"
           value={data.is_active}
           errors={errors}
-          label="Active"
+          label={tForm('fields.is_active.label')}
           disabled={processing}
           className="pt-6"
           onChange={(value) => onChange('is_active', value)}
@@ -114,7 +123,7 @@ export function ContactChannelForm({
         submitLabel={submitLabel}
         processing={processing}
         deleteHref={deleteHref}
-        deleteLabel={deleteLabel}
+        deleteLabel={resolvedDeleteLabel}
         showDeleteWhen="always"
       />
     </Form>

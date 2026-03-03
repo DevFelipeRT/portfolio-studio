@@ -4,6 +4,7 @@ import { resolveFieldErrorMessage } from '@/common/forms/field/error/fieldErrorM
 import { Button } from '@/components/ui/button';
 import type { ProjectFormData } from '@/modules/projects/core/forms';
 import type { ProjectImage } from '@/modules/projects/core/types';
+import { useProjectsTranslation, PROJECTS_NAMESPACES } from '@/modules/projects/i18n';
 import type React from 'react';
 import { ExistingProjectImageCard } from './ExistingProjectImageCard';
 import { SelectImageCard } from './SelectImageCard';
@@ -44,6 +45,13 @@ export function ImagesSection({
   onUpdateImageAlt,
   onUpdateImageFile,
 }: ImagesSectionProps) {
+  const { translate: tSections } = useProjectsTranslation(
+    PROJECTS_NAMESPACES.sections,
+  );
+  const { translate: tForm } = useProjectsTranslation(PROJECTS_NAMESPACES.form);
+  const { translate: tActions } = useProjectsTranslation(
+    PROJECTS_NAMESPACES.actions,
+  );
   const existingImageCards = existingImages
     .map((image) => {
       const resolvedUrl = resolveExistingImageUrl(image);
@@ -69,7 +77,9 @@ export function ImagesSection({
   const hasPendingImageSelection = images.some((image) => !image.file);
   const hasAnyImages = hasExistingImages || hasNewImages;
   const emptyState = !hasAnyImages ? (
-    <p className="text-muted-foreground text-sm">No images added yet.</p>
+    <p className="text-muted-foreground text-sm">
+      {tForm('fields.images.empty')}
+    </p>
   ) : null;
   const imagesError = resolveFieldErrorMessage(
     errors as FormErrors<string>,
@@ -87,7 +97,7 @@ export function ImagesSection({
   return (
     <section className="space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-lg font-medium">Images</h2>
+        <h2 className="text-lg font-medium">{tSections('images')}</h2>
         <Button
           type="button"
           variant="outline"
@@ -96,11 +106,11 @@ export function ImagesSection({
           disabled={hasPendingImageSelection}
           title={
             hasPendingImageSelection
-              ? 'Select an image file before adding another field.'
+              ? tForm('fields.images.addDisabledTitle')
               : undefined
           }
         >
-          Add image
+          {tActions('addImage')}
         </Button>
       </div>
 

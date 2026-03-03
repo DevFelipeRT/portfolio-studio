@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext } from 'react';
-import type { Locale, Namespace, TranslationParams } from '../core/types';
+import type { Locale, Namespace, PlaceholderValues } from '../core/types';
 
 export interface I18nContextValue {
     locale: Locale;
@@ -9,7 +9,7 @@ export interface I18nContextValue {
     setLocale(nextLocale: string): Locale;
     translate(
         key: string,
-        params?: TranslationParams,
+        params?: PlaceholderValues,
         namespace?: Namespace,
     ): string;
 }

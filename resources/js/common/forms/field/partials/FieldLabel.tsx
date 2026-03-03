@@ -1,6 +1,7 @@
 'use client';
 
 import { useFormsTranslation } from '@/common/forms/hooks/useFormsTranslation';
+import { I18N_NAMESPACES } from '@/common/i18n';
 import { FieldLabel as ShadcnFieldLabel } from '@/components/ui/field';
 import { cn } from '@/lib/utils';
 import type { ReactNode } from 'react';
@@ -21,8 +22,8 @@ export function FieldLabel({
   children,
   className,
 }: FormLabelProps) {
-  const { translate } = useFormsTranslation();
-  const requiredLabel = translate('labels.required', 'Required');
+  const { translate } = useFormsTranslation(I18N_NAMESPACES.labels);
+  const requiredLabel = translate('required', 'Required');
 
   return (
     <ShadcnFieldLabel

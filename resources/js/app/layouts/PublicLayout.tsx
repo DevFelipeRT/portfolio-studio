@@ -8,7 +8,7 @@ import {
   type NavigationItem,
 } from '@/app/navigation';
 import { useNavigationSheet } from '@/app/navigation/useNavigationSheet';
-import { NAMESPACES, useTranslation } from '@/common/i18n';
+import { LayoutsI18nProvider, useLayoutsTranslation } from '@/app/layouts/i18n';
 import { useIsMobile } from '@/hooks/useMobile';
 import { usePage } from '@inertiajs/react';
 import { PropsWithChildren } from 'react';
@@ -29,22 +29,35 @@ export default function PublicLayout({
   children,
   navigationItems,
 }: PublicLayoutProps) {
+  return (
+    <LayoutsI18nProvider>
+      <PublicLayoutI18nContent navigationItems={navigationItems}>
+        {children}
+      </PublicLayoutI18nContent>
+    </LayoutsI18nProvider>
+  );
+}
+
+function PublicLayoutI18nContent({
+  children,
+  navigationItems,
+}: PublicLayoutProps) {
   const page = usePage();
   const { auth } = page.props as SharedProps;
   const { url } = page;
-  const { translate: translateFromLayout } = useTranslation(NAMESPACES.layout);
-  const { translate: translateFromCommon } = useTranslation(NAMESPACES.common);
   const isMobile = useIsMobile();
   const { isSheetOpen, setIsSheetOpen } = useNavigationSheet(url);
+  const { translate: translateFromNavigation } =
+    useLayoutsTranslation('navigation');
 
   const navItems: NavigationItem[] = navigationItems ?? [];
-  const openNavigationLabel = translateFromCommon(
-    'navigation.openMenu',
+  const openNavigationLabel = translateFromNavigation(
+    'openMenu',
     'Open navigation menu',
   );
 
-  const mobileNavigationTitle = translateFromLayout(
-    'header.navigation.mobileTitle',
+  const mobileNavigationTitle = translateFromNavigation(
+    'mobileTitle',
     'Navigation',
   );
 

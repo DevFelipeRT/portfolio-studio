@@ -7,15 +7,14 @@ export function getErrorSummaryFields(
 ) {
   return collectErroredFieldLabels(errors, [
     { name: 'locale', label: t('fields.locale.label') },
-    { name: 'name', label: 'Name' },
-    { name: 'status', label: 'Status' },
-    { name: 'summary', label: 'Summary' },
-    { name: 'description', label: 'Description' },
-    { name: 'display', label: 'Display on landing' },
-    { name: 'repository_url', label: 'Repository URL' },
-    { name: 'live_url', label: 'Live URL' },
-    { name: 'skill_ids', label: 'Skills' },
-    { name: 'images', label: 'Images' },
+    { name: 'name', label: t('fields.name.label') },
+    { name: 'status', label: t('fields.status.label') },
+    { name: 'summary', label: t('fields.summary.label') },
+    { name: 'description', label: t('fields.description.label') },
+    { name: 'display', label: t('fields.display.label') },
+    { name: 'repository_url', label: t('fields.repository_url.label') },
+    { name: 'live_url', label: t('fields.live_url.label') },
+    { name: 'skill_ids', label: t('fields.skill_ids.label') },
+    { name: 'images', label: t('fields.images.label') },
   ] as const);
 }
-

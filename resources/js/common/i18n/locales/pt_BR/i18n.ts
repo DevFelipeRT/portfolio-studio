@@ -1,11 +1,6 @@
 import type { TranslationTree } from '../../core/types';
 
 const i18n: TranslationTree = {
-    languageSwitcher: {
-        ariaLabel: 'Alterar idioma (atual: {{locale}})',
-        label: 'Idioma',
-    },
-
     locales: {
         en: { label: 'English', short: 'en' },
         pt_BR: { label: 'Português (Brasil)', short: 'pt_BR' },
@@ -13,4 +8,3 @@ const i18n: TranslationTree = {
 };
 
 export default i18n;
-

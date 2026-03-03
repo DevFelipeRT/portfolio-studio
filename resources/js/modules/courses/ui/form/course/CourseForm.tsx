@@ -12,8 +12,9 @@ import {
   TextInputField,
   type FormErrors,
 } from '@/common/forms';
-import { useSupportedLocales, useTranslation } from '@/common/i18n';
+import { useSupportedLocales } from '@/common/i18n';
 import type { CourseFormData } from '@/modules/courses/core/forms';
+import { useCoursesTranslation, COURSES_NAMESPACES } from '@/modules/courses/i18n';
 import { getErrorSummaryFields } from './errorSummaryFields';
 
 export interface CourseFormProps {
@@ -43,10 +44,18 @@ export function CourseForm({
   onLocaleChange,
   localeDisabled = false,
 }: CourseFormProps) {
-  const { translate: t, locale } = useTranslation('courses');
+  const { translate: tSections } = useCoursesTranslation(
+    COURSES_NAMESPACES.sections,
+  );
+  const { translate: tForm, locale } = useCoursesTranslation(
+    COURSES_NAMESPACES.form,
+  );
+  const { translate: tActions } = useCoursesTranslation(
+    COURSES_NAMESPACES.actions,
+  );
   const supportedLocales = useSupportedLocales();
 
-  const summaryFields = getErrorSummaryFields(errors, t);
+  const summaryFields = getErrorSummaryFields(errors, tForm);
 
   const handleLocaleValueChange = (value: CourseFormData['locale']): void => {
     if (onLocaleChange) {
@@ -66,7 +75,7 @@ export function CourseForm({
       <section className="space-y-4">
         <FormHeader
           title={
-            <h2 className="text-lg font-medium">{t('sections.details')}</h2>
+            <h2 className="text-lg font-medium">{tSections('details')}</h2>
           }
           localeFieldProps={{
             value: data.locale,
@@ -84,8 +93,8 @@ export function CourseForm({
             id="name"
             value={data.name}
             errors={errors}
-            label={t('fields.name.label')}
-            placeholder={t('fields.name.placeholder')}
+            label={tForm('fields.name.label')}
+            placeholder={tForm('fields.name.placeholder')}
             disabled={processing}
             required
             className="md:col-span-2"
@@ -97,8 +106,8 @@ export function CourseForm({
             id="institution"
             value={data.institution}
             errors={errors}
-            label={t('fields.institution.label')}
-            placeholder={t('fields.institution.placeholder')}
+            label={tForm('fields.institution.label')}
+            placeholder={tForm('fields.institution.placeholder')}
             disabled={processing}
             onChange={(value) => onChange('institution', value)}
           />
@@ -108,8 +117,8 @@ export function CourseForm({
             id="category"
             value={data.category}
             errors={errors}
-            label={t('fields.category.label')}
-            placeholder={t('fields.category.placeholder')}
+            label={tForm('fields.category.label')}
+            placeholder={tForm('fields.category.placeholder')}
             disabled={processing}
             required
             options={Object.entries(categories).map(([id, categoryLabel]) => ({
@@ -125,8 +134,8 @@ export function CourseForm({
           id="summary"
           value={data.summary}
           errors={errors}
-          label={t('fields.summary.label')}
-          placeholder={t('fields.summary.placeholder')}
+          label={tForm('fields.summary.label')}
+          placeholder={tForm('fields.summary.placeholder')}
           disabled={processing}
           required
           rows={3}
@@ -138,7 +147,7 @@ export function CourseForm({
           id="description"
           value={data.description}
           errors={errors}
-          label={t('fields.description.label')}
+          label={tForm('fields.description.label')}
           required
           disabled={processing}
           onChange={(value) => onChange('description', value)}
@@ -146,7 +155,7 @@ export function CourseForm({
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-lg font-medium">{t('sections.timeline')}</h2>
+        <h2 className="text-lg font-medium">{tSections('timeline')}</h2>
 
         <div className="grid gap-4 md:grid-cols-2">
           <DatePickerField
@@ -154,7 +163,7 @@ export function CourseForm({
             id="started_at"
             value={data.started_at}
             errors={errors}
-            label={t('fields.started_at.label')}
+            label={tForm('fields.started_at.label')}
             required
             disabled={processing}
             remountKey={locale}
@@ -168,7 +177,7 @@ export function CourseForm({
             id="completed_at"
             value={data.completed_at}
             errors={errors}
-            label={t('fields.completed_at.label')}
+            label={tForm('fields.completed_at.label')}
             disabled={processing}
             remountKey={locale}
             locale={locale}
@@ -179,14 +188,14 @@ export function CourseForm({
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-lg font-medium">{t('sections.visibility')}</h2>
+        <h2 className="text-lg font-medium">{tSections('visibility')}</h2>
 
-        <CheckboxField
+      <CheckboxField
           name="display"
           id="display"
           value={data.display}
           errors={errors}
-          label={t('fields.display.label')}
+          label={tForm('fields.display.label')}
           disabled={processing}
           onChange={(value) => onChange('display', value)}
         />
@@ -194,12 +203,12 @@ export function CourseForm({
 
       <FormActions
         cancelHref={cancelHref}
-        cancelLabel={t('actions.cancel')}
-        submitLabel={t('actions.save')}
+        cancelLabel={tActions('cancel')}
+        submitLabel={tActions('save')}
         processing={processing}
         cancelVariant="ghostButton"
         disableCancelWhenProcessing
-        submittingLabel={t('actions.saving')}
+        submittingLabel={tActions('saving')}
         showSpinnerWhenProcessing
       />
     </Form>

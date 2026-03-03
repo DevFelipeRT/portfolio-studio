@@ -1,14 +1,18 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import type { FormErrors } from '@/common/forms';
-import { useTranslation } from '@/common/i18n';
 import { LocaleSwapDialog } from '@/common/LocaleSwapDialog';
 import { Button } from '@/components/ui/button';
 import { listCourseTranslations } from '@/modules/courses/core/api/translations';
 import type { CourseFormData } from '@/modules/courses/core/forms';
 import type { Course } from '@/modules/courses/core/types';
+import {
+  CoursesI18nProvider,
+  COURSES_NAMESPACES,
+  useCoursesTranslation,
+} from '@/modules/courses/i18n';
 import { CourseForm } from '@/modules/courses/ui/form/course';
 import { TranslationModal } from '@/modules/courses/ui/translation-modal/TranslationModal';
-import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { ChevronLeft } from 'lucide-react';
 import React from 'react';
 
@@ -25,7 +29,6 @@ interface EditCourseProps {
  * Initializes the form state with the provided course data.
  */
 export default function Edit({ course, course_categories }: EditCourseProps) {
-  const { translate: t } = useTranslation('courses');
   const { data, setData, put, processing } = useForm<CourseFormData>({
     locale: course.locale,
     confirm_swap: false,
@@ -123,47 +126,29 @@ export default function Edit({ course, course_categories }: EditCourseProps) {
     >
       <Head title={`Edit - ${data.name}`} />
 
-      <div className="overflow-hidden">
-        <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
-          <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-            <Link
-              href={route('courses.index')}
-              className="text-muted-foreground hover:text-foreground inline-flex items-center text-sm transition-colors"
-            >
-              <ChevronLeft className="mr-1 h-4 w-4" />
-              Back to courses
-            </Link>
+      <CoursesI18nProvider>
+        <EditCourseI18nContent
+          data={data}
+          formErrors={formErrors}
+          processing={processing}
+          categories={course_categories ?? {}}
+          cancelHref={cancelHref}
+          loadingTranslations={loadingTranslations}
+          localesLoadError={localesLoadError}
+          onChange={setData}
+          onSubmit={handleSubmit}
+          onLocaleChange={handleLocaleChange}
+          onOpenTranslations={() => setTranslationOpen(true)}
+        />
 
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => setTranslationOpen(true)}
-            >
-              {t('translations.manage')}
-            </Button>
-          </div>
-
-          <CourseForm
-            data={data}
-            errors={formErrors}
-            processing={processing}
-            categories={course_categories ?? {}}
-            onChange={setData}
-            onSubmit={handleSubmit}
-            cancelHref={cancelHref}
-            onLocaleChange={handleLocaleChange}
-            localeDisabled={loadingTranslations || Boolean(localesLoadError)}
-          />
-        </div>
-      </div>
-
-      <TranslationModal
-        open={translationOpen}
-        onClose={() => setTranslationOpen(false)}
-        courseId={course.id}
-        courseLabel={course.name}
-        baseLocale={data.locale}
-      />
+        <TranslationModal
+          open={translationOpen}
+          onClose={() => setTranslationOpen(false)}
+          courseId={course.id}
+          courseLabel={course.name}
+          baseLocale={data.locale}
+        />
+      </CoursesI18nProvider>
 
       {pendingLocale && (
         <LocaleSwapDialog
@@ -189,5 +174,69 @@ export default function Edit({ course, course_categories }: EditCourseProps) {
         />
       )}
     </AuthenticatedLayout>
+  );
+}
+
+type EditCourseI18nContentProps = {
+  data: CourseFormData;
+  formErrors: FormErrors<keyof CourseFormData>;
+  processing: boolean;
+  categories: Record<string, string>;
+  cancelHref: string;
+  loadingTranslations: boolean;
+  localesLoadError: string | null;
+  onChange: (key: keyof CourseFormData, value: string | boolean | null) => void;
+  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+  onLocaleChange: (locale: string) => void;
+  onOpenTranslations: () => void;
+};
+
+function EditCourseI18nContent({
+  data,
+  formErrors,
+  processing,
+  categories,
+  cancelHref,
+  loadingTranslations,
+  localesLoadError,
+  onChange,
+  onSubmit,
+  onLocaleChange,
+  onOpenTranslations,
+}: EditCourseI18nContentProps) {
+  const { translate: tTranslations } = useCoursesTranslation(
+    COURSES_NAMESPACES.translations,
+  );
+
+  return (
+    <div className="overflow-hidden">
+      <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+          <Link
+            href={route('courses.index')}
+            className="text-muted-foreground hover:text-foreground inline-flex items-center text-sm transition-colors"
+          >
+            <ChevronLeft className="mr-1 h-4 w-4" />
+            Back to courses
+          </Link>
+
+          <Button type="button" variant="secondary" onClick={onOpenTranslations}>
+            {tTranslations('manage')}
+          </Button>
+        </div>
+
+        <CourseForm
+          data={data}
+          errors={formErrors}
+          processing={processing}
+          categories={categories}
+          onChange={onChange}
+          onSubmit={onSubmit}
+          cancelHref={cancelHref}
+          onLocaleChange={onLocaleChange}
+          localeDisabled={loadingTranslations || Boolean(localesLoadError)}
+        />
+      </div>
+    </div>
   );
 }

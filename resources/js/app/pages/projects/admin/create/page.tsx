@@ -5,6 +5,11 @@ import type {
   ImageInput,
   ProjectFormData,
 } from '@/modules/projects/core/forms';
+import {
+  ProjectsI18nProvider,
+  useProjectsTranslation,
+} from '@/modules/projects/i18n';
+import { PROJECTS_NAMESPACES } from '@/modules/projects/i18n';
 import { ProjectForm } from '@/modules/projects/ui/form/project';
 import type { Skill } from '@/modules/skills/core/types';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
@@ -100,44 +105,110 @@ export default function Create({ skills }: CreateProjectProps) {
   };
 
   return (
-    <AuthenticatedLayout
-      header={
-        <h1 className="text-xl leading-tight font-semibold">New project</h1>
-      }
-    >
-      <Head title="New project" />
+    <ProjectsI18nProvider>
+      <AuthenticatedLayout header={<CreateProjectHeader />}>
+        <Head title="New project" />
 
-      <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="overflow-hidden">
-          <div className="mb-4">
-            <Link
-              href={route('projects.index')}
-              className="text-muted-foreground hover:text-foreground text-sm"
-            >
-              Back to projects
-            </Link>
-          </div>
+        <CreateProjectContent
+          skills={skills}
+          supportedLocales={supportedLocales}
+          data={data}
+          formErrors={formErrors}
+          processing={processing}
+          onSubmit={submit}
+          onChangeField={changeField}
+          onChangeSkillIds={changeSkillIds}
+          onAddImageRow={addImageRow}
+          onRemoveImageRow={removeImageRow}
+          onUpdateImageAlt={updateImageAlt}
+          onUpdateImageFile={updateImageFile}
+        />
+      </AuthenticatedLayout>
+    </ProjectsI18nProvider>
+  );
+}
 
-          <ProjectForm
-            skills={skills}
-            existingImages={[]}
-            projectId={undefined}
-            data={data}
-            errors={formErrors}
-            processing={processing}
-            cancelHref={route('projects.index')}
-            submitLabel="Save project"
-            supportedLocales={supportedLocales}
-            onSubmit={submit}
-            onChangeField={changeField}
-            onChangeSkillIds={changeSkillIds}
-            onAddImageRow={addImageRow}
-            onRemoveImageRow={removeImageRow}
-            onUpdateImageAlt={updateImageAlt}
-            onUpdateImageFile={updateImageFile}
-          />
+function CreateProjectHeader() {
+  const { translate: tActions } = useProjectsTranslation(
+    PROJECTS_NAMESPACES.actions,
+  );
+  return (
+    <h1 className="text-xl leading-tight font-semibold">
+      {tActions('newProject')}
+    </h1>
+  );
+}
+
+type CreateProjectContentProps = {
+  skills: Skill[];
+  supportedLocales: readonly string[];
+  data: ProjectFormData;
+  formErrors: FormErrors<keyof ProjectFormData>;
+  processing: boolean;
+  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+  onChangeField: <K extends keyof ProjectFormData>(
+    key: K,
+    value: ProjectFormData[K],
+  ) => void;
+  onChangeSkillIds: (ids: number[]) => void;
+  onAddImageRow: () => void;
+  onRemoveImageRow: (index: number) => void;
+  onUpdateImageAlt: (index: number, value: string) => void;
+  onUpdateImageFile: (
+    index: number,
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => void;
+};
+
+function CreateProjectContent({
+  skills,
+  supportedLocales,
+  data,
+  formErrors,
+  processing,
+  onSubmit,
+  onChangeField,
+  onChangeSkillIds,
+  onAddImageRow,
+  onRemoveImageRow,
+  onUpdateImageAlt,
+  onUpdateImageFile,
+}: CreateProjectContentProps) {
+  const { translate: tActions } = useProjectsTranslation(
+    PROJECTS_NAMESPACES.actions,
+  );
+
+  return (
+    <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="overflow-hidden">
+        <div className="mb-4">
+          <Link
+            href={route('projects.index')}
+            className="text-muted-foreground hover:text-foreground text-sm"
+          >
+            {tActions('backToIndex')}
+          </Link>
         </div>
+
+        <ProjectForm
+          skills={skills}
+          existingImages={[]}
+          projectId={undefined}
+          data={data}
+          errors={formErrors}
+          processing={processing}
+          cancelHref={route('projects.index')}
+          submitLabel={tActions('saveProject')}
+          supportedLocales={supportedLocales}
+          onSubmit={onSubmit}
+          onChangeField={onChangeField}
+          onChangeSkillIds={onChangeSkillIds}
+          onAddImageRow={onAddImageRow}
+          onRemoveImageRow={onRemoveImageRow}
+          onUpdateImageAlt={onUpdateImageAlt}
+          onUpdateImageFile={onUpdateImageFile}
+        />
       </div>
-    </AuthenticatedLayout>
+    </div>
   );
 }

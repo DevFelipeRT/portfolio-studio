@@ -22,6 +22,8 @@ import {
     TranslationModalBody,
     TranslationModalLayout,
 } from '@/modules/translations/ui/TranslationModalParts';
+import { useContactChannelsTranslation } from '@/modules/contact-channels/i18n';
+import { CONTACT_CHANNELS_NAMESPACES } from '@/modules/contact-channels/i18n';
 
 type TranslationModalProps = {
     open: boolean;
@@ -47,6 +49,9 @@ export function TranslationModal({
     entityLabel,
     baseLocale,
 }: TranslationModalProps) {
+    const { translate: t } = useContactChannelsTranslation(
+        CONTACT_CHANNELS_NAMESPACES.translations,
+    );
     const [supportedLocales, setSupportedLocales] = React.useState<string[]>([]);
     const [translations, setTranslations] = React.useState<EditableTranslation[]>(
         [],
@@ -111,7 +116,7 @@ export function TranslationModal({
 
     const handleCreate = async (): Promise<void> => {
         if (!newLocale || !newLabel.trim()) {
-            setError('Select a locale and provide a label.');
+            setError(t('errors.localeAndLabelRequired'));
             return;
         }
 
@@ -154,7 +159,7 @@ export function TranslationModal({
 
     const handleUpdate = async (item: EditableTranslation): Promise<void> => {
         if (!item.draftLabel?.trim()) {
-            setError('Translation label cannot be empty.');
+            setError(t('errors.labelRequired'));
             return;
         }
 
@@ -184,7 +189,7 @@ export function TranslationModal({
     };
 
     const handleDelete = async (item: EditableTranslation): Promise<void> => {
-        if (!window.confirm(`Delete translation for ${item.locale}?`)) {
+        if (!window.confirm(t('confirmDelete', { locale: item.locale }))) {
             return;
         }
 
@@ -222,10 +227,11 @@ export function TranslationModal({
                 }
             }}
             maxWidthClassName="max-w-2xl"
-            title="Translations"
+            title={t('title')}
             description={
                 <>
-                    Manage translations for <span className="font-semibold">{entityLabel}</span>.
+                    {t('subtitle')}{' '}
+                    <span className="font-semibold">{entityLabel}</span>.
                 </>
             }
         >
@@ -233,7 +239,7 @@ export function TranslationModal({
                 {loading && (
                     <div className="text-muted-foreground flex items-center gap-2 text-sm">
                         <Loader2 className="h-4 w-4 animate-spin" />
-                        Loading translations...
+                        {t('loading')}
                     </div>
                 )}
 
@@ -242,7 +248,7 @@ export function TranslationModal({
                         {view === 'list' && (
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between">
-                                    <Label>Existing translations</Label>
+                                    <Label>{t('existing')}</Label>
                                     <Button
                                         type="button"
                                         size="sm"
@@ -250,13 +256,13 @@ export function TranslationModal({
                                         onClick={openAddPanel}
                                     >
                                         <Plus className="mr-2 h-4 w-4" />
-                                        Add translation
+                                        {t('add')}
                                     </Button>
                                 </div>
 
                                 {translations.length === 0 ? (
                                     <p className="text-muted-foreground text-sm">
-                                        No translations yet.
+                                        {t('empty')}
                                     </p>
                                 ) : (
                                     <div className="space-y-3">
@@ -284,33 +290,35 @@ export function TranslationModal({
                         {view === 'add' && (
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between">
-                                    <Label>Add translation</Label>
+                                    <Label>{t('add')}</Label>
                                     <Button
                                         type="button"
                                         variant="ghost"
                                         size="sm"
                                         onClick={() => setView('list')}
                                     >
-                                        Back
+                                        {t('actions.back')}
                                     </Button>
                                 </div>
 
                                 {availableLocales.length === 0 ? (
                                     <p className="text-muted-foreground text-sm">
-                                        All supported locales already have translations.
+                                        {t('allCovered')}
                                     </p>
                                 ) : (
                                     <div className="space-y-4">
                                         <div className="space-y-1.5">
                                             <Label htmlFor="translation-locale">
-                                                Locale
+                                                {t('fields.locale')}
                                             </Label>
                                             <Select
                                                 value={newLocale}
                                                 onValueChange={setNewLocale}
                                             >
                                                 <SelectTrigger id="translation-locale">
-                                                    <SelectValue placeholder="Select a locale" />
+                                                    <SelectValue
+                                                        placeholder={t('fields.locale')}
+                                                    />
                                                 </SelectTrigger>
                                                 <SelectContent>
                                                     {availableLocales.map((locale) => (
@@ -323,7 +331,9 @@ export function TranslationModal({
                                         </div>
 
                                         <div className="space-y-1.5">
-                                            <Label htmlFor="translation-label">Label</Label>
+                                            <Label htmlFor="translation-label">
+                                                {t('fields.label')}
+                                            </Label>
                                             <Input
                                                 id="translation-label"
                                                 value={newLabel}
@@ -337,7 +347,7 @@ export function TranslationModal({
                                                 onClick={handleCreate}
                                                 disabled={saving}
                                             >
-                                                {saving ? 'Saving…' : 'Save translation'}
+                                                {saving ? 'Saving…' : t('actions.save')}
                                             </Button>
                                         </div>
                                     </div>
@@ -348,14 +358,14 @@ export function TranslationModal({
                         {view === 'edit' && activeTranslation && (
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between">
-                                    <Label>Edit translation</Label>
+                                    <Label>{t('editTitle')}</Label>
                                     <Button
                                         type="button"
                                         variant="ghost"
                                         size="sm"
                                         onClick={() => setView('list')}
                                     >
-                                        Back
+                                        {t('actions.back')}
                                     </Button>
                                 </div>
 
@@ -387,7 +397,7 @@ export function TranslationModal({
                                         disabled={saving}
                                     >
                                         <Trash2 className="mr-2 h-4 w-4" />
-                                        Delete
+                                        {t('actions.delete')}
                                     </Button>
 
                                     <Button
@@ -395,7 +405,7 @@ export function TranslationModal({
                                         onClick={() => handleUpdate(activeTranslation)}
                                         disabled={saving}
                                     >
-                                        {saving ? 'Saving…' : 'Save changes'}
+                                        {saving ? 'Saving…' : t('actions.saveChanges')}
                                     </Button>
                                 </div>
                             </div>

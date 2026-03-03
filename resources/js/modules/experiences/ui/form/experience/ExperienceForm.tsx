@@ -10,7 +10,10 @@ import {
   TextareaField,
   TextInputField,
 } from '@/common/forms';
-import { useTranslation } from '@/common/i18n';
+import {
+  useExperiencesTranslation,
+  EXPERIENCES_NAMESPACES,
+} from '@/modules/experiences/i18n';
 
 import { getErrorSummaryFields } from './errorSummaryFields';
 import type { ExperienceFormProps } from './types';
@@ -31,8 +34,16 @@ export function ExperienceForm({
   onChange,
   onLocaleChange,
 }: ExperienceFormProps) {
-  const { translate: t } = useTranslation('experience');
-  const summaryFields = getErrorSummaryFields(errors, t('fields.locale.label'));
+  const { translate: tSections } = useExperiencesTranslation(
+    EXPERIENCES_NAMESPACES.sections,
+  );
+  const { translate: tForm } = useExperiencesTranslation(
+    EXPERIENCES_NAMESPACES.form,
+  );
+  const summaryFields = getErrorSummaryFields(
+    errors,
+    tForm('fields.locale.label'),
+  );
 
   return (
     <Form
@@ -41,10 +52,13 @@ export function ExperienceForm({
       variant="spacious"
       errorSummaryFields={summaryFields}
     >
-
       <section className="space-y-4">
         <FormHeader
-          title={<h2 className="text-lg font-medium">Experience details</h2>}
+          title={
+            <h2 className="text-lg font-medium">
+              {tSections('details')}
+            </h2>
+          }
           localeFieldProps={{
             value: data.locale,
             locales: supportedLocales,
@@ -72,7 +86,7 @@ export function ExperienceForm({
             id="position"
             value={data.position}
             errors={errors}
-            label="Position"
+            label={tForm('fields.position.label')}
             required
             onChange={(value) => onChange('position', value)}
           />
@@ -82,7 +96,7 @@ export function ExperienceForm({
             id="company"
             value={data.company}
             errors={errors}
-            label="Company"
+            label={tForm('fields.company.label')}
             required
             onChange={(value) => onChange('company', value)}
           />
@@ -93,7 +107,7 @@ export function ExperienceForm({
           id="summary"
           value={data.summary}
           errors={errors}
-          label="Summary"
+          label={tForm('fields.summary.label')}
           rows={3}
           onChange={(value) => onChange('summary', value)}
         />
@@ -103,7 +117,7 @@ export function ExperienceForm({
           id="description"
           value={data.description}
           errors={errors}
-          label="Description"
+          label={tForm('fields.description.label')}
           required
           onChange={(value) => onChange('description', value)}
         />
@@ -114,7 +128,7 @@ export function ExperienceForm({
             id="start_date"
             value={data.start_date}
             errors={errors}
-            label="Start date"
+            label={tForm('fields.start_date.label')}
             required
             type="date"
             errorId="start-date-error"
@@ -126,7 +140,7 @@ export function ExperienceForm({
             id="end_date"
             value={data.end_date}
             errors={errors}
-            label="End date"
+            label={tForm('fields.end_date.label')}
             type="date"
             errorId="end-date-error"
             onChange={(value) => onChange('end_date', value)}
@@ -138,7 +152,7 @@ export function ExperienceForm({
           id="display"
           value={data.display}
           errors={errors}
-          label="Display on portfolio"
+          label={tForm('fields.display.label')}
           className="pt-1"
           onChange={(value) => onChange('display', value)}
         />

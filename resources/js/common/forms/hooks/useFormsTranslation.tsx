@@ -1,13 +1,13 @@
 'use client';
 
-import { NAMESPACES } from '@/common/i18n/config/namespaces';
-import type { Namespace, TranslationParams } from '@/common/i18n/core/types';
+import { I18N_NAMESPACES } from '@/common/i18n';
+import type { Namespace, PlaceholderValues } from '@/common/i18n/core/types';
 import { I18nContext } from '@/common/i18n/react/I18nContext';
 import { useContext } from 'react';
 
 type TranslationFunction = {
-  (key: string, params?: TranslationParams): string;
-  (key: string, fallback: string, params?: TranslationParams): string;
+  (key: string, params?: PlaceholderValues): string;
+  (key: string, fallback: string, params?: PlaceholderValues): string;
 };
 
 type UseFormsTranslationResult = {
@@ -20,16 +20,16 @@ type UseFormsTranslationResult = {
  * (e.g. in isolated form stories/tests). Falls back to the provided fallback text.
  */
 export function useFormsTranslation(
-  namespace: Namespace = NAMESPACES.common,
+  namespace: Namespace = I18N_NAMESPACES.form,
 ): UseFormsTranslationResult {
   const context = useContext(I18nContext);
 
   const translate: TranslationFunction = (
     key: string,
-    secondArgument?: TranslationParams | string,
-    thirdArgument?: TranslationParams,
+    secondArgument?: PlaceholderValues | string,
+    thirdArgument?: PlaceholderValues,
   ): string => {
-    let parameters: TranslationParams | undefined;
+    let parameters: PlaceholderValues | undefined;
     let fallbackText: string | undefined;
 
     if (typeof secondArgument === 'string') {
@@ -61,4 +61,3 @@ export function useFormsTranslation(
     translate,
   };
 }
-

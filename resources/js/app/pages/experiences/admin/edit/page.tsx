@@ -1,11 +1,16 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
-import { useSupportedLocales, useTranslation } from '@/common/i18n';
+import { useSupportedLocales } from '@/common/i18n';
 import { LocaleSwapDialog } from '@/common/LocaleSwapDialog';
 import type { FormErrors } from '@/common/forms';
 import { Button } from '@/components/ui/button';
 import { listExperienceTranslations } from '@/modules/experiences/core/api/translations';
 import type { ExperienceFormData } from '@/modules/experiences/core/forms';
 import type { Experience } from '@/modules/experiences/core/types';
+import {
+  ExperiencesI18nProvider,
+  useExperiencesTranslation,
+} from '@/modules/experiences/i18n';
+import { EXPERIENCES_NAMESPACES } from '@/modules/experiences/i18n';
 import { ExperienceForm } from '@/modules/experiences/ui/form/experience';
 import { TranslationModal } from '@/modules/experiences/ui/TranslationModal';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
@@ -26,7 +31,6 @@ type ExperienceEditableField =
   | 'display';
 
 export default function Edit({ experience }: EditExperienceProps) {
-  const { translate: t } = useTranslation('experience');
   const supportedLocales = useSupportedLocales();
   const { data, setData, put, processing } = useForm<ExperienceFormData>({
     locale: experience.locale,
@@ -114,52 +118,29 @@ export default function Edit({ experience }: EditExperienceProps) {
     <AuthenticatedLayout>
       <Head title="Edit experience" />
 
-      <div className="overflow-hidden">
-        <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
-          <div className="mb-4 flex items-center justify-between gap-3">
-            <Link
-              href={route('experiences.index')}
-              className="text-muted-foreground hover:text-foreground text-sm"
-            >
-              Back to experiences
-            </Link>
+      <ExperiencesI18nProvider>
+        <EditExperienceI18nContent
+          experience={experience}
+          data={data}
+          formErrors={formErrors}
+          processing={processing}
+          supportedLocales={supportedLocales}
+          localesLoadError={localesLoadError}
+          loadingTranslations={loadingTranslations}
+          onSubmit={submit}
+          onChange={setExperienceData}
+          onLocaleChange={handleLocaleChange}
+          onOpenTranslations={() => setTranslationOpen(true)}
+        />
 
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => setTranslationOpen(true)}
-            >
-              {t('translations.manage')}
-            </Button>
-
-            <span className="text-muted-foreground text-xs">
-              Editing: {experience.position} at {experience.company ?? '—'}
-            </span>
-          </div>
-
-          <ExperienceForm
-            data={data}
-            errors={formErrors}
-            processing={processing}
-            supportedLocales={supportedLocales}
-            cancelHref={route('experiences.index')}
-            submitLabel="Save changes"
-            localeDisabled={loadingTranslations || Boolean(localesLoadError)}
-            localeNote={localesLoadError}
-            onSubmit={submit}
-            onChange={setExperienceData}
-            onLocaleChange={handleLocaleChange}
-          />
-        </div>
-      </div>
-
-      <TranslationModal
-        open={translationOpen}
-        onClose={() => setTranslationOpen(false)}
-        experienceId={experience.id}
-        experienceLabel={`${experience.position} - ${experience.company ?? ''}`}
-        baseLocale={data.locale}
-      />
+        <TranslationModal
+          open={translationOpen}
+          onClose={() => setTranslationOpen(false)}
+          experienceId={experience.id}
+          experienceLabel={`${experience.position} - ${experience.company ?? ''}`}
+          baseLocale={data.locale}
+        />
+      </ExperiencesI18nProvider>
 
       {pendingLocale && (
         <LocaleSwapDialog
@@ -185,5 +166,80 @@ export default function Edit({ experience }: EditExperienceProps) {
         />
       )}
     </AuthenticatedLayout>
+  );
+}
+
+type EditExperienceI18nContentProps = {
+  experience: Experience;
+  data: ExperienceFormData;
+  formErrors: FormErrors<keyof ExperienceFormData>;
+  processing: boolean;
+  supportedLocales: readonly string[];
+  localesLoadError: string | null;
+  loadingTranslations: boolean;
+  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+  onChange: <K extends ExperienceEditableField>(
+    field: K,
+    value: ExperienceFormData[K],
+  ) => void;
+  onLocaleChange: (locale: string) => void;
+  onOpenTranslations: () => void;
+};
+
+function EditExperienceI18nContent({
+  experience,
+  data,
+  formErrors,
+  processing,
+  supportedLocales,
+  localesLoadError,
+  loadingTranslations,
+  onSubmit,
+  onChange,
+  onLocaleChange,
+  onOpenTranslations,
+}: EditExperienceI18nContentProps) {
+  const { translate: tActions } = useExperiencesTranslation(
+    EXPERIENCES_NAMESPACES.actions,
+  );
+  const { translate: tTranslations } = useExperiencesTranslation(
+    EXPERIENCES_NAMESPACES.translations,
+  );
+
+  return (
+    <div className="overflow-hidden">
+      <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <Link
+            href={route('experiences.index')}
+            className="text-muted-foreground hover:text-foreground text-sm"
+          >
+            {tActions('backToIndex')}
+          </Link>
+
+          <Button type="button" variant="secondary" onClick={onOpenTranslations}>
+            {tTranslations('manage')}
+          </Button>
+
+          <span className="text-muted-foreground text-xs">
+            Editing: {experience.position} at {experience.company ?? '—'}
+          </span>
+        </div>
+
+        <ExperienceForm
+          data={data}
+          errors={formErrors}
+          processing={processing}
+          supportedLocales={supportedLocales}
+          cancelHref={route('experiences.index')}
+          submitLabel={tActions('saveChanges')}
+          localeDisabled={loadingTranslations || Boolean(localesLoadError)}
+          localeNote={localesLoadError}
+          onSubmit={onSubmit}
+          onChange={onChange}
+          onLocaleChange={onLocaleChange}
+        />
+      </div>
+    </div>
   );
 }
