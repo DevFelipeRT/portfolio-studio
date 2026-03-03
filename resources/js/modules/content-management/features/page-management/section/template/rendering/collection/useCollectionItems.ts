@@ -22,7 +22,7 @@ export function useCollectionItems({
 }: UseCollectionItemsArgs) {
   const itemFieldDefinitions: TemplateFieldDto[] = React.useMemo(
     () => getItemFieldDefinitions(field),
-    [field.item_fields],
+    [field],
   );
 
   const items: SectionDataCollectionItem[] = React.useMemo(() => {

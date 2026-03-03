@@ -34,7 +34,8 @@ export default function Edit({ image }: EditImagePageProps) {
     event.preventDefault();
 
     transform((current) => {
-      const { file: _file, ...payload } = current;
+      const payload = { ...current };
+      delete (payload as Partial<ImageFormData>).file;
       return payload;
     });
 

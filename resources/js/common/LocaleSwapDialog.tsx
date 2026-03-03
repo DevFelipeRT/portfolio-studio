@@ -7,7 +7,6 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
-import React from 'react';
 
 type LocaleSwapDialogProps = {
     open: boolean;
