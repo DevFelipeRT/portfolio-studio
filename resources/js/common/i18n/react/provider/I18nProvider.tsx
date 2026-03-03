@@ -1,21 +1,15 @@
 'use client';
 
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { I18nContext } from '../I18nContext';
 import type { I18nContextValue } from '../I18nContext';
-import type { Namespace, PlaceholderValues } from '../../core/types';
-import { LoadingOverlay } from './LoadingOverlay';
-import { useI18nProviderState } from './state/useI18nProviderState';
+import type { Locale, Namespace, PlaceholderValues } from '../../core/types';
 import type { I18nProviderProps } from './types';
+import { TranslationCatalogGate } from './TranslationCatalogGate';
 
 /**
  * Provides the i18n context value (locale, supported locales, translate, and
  * setLocale) for descendant components.
- *
- * During the initial catalog preload, it renders `loadingFallback` instead of
- * the children. After the first preload attempt completes, children keep
- * rendering while subsequent preload attempts may display a full-screen overlay
- * when requested by the provider state.
  */
 export function I18nProvider({
     children,
@@ -28,20 +22,40 @@ export function I18nProvider({
     loadingOverlay = null,
     loadingOverlayDelayMs = 250,
 }: I18nProviderProps) {
-    const {
-        activeLocale,
-        supportedLocales,
-        isCatalogReady,
-        hasLoadedOnce,
-        showOverlay,
-        setLocale,
-    } = useI18nProviderState({
-        initialLocale,
-        fallbackLocale,
-        localeResolver,
-        translatorProvider,
-        loadingOverlayDelayMs,
-    });
+    const resolvedInitialLocale: Locale = useMemo(() => {
+        return localeResolver.resolve(initialLocale ?? localeResolver.defaultLocale);
+    }, [initialLocale, localeResolver]);
+
+    const [activeLocale, setActiveLocale] = useState<Locale>(resolvedInitialLocale);
+    const [pendingLocale, setPendingLocale] = useState<Locale | null>(null);
+
+    useEffect(() => {
+        if (resolvedInitialLocale !== activeLocale) {
+            setPendingLocale(resolvedInitialLocale);
+        }
+    }, [resolvedInitialLocale, activeLocale]);
+
+    const setLocale = useCallback(
+        (nextLocale: string): Locale => {
+            const resolved = localeResolver.resolve(nextLocale as Locale);
+            if (resolved !== activeLocale) {
+                setPendingLocale(resolved);
+            }
+            return resolved;
+        },
+        [activeLocale, localeResolver],
+    );
+
+    const supportedLocales = localeResolver.supportedLocales;
+
+    const resolvedFallbackLocale = useMemo(() => {
+        if (!fallbackLocale) {
+            return null;
+        }
+        return localeResolver.resolve(fallbackLocale);
+    }, [fallbackLocale, localeResolver]);
+
+    const targetLocale = pendingLocale ?? activeLocale;
 
     const translate: I18nContextValue['translate'] = useCallback(
         (key: string, params?: PlaceholderValues, namespace?: Namespace) => {
@@ -60,20 +74,25 @@ export function I18nProvider({
         [activeLocale, supportedLocales, setLocale, translate],
     );
 
-    const overlayContent = useMemo(() => {
-        return loadingOverlay ?? loadingFallback;
-    }, [loadingFallback, loadingOverlay]);
-
-    if (!isCatalogReady) {
-        if (!hasLoadedOnce) {
-            return <>{loadingFallback}</>;
-        }
-    }
-
     return (
         <I18nContext.Provider value={contextValue}>
-            {children}
-            <LoadingOverlay open={showOverlay} content={overlayContent} />
+            <TranslationCatalogGate
+                locale={targetLocale}
+                fallbackLocale={resolvedFallbackLocale}
+                translatorProvider={translatorProvider}
+                loadingFallback={loadingFallback}
+                loadingOverlay={loadingOverlay}
+                loadingOverlayDelayMs={loadingOverlayDelayMs}
+                strategy="keep"
+                onReadyLocale={(ready) => {
+                    if (pendingLocale && ready === pendingLocale) {
+                        setActiveLocale(pendingLocale);
+                        setPendingLocale(null);
+                    }
+                }}
+            >
+                {children}
+            </TranslationCatalogGate>
         </I18nContext.Provider>
     );
 }

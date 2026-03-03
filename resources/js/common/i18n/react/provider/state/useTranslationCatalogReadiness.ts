@@ -3,41 +3,38 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Locale } from '../../../core/types';
 import type { I18nTranslatorProvider } from '../types';
-import type { PreloadLocale } from './types';
 
-export type UseCatalogPreloadOptions = {
-  targetLocale: Locale;
-  fallbackLocale: Locale | null;
+export type UseTranslationCatalogReadinessOptions = {
+  locale: Locale;
+  fallbackLocale?: Locale | null;
   translatorProvider?: I18nTranslatorProvider;
-  loadingOverlayDelayMs: number;
+  loadingOverlayDelayMs?: number;
 };
 
-export type UseCatalogPreloadResult = {
-  isCatalogReady: boolean;
+export type UseTranslationCatalogReadinessResult = {
+  isReady: boolean;
   hasLoadedOnce: boolean;
   showOverlay: boolean;
   readyLocale: Locale | null;
 };
 
 /**
- * Tracks catalog preload state for a target locale. When a preload function is
- * available, it starts a preload attempt for the target locale and an optional
- * fallback locale. It reports readiness, one-time load status, delayed overlay
- * visibility, and the locale associated with the latest completed attempt.
+ * Preloads translation catalogs for a locale (and optional fallback locale)
+ * and exposes readiness for safe rendering/translation.
  */
-export function useCatalogPreload({
-  targetLocale,
-  fallbackLocale,
+export function useTranslationCatalogReadiness({
+  locale,
+  fallbackLocale = null,
   translatorProvider,
-  loadingOverlayDelayMs,
-}: UseCatalogPreloadOptions): UseCatalogPreloadResult {
-  const [isCatalogReady, setIsCatalogReady] = useState<boolean>(false);
+  loadingOverlayDelayMs = 250,
+}: UseTranslationCatalogReadinessOptions): UseTranslationCatalogReadinessResult {
+  const [isReady, setIsReady] = useState<boolean>(false);
   const [hasLoadedOnce, setHasLoadedOnce] = useState<boolean>(false);
   const [showOverlay, setShowOverlay] = useState<boolean>(false);
   const [readyLocale, setReadyLocale] = useState<Locale | null>(null);
   const loadSequence = useRef<number>(0);
 
-  const preloadLocale: PreloadLocale | null = useMemo(() => {
+  const preloadLocale = useMemo(() => {
     const preloadLocaleFn = translatorProvider?.preloadLocale;
     return typeof preloadLocaleFn === 'function' ? preloadLocaleFn : null;
   }, [translatorProvider]);
@@ -46,10 +43,10 @@ export function useCatalogPreload({
     let cancelled = false;
 
     if (!preloadLocale) {
-      setShowOverlay(false);
+      setReadyLocale(locale);
+      setIsReady(true);
       setHasLoadedOnce(true);
-      setIsCatalogReady(true);
-      setReadyLocale(targetLocale);
+      setShowOverlay(false);
       return;
     }
     const preload = preloadLocale;
@@ -58,7 +55,8 @@ export function useCatalogPreload({
     const isCurrent = () => !cancelled && loadSequence.current === sequence;
 
     async function run() {
-      setIsCatalogReady(false);
+      setIsReady(false);
+      setShowOverlay(false);
 
       const overlayTimer: number | null =
         hasLoadedOnce && loadingOverlayDelayMs >= 0
@@ -70,8 +68,8 @@ export function useCatalogPreload({
           : null;
 
       try {
-        await preload(targetLocale);
-        if (fallbackLocale && fallbackLocale !== targetLocale) {
+        await preload(locale);
+        if (fallbackLocale && fallbackLocale !== locale) {
           await preload(fallbackLocale);
         }
       } catch (error) {
@@ -89,10 +87,10 @@ export function useCatalogPreload({
         return;
       }
 
-      setShowOverlay(false);
+      setReadyLocale(locale);
+      setIsReady(true);
       setHasLoadedOnce(true);
-      setIsCatalogReady(true);
-      setReadyLocale(targetLocale);
+      setShowOverlay(false);
     }
 
     run();
@@ -101,10 +99,10 @@ export function useCatalogPreload({
       cancelled = true;
       setShowOverlay(false);
     };
-  }, [targetLocale, fallbackLocale, preloadLocale, hasLoadedOnce, loadingOverlayDelayMs]);
+  }, [locale, fallbackLocale, preloadLocale, hasLoadedOnce, loadingOverlayDelayMs]);
 
   return {
-    isCatalogReady,
+    isReady,
     hasLoadedOnce,
     showOverlay,
     readyLocale,

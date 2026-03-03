@@ -12,6 +12,18 @@ export type UseSetLocaleOptions = {
   persistClientCookie?: boolean;
   reload?(pathname: string): void;
   /**
+   * Whether to apply the locale change to the client-side i18n state
+   * immediately.
+   *
+   * Defaults to:
+   * - `false` when reload is enabled (`reloadDelayMs >= 0`)
+   * - `true` when reload is disabled (`reloadDelayMs < 0`)
+   *
+   * This avoids UI flicker when a route reload is the source of truth for
+   * content localization (e.g. server-driven pages).
+   */
+  applyLocaleState?: boolean;
+  /**
    * Delay before reloading the current Inertia route.
    * - `0`: reload immediately
    * - `> 0`: reload after delay (only the last selection)
@@ -41,6 +53,8 @@ export function useSetLocale(options?: UseSetLocaleOptions): SetLocaleHandler {
   const persistClientCookie = options?.persistClientCookie ?? true;
   const reload = options?.reload;
   const reloadDelayMs = options?.reloadDelayMs ?? 400;
+  const applyLocaleState =
+    options?.applyLocaleState ?? (reloadDelayMs < 0);
 
   // Stores state for the debounced reload.
   const reloadTimerId = useRef<number | null>(null);
@@ -50,18 +64,24 @@ export function useSetLocale(options?: UseSetLocaleOptions): SetLocaleHandler {
 
   useEffect(() => {
     return () => {
-      cancelReloadRef.current?.();
       cancelReloadRef.current = null;
     };
   }, []);
 
-  const applyLocaleState = useCallback(
+  const resolveLocaleForPersistence = useCallback(
     (nextLocale: string): string => {
-      const resolved = setLocale(nextLocale);
-      lastRequestedLocale.current = resolved;
-      return resolved;
+      const trimmed = nextLocale.trim();
+      if (!trimmed) {
+        return trimmed;
+      }
+
+      if (!applyLocaleState) {
+        return trimmed;
+      }
+
+      return setLocale(trimmed);
     },
-    [setLocale],
+    [applyLocaleState, setLocale],
   );
 
   const persistResolvedLocale = useCallback(
@@ -92,8 +112,8 @@ export function useSetLocale(options?: UseSetLocaleOptions): SetLocaleHandler {
 
   const handler: SetLocaleHandler = useCallback(
     async (nextLocale: string) => {
-      // State
-      const resolved = applyLocaleState(nextLocale);
+      const resolved = resolveLocaleForPersistence(nextLocale);
+      lastRequestedLocale.current = resolved;
 
       // Persistence
       lastPersistPromise.current = persistResolvedLocale(resolved);
@@ -103,7 +123,7 @@ export function useSetLocale(options?: UseSetLocaleOptions): SetLocaleHandler {
 
       return resolved;
     },
-    [applyLocaleState, persistResolvedLocale, scheduleReload],
+    [resolveLocaleForPersistence, persistResolvedLocale, scheduleReload],
   );
 
   return handler;
