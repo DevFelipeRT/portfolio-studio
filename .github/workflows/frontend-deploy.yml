@@ -35,6 +35,33 @@ jobs:
         with:
           ref: "frontend-dist"
 
+      - name: Ensure public/build exists
+        run: |
+          set -euo pipefail
+
+          if [ -d "public/build" ]; then
+            exit 0
+          fi
+
+          # download-artifact may extract into a directory named after the artifact.
+          if [ -d "public-build/public/build" ]; then
+            mkdir -p public
+            mv "public-build/public/build" "public/build"
+            exit 0
+          fi
+
+          if [ -d "public-build" ]; then
+            mkdir -p public/build
+            shopt -s dotglob
+            mv public-build/* public/build/ || true
+            exit 0
+          fi
+
+          echo "public/build not found after checkout/download."
+          ls -la
+          find . -maxdepth 4 -type d -print
+          exit 1
+
       - name: Start SSH agent
         uses: webfactory/ssh-agent@dc588b651fe13675774614f8e6a936a468676387
         with:
