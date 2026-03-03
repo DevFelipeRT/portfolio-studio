@@ -1,6 +1,7 @@
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import laravel from 'laravel-vite-plugin';
+import process from 'node:process';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { defineConfig, loadEnv } from 'vite';
