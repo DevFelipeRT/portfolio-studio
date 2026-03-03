@@ -65,8 +65,8 @@ export default function RenderedPage({
   );
 }
 
-RenderedPage.getI18nScope = (props) => {
-  const sections = (props as unknown as { sections?: PageSectionDto[] }).sections;
+RenderedPage.getI18nScope = (props: unknown) => {
+  const sections = (props as { sections?: PageSectionDto[] }).sections;
   if (!Array.isArray(sections)) {
     return [];
   }

@@ -84,11 +84,10 @@ function useDynamicDateFnsLocale(localeCode: string): Locale {
             try {
                 // Avoid importing `date-fns/locale` (it bundles all locales).
                 // Only load the locales the app actually uses.
-                const localeModule =
+                const localeObj =
                     normalizedId === 'pt-br'
-                        ? await import('date-fns/locale/pt-BR')
-                        : await import('date-fns/locale/en-US');
-                const localeObj = (localeModule as any).default;
+                        ? (await import('date-fns/locale/pt-BR')).ptBR
+                        : (await import('date-fns/locale/en-US')).enUS;
 
                 if (isMounted && localeObj) {
                     // CRUCIAL: Force a new object reference to trigger useMemo in consuming components,
@@ -96,7 +95,7 @@ function useDynamicDateFnsLocale(localeCode: string): Locale {
                     setLoadedLocale({ ...localeObj });
                     setLoadedCode(codeToUse);
                 }
-            } catch (error) {
+            } catch {
                 if (isMounted) {
                     setLoadedLocale(FALLBACK_LOCALE_OBJ);
                     setLoadedCode(FALLBACK_LOCALE_OBJ.code || 'en-US');
