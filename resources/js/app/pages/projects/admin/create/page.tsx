@@ -1,6 +1,6 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import { useFormSubmit, type FormErrors } from '@/common/forms';
-import { useSupportedLocales } from '@/common/i18n';
+import { useSupportedLocales } from '@/common/locale';
 import type {
   ImageInput,
   ProjectFormData,

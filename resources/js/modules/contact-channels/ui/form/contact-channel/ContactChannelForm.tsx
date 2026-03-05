@@ -5,7 +5,7 @@ import {
   type FormErrors,
 } from '@/common/forms';
 import { CheckboxField, SelectField, TextInputField } from '@/common/forms';
-import { useSupportedLocales } from '@/common/i18n';
+import { useSupportedLocales } from '@/common/locale';
 import { useContactChannelsTranslation } from '@/modules/contact-channels/i18n';
 import { CONTACT_CHANNELS_NAMESPACES } from '@/modules/contact-channels/i18n';
 

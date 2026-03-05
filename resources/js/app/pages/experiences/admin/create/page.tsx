@@ -1,5 +1,5 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
-import { useSupportedLocales } from '@/common/i18n';
+import { useSupportedLocales } from '@/common/locale';
 import { useFormSubmit, type FormErrors } from '@/common/forms';
 import type { ExperienceFormData } from '@/modules/experiences/core/forms';
 import { useExperiencesTranslation } from '@/modules/experiences/i18n';
