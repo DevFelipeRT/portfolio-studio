@@ -31,11 +31,11 @@ If a key is missing, the resolver throws: `Page not found in registry: <key>` (`
 
 The Inertia setup initializes a runtime state snapshot derived from initial shared props (e.g. website meta title template) (`resources/js/app/inertia/utils/runtimeState.ts`, `resources/js/app/inertia/utils/setup.tsx`).
 
-The runtime wraps content in the application i18n provider configured from Inertia shared props (`props.localization`) (`resources/js/app/inertia/page/utils/WithI18nProvider.tsx`).
+The runtime wraps content in an i18next provider configured from Inertia shared props (`props.localization`) (`resources/js/app/inertia/page/utils/WithI18nProvider.tsx`).
 
 ## i18n scoping (preload)
 
-The app preloads translation catalogs via the React `I18nProvider` gate. To avoid preloading every module on every page, pages can declare which i18n contributions they need:
+The app preloads translation bundles for i18next via a scoped preloader. To avoid preloading every module on every page, pages can declare which i18n contributions they need:
 
 - Static scope: `Page.i18n = ['projects', 'courses']`
 - Dynamic scope: `Page.getI18nScope = (props) => ['contact-channels']` (useful for CMS/section-driven pages)
@@ -52,9 +52,17 @@ Module and layout i18n preloaders are resolved on-demand through registry defini
 - `resources/js/modules/<id>/i18n/definition.ts` should call:
   - `createI18nRegistry().define('<id>', () => import('./environment'))`
 - `resources/js/modules/<id>/i18n/environment.ts` should call:
-  - `createI18nRegistry().register('<id>', <translatorProvider>)`
+  - `createI18nRegistry().register('<id>', <i18nextPreloader>)`
 
 Layouts follow the same pattern under `resources/js/app/layouts/i18n/`.
+
+### Local loading gates
+
+For dynamic features (e.g. CMS rendered pages), you can block only a subtree until
+its scope preloads using `I18nScopeGate`:
+
+- Gate: `resources/js/common/i18n/react/I18nScopeGate.tsx`
+- Example usage: `resources/js/app/pages/content-management/public/rendered-page/page.tsx`
 
 For dynamic CMS sections, section providers can expose a minimal `i18n` metadata list so page-rendering can derive scope from `sections`:
 
