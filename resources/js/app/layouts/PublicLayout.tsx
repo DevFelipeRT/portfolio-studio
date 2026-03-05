@@ -81,8 +81,8 @@ function PublicLayoutI18nContent({
           )}
         </Header>
 
-        <main className="w-full grow">
-          <div className="mx-auto max-w-7xl grow px-4 sm:px-6 lg:px-8">
+        <main className="w-full flex flex-1">
+          <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-4 sm:px-6 lg:px-8">
             {children}
           </div>
         </main>
