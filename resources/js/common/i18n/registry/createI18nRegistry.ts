@@ -1,4 +1,4 @@
-import type { Locale } from '../core/types';
+import type { Locale } from '@/common/locale';
 import type { I18nPreloader, I18nRegistry } from './types';
 
 let singleton: I18nRegistry | null = null;

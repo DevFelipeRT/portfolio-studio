@@ -1,4 +1,4 @@
-import type { TranslationTree } from '../../core/types';
+import type { TranslationTree } from '../../types';
 
 const table: TranslationTree = {
     empty: 'No records to display.',

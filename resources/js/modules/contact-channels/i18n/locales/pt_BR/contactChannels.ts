@@ -1,4 +1,4 @@
-import type { TranslationTree } from '@/common/i18n/core/types';
+import type { TranslationTree } from '@/common/i18n/types';
 
 const contactChannels: TranslationTree = {
   socials: {
@@ -24,4 +24,3 @@ const contactChannels: TranslationTree = {
 };
 
 export default contactChannels;
-

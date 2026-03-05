@@ -1,4 +1,4 @@
-import type { TranslationTree } from '../../core/types';
+import type { TranslationTree } from '../../types';
 
 const validation: TranslationTree = {
     required: 'Este campo é obrigatório.',

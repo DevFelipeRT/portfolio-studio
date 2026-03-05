@@ -1,4 +1,4 @@
-import type { Locale } from '../core/types';
+import type { Locale } from '@/common/locale';
 
 export type I18nPreloader = {
   preloadLocale?(locale: Locale): Promise<void>;

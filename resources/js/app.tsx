@@ -3,4 +3,4 @@ import './bootstrap';
 
 import { bootInertiaApp } from './app/inertia';
 
-bootInertiaApp();
+void bootInertiaApp();

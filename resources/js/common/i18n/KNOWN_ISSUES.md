@@ -1,93 +1,122 @@
-# i18n – Known issues / tradeoffs
+# i18n – Issues, limitations, and trade-offs
 
-This folder contains an i18n system composed of:
-1) a global app i18n environment (`createI18nEnvironment(...)`) used by the React provider, and
-2) module-level translation providers (each backed by `import.meta.glob(...)`), coordinated by the i18n registry.
+This module currently uses:
+1. an `i18next` runtime,
+2. shared preloaders for `common` and `layouts`,
+3. scope-level preloaders coordinated by the i18n registry, and
+4. local gating for dynamic areas that must wait for scoped catalogs.
 
-The current design intentionally optimizes for incremental migration (scoped preloading and decoupling the Inertia wrapper from module imports) but still has important tradeoffs.
+The points below reflect the current state of the implementation.
 
-## 1) Translations can run before catalogs are preloaded
+## Issues
 
-### Symptom
-- On first render (or when navigating between pages), some strings may briefly render as the raw key (or fallback text) before the relevant translation catalogs are loaded.
-
-### Root cause
-- Many modules translate using their own module-level translator (e.g. `contactChannelsTranslator.translate(...)`) rather than using the `I18nContext` translator from the app provider.
-- The module translator reads from its module provider cache; if that cache does not yet have `loadedCatalogs[locale]`, it cannot resolve a translation tree and returns the key.
-
-### Why it’s currently expected
-- The global React provider gate only preloads catalogs through the preloader(s) that were included in the page scope.
-- When we render immediately (no blocking loading fallback), there is no UI-level guarantee that module catalogs are ready before components call module translators.
-
-### Mitigation options
-- Reintroduce a UI gate (blocking or overlay) until the scoped preloads complete.
-- Add local gates around dynamic features/modules (e.g. CMS section rendering) so that a module preloads itself before translating.
-- Migrate module hooks to translate through `I18nContext` (requires namespace strategy if catalogs are unified).
-
-## 2) DEV warning: `Catalog for locale "…" is not loaded yet.`
+## 1) Scoped translation loading can still be missed outside gated flows
 
 ### Symptom
-- Console warning emitted from `createTranslatorProviderFromLoaders(...).getCatalog(locale)` in DEV.
+- A feature can still render fallback text or raw keys if it depends on a scoped catalog and does not preload or gate that scope correctly.
 
-### Root cause
-- A module translator is used before its provider preloaded that locale’s catalogs.
+### Current state
+- This is no longer a blanket app-wide issue.
+- The shell (`common` + `layouts`) is preloaded before mount.
+- `RenderedPage` also has scoped preload + gate behavior.
+- The issue still exists as a risk for any other feature/module that renders before its scope is ready.
 
-### Notes
-- This warning is useful when the UI is gated, but becomes noisy when rendering immediately.
+### Why it still happens
+- The architecture does not globally block all page rendering on all possible scope ids.
+- Scoped bundles are still loaded asynchronously.
 
-### Mitigation options
-- Keep the warning but ensure scope is correct and the UI waits for preload.
-- Downgrade/suppress this warning in DEV when running in a non-blocking strategy.
-- Ensure dynamic pages (e.g. CMS rendered pages) derive their i18n scope from runtime data (sections), so the right preloaders are included.
+### Mitigation
+- Use `I18nScopeGate` around dynamic scope-heavy subtrees.
+- Preload the page scope before locale reload when the route depends on scoped catalogs.
+- Keep scope declaration correct via `Page.i18n` or `Page.getI18nScope`.
 
-## 3) Scoped preload granularity is module-level (not per section/namespace)
-
-### Symptom
-- Activating an i18n scope id (e.g. `projects`) preloads all catalogs for that module and locale, even if only one section/namespace is rendered.
-
-### Root cause
-- The module provider preloader is built from a Vite glob and preloads all namespaces for a locale within that provider.
-
-### Mitigation options
-- Introduce sub-scopes (per namespace group) and split providers/loaders accordingly.
-- Maintain separate loaders/providers for “heavy” namespaces and activate them only when needed.
-
-## 4) Behavior/config divergence between global and module translators
+## 2) Missing key vs missing bundle is still hard to distinguish quickly
 
 ### Symptom
-- Fallback locale behavior and missing-key reporting may differ between global translations and module translations.
+- A translation may resolve to fallback text or the key itself even when the source file exists.
 
-### Root cause
-- The app-level translator is created with runtime config (e.g. `fallbackLocale` and `onMissingKey` in `createI18nEnvironment(...)`).
-- Module translators are often created with `createTranslator({})`, so they do not automatically inherit runtime fallback or missing-key behavior.
+### Why it still happens
+- The underlying problem may be:
+  - an actual missing key, or
+  - a scope that was never loaded for that locale.
 
-### Mitigation options
-- Stop creating module translators as constants; create them from the runtime config (or from `I18nContext`) instead.
-- Standardize translator creation so module translators receive the same config as the global translator.
+### Current state
+- DEV warnings help, but they still do not fully separate these two failure modes.
 
-## 5) Registry definitions are stringly-typed
+### Mitigation
+- Verify the page scope first.
+- Verify registry ids and `definition.ts` registration.
+- Then verify the key inside the loaded namespace.
 
-### Symptom
-- A typo in a scope id (e.g. `Page.i18n = ['course']`) results in missing preloads.
+## Limitations
 
-### Root cause
-- Scope ids are plain strings and currently enforced at runtime.
-- The registry can ensure an id is defined/registered at runtime, but TypeScript cannot validate ids without a typed contract.
+## 3) Scope ids are still stringly-typed
 
-### Mitigation options
-- Export a typed constant map of ids (e.g. `I18N_SCOPE_IDS`) and use it everywhere.
-- Add stricter DEV-time assertions (throw on unknown ids) to fail fast.
+### Limitation
+- Scope ids such as `projects`, `courses`, `layouts`, and dynamic ids are still plain strings.
 
-## 6) Convention required for dynamic definition loading
+### Impact
+- Typos are caught only at runtime.
+- TypeScript does not currently guarantee that a declared scope id is valid.
 
-### Symptom
-- For on-demand resolution, each module/layout with i18n must provide a definition file under `i18n/definition.ts`.
+### Possible improvement
+- Introduce a typed constant map for scope ids and consume it everywhere.
 
-### Root cause
-- `createI18nRegistry()` loads all `*/i18n/definition.ts` modules via `import.meta.glob(...)` (non-eager) to populate `define(id, loader)`.
+## 4) Dynamic definition loading still depends on convention
 
-### Mitigation options
-- Keep the convention (simple and scalable) and document it as part of module authoring.
-- Replace with an explicit, centralized bootstrap import list (rejected earlier as too coupled).
-- Generate definitions automatically (build step) if the project ever adopts codegen.
+### Limitation
+- Modules/layouts must expose `i18n/definition.ts` so the registry can resolve them on demand.
 
+### Impact
+- If a module forgets this convention, runtime preload resolution breaks for that scope.
+
+### Possible improvement
+- Keep the convention documented and enforced in reviews, or generate registry definitions automatically in the future.
+
+## Trade-offs
+
+## 5) Scoped preload granularity is module-level
+
+### Trade-off
+- Enabling a scope id preloads all catalogs for that scope and locale, not only the exact namespace used by the current subtree.
+
+### Benefit
+- Simpler registry model.
+- Less orchestration complexity.
+- Easier module authoring.
+
+### Cost
+- More data may be loaded than strictly necessary for a given render path.
+
+### Possible improvement
+- Introduce finer-grained sub-scopes for large modules.
+
+## 6) Namespace strategy is scope-prefixed
+
+### Trade-off
+- Namespaces are addressed as `<scopeId>.<namespace>`.
+
+### Benefit
+- Avoids collisions between modules.
+- Keeps catalogs isolated by scope.
+
+### Cost
+- It is easy to target the wrong namespace when migrating code manually.
+
+### Possible improvement
+- Keep scope-local hooks such as `useProjectsTranslation(...)` and `useLayoutsTranslation(...)`.
+- Consider typed scope/namespace maps if the matrix grows.
+
+## 7) The system favors incremental migration over a fully blocking global bootstrap
+
+### Trade-off
+- The app does not globally block every page until every possible scoped catalog is loaded.
+
+### Benefit
+- Faster shell startup.
+- Lower coupling between app bootstrap and modules.
+- Better incremental migration path.
+
+### Cost
+- Dynamic areas still require local preload/gate discipline.
+- Some correctness depends on the page declaring its i18n scope properly.

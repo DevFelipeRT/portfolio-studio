@@ -1,4 +1,4 @@
-import type { TranslationModuleLoaders } from '../core/translation';
+import type { TranslationModuleLoaders } from '../i18next/types';
 
 /**
  * Default app-wide translation loaders.
@@ -6,10 +6,9 @@ import type { TranslationModuleLoaders } from '../core/translation';
  * Structure convention:
  * - ../locales/{locale}/{namespace}.ts
  *
- * Domains should provide their own translation provider (and local React gate)
- * via `createTranslatorProviderFromLoaders(...)`.
+ * Domains should expose their own scoped i18n preloaders for i18next (and
+ * local loading UI) via `createI18nextPreloaderFromLoaders(...)`.
  */
 export const translationModuleLoaders = {
     ...import.meta.glob('../locales/*/*.ts'),
 } as TranslationModuleLoaders;
-

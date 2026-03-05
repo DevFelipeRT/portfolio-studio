@@ -1,4 +1,4 @@
-import type { TranslationTree } from '../../core/types';
+import type { TranslationTree } from '../../types';
 
 const languageSelector: TranslationTree = {
     ariaLabel: 'Change language (current: {{locale}})',

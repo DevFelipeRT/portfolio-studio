@@ -1,9 +1,10 @@
 'use client';
 
 import { I18N_NAMESPACES } from '@/common/i18n';
-import type { Namespace, PlaceholderValues } from '@/common/i18n/core/types';
-import { I18nContext } from '@/common/i18n/react/I18nContext';
-import { useContext } from 'react';
+import type { Namespace, PlaceholderValues } from '@/common/i18n/types';
+import { useGetLocale } from '@/common/locale';
+import { useTranslation as useReactI18nextTranslation } from 'react-i18next';
+import { scopedNamespace } from '@/common/i18n/i18next/scopedNamespace';
 
 type TranslationFunction = {
   (key: string, params?: PlaceholderValues): string;
@@ -22,7 +23,8 @@ type UseFormsTranslationResult = {
 export function useFormsTranslation(
   namespace: Namespace = I18N_NAMESPACES.form,
 ): UseFormsTranslationResult {
-  const context = useContext(I18nContext);
+  const locale = useGetLocale();
+  const { i18n } = useReactI18nextTranslation();
 
   const translate: TranslationFunction = (
     key: string,
@@ -39,25 +41,21 @@ export function useFormsTranslation(
       parameters = secondArgument;
     }
 
-    if (context) {
-      const resolved = context.translate(key, parameters, namespace);
-      if (fallbackText !== undefined) {
-        if (!resolved || resolved === key) {
-          return fallbackText;
-        }
-      }
-      return resolved;
+    const ns = scopedNamespace('common', namespace);
+    if (!ns) {
+      return fallbackText ?? key;
     }
 
-    if (fallbackText !== undefined) {
-      return fallbackText;
-    }
-
-    return key;
+    return i18n.t(key, {
+      lng: locale,
+      ns,
+      ...(fallbackText !== undefined ? { defaultValue: fallbackText } : {}),
+      ...(parameters ? { ...parameters } : {}),
+    });
   };
 
   return {
-    locale: context?.locale ?? 'en',
+    locale,
     translate,
   };
 }

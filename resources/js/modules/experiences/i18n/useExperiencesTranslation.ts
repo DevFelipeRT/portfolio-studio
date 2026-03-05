@@ -1,9 +1,10 @@
 'use client';
 
-import { useContext } from 'react';
-import { I18nContext, type PlaceholderValues } from '@/common/i18n';
-import type { Locale, Namespace } from '@/common/i18n/core/types';
-import { experiencesTranslator } from './environment';
+import type { PlaceholderValues } from '@/common/i18n';
+import type { Namespace } from '@/common/i18n/types';
+import { getI18next } from '@/common/i18n/i18next/i18next';
+import { scopedNamespace } from '@/common/i18n/i18next/scopedNamespace';
+import { useGetLocale } from '@/common/locale';
 
 type TranslationFunction = {
   (key: string, params?: PlaceholderValues): string;
@@ -19,15 +20,7 @@ export interface UseExperiencesTranslationResult {
 export function useExperiencesTranslation(
   namespace?: Namespace,
 ): UseExperiencesTranslationResult {
-  const context = useContext(I18nContext);
-
-  if (!context) {
-    throw new Error(
-      'useExperiencesTranslation must be used within an I18nProvider.',
-    );
-  }
-
-  const { locale, setLocale } = context;
+  const locale = useGetLocale();
 
   const translateWithNamespace: TranslationFunction = (
     key: string,
@@ -44,25 +37,29 @@ export function useExperiencesTranslation(
       parameters = secondArgument;
     }
 
-    const resolved = experiencesTranslator.translate(
-      locale as Locale,
-      namespace,
-      key,
-      parameters,
-    );
-
-    if (fallbackText !== undefined) {
-      if (!resolved || resolved === key) {
-        return fallbackText;
-      }
+    const ns = scopedNamespace('experiences', namespace);
+    if (!ns) {
+      return fallbackText ?? key;
     }
 
-    return resolved;
+    return getI18next().t(key, {
+      lng: locale,
+      ns,
+      ...(fallbackText !== undefined ? { defaultValue: fallbackText } : {}),
+      ...(parameters ? { ...parameters } : {}),
+    });
   };
 
   return {
     locale,
     translate: translateWithNamespace,
-    setLocale,
+    setLocale(nextLocale: string): string {
+      const trimmed = nextLocale.trim();
+      if (!trimmed) {
+        return trimmed;
+      }
+      void getI18next().changeLanguage(trimmed);
+      return trimmed;
+    },
   };
 }

@@ -1,4 +1,4 @@
-import type { Namespace } from '@/common/i18n/core/types';
+import type { Namespace } from '@/common/i18n/types';
 
 export const COURSES_NAMESPACES = {
   actions: 'actions' as Namespace,

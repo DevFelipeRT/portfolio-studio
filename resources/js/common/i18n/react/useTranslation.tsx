@@ -1,8 +1,9 @@
 'use client';
 
-import { useContext } from 'react';
-import type { Namespace, PlaceholderValues } from '../core/types';
-import { I18nContext } from './I18nContext';
+import type { Namespace, PlaceholderValues } from '../types';
+import { useTranslation as useReactI18nextTranslation } from 'react-i18next';
+import { useGetLocale } from '@/common/locale';
+import { scopedNamespace } from '../i18next/scopedNamespace';
 
 type TranslationFunction = {
   (key: string, params?: PlaceholderValues): string;
@@ -17,7 +18,7 @@ export interface UseTranslationResult {
 
 /**
  * useTranslation exposes the current locale and a namespaced
- * translation function bound to the I18nProvider context.
+ * translation function backed by i18next.
  *
  * The translation function supports an optional fallback:
  * - translate('key')
@@ -26,13 +27,8 @@ export interface UseTranslationResult {
  * - translate('key', 'Fallback text', params)
  */
 export function useTranslation(namespace?: Namespace): UseTranslationResult {
-  const context = useContext(I18nContext);
-
-  if (!context) {
-    throw new Error('useTranslation must be used within an I18nProvider.');
-  }
-
-  const { locale, translate, setLocale } = context;
+  const locale = useGetLocale();
+  const { i18n } = useReactI18nextTranslation();
 
   const translateWithNamespace: TranslationFunction = (
     key: string,
@@ -49,20 +45,29 @@ export function useTranslation(namespace?: Namespace): UseTranslationResult {
       parameters = secondArgument;
     }
 
-    const resolved = translate(key, parameters, namespace);
-
-    if (fallbackText !== undefined) {
-      if (!resolved || resolved === key) {
-        return fallbackText;
-      }
+    const ns = scopedNamespace('common', namespace);
+    if (!ns) {
+      return fallbackText ?? key;
     }
 
-    return resolved;
+    return i18n.t(key, {
+      lng: locale,
+      ns,
+      ...(fallbackText !== undefined ? { defaultValue: fallbackText } : {}),
+      ...(parameters ? { ...parameters } : {}),
+    });
   };
 
   return {
     locale,
     translate: translateWithNamespace,
-    setLocale,
+    setLocale(nextLocale: string): string {
+      const trimmed = nextLocale.trim();
+      if (!trimmed) {
+        return trimmed;
+      }
+      void i18n.changeLanguage(trimmed);
+      return trimmed;
+    },
   };
 }

@@ -1,7 +1,6 @@
 export { I18N_NAMESPACES } from './namespaces';
 
 export {
-  catalogProvider,
   createI18nEnvironment,
   translatorProvider,
 } from './environment';
@@ -9,17 +8,11 @@ export {
 export { createI18nRegistry } from './registry';
 export type { I18nPreloader, I18nRegistry } from './registry';
 
-export { createTranslatorProviderFromLoaders } from './core/translation';
-export type { TranslationModuleLoaders } from './core/translation';
-export type { PlaceholderValues } from './core/types';
+export type { TranslationModuleLoaders } from './i18next/types';
+export type { PlaceholderValues } from './types';
 
 export {
-  I18nContext,
-  I18nProvider,
   LanguageSelector,
-  LocaleSwitcher,
-  TranslationCatalogGate,
-  useGetLocale,
-  useSupportedLocales,
+  I18nScopeGate,
   useTranslation,
 } from './react';

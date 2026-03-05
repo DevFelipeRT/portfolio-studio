@@ -1,12 +1,16 @@
+'use client';
+
 import {
-  I18nProvider,
   createI18nEnvironment,
 } from '@/common/i18n';
 import type { ReactNode } from 'react';
+import { useEffect, useMemo } from 'react';
 import type { InertiaPageProps } from '../../types';
 import { resolveInitialLocale } from './locale';
-import type { Locale } from '@/common/i18n/core/types';
+import type { Locale } from '@/common/locale';
 import type { I18nPreloader } from '@/common/i18n';
+import { I18nextProvider } from 'react-i18next';
+import { getI18next } from '@/common/i18n/i18next/i18next';
 
 export type WithI18nProviderOptions = { i18nPreloader?: I18nPreloader | null };
 
@@ -22,7 +26,7 @@ export function wrapWithI18nProvider(
   const currentLocale = resolveInitialLocale(props) ?? null;
   const localizationConfig = props.localization || {};
 
-  const { localeResolver, translator, translatorProvider } = createI18nEnvironment({
+  const { localeResolver, translatorProvider } = createI18nEnvironment({
     supportedLocales: localizationConfig.supportedLocales,
     defaultLocale: currentLocale,
     fallbackLocale: localizationConfig.fallbackLocale,
@@ -40,15 +44,46 @@ export function wrapWithI18nProvider(
   };
 
   return (
-    <I18nProvider
-      initialLocale={currentLocale}
-      localeResolver={localeResolver}
-      translator={translator}
-      fallbackLocale={localizationConfig.fallbackLocale ?? null}
-      translatorProvider={combinedTranslatorProvider}
-      loadingOverlayDelayMs={-1}
-    >
+    <I18nextProvider i18n={getI18next()}>
+      <ScopedPreload
+        localeResolver={localeResolver}
+        initialLocale={currentLocale}
+        fallbackLocale={localizationConfig.fallbackLocale ?? null}
+        translatorProvider={combinedTranslatorProvider}
+      />
       {content}
-    </I18nProvider>
+    </I18nextProvider>
   );
+}
+
+function ScopedPreload(props: {
+  localeResolver: ReturnType<typeof createI18nEnvironment>['localeResolver'];
+  initialLocale: string | null;
+  fallbackLocale: string | null;
+  translatorProvider: { preloadLocale(locale: Locale): Promise<void> };
+}) {
+  const { localeResolver, initialLocale, fallbackLocale, translatorProvider } =
+    props;
+
+  const resolvedLocale = useMemo(
+    () =>
+      localeResolver.resolve(initialLocale ?? localeResolver.defaultLocale),
+    [localeResolver, initialLocale],
+  );
+
+  const resolvedFallback = useMemo(() => {
+    if (!fallbackLocale) {
+      return null;
+    }
+    return localeResolver.resolve(fallbackLocale);
+  }, [localeResolver, fallbackLocale]);
+
+  useEffect(() => {
+    void translatorProvider.preloadLocale(resolvedLocale);
+    if (resolvedFallback && resolvedFallback !== resolvedLocale) {
+      void translatorProvider.preloadLocale(resolvedFallback);
+    }
+  }, [translatorProvider, resolvedLocale, resolvedFallback]);
+
+  return null;
 }

@@ -1,8 +1,9 @@
-import type { TranslationTree } from '../../core/types';
+import type { TranslationTree } from '../../types';
 
 const state: TranslationTree = {
     loading: 'Loading…',
     loadingContent: 'Loading content…',
+    loadingPleaseWait: 'Please wait a moment.',
     empty: 'Nothing to display yet.',
     noResults: 'No results found.',
     error: 'Something went wrong.',

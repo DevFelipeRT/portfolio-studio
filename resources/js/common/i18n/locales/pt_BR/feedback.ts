@@ -1,4 +1,4 @@
-import type { TranslationTree } from '../../core/types';
+import type { TranslationTree } from '../../types';
 
 const feedback: TranslationTree = {
     saved: 'Alterações salvas com sucesso.',
