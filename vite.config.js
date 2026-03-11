@@ -15,10 +15,6 @@ const __dirname = path.dirname(__filename);
 export default defineConfig(({ mode, command }) => {
   const env = loadEnv(mode, process.cwd(), '');
 
-  /**
-   * Resolves host and port used by the dev server and HMR client.
-   */
-  const viteHost = env.VITE_HOST || 'localhost';
   const vitePort = Number(env.VITE_PORT) || 5173;
 
   /**
@@ -89,18 +85,9 @@ export default defineConfig(({ mode, command }) => {
           host: env.VITE_BIND || '0.0.0.0',
           port: vitePort,
           strictPort: true,
-          cors: {
-            origin: [
-              `http://${viteHost}`,
-              `http://${viteHost}:80`,
-              'http://localhost',
-              'http://localhost:80',
-            ],
-          },
+          cors: true,
           hmr: {
-            host: viteHost,
-            port: vitePort,
-            clientPort: vitePort,
+            path: '/vite-hmr',
             protocol: 'ws',
           },
         }
