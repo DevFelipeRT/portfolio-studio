@@ -1,0 +1,148 @@
+# ------------------------------------------------------------------------------
+# Nginx vhost template for Laravel + Vite integration (DEV/PROD)
+#
+# Variables:
+#   SERVER_NAME   : Space-separated list of hostnames
+#   PHP_FPM_PORT  : TCP port where php-fpm listens (container: php)
+#   VITE_PORT     : Port where Vite dev server listens (container: vite)
+#   APP_DIR       : Absolute application path inside the container
+#
+# Effective paths inside the container:
+#   - App base dir: ${APP_DIR}
+#   - Public root : ${APP_DIR}/public
+#   - PHP-FPM     : php:${PHP_FPM_PORT}
+#   - Vite        : vite:${VITE_PORT}
+# ------------------------------------------------------------------------------
+
+server {
+    listen 80;
+    server_name ${SERVER_NAME};
+
+    # Expose only Laravel "public" directory
+    root   ${APP_DIR}/public;
+    index  index.php index.html;
+
+    access_log /var/log/nginx/access.log;
+    error_log  /var/log/nginx/error.log;
+
+    # -------------------- Basic limits & security headers ---------------------
+    client_max_body_size 20m;
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    add_header Permissions-Policy "interest-cohort=()" always;
+
+    # -------------------- Static assets (images, fonts, etc.) -----------------
+    location ~* \.(?:jpg|jpeg|png|gif|ico|svg|webp|woff2?|ttf|eot)$ {
+        try_files $uri =404;
+        expires 7d;
+        add_header Cache-Control "public, max-age=604800, immutable";
+        access_log off;
+    }
+
+    # -------------------- Vite integration (DEV only) -------------------------
+    # In development, Laravel @vite points assets to the Vite dev server.
+    # In production (npm run build), assets are served from /public/build.
+    #
+    # HMR client and internal Vite endpoints (must be first)
+    location ^~ /@vite/ {
+        proxy_pass http://vite:${VITE_PORT}/@vite/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    # Source files served by Vite in dev (e.g., /resources/js/app.tsx)
+    location ^~ /resources/ {
+        proxy_pass http://vite:${VITE_PORT}/resources/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    location ^~ /@react-refresh {
+        proxy_pass http://vite:${VITE_PORT}/@react-refresh;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    location ^~ /vite-hmr {
+        proxy_pass http://vite:${VITE_PORT}/vite-hmr;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    # Optional: additional Vite-internal paths
+    location ^~ /node_modules/.vite/ {
+        proxy_pass http://vite:${VITE_PORT}/node_modules/.vite/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    location ^~ /node_modules/vite/ {
+        proxy_pass http://vite:${VITE_PORT}/node_modules/vite/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    location ^~ /@id/          { proxy_pass http://vite:${VITE_PORT}/@id/; }
+    location ^~ /node_modules/ { proxy_pass http://vite:${VITE_PORT}/node_modules/; }
+
+    # CSS/JS assets: try from /public first, then proxy to Vite in dev
+    location ~* \.(?:css|js|mjs|map)$ {
+        try_files $uri @vite;
+    }
+
+    location @vite {
+        proxy_pass http://vite:${VITE_PORT};
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    # -------------------- Main application routing ----------------------------
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    # -------------------- PHP handling via php-fpm -----------------------------
+    location ~ \.php$ {
+        include fastcgi_params;
+
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass php:${PHP_FPM_PORT};
+        fastcgi_index index.php;
+
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        fastcgi_param DOCUMENT_ROOT   $realpath_root;
+        fastcgi_param PATH_INFO       $fastcgi_path_info;
+
+        fastcgi_read_timeout 120s;
+        fastcgi_buffers      16 16k;
+        fastcgi_buffer_size  32k;
+    }
+
+    # -------------------- Deny access to sensitive files ----------------------
+    location ~ /\.(?!well-known).*                         { deny all; }
+    # /resources/ is allowed above via Vite proxy in dev; do not block it here
+    location ~* /(vendor|bootstrap|database)/              { deny all; return 404; }
+    location ~* \.(?:env|env\.local|env\..*|log|sql|bak)$  { deny all; return 404; }
+}
