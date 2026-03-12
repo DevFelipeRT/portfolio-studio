@@ -16,10 +16,10 @@ A modular Laravel + Inertia studio for a content-managed public site and an admi
 - [Feature highlights (evidence-based)](#feature-highlights-evidence-based)
 - [Tech stack](#tech-stack)
 - [Architecture at a glance](#architecture-at-a-glance)
-- [Documentation map](#documentation-map)
 - [Security / scope notes](#security--scope-notes)
 - [Deployment (shared hosting / Apache)](#deployment-shared-hosting--apache)
 - [CI/CD (GitHub Actions)](#cicd-github-actions)
+- [Documentation map](#documentation-map)
 - [AI Collaboration](#ai-collaboration)
 - [Copyright / License](#copyright--license)
 
@@ -133,6 +133,14 @@ composer test
 npm run lint
 ./vendor/bin/pint
 ```
+
+### Frontend build and Vite configuration
+
+- Production frontend build runs `npm run build`, which executes `tsc && cross-env ASSET_URL='' vite build` (`package.json`)
+- Vite entrypoints are `resources/css/app.css` and `resources/js/app.tsx` (`vite.config.js`)
+- Dev server settings come from `VITE_PORT` and `VITE_BIND`; defaults are `5173` and `0.0.0.0` (`.env.example`, `vite.config.js`)
+- The Vite server uses `strictPort`, enables CORS, and serves HMR on `/vite-hmr` (`vite.config.js`)
+- Build output keeps locale catalogs split by locale and groups core React/Inertia dependencies into dedicated chunks (`vite.config.js`)
 
 ## Key runtime notes (evidence-based)
 
