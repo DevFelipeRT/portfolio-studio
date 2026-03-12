@@ -77,10 +77,34 @@ The public website UI is built from content-managed pages and “section compone
 ## Build and tooling
 
 - Scripts and tooling: `package.json`
-- Vite: `vite.config.js` (Laravel + React integration, aliases)
+- Vite: `vite.config.js` (Laravel + React integration, aliases, dedupe, chunking, dev server)
 - TypeScript: `tsconfig.json`
 - Linting/formatting: `eslint.config.js`, `.prettierrc`
 - Tailwind: `tailwind.config.ts`, `postcss.config.js`
+
+### Build pipeline
+
+- `npm run build` runs `tsc && cross-env ASSET_URL='' vite build`. That means production builds perform a TypeScript compile check before emitting frontend assets. Evidence: `package.json`.
+- The explicit `ASSET_URL=''` keeps the generated asset URLs relative to the Laravel app instead of inheriting a different asset base from the shell environment. Evidence: `package.json`.
+- Laravel Vite integration builds from `resources/css/app.css` and `resources/js/app.tsx`. Evidence: `vite.config.js`.
+
+### Vite configuration details
+
+- Plugins: Laravel Vite plugin, React plugin, and Tailwind Vite plugin. Evidence: `vite.config.js`.
+- Module resolution includes the `@` alias for `resources/js/` and explicit React / ReactDOM aliases to keep imports consistent. Evidence: `vite.config.js`.
+- `resolve.dedupe` forces a single runtime instance for `react`, `react-dom`, `react-i18next`, and `i18next`. This matters because duplicate instances can break hooks/context behavior and i18n state sharing. Evidence: `vite.config.js`.
+- Build chunking is customized:
+  - locale catalogs under `.../i18n/locales/<locale>/...` become `i18n-<locale>` chunks
+  - core React/Inertia/i18n vendor dependencies are grouped into `vendor-core`
+  - shared internal i18n runtime code is grouped into `app-i18n-core`
+  Evidence: `vite.config.js`.
+
+### Dev server behavior
+
+- Dev-server-only options are applied only when running `vite` in serve mode; production builds do not receive the `server` block. Evidence: `vite.config.js`.
+- Host and port come from `VITE_BIND` and `VITE_PORT`, defaulting to `0.0.0.0` and `5173`. Evidence: `.env.example`, `vite.config.js`.
+- The server uses `strictPort: true`, `cors: true`, and HMR over WebSocket on `/vite-hmr`. Evidence: `vite.config.js`.
+- In the Docker workflow, the dedicated `vite` service starts `npm run dev -- --host 0.0.0.0 --port "$VITE_PORT" --strictPort` and exposes the same port externally. Evidence: `docker-compose.yml`.
 
 ## Module documentation
 
