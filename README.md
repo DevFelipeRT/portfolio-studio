@@ -5,6 +5,142 @@ A modular Laravel + Inertia studio for a content-managed public site and an admi
 - Backend: Laravel modular monolith under `app/Modules/*` (`app/Providers/AppServiceProvider.php`)
 - Frontend: React/TypeScript via Inertia + Vite (`resources/js/app.tsx`, `vite.config.js`)
 - Documentation-first structure: cross-cutting overviews + dedicated module docs (`docs/`)
+- AI collaboration entrypoint via `AGENTS.md` for repository-specific agent guidance
+
+## Index
+
+- [Quickstart With Docker](#quickstart-with-docker)
+- [Quickstart Without Docker](#quickstart-without-docker)
+- [Key runtime notes (evidence-based)](#key-runtime-notes-evidence-based)
+- [What’s included (high level)](#whats-included-high-level)
+- [Feature highlights (evidence-based)](#feature-highlights-evidence-based)
+- [Tech stack](#tech-stack)
+- [Architecture at a glance](#architecture-at-a-glance)
+- [Documentation map](#documentation-map)
+- [Security / scope notes](#security--scope-notes)
+- [Deployment (shared hosting / Apache)](#deployment-shared-hosting--apache)
+- [CI/CD (GitHub Actions)](#cicd-github-actions)
+- [AI Collaboration](#ai-collaboration)
+- [Copyright / License](#copyright--license)
+
+## Quickstart With Docker
+
+This repository includes a local Docker development stack driven by:
+
+- `docker-compose.yml`
+- `.env.docker`
+- `docker/laravel/Dockerfile`
+- `docker/nginx/default.conf.template`
+
+### Prerequisites
+
+- Docker Engine with Docker Compose
+
+### Setup
+
+Create the Docker environment file if it does not exist:
+
+```sh
+cp .env.docker.example .env.docker
+```
+
+Start the stack:
+
+```sh
+docker compose --env-file .env.docker up -d
+```
+
+Open the app once the services are healthy:
+
+- Public site: `http://localhost`
+- Admin login: `http://localhost/login`
+
+The Docker workflow brings up:
+
+- MySQL with a Docker-managed named volume
+- PHP-FPM
+- Nginx
+- Vite
+- a one-shot backend bootstrap service that runs migrations and, when enabled, seeds the local database
+
+Useful commands:
+
+```sh
+docker compose --env-file .env.docker logs -f init-backend
+docker compose --env-file .env.docker exec php php artisan test
+docker compose --env-file .env.docker exec php composer install
+docker compose --env-file .env.docker exec php npm run lint
+```
+
+Reset the local database volume:
+
+```sh
+docker compose --env-file .env.docker down -v
+docker compose --env-file .env.docker up -d
+```
+
+Default admin credentials after seeding: `admin@example.com` / `password` (`database/seeders/DatabaseSeeder.php`).
+
+See also: [`docs/backend/seeding.md`](docs/backend/seeding.md).
+
+## Quickstart Without Docker
+
+Use this workflow when running PHP, Composer, Node.js, and the database directly on the host.
+
+### Prerequisites
+
+- PHP 8.2+ and Composer (`composer.json`)
+- Node.js + npm (for Vite + TypeScript) (`package.json`)
+- A configured database (defaults to MySQL) (`.env.example`, `config/database.php`)
+
+### Setup
+
+Installs dependencies, creates `.env` from `.env.example` if missing, generates an app key, runs migrations, installs JS deps, and builds assets (`composer.json`):
+
+```sh
+composer setup
+```
+
+### Seed demo content
+
+Seeds deterministic demo data for local development (admin user, modules, CMS pages, and seed images):
+
+```sh
+php artisan db:seed
+```
+
+Default admin credentials: `admin@example.com` / `password` (`database/seeders/DatabaseSeeder.php`).
+
+See also: [`docs/backend/seeding.md`](docs/backend/seeding.md).
+
+### Run the development stack
+
+Runs the PHP server, queue listener, Laravel Pail log tailing, and Vite in parallel (`composer.json`):
+
+```sh
+composer dev
+```
+
+Default local URLs:
+
+- App: `http://127.0.0.1:8000`
+- Vite: `http://127.0.0.1:5173`
+
+### Tests and linting
+
+```sh
+composer test
+npm run lint
+./vendor/bin/pint
+```
+
+## Key runtime notes (evidence-based)
+
+- Database: configured via `DB_CONNECTION` (default is `mysql`) (`.env.example`, `config/database.php`)
+- Queue: configured via `QUEUE_CONNECTION` (default is `database`) and started as part of `composer dev` (`.env.example`, `config/queue.php`, `composer.json`)
+- Vite dev server defaults: `VITE_PORT=5173` and `VITE_BIND=0.0.0.0` (`.env.example`, `vite.config.js`)
+- Contact form notifications: only sent when `MAIL_TO_ADDRESS` is configured; default local mailer is `log` (`.env.example`, `config/mail.php`, `app/Modules/Mail/Application/Services/MessageService.php`)
+- Locale endpoints: public locale via `POST /set-locale`, system locale via `POST /system/locale` (`routes/web.php`, `config/localization.php`)
 
 ## What’s included (high level)
 
@@ -61,56 +197,6 @@ See the detailed overviews:
 - Backend overview: [`docs/backend/README.md`](docs/backend/README.md)
 - Frontend overview: [`docs/frontend/README.md`](docs/frontend/README.md)
 
-## Quickstart (local development)
-
-### Prerequisites
-
-- PHP 8.2+ and Composer (`composer.json`)
-- Node.js + npm (for Vite + TypeScript) (`package.json`)
-- A configured database (defaults to MySQL) (`.env.example`, `config/database.php`)
-
-### Setup
-
-Installs dependencies, creates `.env` from `.env.example` if missing, generates an app key, runs migrations, installs JS deps, and builds assets (`composer.json`):
-```sh
-composer setup
-```
-
-### Seed demo content
-
-Seeds deterministic demo data for local development (admin user, modules, CMS pages, and seed images):
-
-```sh
-php artisan db:seed
-```
-
-Default admin credentials: `admin@example.com` / `password` (`database/seeders/DatabaseSeeder.php`).
-
-See also: [`docs/backend/seeding.md`](docs/backend/seeding.md).
-
-### Run dev stack
-
-Runs the PHP server, queue listener, Laravel Pail log tailing, and Vite in parallel (`composer.json`):
-```sh
-composer dev
-```
-
-### Tests and linting
-
-```sh
-composer test
-npm run lint
-./vendor/bin/pint
-```
-
-## Key runtime notes (evidence-based)
-
-- Database: configured via `DB_CONNECTION` (default is `mysql`) (`.env.example`, `config/database.php`)
-- Queue: configured via `QUEUE_CONNECTION` (default is `database`) and started as part of `composer dev` (`.env.example`, `config/queue.php`, `composer.json`)
-- Vite dev server defaults: `VITE_HOST=localhost`, `VITE_PORT=5173` (`.env.example`, `vite.config.js`)
-- Contact form notifications: only sent when `MAIL_TO_ADDRESS` is configured; default local mailer is `log` (`.env.example`, `config/mail.php`, `app/Modules/Mail/Application/Services/MessageService.php`)
-- Locale endpoints: public locale via `POST /set-locale`, system locale via `POST /system/locale` (`routes/web.php`, `config/localization.php`)
-
 ## Security / scope notes
 
 - Some auth endpoints (registration and password reset) are intentionally disabled (commented out routes) in `app/Modules/IdentityAccess/Routes/auth.php`.
@@ -119,12 +205,52 @@ npm run lint
 
 Laravel expects the web server document root to point to `public/`. On shared hosting providers, the document root is often fixed to something like `public_html/`.
 
+### Shared hosting quickstart
+
+Use this path when deploying without Docker and without control over the web server document root.
+
+1. Install backend dependencies:
+
+```sh
+composer install --no-dev --optimize-autoloader
+```
+
+2. Create the application environment file and configure production values:
+
+```sh
+cp .env.example .env
+php artisan key:generate
+```
+
+3. Configure the production database credentials in `.env`.
+
+4. Run database migrations:
+
+```sh
+php artisan migrate --force
+```
+
+5. Build frontend assets before deployment:
+
+```sh
+npm ci
+npm run build
+```
+
+6. Optimize the application for production:
+
+```sh
+php artisan optimize
+```
+
+7. Ensure `storage/` and `bootstrap/cache/` are writable in the target environment.
+
 If you cannot change the document root to `public/`, this repository includes a root `.htaccess` that forwards requests to `public/` while keeping clean URLs:
 
 - Root rewrite file: [`.htaccess`](.htaccess)
 - Laravel front controller rules inside `public/`: [`public/.htaccess`](public/.htaccess)
 
-If you use the included GitHub Actions deployment workflows, the frontend build is published to `frontend-dist` and deployed from that branch (see [CI/CD (GitHub Actions)](#cicd-github-actions)).
+If you use the included GitHub Actions deployment workflows, the frontend build is produced in CI as an artifact and deployed directly to the server over SSH/`rsync` (see [CI/CD (GitHub Actions)](#cicd-github-actions)).
 
 ## CI/CD (GitHub Actions)
 
@@ -136,14 +262,13 @@ This repository includes GitHub Actions workflows under [`.github/workflows/`](.
   - Requires secrets: `SSH_PRIVATE_KEY`, `KNOWN_HOSTS`, `HOST`, `PORT`, `USERNAME`, `TARGET_DIR` (and optional `APP_DIR` to force the app path).
 - Backend optimize (manual utility): [`.github/workflows/backend-optimize.yml`](.github/workflows/backend-optimize.yml)
   - Runs `composer dump-autoload -o`, `php artisan optimize:clear`, and `php artisan optimize` on a remote host over SSH.
-- Frontend build publish on `master` pushes (frontend-related paths only): [`.github/workflows/frontend-build.yml`](.github/workflows/frontend-build.yml)
-  - Runs `npm ci` + `npm run build` and force-pushes `public/build` into a `frontend-dist` branch.
-- Frontend deploy from `frontend-dist`: [`.github/workflows/frontend-deploy.yml`](.github/workflows/frontend-deploy.yml)
-  - Uses `rsync` over SSH to upload `public/build` to the server.
+- Frontend build + deploy on `master` pushes (frontend-related paths only): [`.github/workflows/frontend-build-deploy.yml`](.github/workflows/frontend-build-deploy.yml)
+  - Runs `npm ci` + `npm run build`, verifies `public/build`, uploads it as a GitHub Actions artifact, then deploys that artifact to the server with `rsync` over SSH.
   - Deploy target:
     - If `TARGET_DIR` ends with `/public`, uploads into `${TARGET_DIR}/build/`.
     - Otherwise, uploads into `${TARGET_DIR}/public/build/` (Laravel app root).
-  - Requires secrets: `SSH_PRIVATE_KEY`, `KNOWN_HOSTS`, `HOST`, `PORT`, `USERNAME`, `TARGET_DIR`.
+  - After upload, resolves the Laravel app directory and runs `php artisan optimize:clear` + `php artisan optimize`.
+  - Requires secrets: `SSH_PRIVATE_KEY`, `KNOWN_HOSTS`, `HOST`, `PORT`, `USERNAME`, `TARGET_DIR` (and optional `APP_DIR` to force the app path).
 
 ## Documentation map
 
@@ -151,6 +276,20 @@ This repository includes GitHub Actions workflows under [`.github/workflows/`](.
 - Frontend overview (cross-cutting): [`docs/frontend/README.md`](docs/frontend/README.md)
 - Module docs index: [`docs/modules/README.md`](docs/modules/README.md)
 - Architecture decisions (ADRs): [`docs/adrs/`](docs/adrs/)
+
+## AI Collaboration
+
+This repository is being documented to support both human contributors and coding agents.
+
+Current agent-oriented entrypoint:
+
+- [`AGENTS.md`](AGENTS.md): project map, command conventions, environment rules, verification guidance, and editing constraints for automated collaborators
+
+Documentation strategy:
+
+- `README.md` remains the primary human-oriented overview
+- `AGENTS.md` captures repository-specific operational guidance for agents
+- additional AI-focused runbooks and structured guidance may be added later as the collaboration workflow evolves
 
 ## Copyright / License
 
