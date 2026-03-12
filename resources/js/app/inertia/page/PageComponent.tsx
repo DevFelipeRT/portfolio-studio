@@ -2,7 +2,6 @@ import type { ReactElement } from 'react';
 import type { InertiaPageComponent, InertiaPageProps } from '../types';
 import { resolveLayoutContent } from './utils/layout';
 import { wrapWithI18nProvider } from './utils/WithI18nProvider';
-import { createI18nRegistry } from '@/common/i18n';
 
 /**
  * Creates a decorated Inertia page component that preserves the original page
@@ -22,11 +21,9 @@ export function decoratePageComponent(
 
     const staticIds = Component.i18n ?? [];
     const dynamicIds = Component.getI18nScope?.(props) ?? [];
+    const scopeIds = ['layouts', ...staticIds, ...dynamicIds];
 
-    const ids = ['layouts', ...staticIds, ...dynamicIds];
-    const i18nPreloader = createI18nRegistry().preloaderFor(ids);
-
-    return wrapWithI18nProvider(props, content, { i18nPreloader });
+    return wrapWithI18nProvider(props, content, { scopeIds });
   };
 
   return WrappedPage;

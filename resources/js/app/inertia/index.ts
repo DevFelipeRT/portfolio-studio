@@ -6,5 +6,4 @@ export type {
   PageModuleLoader,
 } from './types';
 export * from './page';
-export * from './utils';
-
+export * from './runtime';

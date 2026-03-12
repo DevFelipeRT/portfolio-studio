@@ -1,18 +1,16 @@
 'use client';
 
-import {
-  createI18nEnvironment,
-} from '@/common/i18n';
+import { I18nRuntimeProvider, initializeI18nRuntime } from '@/common/i18n';
 import type { ReactNode } from 'react';
 import { useEffect, useMemo } from 'react';
 import type { InertiaPageProps } from '../../types';
 import { resolveInitialLocale } from './locale';
 import type { Locale } from '@/common/locale';
-import type { I18nPreloader } from '@/common/i18n';
-import { I18nextProvider } from 'react-i18next';
-import { getI18next } from '@/common/i18n/i18next/i18next';
+import { preloadI18nScopes } from '@/common/i18n';
 
-export type WithI18nProviderOptions = { i18nPreloader?: I18nPreloader | null };
+export type WithI18nProviderOptions = {
+  scopeIds?: readonly string[] | null;
+};
 
 /**
  * Wraps arbitrary content in the application's I18n provider configured from
@@ -25,65 +23,58 @@ export function wrapWithI18nProvider(
 ): ReactNode {
   const currentLocale = resolveInitialLocale(props) ?? null;
   const localizationConfig = props.localization || {};
-
-  const { localeResolver, translatorProvider } = createI18nEnvironment({
-    supportedLocales: localizationConfig.supportedLocales,
-    defaultLocale: currentLocale,
-    fallbackLocale: localizationConfig.fallbackLocale,
-  });
-
-  const i18nPreloader = options.i18nPreloader ?? null;
-
-  const combinedTranslatorProvider = {
-    preloadLocale: async (locale: Locale) => {
-      await Promise.all([
-        translatorProvider.preloadLocale?.(locale),
-        i18nPreloader?.preloadLocale?.(locale),
-      ]);
-    },
-  };
+  const scopeIds = options.scopeIds ?? null;
 
   return (
-    <I18nextProvider i18n={getI18next()}>
+    <I18nRuntimeProvider>
       <ScopedPreload
-        localeResolver={localeResolver}
+        supportedLocales={localizationConfig.supportedLocales}
         initialLocale={currentLocale}
         fallbackLocale={localizationConfig.fallbackLocale ?? null}
-        translatorProvider={combinedTranslatorProvider}
+        scopeIds={scopeIds}
       />
       {content}
-    </I18nextProvider>
+    </I18nRuntimeProvider>
   );
 }
 
 function ScopedPreload(props: {
-  localeResolver: ReturnType<typeof createI18nEnvironment>['localeResolver'];
+  supportedLocales?: unknown;
   initialLocale: string | null;
   fallbackLocale: string | null;
-  translatorProvider: { preloadLocale(locale: Locale): Promise<void> };
+  scopeIds?: readonly string[] | null;
 }) {
-  const { localeResolver, initialLocale, fallbackLocale, translatorProvider } =
-    props;
+  const { supportedLocales, initialLocale, fallbackLocale, scopeIds } = props;
 
-  const resolvedLocale = useMemo(
-    () =>
-      localeResolver.resolve(initialLocale ?? localeResolver.defaultLocale),
-    [localeResolver, initialLocale],
+  const runtimeConfig = useMemo(
+    () => ({
+      supportedLocales,
+      defaultLocale: initialLocale,
+      fallbackLocale,
+    }),
+    [supportedLocales, initialLocale, fallbackLocale],
   );
 
-  const resolvedFallback = useMemo(() => {
-    if (!fallbackLocale) {
-      return null;
-    }
-    return localeResolver.resolve(fallbackLocale);
-  }, [localeResolver, fallbackLocale]);
-
   useEffect(() => {
-    void translatorProvider.preloadLocale(resolvedLocale);
-    if (resolvedFallback && resolvedFallback !== resolvedLocale) {
-      void translatorProvider.preloadLocale(resolvedFallback);
-    }
-  }, [translatorProvider, resolvedLocale, resolvedFallback]);
+    void (async () => {
+      const { localeResolver, runtimeConfig: normalized } =
+        await initializeI18nRuntime(runtimeConfig);
+      const resolvedLocale = localeResolver.resolve(
+        initialLocale ?? normalized.defaultLocale,
+      ) as Locale;
+      const resolvedFallback =
+        typeof fallbackLocale === 'string' && fallbackLocale.trim() !== ''
+          ? (localeResolver.resolve(fallbackLocale) as Locale)
+          : null;
+
+      await preloadI18nScopes({
+        locale: resolvedLocale,
+        fallbackLocale: resolvedFallback,
+        scopeIds,
+        includeCommon: true,
+      });
+    })();
+  }, [fallbackLocale, initialLocale, runtimeConfig, scopeIds]);
 
   return null;
 }

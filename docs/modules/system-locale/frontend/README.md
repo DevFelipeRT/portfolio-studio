@@ -7,7 +7,7 @@ Evidence:
 - Shared localization props source: `app/Modules/Inertia/Http/Middleware/HandleInertiaRequests.php`
 - Locale switcher UI: `resources/js/common/locale/react/LocaleSwitcher.tsx`, `resources/js/common/i18n/react/LanguageSelector.tsx`
 - Locale persistence hook: `resources/js/common/locale/react/useSetLocale.tsx`
-- i18n-aware preload/apply wrapper: `resources/js/common/i18n/react/useSetLocale.tsx`
+- i18n-aware preload/apply wrapper: `resources/js/common/i18n/react/hooks/useSetI18nLocale.tsx` exposed compatibly via `resources/js/common/i18n/react/useSetLocale.tsx`
 - Admin header integration: `resources/js/app/layouts/partials/Header.tsx`
 
 ## Where the switcher appears
@@ -39,7 +39,7 @@ When the user selects a locale, the container delegates to `useSetLocale`, which
 Evidence:
 
 - Base locale switching flow: `resources/js/common/locale/react/useSetLocale.tsx`
-- i18n-aware preload/apply integration: `resources/js/common/i18n/react/useSetLocale.tsx`
+- i18n-aware preload/apply integration: `resources/js/common/i18n/react/hooks/useSetI18nLocale.tsx`
 - Admin reload behavior: `resources/js/app/layouts/partials/Header.tsx`
 
 ## Why `persistClientCookie` is disabled for system locale

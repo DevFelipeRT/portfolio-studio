@@ -1,43 +1,33 @@
-import { createLocaleResolver, normalizeRuntimeConfig } from '@/common/locale';
-import type { Locale } from '@/common/locale';
-import { translationModuleLoaders } from './translationModuleLoaders';
+import { createLocaleResolver } from '@/common/locale';
 import type {
-    NormalizedRuntimeLocalizationConfig,
-    RuntimeLocalizationConfig,
+  NormalizedRuntimeLocalizationConfig,
+  RuntimeLocalizationConfig,
 } from '@/common/locale';
-import { ensureI18nextInitialized } from '../i18next/i18next';
-import { createI18nextPreloaderFromLoaders } from '../i18next/preloaderFromLoaders';
+import type { I18nPreloader } from '../registry';
+import { translatorProvider as sharedTranslatorProvider } from '../preloading/preloading';
+import { initializeI18nRuntime } from '../runtime';
+
+export const translatorProvider = sharedTranslatorProvider;
 
 /**
- * Default app-wide preloader for shared catalogs (`common.*`), backed by Vite glob loaders.
+ * Compatibility layer for callers that still expect the environment helper.
+ *
+ * Runtime initialization now lives in `runtime.ts`, while shared catalog
+ * preloading lives in `preloading/preloading.ts`.
  */
-export const translatorProvider: {
-    preloadLocale(locale: Locale): Promise<void>;
-} = {
-    preloadLocale: createI18nextPreloaderFromLoaders('common', translationModuleLoaders)
-        .preloadLocale!,
-};
+export async function createI18nEnvironment(
+  runtimeConfig: RuntimeLocalizationConfig,
+): Promise<{
+  localeResolver: ReturnType<typeof createLocaleResolver>;
+  runtimeConfig: NormalizedRuntimeLocalizationConfig;
+  translatorProvider: I18nPreloader;
+}> {
+  const { localeResolver, runtimeConfig: normalized } =
+    await initializeI18nRuntime(runtimeConfig);
 
-/**
- * Instantiates the locale resolver and initializes i18next runtime configuration.
- */
-export function createI18nEnvironment(runtimeConfig: RuntimeLocalizationConfig) {
-    const normalized: NormalizedRuntimeLocalizationConfig =
-        normalizeRuntimeConfig(runtimeConfig);
-
-    void ensureI18nextInitialized({
-        locale: normalized.defaultLocale,
-        fallbackLocale: normalized.fallbackLocale,
-        supportedLocales: normalized.supportedLocales,
-    });
-
-    const localeResolver = createLocaleResolver({
-        supportedLocales: normalized.supportedLocales,
-        defaultLocale: normalized.defaultLocale,
-    });
-
-    return {
-        localeResolver,
-        translatorProvider,
-    };
+  return {
+    localeResolver,
+    runtimeConfig: normalized,
+    translatorProvider,
+  };
 }

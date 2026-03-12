@@ -11,7 +11,7 @@ Evidence:
 - Page registry: `resources/js/app/pages/pageRegistryProvider.ts`
 - Root HTML shell: `resources/views/app.blade.php`
 - i18n wrapper: `resources/js/app/inertia/page/utils/WithI18nProvider.tsx`
-- Runtime state helpers (title/settings): `resources/js/app/inertia/utils/runtimeState.ts`, `resources/js/app/inertia/utils/title.ts`
+- Runtime state helpers (title/settings): `resources/js/app/inertia/runtime/runtimeState.ts`, `resources/js/app/inertia/runtime/title.ts`
 
 ## Boot sequence (CSR)
 
@@ -29,21 +29,21 @@ If a key is missing, the resolver throws: `Page not found in registry: <key>` (`
 
 ## Shared providers and runtime state
 
-The Inertia setup initializes a runtime state snapshot derived from initial shared props (e.g. website meta title template) (`resources/js/app/inertia/utils/runtimeState.ts`, `resources/js/app/inertia/utils/setup.tsx`).
+The Inertia setup initializes a runtime state snapshot derived from initial shared props (e.g. website meta title template) through the canonical runtime helpers in `resources/js/app/inertia/runtime/*` (`resources/js/app/inertia/runtime/runtimeState.ts`, `resources/js/app/inertia/runtime/setup.tsx`).
 
-The runtime wraps content in an i18next provider configured from Inertia shared props (`props.localization`) (`resources/js/app/inertia/page/utils/WithI18nProvider.tsx`).
+The i18n boot flow now goes through `initializeI18nRuntime(...)` plus `preloadI18nScopes(...)` before mount, and the mounted tree is wrapped by `I18nRuntimeProvider` via `resources/js/app/inertia/page/utils/WithI18nProvider.tsx`.
 
 ## i18n scoping (preload)
 
-The app preloads translation bundles for i18next via a scoped preloader. To avoid preloading every module on every page, pages can declare which i18n contributions they need:
+The app preloads translation bundles for i18next via the shared preloading API in `resources/js/common/i18n/preloading/preloading.ts`. To avoid preloading every module on every page, pages can declare which i18n contributions they need:
 
 - Static scope: `Page.i18n = ['projects', 'courses']`
 - Dynamic scope: `Page.getI18nScope = (props) => ['contact-channels']` (useful for CMS/section-driven pages)
 
-The scope is collected in the page decorator (`resources/js/app/inertia/page/PageComponent.tsx`) and turned into a scoped preloader via the i18n registry:
+The scope is collected in the page decorator (`resources/js/app/inertia/page/PageComponent.tsx`) and handed to `wrapWithI18nProvider(...)`, which preloads `common`, `layouts`, page scopes, and the fallback locale through the same runtime-backed path used during locale switching:
 
 - Registry factory: `createI18nRegistry()` (`resources/js/common/i18n/registry/createI18nRegistry.ts`)
-- Scope → preloader: `preloaderFor(scopeIds)`
+- Scope → preload orchestration: `preloadI18nScopes({ scopeIds, ... })`
 
 ### Conventions for modules/layouts
 

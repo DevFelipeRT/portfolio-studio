@@ -10,10 +10,12 @@ import {
   inertiaTitle,
   initializeInertiaRuntimeState,
   renderInertiaApp,
-} from './utils';
-import { createI18nEnvironment, createI18nRegistry } from '@/common/i18n';
+} from './runtime';
+import {
+  initializeI18nRuntime,
+  preloadI18nScopes,
+} from '@/common/i18n';
 import type { Locale } from '@/common/locale';
-import { ensureI18nextInitialized } from '@/common/i18n/i18next/i18next';
 
 const useScriptElementForInitialPage = true;
 
@@ -21,7 +23,7 @@ async function preloadShellCatalogs(initialProps: InertiaPageProps): Promise<voi
   const currentLocale = resolveInitialLocale(initialProps) ?? null;
   const localizationConfig = initialProps.localization || {};
 
-  const { localeResolver, translatorProvider } = createI18nEnvironment({
+  const { localeResolver, runtimeConfig } = await initializeI18nRuntime({
     supportedLocales: localizationConfig.supportedLocales,
     defaultLocale: currentLocale,
     fallbackLocale: localizationConfig.fallbackLocale,
@@ -29,34 +31,19 @@ async function preloadShellCatalogs(initialProps: InertiaPageProps): Promise<voi
 
   const resolvedLocale = localeResolver.resolve(
     currentLocale ?? localeResolver.defaultLocale,
-  );
-  const resolvedFallbackLocale = localeResolver.resolve(
-    (localizationConfig.fallbackLocale ?? resolvedLocale) as Locale,
-  );
+  ) as Locale;
+  const resolvedFallbackLocale =
+    typeof localizationConfig.fallbackLocale === 'string' &&
+    localizationConfig.fallbackLocale.trim() !== ''
+      ? (localeResolver.resolve(localizationConfig.fallbackLocale) as Locale)
+      : runtimeConfig.fallbackLocale;
 
-  await ensureI18nextInitialized({
+  await preloadI18nScopes({
     locale: resolvedLocale,
     fallbackLocale: resolvedFallbackLocale,
-    supportedLocales: localeResolver.supportedLocales,
+    scopeIds: ['layouts'],
+    includeCommon: true,
   });
-
-  const layoutsPreloader = createI18nRegistry().preloaderFor(['layouts']);
-
-  await Promise.all([
-    translatorProvider.preloadLocale?.(resolvedLocale),
-    layoutsPreloader.preloadLocale?.(resolvedLocale as Locale),
-  ]);
-
-  const rawFallback = localizationConfig.fallbackLocale;
-  if (typeof rawFallback === 'string' && rawFallback.trim() !== '') {
-    const fallbackLocale = localeResolver.resolve(rawFallback as Locale);
-    if (fallbackLocale !== resolvedLocale) {
-      await Promise.all([
-        translatorProvider.preloadLocale?.(fallbackLocale),
-        layoutsPreloader.preloadLocale?.(fallbackLocale),
-      ]);
-    }
-  }
 }
 
 export async function bootInertiaApp(): Promise<void> {

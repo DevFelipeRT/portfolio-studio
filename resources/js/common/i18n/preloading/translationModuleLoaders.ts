@@ -1,4 +1,4 @@
-import type { TranslationModuleLoaders } from '../i18next/types';
+import type { TranslationModuleLoaders } from '../types';
 
 /**
  * Default app-wide translation loaders.
