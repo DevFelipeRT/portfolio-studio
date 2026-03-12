@@ -37,7 +37,7 @@ Notes:
 `DatabaseSeeder` creates a default admin user:
 
 - Email: `admin@example.com`
-- Password: `password`
+- Password: demo-only local seed value defined in `database/seeders/DatabaseSeeder.php`
 
 Then it calls (in order) (`database/seeders/DatabaseSeeder.php`):
 
