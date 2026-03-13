@@ -1,7 +1,6 @@
 import { createInertiaApp } from '@inertiajs/react';
 import {
   createInertiaPageResolver,
-  resolveInitialLocale,
   resolveInitialPageForCSR,
 } from './page';
 import type { InertiaPageProps } from './types';
@@ -9,36 +8,36 @@ import {
   getInertiaPageRegistry,
   inertiaTitle,
   initializeInertiaRuntimeState,
+  resolveInertiaLocalizationContext,
   renderInertiaApp,
 } from './runtime';
 import {
   initializeI18nRuntime,
-  preloadI18nScopes,
+  preloadI18nBundles,
 } from '@/common/i18n';
 import type { Locale } from '@/common/locale';
 
 const useScriptElementForInitialPage = true;
 
-async function preloadShellCatalogs(initialProps: InertiaPageProps): Promise<void> {
-  const currentLocale = resolveInitialLocale(initialProps) ?? null;
-  const localizationConfig = initialProps.localization || {};
+async function preloadShellBundles(initialProps: InertiaPageProps): Promise<void> {
+  const localizationContext = resolveInertiaLocalizationContext(initialProps);
+  const currentLocale = localizationContext.currentLocale;
 
   const { localeResolver, runtimeConfig } = await initializeI18nRuntime({
-    supportedLocales: localizationConfig.supportedLocales,
+    supportedLocales: localizationContext.supportedLocales,
     defaultLocale: currentLocale,
-    fallbackLocale: localizationConfig.fallbackLocale,
+    fallbackLocale: localizationContext.fallbackLocale,
   });
 
   const resolvedLocale = localeResolver.resolve(
     currentLocale ?? localeResolver.defaultLocale,
   ) as Locale;
   const resolvedFallbackLocale =
-    typeof localizationConfig.fallbackLocale === 'string' &&
-    localizationConfig.fallbackLocale.trim() !== ''
-      ? (localeResolver.resolve(localizationConfig.fallbackLocale) as Locale)
+    localizationContext.fallbackLocale
+      ? (localeResolver.resolve(localizationContext.fallbackLocale) as Locale)
       : runtimeConfig.fallbackLocale;
 
-  await preloadI18nScopes({
+  await preloadI18nBundles({
     locale: resolvedLocale,
     fallbackLocale: resolvedFallbackLocale,
     scopeIds: ['layouts'],
@@ -55,7 +54,7 @@ export async function bootInertiaApp(): Promise<void> {
   if (initialPage?.props) {
     const initialProps = initialPage.props as InertiaPageProps;
     initializeInertiaRuntimeState(initialProps);
-    await preloadShellCatalogs(initialProps);
+    await preloadShellBundles(initialProps);
   }
 
   createInertiaApp({
