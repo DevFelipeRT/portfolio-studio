@@ -1,36 +1,8 @@
 import type { Locale } from '@/common/locale';
-import type { I18nPreloader, I18nRegistry } from './types';
+import { I18nPreloader, I18nRegistry } from '../types';
+import { normalizeScope } from './scopeNormalizer';
 
 let singleton: I18nRegistry | null = null;
-
-function normalizeScope(
-  scope?: readonly string[] | null,
-): readonly string[] | null {
-  if (!scope) {
-    return null;
-  }
-
-  const ids = scope
-    .filter((id): id is string => typeof id === 'string')
-    .map((id) => id.trim())
-    .filter((id) => id !== '');
-
-  if (ids.length === 0) {
-    return null;
-  }
-
-  const seen = new Set<string>();
-  const unique: string[] = [];
-  ids.forEach((id) => {
-    if (seen.has(id)) {
-      return;
-    }
-    seen.add(id);
-    unique.push(id);
-  });
-
-  return unique;
-}
 
 function scopeKey(scope: readonly string[] | null): string {
   return scope ? scope.join('|') : '*';

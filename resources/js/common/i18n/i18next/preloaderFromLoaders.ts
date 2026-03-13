@@ -1,10 +1,9 @@
 import type { Locale } from '@/common/locale';
 import { canonicalizeLocale } from '@/common/locale';
-import type { Namespace, TranslationTree } from '../types';
-import type { I18nPreloader } from '../registry';
+import type { I18nPreloader, Namespace, TranslationTree } from '../types';
 import { getI18next } from './i18next';
 import { scopedNamespace } from './scopedNamespace';
-import type { TranslationModuleLoaders } from './types';
+import type { TranslationLoaders } from './types';
 import { indexLoadersByLocale } from './indexLoadersByLocale';
 import { parseTranslationModulePath } from './parseTranslationModulePath';
 
@@ -15,7 +14,7 @@ type LoaderEntry = {
 
 export function createI18nextPreloaderFromLoaders(
   scopeId: string,
-  loaders: TranslationModuleLoaders,
+  loaders: TranslationLoaders,
 ): I18nPreloader {
   const { loadersByLocale } = indexLoadersByLocale(loaders, (modulePath) =>
     parseTranslationModulePath(modulePath, canonicalizeLocale),
