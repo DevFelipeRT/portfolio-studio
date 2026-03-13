@@ -1,17 +1,11 @@
-'use client';
-
+import { resolveInertiaLocalizationContext } from '@/app/inertia';
 import type { ReactNode } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useGetLocale } from '@/common/locale';
-import { createI18nRegistry } from '../registry';
+import { canonicalizeLocale, useGetLocale } from '@/common/locale';
 import type { Locale } from '@/common/locale';
 import { usePage } from '@inertiajs/react';
-
-type SharedProps = {
-  localization?: {
-    fallbackLocale?: string;
-  };
-};
+import type { InertiaPageProps } from '@/app/inertia';
+import { createI18nRegistry } from '../registry/registry';
 
 export type I18nScopeGateProps = {
   scopeIds?: readonly string[] | null;
@@ -55,7 +49,7 @@ function normalizeScope(scope?: readonly string[] | null): string[] {
 }
 
 /**
- * Blocks rendering until all scoped i18n preloaders have preloaded catalogs for
+ * Blocks rendering until all scoped i18n preloaders have preloaded bundles for
  * the current locale (and optional fallback locale).
  *
  * Use this around dynamic pages/features (e.g. CMS sections) to prevent
@@ -73,14 +67,13 @@ export function I18nScopeGate({
   minVisibleMs,
 }: I18nScopeGateProps) {
   const locale = useGetLocale();
-  const pageProps = usePage().props as SharedProps;
+  const pageProps = usePage().props as InertiaPageProps;
+  const localizationContext = resolveInertiaLocalizationContext(pageProps);
 
   const fallbackLocale: Locale | null =
-    explicitFallbackLocale ??
-    ((typeof pageProps.localization?.fallbackLocale === 'string' &&
-      pageProps.localization.fallbackLocale.trim() !== ''
-      ? (pageProps.localization.fallbackLocale.trim() as Locale)
-      : null) satisfies Locale | null);
+    canonicalizeLocale(
+      explicitFallbackLocale ?? localizationContext.fallbackLocale ?? '',
+    );
 
   const normalizedScope = useMemo(
     () => normalizeScope(scopeIds),

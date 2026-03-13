@@ -3,8 +3,7 @@
 import { Moon, Sun } from 'lucide-react';
 
 import { useTheme } from '@/app/layouts/partials/theme/ThemeProvider';
-import { I18N_NAMESPACES } from '@/common/i18n';
-import { useTranslation } from '@/common/i18n/react/useTranslation';
+import { I18N_NAMESPACES, useTranslation } from '@/common/i18n';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,

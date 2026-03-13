@@ -1,6 +1,6 @@
 'use client';
 
-import { usePage } from '@inertiajs/react';
+import { useInertiaLocalizationContext } from '@/app/inertia';
 import { useMemo } from 'react';
 import { canonicalizeLocale } from '../canonicalizers/localeCanonicalizer';
 import type { Locale } from '../types';
@@ -11,11 +11,7 @@ import { useGetLocale } from './useGetLocale';
  */
 export function useSupportedLocales(): readonly Locale[] {
   const activeLocale = useGetLocale();
-  const props = usePage().props as {
-    localization?: { supportedLocales?: unknown };
-  };
-
-  const raw = props.localization?.supportedLocales;
+  const { supportedLocales: raw } = useInertiaLocalizationContext();
 
   return useMemo(() => {
     const list = Array.isArray(raw) ? raw : [];
