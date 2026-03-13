@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && cross-env ASSET_URL='' vite build",
-    "lint": "eslint resources/js",
+    "typecheck": "tsc --noEmit",
+    "lint:eslint": "eslint resources/js",
+    "lint": "npm run lint:eslint && npm run typecheck",
     "lint:fix": "eslint resources/js --fix"
   },
   "devDependencies": {
