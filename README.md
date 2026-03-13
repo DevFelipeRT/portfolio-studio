@@ -147,6 +147,7 @@ npm run lint
 - Database: configured via `DB_CONNECTION` (default is `mysql`) (`.env.example`, `config/database.php`)
 - Queue: configured via `QUEUE_CONNECTION` (default is `database`) and started as part of `composer dev` (`.env.example`, `config/queue.php`, `composer.json`)
 - Vite dev server defaults: `VITE_PORT=5173` and `VITE_BIND=0.0.0.0` (`.env.example`, `vite.config.js`)
+- Docker PHP runtime: the `php` service `security_opt` is configurable via `.env.docker` (`PHP_SECURITY_OPT`, default `seccomp:unconfined`) to support tools that require unprivileged user namespaces (e.g. `bwrap`) (`docker-compose.yml`, `.env.docker.example`)
 - Contact form notifications: only sent when `MAIL_TO_ADDRESS` is configured; default local mailer is `log` (`.env.example`, `config/mail.php`, `app/Modules/Mail/Application/Services/MessageService.php`)
 - Locale endpoints: public locale via `POST /set-locale`, system locale via `POST /system/locale` (`routes/web.php`, `config/localization.php`)
 

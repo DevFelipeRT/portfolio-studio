@@ -114,6 +114,10 @@ services:
     volumes:
       - ./:/var/www/html
       - node_modules:/var/www/html/node_modules
+    security_opt:
+      # Configurable per environment (.env.docker): use seccomp:unconfined when
+      # tools inside the container need unprivileged user namespaces (e.g. bwrap).
+      - ${PHP_SECURITY_OPT:-seccomp:unconfined}
     working_dir: "/var/www/html"
     command: ["php-fpm"]
     expose:
