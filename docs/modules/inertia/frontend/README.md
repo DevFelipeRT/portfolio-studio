@@ -11,7 +11,7 @@ Evidence:
 - Page registry: `resources/js/app/pages/pageRegistryProvider.ts`
 - Root HTML shell: `resources/views/app.blade.php`
 - i18n wrapper: `resources/js/app/inertia/page/utils/WithI18nProvider.tsx`
-- Runtime state helpers (title/settings): `resources/js/app/inertia/runtime/runtimeState.ts`, `resources/js/app/inertia/runtime/title.ts`
+- Runtime state helpers (title/settings + localization context): `resources/js/app/inertia/runtime/runtimeState.ts`, `resources/js/app/inertia/runtime/localizationContext.ts`, `resources/js/app/inertia/runtime/title.ts`
 
 ## Boot sequence (CSR)
 
@@ -29,9 +29,21 @@ If a key is missing, the resolver throws: `Page not found in registry: <key>` (`
 
 ## Shared providers and runtime state
 
-The Inertia setup initializes a runtime state snapshot derived from initial shared props (e.g. website meta title template) through the canonical runtime helpers in `resources/js/app/inertia/runtime/*` (`resources/js/app/inertia/runtime/runtimeState.ts`, `resources/js/app/inertia/runtime/setup.tsx`).
+The backend owns request locale-context selection and shares it explicitly as `page.props.localization.scope`, with `system` for authenticated/admin requests and `public` for public website requests (`app/Modules/Inertia/Http/Middleware/HandleInertiaRequests.php`).
 
-The i18n boot flow now goes through `initializeI18nRuntime(...)` plus `preloadI18nScopes(...)` before mount, and the mounted tree is wrapped by `I18nRuntimeProvider` via `resources/js/app/inertia/page/utils/WithI18nProvider.tsx`.
+The frontend normalizes that payload exactly once in `resolveInertiaLocalizationContext(...)` / `useInertiaLocalizationContext()` (`resources/js/app/inertia/runtime/localizationContext.ts`). Profile identity is centralized in `resources/js/app/inertia/runtime/localizationProfiles.ts`, so `system` and `public` are resolved through a typed registry rather than ad hoc string comparisons throughout the app. That canonical context includes:
+
+- scope (`system` | `public`)
+- profile metadata (`profile.id`, `profile.isSystem`, `profile.isPublic`)
+- current/default/fallback locale
+- supported locales
+- persistence policy (`apiEndpoint`, `cookieName`, `persistClientCookie`)
+
+The Inertia setup initializes a runtime state snapshot derived from initial shared props (e.g. website meta title template and normalized localization context) through the canonical runtime helpers in `resources/js/app/inertia/runtime/*` (`resources/js/app/inertia/runtime/runtimeState.ts`, `resources/js/app/inertia/runtime/setup.tsx`).
+
+The i18n boot flow now goes through `initializeI18nRuntime(...)` plus `preloadI18nBundles(...)` before mount, and the mounted tree is wrapped by `I18nRuntimeProvider` via `resources/js/app/inertia/page/utils/WithI18nProvider.tsx`.
+
+App boot (`resources/js/app/inertia/InertiaApp.tsx`), provider preload (`resources/js/app/inertia/page/utils/WithI18nProvider.tsx`), and the locale-switch integration (`resources/js/app/layouts/partials/Header.tsx`, `resources/js/common/i18n/react/hooks/useSetI18nLocale.tsx`) all consume that same normalized Inertia context instead of reconstructing policy from raw props.
 
 ## i18n scoping (preload)
 
@@ -43,7 +55,7 @@ The app preloads translation bundles for i18next via the shared preloading API i
 The scope is collected in the page decorator (`resources/js/app/inertia/page/PageComponent.tsx`) and handed to `wrapWithI18nProvider(...)`, which preloads `common`, `layouts`, page scopes, and the fallback locale through the same runtime-backed path used during locale switching:
 
 - Registry factory: `createI18nRegistry()` (`resources/js/common/i18n/registry/createI18nRegistry.ts`)
-- Scope → preload orchestration: `preloadI18nScopes({ scopeIds, ... })`
+- Scope → preload orchestration: `preloadI18nBundles({ scopeIds, ... })`
 
 ### Conventions for modules/layouts
 
@@ -70,4 +82,4 @@ For dynamic CMS sections, section providers can expose a minimal `i18n` metadata
 
 ### Known issues
 
-See `resources/js/common/i18n/KNOWN_ISSUES.md` for tradeoffs such as module translators being used before catalogs preload when the UI is non-blocking.
+See `resources/js/common/i18n/KNOWN_ISSUES.md` for tradeoffs such as module translators being used before bundles preload when the UI is non-blocking.

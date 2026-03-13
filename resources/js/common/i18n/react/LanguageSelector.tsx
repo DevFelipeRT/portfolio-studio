@@ -1,5 +1,5 @@
 import { I18N_NAMESPACES } from '@/common/i18n';
-import { useTranslation } from '@/common/i18n/react/useTranslation';
+import { useTranslation } from '@/common/i18n';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,

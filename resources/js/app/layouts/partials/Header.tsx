@@ -86,7 +86,7 @@ function HeaderI18nContent({ children }: PropsWithChildren) {
               localizationContext.persistence.persistClientCookie
             }
             reload={() => {
-              router.reload({
+              router.visit(window.location.href, {
                 replace: true,
                 preserveScroll: true,
                 preserveState: true,

@@ -5,18 +5,23 @@ import type {
   InertiaPageProps,
   PageModule,
 } from '@/app/inertia/types';
+import { resolveInertiaLocalizationContext } from '@/app/inertia';
 import { pageRegistry } from '@/app/pages/pageRegistryProvider';
 import type {
   UseSetLocaleOptions as BaseUseSetLocaleOptions,
   SetLocaleHandler,
 } from '@/common/locale';
-import { useSetLocale as useBaseSetLocale, type Locale } from '@/common/locale';
+import {
+  canonicalizeLocale,
+  useSetLocale as useBaseSetLocale,
+  type Locale,
+} from '@/common/locale';
 import { usePage } from '@inertiajs/react';
 import { useCallback } from 'react';
 import {
-  preloaderForI18nScopes,
-  preloadI18nScopes,
-} from '../../preloading/preloading';
+  preloadI18nBundles,
+} from '../../preloading/preloader';
+import { preloaderForI18nScopes } from '../../preloading/scopedPreloader';
 import { setI18nRuntimeLocale } from '../../runtime';
 
 export type UseSetLocaleOptions = BaseUseSetLocaleOptions;
@@ -52,19 +57,17 @@ export function useSetI18nLocale(
       const staticIds = currentPage.i18n ?? [];
       const dynamicIds = currentPage.getI18nScope?.(currentPageProps) ?? [];
       const scopedIds = [...staticIds, ...dynamicIds];
+      const localizationContext =
+        resolveInertiaLocalizationContext(currentPageProps);
 
       if (scopedIds.length === 0) {
         return;
       }
 
       const locale = resolvedLocale as Locale;
-      const fallbackLocale =
-        typeof currentPageProps.localization?.fallbackLocale === 'string' &&
-        currentPageProps.localization.fallbackLocale.trim() !== ''
-          ? (currentPageProps.localization.fallbackLocale.trim() as Locale)
-          : null;
+      const fallbackLocale = canonicalizeLocale(localizationContext.fallbackLocale ?? '');
 
-      await preloadI18nScopes({
+      await preloadI18nBundles({
         locale,
         fallbackLocale,
         scopeIds: scopedIds,
@@ -80,14 +83,14 @@ export function useSetI18nLocale(
       async (resolvedLocale: string): Promise<void> => {
         const locale = resolvedLocale as Locale;
         const currentPageProps = (page.props ?? {}) as InertiaPageProps;
-        const fallbackLocale =
-          typeof currentPageProps.localization?.fallbackLocale === 'string' &&
-          currentPageProps.localization.fallbackLocale.trim() !== ''
-            ? (currentPageProps.localization.fallbackLocale.trim() as Locale)
-            : null;
+        const localizationContext =
+          resolveInertiaLocalizationContext(currentPageProps);
+        const fallbackLocale = canonicalizeLocale(
+          localizationContext.fallbackLocale ?? '',
+        );
         const layoutsPreloader = preloaderForI18nScopes(['layouts']);
         await Promise.all([
-          preloadI18nScopes({
+          preloadI18nBundles({
             locale,
             fallbackLocale,
             includeCommon: true,

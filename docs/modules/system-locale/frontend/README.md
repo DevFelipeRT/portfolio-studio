@@ -7,7 +7,7 @@ Evidence:
 - Shared localization props source: `app/Modules/Inertia/Http/Middleware/HandleInertiaRequests.php`
 - Locale switcher UI: `resources/js/common/locale/react/LocaleSwitcher.tsx`, `resources/js/common/i18n/react/LanguageSelector.tsx`
 - Locale persistence hook: `resources/js/common/locale/react/useSetLocale.tsx`
-- i18n-aware preload/apply wrapper: `resources/js/common/i18n/react/hooks/useSetI18nLocale.tsx` exposed compatibly via `resources/js/common/i18n/react/useSetLocale.tsx`
+- i18n-aware preload/apply hook: `resources/js/common/i18n/react/hooks/useSetI18nLocale.tsx`
 - Admin header integration: `resources/js/app/layouts/partials/Header.tsx`
 
 ## Where the switcher appears
@@ -18,13 +18,15 @@ The authenticated layout header renders the system language selector (`resources
 
 ## Data source (Inertia shared props)
 
-`LocaleSwitcher` reads `page.props.localization` and uses:
+The backend exposes the active request locale pipeline through `page.props.localization.scope = 'system'` for authenticated/admin requests, and `resources/js/app/inertia/runtime/localizationContext.ts` normalizes that into the runtime context consumed by the admin header.
+
+`LocaleSwitcher` receives the resolved system-locale persistence policy from that normalized Inertia context and uses:
 
 - `supportedLocales` to build the dropdown options
 - `cookieName` to optionally persist client-side cookies (see below)
 - `apiEndpoint` as the POST target for locale persistence (`resources/js/common/locale/react/LocaleSwitcher.tsx`).
 
-Those props are provided by the backend Inertia middleware (`app/Modules/Inertia/Http/Middleware/HandleInertiaRequests.php`).
+The raw shared props still come from the backend Inertia middleware (`app/Modules/Inertia/Http/Middleware/HandleInertiaRequests.php`), but request-context normalization now lives at the Inertia frontend boundary instead of inside `common/locale`.
 
 ## Persistence + reload behavior
 

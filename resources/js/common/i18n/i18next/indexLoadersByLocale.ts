@@ -1,6 +1,6 @@
 import type { Locale } from '@/common/locale';
 import type { Namespace, TranslationTree } from '../types';
-import type { TranslationModuleLoaders } from './types';
+import type { TranslationLoaders } from './types';
 import type { TranslationModuleMeta } from './parseTranslationModulePath';
 
 type LoaderEntry = {
@@ -12,7 +12,7 @@ type LoaderEntry = {
  * Indexes translation module loaders by locale and records namespaces per locale.
  */
 export function indexLoadersByLocale(
-  loaders: TranslationModuleLoaders,
+  loaders: TranslationLoaders,
   parseMeta: (modulePath: string) => TranslationModuleMeta | null,
 ): {
   loadersByLocale: Map<Locale, LoaderEntry[]>;

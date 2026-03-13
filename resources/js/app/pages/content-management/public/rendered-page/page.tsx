@@ -1,6 +1,5 @@
 // resources/js/app/pages/content-management/public/RenderedPage.tsx
 import PublicLayout from '@/app/layouts/PublicLayout';
-import { I18nScopeGate } from '@/common/i18n';
 import { RenderedPageLoadingState } from './partials/RenderedPageLoadingState';
 import {
   buildNavigationItems,
@@ -16,7 +15,7 @@ import type {
 } from '@/modules/content-management/types';
 import { defaultStringNormalizer } from '@/modules/content-management/utils/strings';
 import { Head } from '@inertiajs/react';
-import { JSX, useMemo } from 'react';
+import { JSX } from 'react';
 
 // TEMP (DEV): set to `true` to keep the loader visible while testing UI.
 const FORCE_RENDERED_PAGE_LOADER = false;
@@ -47,11 +46,6 @@ export default function RenderedPage({
 
   const renderingContext = buildPageRenderingContext([]);
 
-  const i18nScopeIds = useMemo(
-    () => deriveI18nScopeFromSections(visibleSections),
-    [visibleSections],
-  );
-
   if (FORCE_RENDERED_PAGE_LOADER) {
     return (
       <PublicLayout navigationItems={[]}>
@@ -77,16 +71,7 @@ export default function RenderedPage({
           )}
         </Head>
 
-        <I18nScopeGate
-          scopeIds={i18nScopeIds}
-          loadingDelayMs={180}
-          loadingMinVisibleMs={320}
-          loadingFallback={
-            <RenderedPageLoadingState />
-          }
-        >
-          {sectionSlotLayoutManager.render(visibleSections, templates)}
-        </I18nScopeGate>
+        {sectionSlotLayoutManager.render(visibleSections, templates)}
       </PageRenderingContextProvider>
     </PublicLayout>
   );

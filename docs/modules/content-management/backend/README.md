@@ -95,11 +95,11 @@ The aggregated templates config is bound to `config('content_management.template
 
 ### Template translations (labels and defaults)
 
-Templates can use translation catalogs stored at:
+Templates can use translation bundles stored at:
 
 `resources/templates/{origin}/{template}/locales/{locale}.php` (`app/Modules/ContentManagement/Application/Services/Templates/TemplateTranslationService.php`).
 
-These catalogs are used when mapping templates to DTOs and when applying locale-specific default values (`app/Modules/ContentManagement/Application/Services/Templates/TemplateValidationService.php`).
+These bundles are used when mapping templates to DTOs and when applying locale-specific default values (`app/Modules/ContentManagement/Application/Services/Templates/TemplateValidationService.php`).
 
 ### Validation and normalization
 
@@ -130,4 +130,3 @@ Sections can reference images via the shared `image_attachments` pivot using the
 ## Ordering constraints (hero sections)
 
 `PageSectionService` enforces a domain rule for the `hero` slot: hero sections must appear first when ordering sections (`app/Modules/ContentManagement/Application/Services/PageSectionService.php`).
-
