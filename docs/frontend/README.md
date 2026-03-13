@@ -52,20 +52,20 @@ Note: the frontend currently doesn’t read `props.ziggy` directly (it relies on
 
 ## Localization (i18n)
 
-Localization metadata (locale + supported locales) is shared to the client via the Inertia middleware, and frontend i18n code lives under `resources/js/common/i18n/`. Evidence: `app/Modules/Inertia/Http/Middleware/HandleInertiaRequests.php`, `resources/js/common/i18n/`.
+Localization metadata (locale + supported locales) is shared to the client via the Inertia middleware, and frontend i18n code lives under `resources/js/common/i18n/`. The backend now also sends an explicit `localization.scope` discriminator (`system` or `public`), and `resources/js/app/inertia/runtime/localizationContext.ts` is the canonical frontend boundary that normalizes this request context before boot, preload, or locale switching consume it. Evidence: `app/Modules/Inertia/Http/Middleware/HandleInertiaRequests.php`, `resources/js/app/inertia/runtime/localizationContext.ts`, `resources/js/common/i18n/`.
 
-Translation catalogs are loaded lazily via Vite `import.meta.glob` and follow the convention `.../locales/<locale>/<namespace>.ts`. Namespaces are intentionally free-form (modules may organize them however they want, e.g. `forms`, `table`, `list`) as long as they follow that folder/file naming convention.
+Translation bundles are loaded lazily via Vite `import.meta.glob` and follow the convention `.../locales/<locale>/<namespace>.ts`. Namespaces are intentionally free-form (modules may organize them however they want, e.g. `forms`, `table`, `list`) as long as they follow that folder/file naming convention.
 
 The canonical frontend i18n flow is now split into:
 
 - `resources/js/common/i18n/runtime.ts` for i18next runtime initialization and locale changes
-- `resources/js/common/i18n/preloading/preloading.ts` for common/scoped/fallback catalog preloading
+- `resources/js/common/i18n/preloading/preloading.ts` for common/scoped/fallback bundle preloading
 - `resources/js/common/i18n/react/hooks/*` for runtime-backed React hooks
-- `resources/js/app/inertia/runtime/*` for the Inertia runtime helpers used during boot
+- `resources/js/app/inertia/runtime/*` for Inertia request-context normalization and boot/runtime helpers
 
-The app uses i18next/react-i18next for translation resolution and keeps the same catalog file convention. Evidence: `resources/js/common/i18n/i18next/preloaderFromLoaders.ts`, `resources/js/common/i18n/i18next/i18next.ts`, `resources/js/common/i18n/preloading/translationModuleLoaders.ts`.
+The app uses i18next/react-i18next for translation resolution and keeps the same bundle file convention. Evidence: `resources/js/common/i18n/i18next/preloaderFromLoaders.ts`, `resources/js/common/i18n/i18next/i18next.ts`, `resources/js/common/i18n/preloading/translationModuleLoaders.ts`.
 
-Build config keeps locale catalogs code-split by locale. Evidence: `vite.config.js`.
+Build config keeps locale bundles code-split by locale. Evidence: `vite.config.js`.
 
 ## Common admin UX patterns
 
@@ -103,7 +103,7 @@ The public website UI is built from content-managed pages and “section compone
 - Module resolution includes the `@` alias for `resources/js/` and explicit React / ReactDOM aliases to keep imports consistent. Evidence: `vite.config.js`.
 - `resolve.dedupe` forces a single runtime instance for `react`, `react-dom`, `react-i18next`, and `i18next`. This matters because duplicate instances can break hooks/context behavior and i18n state sharing. Evidence: `vite.config.js`.
 - Build chunking is customized:
-  - locale catalogs under `.../i18n/locales/<locale>/...` become `i18n-<locale>` chunks
+  - locale bundles under `.../i18n/locales/<locale>/...` become `i18n-<locale>` chunks
   - core React/Inertia/i18n vendor dependencies are grouped into `vendor-core`
   - shared internal i18n runtime code is grouped into `app-i18n-core`
   Evidence: `vite.config.js`.

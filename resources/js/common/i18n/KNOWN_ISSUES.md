@@ -4,7 +4,7 @@ This module currently uses:
 1. an `i18next` runtime,
 2. shared preloaders for `common` and `layouts`,
 3. scope-level preloaders coordinated by the i18n registry, and
-4. local gating for dynamic areas that must wait for scoped catalogs.
+4. local gating for dynamic areas that must wait for scoped bundles.
 
 The points below reflect the current state of the implementation.
 
@@ -13,7 +13,7 @@ The points below reflect the current state of the implementation.
 ## 1) Scoped translation loading can still be missed outside gated flows
 
 ### Symptom
-- A feature can still render fallback text or raw keys if it depends on a scoped catalog and does not preload or gate that scope correctly.
+- A feature can still render fallback text or raw keys if it depends on a scoped bundle and does not preload or gate that scope correctly.
 
 ### Current state
 - This is no longer a blanket app-wide issue.
@@ -27,7 +27,7 @@ The points below reflect the current state of the implementation.
 
 ### Mitigation
 - Use `I18nScopeGate` around dynamic scope-heavy subtrees.
-- Preload the page scope before locale reload when the route depends on scoped catalogs.
+- Preload the page scope before locale reload when the route depends on scoped bundles.
 - Keep scope declaration correct via `Page.i18n` or `Page.getI18nScope`.
 
 ## 2) Missing key vs missing bundle is still hard to distinguish quickly
@@ -78,7 +78,7 @@ The points below reflect the current state of the implementation.
 ## 5) Scoped preload granularity is module-level
 
 ### Trade-off
-- Enabling a scope id preloads all catalogs for that scope and locale, not only the exact namespace used by the current subtree.
+- Enabling a scope id preloads all bundles for that scope and locale, not only the exact namespace used by the current subtree.
 
 ### Benefit
 - Simpler registry model.
@@ -98,7 +98,7 @@ The points below reflect the current state of the implementation.
 
 ### Benefit
 - Avoids collisions between modules.
-- Keeps catalogs isolated by scope.
+- Keeps bundles isolated by scope.
 
 ### Cost
 - It is easy to target the wrong namespace when migrating code manually.
@@ -110,7 +110,7 @@ The points below reflect the current state of the implementation.
 ## 7) The system favors incremental migration over a fully blocking global bootstrap
 
 ### Trade-off
-- The app does not globally block every page until every possible scoped catalog is loaded.
+- The app does not globally block every page until every possible scoped bundle is loaded.
 
 ### Benefit
 - Faster shell startup.
