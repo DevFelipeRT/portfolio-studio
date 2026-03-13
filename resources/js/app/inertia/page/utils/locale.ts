@@ -1,4 +1,5 @@
 import type { InertiaPageProps } from '../../types';
+import { resolveInertiaLocalizationContext } from '../../runtime';
 
 /**
  * Resolves the initial locale based on the page props hierarchy.
@@ -6,15 +7,7 @@ import type { InertiaPageProps } from '../../types';
 export function resolveInitialLocale(
   props: InertiaPageProps,
 ): string | undefined {
-  if (props.locale?.trim()) {
-    return props.locale;
-  }
-
-  if (props.localization?.currentLocale?.trim()) {
-    return props.localization.currentLocale;
-  }
-
-  return props.localization?.defaultLocale;
+  return resolveInertiaLocalizationContext(props).currentLocale ?? undefined;
 }
 
 export function resolveLocalizedValue(

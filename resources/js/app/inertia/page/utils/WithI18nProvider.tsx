@@ -3,10 +3,13 @@
 import { I18nRuntimeProvider, initializeI18nRuntime } from '@/common/i18n';
 import type { ReactNode } from 'react';
 import { useEffect, useMemo } from 'react';
-import type { InertiaPageProps } from '../../types';
-import { resolveInitialLocale } from './locale';
+import type {
+  InertiaLocalizationContext,
+  InertiaPageProps,
+} from '../../types';
 import type { Locale } from '@/common/locale';
-import { preloadI18nScopes } from '@/common/i18n';
+import { preloadI18nBundles } from '@/common/i18n';
+import { resolveInertiaLocalizationContext } from '../../runtime';
 
 export type WithI18nProviderOptions = {
   scopeIds?: readonly string[] | null;
@@ -21,16 +24,13 @@ export function wrapWithI18nProvider(
   content: ReactNode,
   options: WithI18nProviderOptions = {},
 ): ReactNode {
-  const currentLocale = resolveInitialLocale(props) ?? null;
-  const localizationConfig = props.localization || {};
   const scopeIds = options.scopeIds ?? null;
+  const localizationContext = resolveInertiaLocalizationContext(props);
 
   return (
     <I18nRuntimeProvider>
       <ScopedPreload
-        supportedLocales={localizationConfig.supportedLocales}
-        initialLocale={currentLocale}
-        fallbackLocale={localizationConfig.fallbackLocale ?? null}
+        localizationContext={localizationContext}
         scopeIds={scopeIds}
       />
       {content}
@@ -39,20 +39,20 @@ export function wrapWithI18nProvider(
 }
 
 function ScopedPreload(props: {
-  supportedLocales?: unknown;
-  initialLocale: string | null;
-  fallbackLocale: string | null;
+  localizationContext: InertiaLocalizationContext;
   scopeIds?: readonly string[] | null;
 }) {
-  const { supportedLocales, initialLocale, fallbackLocale, scopeIds } = props;
+  const { localizationContext, scopeIds } = props;
+  const { currentLocale, fallbackLocale, supportedLocales } =
+    localizationContext;
 
   const runtimeConfig = useMemo(
     () => ({
       supportedLocales,
-      defaultLocale: initialLocale,
+      defaultLocale: currentLocale,
       fallbackLocale,
     }),
-    [supportedLocales, initialLocale, fallbackLocale],
+    [supportedLocales, currentLocale, fallbackLocale],
   );
 
   useEffect(() => {
@@ -60,21 +60,21 @@ function ScopedPreload(props: {
       const { localeResolver, runtimeConfig: normalized } =
         await initializeI18nRuntime(runtimeConfig);
       const resolvedLocale = localeResolver.resolve(
-        initialLocale ?? normalized.defaultLocale,
+        currentLocale ?? normalized.defaultLocale,
       ) as Locale;
       const resolvedFallback =
-        typeof fallbackLocale === 'string' && fallbackLocale.trim() !== ''
+        fallbackLocale
           ? (localeResolver.resolve(fallbackLocale) as Locale)
           : null;
 
-      await preloadI18nScopes({
+      await preloadI18nBundles({
         locale: resolvedLocale,
         fallbackLocale: resolvedFallback,
         scopeIds,
         includeCommon: true,
       });
     })();
-  }, [fallbackLocale, initialLocale, runtimeConfig, scopeIds]);
+  }, [currentLocale, fallbackLocale, runtimeConfig, scopeIds]);
 
   return null;
 }
