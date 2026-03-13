@@ -4,6 +4,7 @@ namespace App\Modules\Inertia\Http\Middleware;
 
 use App\Modules\ContentManagement\Application\Services\PageService;
 use App\Modules\ContentManagement\Application\Services\PublicPageLocaleResolver;
+use App\Modules\Inertia\Domain\Enums\InertiaLocalizationScope;
 use App\Modules\SystemLocale\Application\Services\SystemLocaleService;
 use App\Modules\WebsiteSettings\Application\Services\WebsiteLocaleResolver;
 use App\Modules\WebsiteSettings\Application\Services\WebsiteSettingsService;
@@ -44,6 +45,9 @@ class HandleInertiaRequests extends Middleware
         $settings = $websiteSettings->getSettings();
 
         $isPublicContent = $this->isPublicContentRoute($request);
+        $localizationScope = $isPublicContent
+            ? InertiaLocalizationScope::Public
+            : InertiaLocalizationScope::System;
         $currentLocale = app()->getLocale();
         $supportedLocales = $systemLocale->getSupportedLocales();
         $defaultLocale = $systemLocale->getDefaultLocale();
@@ -95,6 +99,7 @@ class HandleInertiaRequests extends Middleware
 
             // Localization metadata for the front-end.
             'localization' => fn() => [
+                'scope' => $localizationScope->value,
                 'currentLocale' => app()->getLocale(),
                 'supportedLocales' => $supportedLocales,
                 'defaultLocale' => $defaultLocale,
