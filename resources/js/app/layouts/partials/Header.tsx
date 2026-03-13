@@ -1,6 +1,7 @@
 'use client';
 
 import ApplicationLogo from '@/app/layouts/partials/application-logo/ApplicationLogo';
+import { useInertiaLocalizationContext } from '@/app/inertia';
 import { ModeToggle } from '@/app/layouts/partials/theme/ModeToggle';
 import { UserMenu } from '@/app/layouts/partials/UserMenu';
 import { LocaleSwitcher } from '@/common/locale';
@@ -17,12 +18,6 @@ type AuthUser = {
 type SharedProps = {
   auth: {
     user: AuthUser | null;
-  };
-  localization?: {
-    cookieName?: string;
-    apiEndpoint?: string;
-    persistClientCookie?: boolean;
-    supportedLocales?: string[];
   };
 };
 
@@ -42,6 +37,7 @@ export default function Header({ children }: PropsWithChildren) {
 function HeaderI18nContent({ children }: PropsWithChildren) {
   const props = usePage().props as SharedProps;
   const user = props.auth.user;
+  const localizationContext = useInertiaLocalizationContext();
 
   const { translate: tHeader } = useLayoutsTranslation('header');
   const { translate: tNavigation } = useLayoutsTranslation('navigation');
@@ -81,7 +77,14 @@ function HeaderI18nContent({ children }: PropsWithChildren) {
         <div className="order-2 flex flex-1 items-center justify-end gap-3 md:order-3">
           <ModeToggle />
           <LocaleSwitcher
-            localization={props.localization}
+            localization={{
+              supportedLocales: localizationContext.supportedLocales,
+            }}
+            cookieName={localizationContext.persistence.cookieName ?? undefined}
+            apiEndpoint={localizationContext.persistence.apiEndpoint ?? undefined}
+            persistClientCookie={
+              localizationContext.persistence.persistClientCookie
+            }
             reload={() => {
               router.reload({
                 replace: true,
