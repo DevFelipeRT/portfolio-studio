@@ -1,7 +1,12 @@
-import type { InertiaPageProps } from '../types';
+import type {
+  InertiaLocalizationContext,
+  InertiaPageProps,
+} from '../types';
+import { resolveInertiaLocalizationContext } from './localizationContext';
 
 type InertiaRuntimeState = {
   propsCache: InertiaPageProps;
+  localizationContext: InertiaLocalizationContext;
   titleTemplate: string | null;
   siteName: Record<string, string> | null;
   defaultMetaTitle: Record<string, string> | null;
@@ -10,6 +15,7 @@ type InertiaRuntimeState = {
 
 let state: InertiaRuntimeState = {
   propsCache: {},
+  localizationContext: resolveInertiaLocalizationContext({}),
   titleTemplate: null,
   siteName: null,
   defaultMetaTitle: null,
@@ -29,6 +35,7 @@ export function initializeInertiaRuntimeState(
 ): void {
   state = {
     propsCache: initialProps,
+    localizationContext: resolveInertiaLocalizationContext(initialProps),
     titleTemplate: initialProps.websiteSettings?.metaTitleTemplate ?? null,
     siteName: initialProps.websiteSettings?.siteName ?? null,
     defaultMetaTitle: initialProps.websiteSettings?.defaultMetaTitle ?? null,
