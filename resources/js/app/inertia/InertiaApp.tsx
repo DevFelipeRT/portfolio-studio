@@ -1,23 +1,61 @@
 import { createInertiaApp } from '@inertiajs/react';
-import { createInertiaPageResolver, resolveInitialPageForCSR } from './page';
+import {
+  createInertiaPageResolver,
+  resolveInitialLocale,
+  resolveInitialPageForCSR,
+} from './page';
 import type { InertiaPageProps } from './types';
 import {
   getInertiaPageRegistry,
   inertiaTitle,
   initializeInertiaRuntimeState,
   renderInertiaApp,
-} from './utils';
+} from './runtime';
+import {
+  initializeI18nRuntime,
+  preloadI18nScopes,
+} from '@/common/i18n';
+import type { Locale } from '@/common/locale';
 
 const useScriptElementForInitialPage = true;
 
-export function bootInertiaApp(): void {
+async function preloadShellCatalogs(initialProps: InertiaPageProps): Promise<void> {
+  const currentLocale = resolveInitialLocale(initialProps) ?? null;
+  const localizationConfig = initialProps.localization || {};
+
+  const { localeResolver, runtimeConfig } = await initializeI18nRuntime({
+    supportedLocales: localizationConfig.supportedLocales,
+    defaultLocale: currentLocale,
+    fallbackLocale: localizationConfig.fallbackLocale,
+  });
+
+  const resolvedLocale = localeResolver.resolve(
+    currentLocale ?? localeResolver.defaultLocale,
+  ) as Locale;
+  const resolvedFallbackLocale =
+    typeof localizationConfig.fallbackLocale === 'string' &&
+    localizationConfig.fallbackLocale.trim() !== ''
+      ? (localeResolver.resolve(localizationConfig.fallbackLocale) as Locale)
+      : runtimeConfig.fallbackLocale;
+
+  await preloadI18nScopes({
+    locale: resolvedLocale,
+    fallbackLocale: resolvedFallbackLocale,
+    scopeIds: ['layouts'],
+    includeCommon: true,
+  });
+}
+
+export async function bootInertiaApp(): Promise<void> {
   const initialPage = useScriptElementForInitialPage
     ? resolveInitialPageForCSR()
     : undefined;
 
   // Initializes derived metadata (e.g. title tokens) from the initial page props.
   if (initialPage?.props) {
-    initializeInertiaRuntimeState(initialPage.props as InertiaPageProps);
+    const initialProps = initialPage.props as InertiaPageProps;
+    initializeInertiaRuntimeState(initialProps);
+    await preloadShellCatalogs(initialProps);
   }
 
   createInertiaApp({

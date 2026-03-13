@@ -1,59 +1,33 @@
-import { createLocaleResolver } from '../core/locale';
-import {
-    createTranslatorProviderFromLoaders,
-    type MissingPathInfo,
-    type TranslatorFactoryConfig,
-    type TranslatorProvider,
-} from '../core/translation';
-import { translationModuleLoaders } from './translationModuleLoaders';
-import {
-    type NormalizedRuntimeLocalizationConfig,
-    type RuntimeLocalizationConfig,
-    normalizeRuntimeConfig,
-} from './runtimeConfig';
+import { createLocaleResolver } from '@/common/locale';
+import type {
+  NormalizedRuntimeLocalizationConfig,
+  RuntimeLocalizationConfig,
+} from '@/common/locale';
+import type { I18nPreloader } from '../registry';
+import { translatorProvider as sharedTranslatorProvider } from '../preloading/preloading';
+import { initializeI18nRuntime } from '../runtime';
+
+export const translatorProvider = sharedTranslatorProvider;
 
 /**
- * Default app-wide provider, backed by Vite glob loaders.
+ * Compatibility layer for callers that still expect the environment helper.
+ *
+ * Runtime initialization now lives in `runtime.ts`, while shared catalog
+ * preloading lives in `preloading/preloading.ts`.
  */
-export const translatorProvider: TranslatorProvider =
-    createTranslatorProviderFromLoaders(translationModuleLoaders);
+export async function createI18nEnvironment(
+  runtimeConfig: RuntimeLocalizationConfig,
+): Promise<{
+  localeResolver: ReturnType<typeof createLocaleResolver>;
+  runtimeConfig: NormalizedRuntimeLocalizationConfig;
+  translatorProvider: I18nPreloader;
+}> {
+  const { localeResolver, runtimeConfig: normalized } =
+    await initializeI18nRuntime(runtimeConfig);
 
-/**
- * Back-compat export: the provider also implements the catalog methods used by
- * the previous API surface.
- */
-export const catalogProvider = translatorProvider;
-
-/**
- * Instantiates the locale resolver and a configured Translator based on runtime configuration.
- */
-export function createI18nEnvironment(runtimeConfig: RuntimeLocalizationConfig) {
-    const normalized: NormalizedRuntimeLocalizationConfig =
-        normalizeRuntimeConfig(runtimeConfig);
-
-    const localeResolver = createLocaleResolver({
-        supportedLocales: normalized.supportedLocales,
-        defaultLocale: normalized.defaultLocale,
-    });
-
-    const translatorConfig: TranslatorFactoryConfig = {
-        fallbackLocale: normalized.fallbackLocale,
-        onMissingKey(info: MissingPathInfo) {
-            if (import.meta.env.DEV) {
-                // eslint-disable-next-line no-console
-                console.warn(
-                    `[i18n] Missing key "${info.namespace}.${info.path}" for locale "${info.locale}".`,
-                );
-            }
-        },
-    };
-
-    const translator = translatorProvider.createTranslator(translatorConfig);
-
-    return {
-        localeResolver,
-        translator,
-        translatorProvider,
-    };
+  return {
+    localeResolver,
+    runtimeConfig: normalized,
+    translatorProvider,
+  };
 }
-

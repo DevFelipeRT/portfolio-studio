@@ -54,7 +54,16 @@ Note: the frontend currently doesn’t read `props.ziggy` directly (it relies on
 
 Localization metadata (locale + supported locales) is shared to the client via the Inertia middleware, and frontend i18n code lives under `resources/js/common/i18n/`. Evidence: `app/Modules/Inertia/Http/Middleware/HandleInertiaRequests.php`, `resources/js/common/i18n/`.
 
-Translation catalogs are loaded lazily via Vite `import.meta.glob` and follow the convention `.../locales/<locale>/<namespace>.ts`. Namespaces are intentionally free-form (modules may organize them however they want, e.g. `forms`, `table`, `list`) as long as they follow that folder/file naming convention. Evidence: `resources/js/common/i18n/core/translatorProvider.ts`, `resources/js/common/i18n/setup.ts`.
+Translation catalogs are loaded lazily via Vite `import.meta.glob` and follow the convention `.../locales/<locale>/<namespace>.ts`. Namespaces are intentionally free-form (modules may organize them however they want, e.g. `forms`, `table`, `list`) as long as they follow that folder/file naming convention.
+
+The canonical frontend i18n flow is now split into:
+
+- `resources/js/common/i18n/runtime.ts` for i18next runtime initialization and locale changes
+- `resources/js/common/i18n/preloading/preloading.ts` for common/scoped/fallback catalog preloading
+- `resources/js/common/i18n/react/hooks/*` for runtime-backed React hooks
+- `resources/js/app/inertia/runtime/*` for the Inertia runtime helpers used during boot
+
+The app uses i18next/react-i18next for translation resolution and keeps the same catalog file convention. Evidence: `resources/js/common/i18n/i18next/preloaderFromLoaders.ts`, `resources/js/common/i18n/i18next/i18next.ts`, `resources/js/common/i18n/preloading/translationModuleLoaders.ts`.
 
 Build config keeps locale catalogs code-split by locale. Evidence: `vite.config.js`.
 

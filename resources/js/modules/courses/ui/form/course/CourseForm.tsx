@@ -12,7 +12,7 @@ import {
   TextInputField,
   type FormErrors,
 } from '@/common/forms';
-import { useSupportedLocales } from '@/common/i18n';
+import { useSupportedLocales } from '@/common/locale';
 import type { CourseFormData } from '@/modules/courses/core/forms';
 import { useCoursesTranslation, COURSES_NAMESPACES } from '@/modules/courses/i18n';
 import { getErrorSummaryFields } from './errorSummaryFields';

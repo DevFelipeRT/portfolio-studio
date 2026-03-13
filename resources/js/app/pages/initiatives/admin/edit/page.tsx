@@ -1,6 +1,6 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import type { FormErrors } from '@/common/forms';
-import { useSupportedLocales } from '@/common/i18n';
+import { useSupportedLocales } from '@/common/locale';
 import { LocaleSwapDialog } from '@/common/LocaleSwapDialog';
 import { Button } from '@/components/ui/button';
 import { listInitiativeTranslations } from '@/modules/initiatives/core/api/translations';

@@ -1,7 +1,5 @@
-export { I18nContext } from './I18nContext';
 export { LanguageSelector } from './LanguageSelector';
-export { useGetLocale, useSetLocale, useSupportedLocales } from './locale';
-export { LocaleSwitcher } from './locale';
-export { I18nProvider } from './provider';
-export { TranslationCatalogGate } from './provider';
+export { I18nRuntimeProvider } from './I18nRuntimeProvider';
+export { I18nScopeGate } from './I18nScopeGate';
+export { useSetLocale } from './useSetLocale';
 export { useTranslation } from './useTranslation';

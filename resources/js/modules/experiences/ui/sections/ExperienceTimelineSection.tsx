@@ -1,4 +1,4 @@
-import { useGetLocale } from '@/common/i18n';
+import { useGetLocale } from '@/common/locale';
 import { RichTextRenderer } from '@/common/rich-text/RichTextRenderer';
 import { DateDisplay } from '@/components/ui/date-display';
 import { TimelineItem } from '@/components/ui/timeline-item';

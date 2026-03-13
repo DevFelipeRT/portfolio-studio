@@ -1,4 +1,4 @@
-import { useGetLocale } from '@/common/i18n';
+import { useGetLocale } from '@/common/locale';
 import { Button } from '@/components/ui/button';
 import { DateDisplay } from '@/components/ui/date-display';
 import {

@@ -5,7 +5,7 @@ import {
   type FormErrors,
 } from '@/common/forms';
 import { SelectField, TextInputField } from '@/common/forms';
-import { useSupportedLocales } from '@/common/i18n';
+import { useSupportedLocales } from '@/common/locale';
 
 import { getErrorSummaryFields } from './errorSummaryFields';
 import type { SkillFormProps } from './types';

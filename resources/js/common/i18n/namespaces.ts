@@ -1,4 +1,4 @@
-import { Namespace } from './core/types';
+import type { Namespace } from './types';
 
 /**
  * String constants for well-known namespaces used by shared UI.

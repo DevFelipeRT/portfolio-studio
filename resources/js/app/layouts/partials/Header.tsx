@@ -3,7 +3,7 @@
 import ApplicationLogo from '@/app/layouts/partials/application-logo/ApplicationLogo';
 import { ModeToggle } from '@/app/layouts/partials/theme/ModeToggle';
 import { UserMenu } from '@/app/layouts/partials/UserMenu';
-import { LocaleSwitcher } from '@/common/i18n';
+import { LocaleSwitcher } from '@/common/locale';
 import { useLayoutsTranslation } from '@/app/layouts/i18n';
 import { Link, router, usePage } from '@inertiajs/react';
 import { PropsWithChildren } from 'react';
@@ -85,6 +85,8 @@ function HeaderI18nContent({ children }: PropsWithChildren) {
             reload={() => {
               router.reload({
                 replace: true,
+                preserveScroll: true,
+                preserveState: true,
                 headers: {
                   'Cache-Control': 'no-cache',
                 },
