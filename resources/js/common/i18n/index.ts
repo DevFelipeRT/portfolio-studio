@@ -11,7 +11,7 @@ export {
 export { preloaderForI18nScopes } from './preloading/scopedPreloader';
 
 export { createI18nRegistry } from './registry/registry';
-export type { I18nPreloader, I18nRegistry } from './registry/registry';
+export type { I18nPreloader, I18nRegistry } from './types';
 
 export type { TranslationLoaders as TranslationModuleLoaders } from './i18next/types';
 export type { PlaceholderValues } from './types';
