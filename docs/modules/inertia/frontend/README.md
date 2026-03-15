@@ -47,14 +47,21 @@ App boot (`resources/js/app/inertia/InertiaApp.tsx`), provider preload (`resourc
 
 ## i18n scoping (preload)
 
-The app preloads translation bundles for i18next via the shared preloading API in `resources/js/common/i18n/preloading/preloading.ts`. To avoid preloading every module on every page, pages can declare which i18n contributions they need:
+The app preloads translation bundles for i18next via the shared preloading API in `resources/js/common/i18n/preloading/index.ts`. To avoid preloading every module on every page, pages can declare which i18n contributions they need:
 
 - Static scope: `Page.i18n = ['projects', 'courses']`
 - Dynamic scope: `Page.getI18nScope = (props) => ['contact-channels']` (useful for CMS/section-driven pages)
 
-The scope is collected in the page decorator (`resources/js/app/inertia/page/PageComponent.tsx`) and handed to `wrapWithI18nProvider(...)`, which preloads `common`, `layouts`, page scopes, and the fallback locale through the same runtime-backed path used during locale switching:
+The scope is collected in the page decorator (`resources/js/app/inertia/page/PageComponent.tsx`) and handed to `wrapWithI18nProvider(...)`. Two different preload timings are involved:
 
-- Registry factory: `createI18nRegistry()` (`resources/js/common/i18n/registry/createI18nRegistry.ts`)
+- `bootInertiaApp()` preloads the initial shell (`common` + `layouts`) before the first mount.
+- `wrapWithI18nProvider(...)` then starts scope preload from a React effect.
+- For `system` pages, the page decorator wraps only the page subtree in `I18nScopeGate` when the page declares module scopes, so layouts remain visible while admin/module bundles finish loading.
+- For `public` pages, that gate is intentionally skipped because the CMS payload already provides the main localized content.
+
+The same runtime-backed preload path is also reused during locale switching:
+
+- Registry factory: `createI18nRegistry()` (`resources/js/common/i18n/registry/registry.ts`)
 - Scope → preload orchestration: `preloadI18nBundles({ scopeIds, ... })`
 
 ### Conventions for modules/layouts
@@ -74,7 +81,8 @@ For dynamic features (e.g. CMS rendered pages), you can block only a subtree unt
 its scope preloads using `I18nScopeGate`:
 
 - Gate: `resources/js/common/i18n/react/I18nScopeGate.tsx`
-- Example usage: `resources/js/app/pages/content-management/public/rendered-page/page.tsx`
+- Current state: the page decorator now applies it centrally for `system` pages that declare module scopes.
+- Public pages such as `RenderedPage` intentionally stay outside that gate.
 
 For dynamic CMS sections, section providers can expose a minimal `i18n` metadata list so page-rendering can derive scope from `sections`:
 
@@ -82,4 +90,4 @@ For dynamic CMS sections, section providers can expose a minimal `i18n` metadata
 
 ### Known issues
 
-See `resources/js/common/i18n/KNOWN_ISSUES.md` for tradeoffs such as module translators being used before bundles preload when the UI is non-blocking.
+See `resources/js/common/i18n/KNOWN_ISSUES.md` for the remaining i18n limitations and tradeoffs, such as registry conventions and scope-preload behavior.

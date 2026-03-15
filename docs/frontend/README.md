@@ -38,6 +38,11 @@ Backend controllers render pages using the same page keys via `Inertia::render(.
 
 Evidence: folder structure under `resources/js/`.
 
+## Common frontend docs
+
+- Shared frontend docs index: [`docs/frontend/common/README.md`](./common/README.md)
+- Shared i18n runtime: [`docs/frontend/common/i18n/README.md`](./common/i18n/README.md)
+
 ## Routing on the client (Ziggy)
 
 Frontend code uses Ziggy’s `route(...)` helper. In this codebase, the `route` function is provided globally by the root Blade view via Ziggy’s `@routes` directive:
@@ -58,12 +63,16 @@ Translation bundles are loaded lazily via Vite `import.meta.glob` and follow the
 
 The canonical frontend i18n flow is now split into:
 
-- `resources/js/common/i18n/runtime.ts` for i18next runtime initialization and locale changes
-- `resources/js/common/i18n/preloading/preloading.ts` for common/scoped/fallback bundle preloading
-- `resources/js/common/i18n/react/hooks/*` for runtime-backed React hooks
+- `resources/js/common/i18n/runtime.ts` for runtime initialization over the shared i18next instance
+- `resources/js/common/i18n/i18next/*` for provider/hooks/runtime adapters and the bundle-to-i18next preloader bridge
+- `resources/js/common/i18n/preloading/*` for common/scoped/fallback bundle preloading and locale bundle caching
+- `resources/js/common/i18n/registry/*` for lazy scope definition loading and preloader registration
+- `resources/js/common/i18n/react/*` for runtime-backed React providers, gates, and hooks
 - `resources/js/app/inertia/runtime/*` for Inertia request-context normalization and boot/runtime helpers
 
-The app uses i18next/react-i18next for translation resolution and keeps the same bundle file convention. Evidence: `resources/js/common/i18n/i18next/preloaderFromLoaders.ts`, `resources/js/common/i18n/i18next/i18next.ts`, `resources/js/common/i18n/preloading/translationModuleLoaders.ts`.
+The app uses i18next/react-i18next for translation resolution and keeps the same bundle file convention. Evidence: `resources/js/common/i18n/i18next/preloader.ts`, `resources/js/common/i18n/i18next/i18next.ts`, `resources/js/common/i18n/preloading/bundle/bundleLoaders.ts`.
+
+At runtime, the app treats public and system pages differently: the shell (`common` + `layouts`) is preloaded before the first mount for both, public pages remain non-blocking because CMS content is already localized by the backend, and system/admin pages can gate only the page subtree when they declare module scopes through `Page.i18n` / `Page.getI18nScope`. See [`docs/frontend/common/i18n/README.md`](./common/i18n/README.md) for the module-specific behavior and authoring contract. Evidence: `resources/js/app/inertia/InertiaApp.tsx`, `resources/js/app/inertia/page/PageComponent.tsx`, `resources/js/app/inertia/page/utils/WithI18nProvider.tsx`.
 
 Build config keeps locale bundles code-split by locale. Evidence: `vite.config.js`.
 
