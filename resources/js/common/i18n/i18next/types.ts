@@ -1,10 +1,9 @@
 import type { TranslationTree } from '../types';
 
 /**
- * TranslationModuleLoaders maps module paths to loader functions that resolve to a
- * default TranslationTree export.
+ * Translation module loaders keyed by module path.
  */
-export type TranslationLoaders = Record<
+export type BundleLoaders = Record<
   string,
   () => Promise<{ default: TranslationTree }>
 >;
