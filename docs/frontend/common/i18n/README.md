@@ -14,6 +14,8 @@ The `common/i18n` module centralizes:
 
 The application uses a scope-prefixed namespace convention: each bundle is registered in `i18next` as `<scopeId>.<namespace>`. Examples include `common.validation`, `layouts.navigation`, and `projects.form`.
 
+This convention exists to avoid collisions between modules and keep bundles isolated by scope. In practice, frontend consumers should prefer scope-local helpers such as `useProjectsTranslation(...)`, `useLayoutsTranslation(...)`, and `useTranslation(...)` instead of manually assembling fully qualified namespaces.
+
 Primary evidence:
 
 - `resources/js/common/i18n/index.ts`
@@ -108,6 +110,12 @@ Concrete example:
 
 Without this pair of files, the registry cannot resolve the scope on demand.
 
+This is an explicit authoring convention of the module:
+
+- `definition.ts` is the lazy discovery boundary
+- `environment.ts` is the registration boundary
+- registration happens by side effect when the environment module is imported
+
 ## Bundle preloading
 
 Preloading is divided between the shared shell and page-specific scopes:
@@ -122,6 +130,8 @@ When a scope is loaded, `createI18nextPreloader(...)`:
 - derives the namespace from the module path
 - loads the files for the requested locale
 - installs each translation tree into `i18next` via `addResourceBundle(...)`
+
+The current preload granularity is scope-level: enabling a scope id preloads all bundles for that scope and locale, not only the exact namespace used by the current subtree. This keeps the registry model simple and module authoring lightweight, at the cost of sometimes loading more translation data than a specific render path strictly needs.
 
 ## Page behavior by localization profile
 
