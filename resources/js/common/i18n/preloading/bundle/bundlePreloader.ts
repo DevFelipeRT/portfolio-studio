@@ -1,16 +1,8 @@
 import { canonicalizeLocale, type Locale } from '@/common/locale';
-import { createI18nextPreloaderFromLoaders } from '../i18next/preloaderFromLoaders';
-import { preloaderForI18nScopes } from './scopedPreloader';
-import { translationLoaders } from './translationLoaders';
-import { I18nPreloader } from '../types';
-
-/**
- * Shared preloader responsible for application-wide translation bundles.
- */
-const commonI18nPreloader = createI18nextPreloaderFromLoaders(
-  'common',
-  translationLoaders,
-);
+import { createI18nScope } from './scoped/scope';
+import type { I18nPreloader } from '../../types';
+import { commonI18nPreloader } from '../commonPreloader';
+import { preloaderForI18nScopes } from './scoped/scopedBundlePreloader';
 
 type LocalePreloadOptions = {
   locale: Locale;
@@ -26,37 +18,8 @@ type I18nBundlePreloadOptions = {
 };
 
 /**
- * Scope identifier list normalized as trimmed, unique, and non-empty ids.
- */
-function normalizeScopeIds(
-  scopeIds?: readonly string[] | null,
-): readonly string[] | null {
-  if (!scopeIds) {
-    return null;
-  }
-
-  const seen = new Set<string>();
-  const normalized: string[] = [];
-
-  scopeIds.forEach((id) => {
-    if (typeof id !== 'string') {
-      return;
-    }
-
-    const value = id.trim();
-    if (!value || seen.has(value)) {
-      return;
-    }
-
-    seen.add(value);
-    normalized.push(value);
-  });
-
-  return normalized.length > 0 ? normalized : null;
-}
-
-/**
- * Locale string resolved to canonical locale format.
+ * Resolves a locale input into the canonical locale representation used by the
+ * i18n runtime.
  */
 function resolveLocaleOrNull(input: string | null | undefined): Locale | null {
   if (!input) {
@@ -67,7 +30,7 @@ function resolveLocaleOrNull(input: string | null | undefined): Locale | null {
 }
 
 /**
- * Development environment flag resolved from Vite import metadata.
+ * Returns whether the current build is running with Vite development flags.
  */
 function isDevEnvironment(): boolean {
   const meta = import.meta as ImportMeta & {
@@ -77,21 +40,23 @@ function isDevEnvironment(): boolean {
 }
 
 /**
- * Scoped preloader resolved from normalized scope identifiers.
+ * Resolves the preloader responsible for the provided scoped bundle ids.
  */
 function resolveScopedPreloader(
   scopeIds?: readonly string[] | null,
 ): I18nPreloader | null {
-  const normalizedScopeIds = normalizeScopeIds(scopeIds);
-  if (!normalizedScopeIds) {
+  const scope = createI18nScope(scopeIds);
+  const ids = scope.ids();
+
+  if (!ids) {
     return null;
   }
 
-  return preloaderForI18nScopes(normalizedScopeIds);
+  return preloaderForI18nScopes(ids);
 }
 
 /**
- * Locale preload invocation guarded for optional preloader contracts.
+ * Invokes a locale preload operation when the target preloader exposes one.
  */
 function preloadLocaleIfPossible(
   preloader: I18nPreloader,
@@ -101,7 +66,7 @@ function preloadLocaleIfPossible(
 }
 
 /**
- * Concurrent preload tasks for a locale using common and scoped preloaders.
+ * Builds the list of preload tasks required for a single locale.
  */
 function buildLocalePreloadTasks(options: LocalePreloadOptions): Promise<void>[] {
   const { locale, includeCommon, scopedPreloader } = options;
@@ -119,7 +84,7 @@ function buildLocalePreloadTasks(options: LocalePreloadOptions): Promise<void>[]
 }
 
 /**
- * Bundle preload execution for one locale.
+ * Executes all preload tasks associated with a single locale.
  */
 async function preloadLocaleBundles(options: LocalePreloadOptions): Promise<void> {
   const tasks = buildLocalePreloadTasks(options);
@@ -127,7 +92,8 @@ async function preloadLocaleBundles(options: LocalePreloadOptions): Promise<void
 }
 
 /**
- * Translation preload for the target locale and an optional fallback locale.
+ * Preloads the shared bundle and any scoped bundles required for the target
+ * locale, optionally repeating the process for a fallback locale.
  */
 export async function preloadI18nBundles(
   options: I18nBundlePreloadOptions,
