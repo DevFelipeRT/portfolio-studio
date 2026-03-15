@@ -2,7 +2,7 @@
 
 import type { Namespace, PlaceholderValues } from '../../types';
 import { scopedNamespace } from '../../i18next/scopedNamespace';
-import { getI18nRuntime } from '../../runtime';
+import { getI18nRuntime } from '../../i18next';
 import { useGetI18nLocale } from './useGetI18nLocale';
 
 type TranslationFunction = {

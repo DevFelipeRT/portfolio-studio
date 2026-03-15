@@ -5,7 +5,7 @@ import { canonicalizeLocale, useGetLocale } from '@/common/locale';
 import type { Locale } from '@/common/locale';
 import { usePage } from '@inertiajs/react';
 import type { InertiaPageProps } from '@/app/inertia';
-import { createI18nRegistry } from '../registry/registry';
+import { preloaderForI18nScopes } from '../preloading';
 
 export type I18nScopeGateProps = {
   scopeIds?: readonly string[] | null;
@@ -95,7 +95,7 @@ export function I18nScopeGate({
     if (normalizedScope.length === 0) {
       return null;
     }
-    return createI18nRegistry().preloaderFor(normalizedScope);
+    return preloaderForI18nScopes(normalizedScope);
   }, [normalizedScope]);
 
   useEffect(() => {

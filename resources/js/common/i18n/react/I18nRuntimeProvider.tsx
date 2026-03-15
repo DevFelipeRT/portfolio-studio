@@ -1,9 +1,8 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { I18nextProvider } from 'react-i18next';
-import { getI18nRuntime } from '../runtime';
+import { I18nProvider } from '../i18next';
 
 export function I18nRuntimeProvider({ children }: { children: ReactNode }) {
-  return <I18nextProvider i18n={getI18nRuntime()}>{children}</I18nextProvider>;
+  return <I18nProvider>{children}</I18nProvider>;
 }
