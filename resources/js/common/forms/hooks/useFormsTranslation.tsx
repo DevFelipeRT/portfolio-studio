@@ -3,7 +3,7 @@
 import { I18N_NAMESPACES } from '@/common/i18n';
 import type { Namespace, PlaceholderValues } from '@/common/i18n/types';
 import { useGetLocale } from '@/common/locale';
-import { useTranslation as useReactI18nextTranslation } from 'react-i18next';
+import { useI18nextTranslation } from '@/common/i18n/i18next';
 import { scopedNamespace } from '@/common/i18n/i18next/scopedNamespace';
 
 type TranslationFunction = {
@@ -24,7 +24,7 @@ export function useFormsTranslation(
   namespace: Namespace = I18N_NAMESPACES.form,
 ): UseFormsTranslationResult {
   const locale = useGetLocale();
-  const { i18n } = useReactI18nextTranslation();
+  const { i18n } = useI18nextTranslation();
 
   const translate: TranslationFunction = (
     key: string,

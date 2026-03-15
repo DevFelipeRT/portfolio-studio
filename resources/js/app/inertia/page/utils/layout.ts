@@ -7,7 +7,7 @@ import type { InertiaPageProps } from '../../types';
  */
 export function resolveLayoutContent(
   layout: unknown,
-  page: ReactElement<Record<string, unknown>>,
+  page: ReactNode,
   props: InertiaPageProps,
 ): ReactNode {
   if (typeof layout === 'function') {

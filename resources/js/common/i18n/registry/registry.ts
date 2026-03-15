@@ -1,12 +1,8 @@
-import type { Locale } from '@/common/locale';
-import { I18nPreloader, I18nRegistry } from '../types';
-import { normalizeScope } from './scopeNormalizer';
+import type { I18nPreloader, I18nRegistry } from '../types';
+import { createDefinitionRegistrar } from './definition/definitionRegistrar';
+import { createRegistryState } from './registryState';
 
 let singleton: I18nRegistry | null = null;
-
-function scopeKey(scope: readonly string[] | null): string {
-  return scope ? scope.join('|') : '*';
-}
 
 /**
  * Factory for the i18n registry (singleton).
@@ -19,48 +15,12 @@ export function createI18nRegistry(): I18nRegistry {
     return singleton;
   }
 
-  const preloadersById = new Map<string, I18nPreloader>();
-  const loadersById = new Map<string, () => Promise<unknown>>();
-  const loadPromisesById = new Map<string, Promise<void>>();
-  let version = 0;
+  const registryState = createRegistryState();
+  const definitionsLoader = createDefinitionRegistrar();
 
-  type CacheEntry = {
-    version: number;
-    preloader: I18nPreloader;
-  };
-
-  const cacheByScopeKey = new Map<string, CacheEntry>();
-
-  const definitionImporters: Array<() => Promise<unknown>> = [
-    ...Object.values(import.meta.glob('../../../modules/*/i18n/definition.ts')),
-    ...Object.values(
-      import.meta.glob('../../../app/layouts/i18n/definition.ts'),
-    ),
-  ];
-
-  let definitionsLoaded = false;
-  let definitionsLoading: Promise<void> | null = null;
-
-  async function loadDefinitionsOnce(): Promise<void> {
-    if (definitionsLoaded) {
-      return;
-    }
-
-    if (definitionsLoading) {
-      return definitionsLoading;
-    }
-
-    definitionsLoading = Promise.all(definitionImporters.map((load) => load()))
-      .then(() => {
-        definitionsLoaded = true;
-      })
-      .finally(() => {
-        definitionsLoading = null;
-      });
-
-    return definitionsLoading;
-  }
-
+  /**
+   * Reports unknown registry ids during development.
+   */
   function reportUnknown(id: string): void {
     if (!import.meta.env.DEV) {
       return;
@@ -72,22 +32,26 @@ export function createI18nRegistry(): I18nRegistry {
     );
   }
 
+  /**
+   * Ensures that the requested scope ids have registered preloaders available
+   * in the registry state.
+   */
   async function ensureRegistered(ids: readonly string[]): Promise<void> {
-    await loadDefinitionsOnce();
+    await definitionsLoader.registerDefinitionsOnce();
 
     await Promise.all(
       ids.map(async (id) => {
-        if (preloadersById.has(id)) {
+        if (registryState.hasPreloader(id)) {
           return;
         }
 
-        const loader = loadersById.get(id);
+        const loader = registryState.getLoader(id);
         if (!loader) {
           reportUnknown(id);
           return;
         }
 
-        const existingPromise = loadPromisesById.get(id);
+        const existingPromise = registryState.getLoadPromise(id);
         if (existingPromise) {
           await existingPromise;
           return;
@@ -98,13 +62,13 @@ export function createI18nRegistry(): I18nRegistry {
             await loader();
           })
           .finally(() => {
-            loadPromisesById.delete(id);
+            registryState.clearLoadPromise(id);
           });
 
-        loadPromisesById.set(id, promise);
+        registryState.setLoadPromise(id, promise);
         await promise;
 
-        if (!preloadersById.has(id) && import.meta.env.DEV) {
+        if (!registryState.hasPreloader(id) && import.meta.env.DEV) {
           throw new Error(
             `[i18n] Loader for "${id}" ran, but no preloader was registered.`,
           );
@@ -115,62 +79,27 @@ export function createI18nRegistry(): I18nRegistry {
 
   const registry: I18nRegistry = {
     register(id: string, preloader: I18nPreloader) {
-      const key = id.trim();
-      if (!key) {
-        throw new Error('[i18n] Registry id must be a non-empty string.');
-      }
-
-      const existing = preloadersById.get(key);
-      if (existing === preloader) {
-        return;
-      }
-
-      preloadersById.set(key, preloader);
-      version += 1;
+      registryState.register(id, preloader);
     },
 
     define(id: string, load: () => Promise<unknown>) {
-      const key = id.trim();
-      if (!key) {
-        throw new Error('[i18n] Registry id must be a non-empty string.');
-      }
-
-      const existing = loadersById.get(key);
-      if (existing === load) {
-        return;
-      }
-
-      loadersById.set(key, load);
+      registryState.define(id, load);
     },
 
-    preloaderFor(scope?: readonly string[] | null) {
-      const normalized = normalizeScope(scope);
-      const key = scopeKey(normalized);
+    ensureRegistered(ids: readonly string[]) {
+      return ensureRegistered(ids);
+    },
 
-      const cached = cacheByScopeKey.get(key);
-      if (cached && cached.version === version) {
-        return cached.preloader;
-      }
+    getPreloader(id: string) {
+      return registryState.getPreloader(id);
+    },
 
-      const combined: I18nPreloader = {
-        preloadLocale: async (locale: Locale) => {
-          if (normalized) {
-            await ensureRegistered(normalized);
+    getAllPreloaders() {
+      return registryState.getAllPreloaders();
+    },
 
-            await Promise.all(
-              normalized.map((id) => preloadersById.get(id)?.preloadLocale?.(locale)),
-            );
-            return;
-          }
-
-          await Promise.all(
-            Array.from(preloadersById.values()).map((p) => p.preloadLocale?.(locale)),
-          );
-        },
-      };
-
-      cacheByScopeKey.set(key, { version, preloader: combined });
-      return combined;
+    getVersion() {
+      return registryState.getVersion();
     },
   };
 

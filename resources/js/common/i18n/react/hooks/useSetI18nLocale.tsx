@@ -20,9 +20,9 @@ import { usePage } from '@inertiajs/react';
 import { useCallback } from 'react';
 import {
   preloadI18nBundles,
-} from '../../preloading/preloader';
-import { preloaderForI18nScopes } from '../../preloading/scopedPreloader';
-import { setI18nRuntimeLocale } from '../../runtime';
+  preloaderForI18nScopes,
+} from '../../preloading';
+import { setI18nRuntimeLocale } from '../../i18next';
 
 export type UseSetLocaleOptions = BaseUseSetLocaleOptions;
 export type { SetLocaleHandler } from '@/common/locale';

@@ -1,6 +1,7 @@
 import type { ReactElement } from 'react';
 import type { InertiaPageComponent, InertiaPageProps } from '../types';
 import { resolveLayoutContent } from './utils/layout';
+import { resolvePageI18nContent } from './utils/pageI18nContentResolver';
 import { wrapWithI18nProvider } from './utils/WithI18nProvider';
 
 /**
@@ -17,11 +18,12 @@ export function decoratePageComponent(
   WrappedPage.displayName = `I18n(${Component.displayName ?? Component.name ?? 'Page'})`;
   WrappedPage.layout = (page: ReactElement<Record<string, unknown>>) => {
     const props = (page.props ?? {}) as InertiaPageProps;
-    const content = resolveLayoutContent(Component.layout, page, props);
-
-    const staticIds = Component.i18n ?? [];
-    const dynamicIds = Component.getI18nScope?.(props) ?? [];
-    const scopeIds = ['layouts', ...staticIds, ...dynamicIds];
+    const { content: pageContent, scopeIds } = resolvePageI18nContent(
+      Component,
+      page,
+      props,
+    );
+    const content = resolveLayoutContent(Component.layout, pageContent, props);
 
     return wrapWithI18nProvider(props, content, { scopeIds });
   };

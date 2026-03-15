@@ -12,7 +12,7 @@ import {
   renderInertiaApp,
 } from './runtime';
 import {
-  initializeI18nRuntime,
+  createInitializedI18nRuntime,
   preloadI18nBundles,
 } from '@/common/i18n';
 import type { Locale } from '@/common/locale';
@@ -23,7 +23,7 @@ async function preloadShellBundles(initialProps: InertiaPageProps): Promise<void
   const localizationContext = resolveInertiaLocalizationContext(initialProps);
   const currentLocale = localizationContext.currentLocale;
 
-  const { localeResolver, runtimeConfig } = await initializeI18nRuntime({
+  const { localeResolver, runtimeConfig } = await createInitializedI18nRuntime({
     supportedLocales: localizationContext.supportedLocales,
     defaultLocale: currentLocale,
     fallbackLocale: localizationContext.fallbackLocale,

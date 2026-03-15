@@ -1,6 +1,9 @@
 'use client';
 
-import { I18nRuntimeProvider, initializeI18nRuntime } from '@/common/i18n';
+import {
+  I18nRuntimeProvider,
+  createInitializedI18nRuntime,
+} from '@/common/i18n';
 import type { ReactNode } from 'react';
 import { useEffect, useMemo } from 'react';
 import type {
@@ -58,7 +61,7 @@ function ScopedPreload(props: {
   useEffect(() => {
     void (async () => {
       const { localeResolver, runtimeConfig: normalized } =
-        await initializeI18nRuntime(runtimeConfig);
+        await createInitializedI18nRuntime(runtimeConfig);
       const resolvedLocale = localeResolver.resolve(
         currentLocale ?? normalized.defaultLocale,
       ) as Locale;

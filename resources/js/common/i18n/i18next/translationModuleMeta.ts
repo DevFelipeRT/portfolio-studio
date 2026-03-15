@@ -1,6 +1,9 @@
 import type { Locale, LocaleInput } from '@/common/locale';
 import type { Namespace } from '../types';
 
+/**
+ * Locale and namespace metadata derived from a translation module path.
+ */
 export type TranslationModuleMeta = {
   locale: Locale;
   namespace: Namespace;

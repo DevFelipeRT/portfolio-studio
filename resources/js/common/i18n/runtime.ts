@@ -1,19 +1,22 @@
 import { createLocaleResolver, normalizeRuntimeConfig } from '@/common/locale';
 import type {
-  Locale,
   RuntimeLocalizationConfig,
   NormalizedRuntimeLocalizationConfig,
 } from '@/common/locale';
-import { ensureI18nextInitialized, getI18next } from './i18next/i18next';
+import { ensureI18nextInitialized } from './i18next/i18next';
 
-export type InitializedI18nRuntime = {
+export type I18nRuntime = {
   localeResolver: ReturnType<typeof createLocaleResolver>;
   runtimeConfig: NormalizedRuntimeLocalizationConfig;
 };
 
-export async function initializeI18nRuntime(
+/**
+ * Creates the normalized i18n runtime contract used by application boot and
+ * page-level runtime setup.
+ */
+export async function createI18nRuntime(
   runtimeConfig: RuntimeLocalizationConfig,
-): Promise<InitializedI18nRuntime> {
+): Promise<I18nRuntime> {
   const normalized = normalizeRuntimeConfig(runtimeConfig);
 
   await ensureI18nextInitialized({
@@ -31,18 +34,4 @@ export async function initializeI18nRuntime(
     localeResolver,
     runtimeConfig: normalized,
   };
-}
-
-export function getI18nRuntime() {
-  return getI18next();
-}
-
-export async function setI18nRuntimeLocale(locale: Locale | string): Promise<string> {
-  const trimmed = String(locale).trim();
-  if (!trimmed) {
-    return trimmed;
-  }
-
-  await getI18nRuntime().changeLanguage(trimmed);
-  return trimmed;
 }

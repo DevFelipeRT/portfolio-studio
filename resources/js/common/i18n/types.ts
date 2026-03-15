@@ -1,30 +1,32 @@
-import { Locale } from './types';
+import type { Locale } from '@/common/locale';
 
 export type { Locale, LocaleInput } from '@/common/locale';
 
 /**
- * Namespace identifies a translation module within a locale.
+ * Translation namespace identifier.
  */
 export type Namespace = string;
 
 /**
- * TranslationPrimitive is a value type accepted for interpolation parameters.
+ * Value accepted for translation interpolation parameters.
  */
 export type TranslationPrimitive = string | number | boolean;
 
 /**
- * PlaceholderValues provides named values used to replace placeholders during interpolation.
+ * Named interpolation values passed to translation calls.
  */
 export type PlaceholderValues = Record<string, TranslationPrimitive>;
 
 /**
- * TranslationTree is the structured content exported by a translation module,
- * modeled as a nested key/value tree.
+ * Nested translation content exported by a translation module.
  */
 export type TranslationTree = {
   [key: string]: string | TranslationTree;
 };
 
+/**
+ * Public registry contract used by runtime and preloading code.
+ */
 export interface I18nRegistry {
   /**
    * Registers a preloader under a stable id (e.g. 'projects').
@@ -39,13 +41,29 @@ export interface I18nRegistry {
   define(id: string, load: () => Promise<unknown>): void;
 
   /**
-   * Returns a stable preloader for the provided scope.
-   *
-   * When scope is omitted/null, all registered preloaders are included.
+   * Ensures preloaders for the provided ids are registered.
    */
-  preloaderFor(scope?: readonly string[] | null): I18nPreloader;
+  ensureRegistered(ids: readonly string[]): Promise<void>;
+
+  /**
+   * Reads a registered preloader by id.
+   */
+  getPreloader(id: string): I18nPreloader | undefined;
+
+  /**
+   * Reads all currently registered preloaders.
+   */
+  getAllPreloaders(): readonly I18nPreloader[];
+
+  /**
+   * Monotonic version for cache invalidation when registrations change.
+   */
+  getVersion(): number;
 }
 
+/**
+ * Contract implemented by all i18n preloaders.
+ */
 export type I18nPreloader = {
   preloadLocale?(locale: Locale): Promise<void>;
 };

@@ -1,122 +1,79 @@
-# i18n – Issues, limitations, and trade-offs
+# i18n – Known Issues
 
-This module currently uses:
-1. an `i18next` runtime,
-2. shared preloaders for `common` and `layouts`,
-3. scope-level preloaders coordinated by the i18n registry, and
-4. local gating for dynamic areas that must wait for scoped bundles.
+This file tracks the problems and code risks that still matter in the current
+`common/i18n` implementation. It intentionally does not repeat expected
+behavior, authoring conventions, or architectural choices that are documented
+in `docs/frontend/common/i18n/README.md`.
 
-The points below reflect the current state of the implementation.
+## 1) Missing key vs missing bundle is still difficult to diagnose quickly
 
-## Issues
+### Problem
+- A translation can resolve to fallback text or the raw key even when the source
+  file exists in the repository.
 
-## 1) Scoped translation loading can still be missed outside gated flows
+### Why this happens
+- The runtime failure mode is ambiguous:
+  - the key may actually be missing from the loaded namespace, or
+  - the namespace may never have been loaded for that locale because the scope
+    was not declared or not preloaded.
 
-### Symptom
-- A feature can still render fallback text or raw keys if it depends on a scoped bundle and does not preload or gate that scope correctly.
+### Why this matters
+- Debugging gets slower because the visible symptom is the same for two
+  different root causes.
+- The current DEV warning path reports unresolved keys, but it does not tell us
+  whether the namespace itself was absent.
 
-### Current state
-- This is no longer a blanket app-wide issue.
-- The shell (`common` + `layouts`) is preloaded before mount.
-- `RenderedPage` also has scoped preload + gate behavior.
-- The issue still exists as a risk for any other feature/module that renders before its scope is ready.
-
-### Why it still happens
-- The architecture does not globally block all page rendering on all possible scope ids.
-- Scoped bundles are still loaded asynchronously.
-
-### Mitigation
-- Use `I18nScopeGate` around dynamic scope-heavy subtrees.
-- Preload the page scope before locale reload when the route depends on scoped bundles.
-- Keep scope declaration correct via `Page.i18n` or `Page.getI18nScope`.
-
-## 2) Missing key vs missing bundle is still hard to distinguish quickly
-
-### Symptom
-- A translation may resolve to fallback text or the key itself even when the source file exists.
-
-### Why it still happens
-- The underlying problem may be:
-  - an actual missing key, or
-  - a scope that was never loaded for that locale.
-
-### Current state
-- DEV warnings help, but they still do not fully separate these two failure modes.
-
-### Mitigation
+### Current mitigation
 - Verify the page scope first.
-- Verify registry ids and `definition.ts` registration.
-- Then verify the key inside the loaded namespace.
+- Verify the registry id and the corresponding `definition.ts` / `environment.ts`
+  pair.
+- Only then verify the key inside the loaded namespace.
 
-## Limitations
+## 2) Scope ids are stringly-typed
 
-## 3) Scope ids are still stringly-typed
+### Problem
+- Scope ids such as `projects`, `courses`, `layouts`, and dynamic scope names
+  are still represented as plain strings throughout the API.
 
-### Limitation
-- Scope ids such as `projects`, `courses`, `layouts`, and dynamic ids are still plain strings.
+### Why this matters
+- This does not create a bug by itself, but it weakens the codebase:
+  - typos are detected only at runtime
+  - invalid scope declarations can silently skip preload behavior
+  - mistakes are easier to ship and harder to trace back to the declaration site
 
-### Impact
-- Typos are caught only at runtime.
-- TypeScript does not currently guarantee that a declared scope id is valid.
-
-### Possible improvement
-- Introduce a typed constant map for scope ids and consume it everywhere.
-
-## 4) Dynamic definition loading still depends on convention
-
-### Limitation
-- Modules/layouts must expose `i18n/definition.ts` so the registry can resolve them on demand.
-
-### Impact
-- If a module forgets this convention, runtime preload resolution breaks for that scope.
+### Current impact
+- A misspelled scope id can look like a preload problem, a missing translation,
+  or a page-specific regression depending on where it is used.
+- TypeScript does not currently guarantee that a declared scope id matches a
+  real registered scope.
 
 ### Possible improvement
-- Keep the convention documented and enforced in reviews, or generate registry definitions automatically in the future.
+- Introduce a typed source of truth for scope ids and consume it from page
+  declarations, registry definitions, and scope-aware helpers.
 
-## Trade-offs
+## 3) Locale switching may preload more than the current page strictly needs
 
-## 5) Scoped preload granularity is module-level
+### Problem
+- Some locale-switch paths call `preloadI18nBundles(...)` without explicit
+  `scopeIds`.
+
+### Why this happens
+- In that mode, the preloading layer targets every scope that is already
+  registered in the singleton registry, not only the scopes required by the
+  current page.
+
+### Why this matters
+- The amount of preload work depends on prior navigation history.
+- Locale changes can load more translation data than the current screen
+  strictly needs.
 
 ### Trade-off
-- Enabling a scope id preloads all bundles for that scope and locale, not only the exact namespace used by the current subtree.
-
-### Benefit
-- Simpler registry model.
-- Less orchestration complexity.
-- Easier module authoring.
-
-### Cost
-- More data may be loaded than strictly necessary for a given render path.
+- This behavior keeps the public API simple and can warm scopes that the user is
+  likely to revisit soon.
+- The cost is broader preload work and less predictable runtime behavior during
+  locale switches.
 
 ### Possible improvement
-- Introduce finer-grained sub-scopes for large modules.
-
-## 6) Namespace strategy is scope-prefixed
-
-### Trade-off
-- Namespaces are addressed as `<scopeId>.<namespace>`.
-
-### Benefit
-- Avoids collisions between modules.
-- Keeps bundles isolated by scope.
-
-### Cost
-- It is easy to target the wrong namespace when migrating code manually.
-
-### Possible improvement
-- Keep scope-local hooks such as `useProjectsTranslation(...)` and `useLayoutsTranslation(...)`.
-- Consider typed scope/namespace maps if the matrix grows.
-
-## 7) The system favors incremental migration over a fully blocking global bootstrap
-
-### Trade-off
-- The app does not globally block every page until every possible scoped bundle is loaded.
-
-### Benefit
-- Faster shell startup.
-- Lower coupling between app bootstrap and modules.
-- Better incremental migration path.
-
-### Cost
-- Dynamic areas still require local preload/gate discipline.
-- Some correctness depends on the page declaring its i18n scope properly.
+- Pass explicit scope ids from every locale-switch call site that wants bounded
+  work.
+- Separate “common only” and “all registered scopes” into distinct public APIs.

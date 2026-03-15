@@ -11,6 +11,9 @@ export type I18nextRuntimeConfig = {
   supportedLocales: readonly Locale[];
 };
 
+/**
+ * Returns the shared i18next instance backing the application runtime.
+ */
 export function getI18next(): i18n {
   return i18next;
 }
