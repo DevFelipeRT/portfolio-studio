@@ -1,10 +1,16 @@
-export type { PageRuntimeAdapter, PageLinkProps } from './adapter';
+export type {
+  PageLinkAs,
+  PageLinkMethod,
+  PageLinkProps,
+  PageRuntimeAdapter,
+} from './adapter';
 export type { PageHeadProps } from './document';
 export type {
   PageFormDataValues,
   PageFormHook,
   PageFormPrimitiveValue,
   PageFormSetData,
+  PageFormSetDefaults,
   PageFormSubmitOptions,
   PageFormValue,
 } from './form';
