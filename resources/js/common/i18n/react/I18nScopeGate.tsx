@@ -1,10 +1,12 @@
-import { resolveInertiaLocalizationContext } from '@/app/inertia';
+import {
+  resolveAppLocalizationContext,
+  type AppPageProps,
+} from '@/app/shell';
 import type { ReactNode } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { canonicalizeLocale, useGetLocale } from '@/common/locale';
 import type { Locale } from '@/common/locale';
 import { usePageProps } from '@/common/page-runtime';
-import type { InertiaPageProps } from '@/app/inertia';
 import { preloaderForI18nScopes } from '../preloading';
 
 export type I18nScopeGateProps = {
@@ -67,8 +69,8 @@ export function I18nScopeGate({
   minVisibleMs,
 }: I18nScopeGateProps) {
   const locale = useGetLocale();
-  const pageProps = usePageProps<InertiaPageProps>();
-  const localizationContext = resolveInertiaLocalizationContext(pageProps);
+  const pageProps = usePageProps<AppPageProps>();
+  const localizationContext = resolveAppLocalizationContext(pageProps);
 
   const fallbackLocale: Locale | null =
     canonicalizeLocale(

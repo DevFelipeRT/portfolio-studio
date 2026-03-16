@@ -1,7 +1,7 @@
 'use client';
 
 import ApplicationLogo from '@/app/layouts/partials/application-logo/ApplicationLogo';
-import { useInertiaLocalizationContext } from '@/app/inertia';
+import { useAppLocalizationContext } from '@/app/shell';
 import { ModeToggle } from '@/app/layouts/partials/theme/ModeToggle';
 import { UserMenu } from '@/app/layouts/partials/UserMenu';
 import { LocaleSwitcher } from '@/common/locale';
@@ -37,7 +37,7 @@ export default function Header({ children }: PropsWithChildren) {
 function HeaderI18nContent({ children }: PropsWithChildren) {
   const props = usePageProps<SharedProps>();
   const user = props.auth.user;
-  const localizationContext = useInertiaLocalizationContext();
+  const localizationContext = useAppLocalizationContext();
 
   const { translate: tHeader } = useLayoutsTranslation('header');
   const { translate: tNavigation } = useLayoutsTranslation('navigation');
