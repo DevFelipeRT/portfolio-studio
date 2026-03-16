@@ -1,10 +1,10 @@
 import type { Page } from '@inertiajs/core';
 
 /**
- * Reads the initial Inertia page JSON from the root HTML document when running
- * in client-side rendering mode.
+ * The client-side reader for the serialized initial Inertia page embedded in
+ * the root HTML shell.
  */
-export function resolveInitialPageForCSR(): Page {
+export function readInitialPage(): Page {
   const script = document.getElementById('inertia-page');
 
   if (!script) {

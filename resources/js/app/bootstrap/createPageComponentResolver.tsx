@@ -1,6 +1,9 @@
-import type { PageModule, PageModuleLoader } from '../types';
-import { decoratePageComponent } from './PageComponent';
+import { decoratePageComponent } from '@/app/shell';
+import type { PageModule, PageModuleLoader } from '@/app/shell';
 
+/**
+ * The runtime shape expected from lazily imported page modules.
+ */
 function isPageModule(value: unknown): value is PageModule {
   if (!value || typeof value !== 'object') {
     return false;
@@ -12,7 +15,6 @@ function isPageModule(value: unknown): value is PageModule {
     return true;
   }
 
-  // React "exotic" components (memo/forwardRef) are objects with a $$typeof marker.
   return (
     !!maybeDefault &&
     typeof maybeDefault === 'object' &&
@@ -20,16 +22,13 @@ function isPageModule(value: unknown): value is PageModule {
   );
 }
 
-export function createInertiaPageResolver(
+/**
+ * The page-component resolver used by the browser bootstrap layer to map
+ * backend page keys to lazily loaded and shell-decorated React components.
+ */
+export function createPageComponentResolver(
   registry: Record<string, PageModuleLoader>,
 ) {
-  /**
-   * Resolves an Inertia component name to a React page component by looking up
-   * a matching loader in the registry and importing the module.
-   *
-   * The backend is expected to render component names that match registry keys,
-   * e.g. `Inertia::render('dashboard/admin/Dashboard')`.
-   */
   return async (name: string) => {
     const loader = registry[name];
 
