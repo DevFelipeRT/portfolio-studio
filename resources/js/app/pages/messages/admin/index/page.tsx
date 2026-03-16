@@ -1,6 +1,7 @@
 // resources/js/Pages/Messages/Index.tsx
 
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import { PageContent } from '@/app/layouts/primitives';
 import { PageHead, pageRouter } from '@/common/page-runtime';
 import { useMemo, useState } from 'react';
 
@@ -141,16 +142,10 @@ export default function Index({ messages }: MessagesIndexProps) {
   }
 
   return (
-    <AuthenticatedLayout
-      header={
-        <h1 className="text-xl leading-tight font-semibold">
-          Contact messages
-        </h1>
-      }
-    >
+    <AuthenticatedLayout>
       <PageHead title="Messages" />
 
-      <div className="overflow-hidden">
+      <PageContent className="overflow-hidden py-8" pageWidth="container">
         <MessagesHeader total={items.length} />
 
         {!hasMessages && <MessagesEmptyState />}
@@ -164,7 +159,7 @@ export default function Index({ messages }: MessagesIndexProps) {
             onDelete={handleDelete}
           />
         )}
-      </div>
+      </PageContent>
 
       <MessageOverlay
         open={overlayOpen}

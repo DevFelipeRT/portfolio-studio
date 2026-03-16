@@ -1,4 +1,5 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import { PageContent } from '@/app/layouts/primitives';
 import type { FormErrors } from '@/common/forms';
 import { PageHead, pageRouter, usePageForm, usePageProps } from '@/common/page-runtime';
 import { Button } from '@/components/ui/button';
@@ -140,8 +141,14 @@ export default function PageEdit({
   };
 
   return (
-    <AuthenticatedLayout
-      header={
+    <AuthenticatedLayout>
+      <PageHead title={`Edit page – ${page.title}`} />
+
+      <PageContent
+        pageWidth="default"
+        contentClassName="flex flex-col gap-6"
+        className="pb-10"
+      >
         <div className="flex items-center justify-between gap-3">
           <div>
             <h1 className="text-xl font-semibold tracking-tight">
@@ -162,11 +169,7 @@ export default function PageEdit({
             Delete page
           </Button>
         </div>
-      }
-    >
-      <PageHead title={`Edit page – ${page.title}`} />
 
-      <div className="mx-auto flex max-w-5xl flex-col gap-6 pb-10">
         <PageForm
           mode="edit"
           page={page}
@@ -189,7 +192,7 @@ export default function PageEdit({
           onRemoveSection={handleRemoveSection}
           onReorder={sectionsList.onReorder}
         />
-      </div>
+      </PageContent>
 
       <CreateSectionDialog
         open={createDialog.open}

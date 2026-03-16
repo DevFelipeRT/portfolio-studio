@@ -10,35 +10,40 @@ interface InitiativeHeaderProps {
 }
 
 /**
- * InitiativeHeader renders the page header and summary for initiatives.
+ * InitiativeHeader renders the in-page header area for initiatives.
  */
 export function InitiativeHeader({
-    total,
-    visibleCount,
-    createRoute,
+  total,
+  visibleCount,
+  createRoute,
 }: InitiativeHeaderProps) {
-    return (
-        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className='w-full'>
-                <p className="text-muted-foreground mt-1 text-sm">
-                    Activities you led, such as talks, workshops and community
-                    actions.
-                </p>
-            </div>
+  return (
+    <div className="mb-6 space-y-6">
+      <div>
+        <h1 className="text-xl leading-tight font-semibold">Initiatives</h1>
+      </div>
 
-            <div className='flex gap-4 text-nowrap justify-end'>
-                <div className="text-muted-foreground flex items-center gap-2 text-xs">
-                    <Badge variant="outline">Total: {total}</Badge>
-                    <Badge variant="outline">Visible: {visibleCount}</Badge>
-                </div>
-
-                <Button asChild size="sm">
-                    <PageLink href={createRoute}>
-                        <Plus className="mr-2 h-4 w-4" />
-                        New initiative
-                    </PageLink>
-                </Button>
-            </div>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="w-full">
+          <p className="text-muted-foreground mt-1 text-sm">
+            Activities you led, such as talks, workshops and community actions.
+          </p>
         </div>
-    );
+
+        <div className="flex justify-end gap-4 text-nowrap">
+          <div className="text-muted-foreground flex items-center gap-2 text-xs">
+            <Badge variant="outline">Total: {total}</Badge>
+            <Badge variant="outline">Visible: {visibleCount}</Badge>
+          </div>
+
+          <Button asChild size="sm">
+            <PageLink href={createRoute}>
+              <Plus className="mr-2 h-4 w-4" />
+              New initiative
+            </PageLink>
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
 }

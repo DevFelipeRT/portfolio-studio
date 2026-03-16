@@ -1,6 +1,7 @@
 // resources/js/Pages/Skills/Edit.tsx
 
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import { PageContent } from '@/app/layouts/primitives';
 import type { FormErrors } from '@/common/forms';
 import { LocaleSwapDialog } from '@/common/LocaleSwapDialog';
 import { PageHead, PageLink, usePageForm, usePageProps } from '@/common/page-runtime';
@@ -83,49 +84,47 @@ export default function Edit({ skill, categories }: EditSkillProps) {
 
   return (
     <>
-      <AuthenticatedLayout
-        header={
-          <h1 className="text-xl leading-tight font-semibold">Edit skill</h1>
-        }
-      >
+      <AuthenticatedLayout>
         <PageHead title={`Edit skill: ${skill.name}`} />
 
-        <div className="overflow-hidden">
-          <div className="mx-auto max-w-xl px-4 py-8 sm:px-6 lg:px-8">
-            <div className="mb-4">
-              <PageLink
-                href={route('skills.index')}
-                className="text-muted-foreground hover:text-foreground text-sm"
-              >
-                Back to skills
-              </PageLink>
-            </div>
-
-            <SkillForm
-              data={data}
-              errors={formErrors}
-              categories={categories}
-              processing={processing}
-              onChange={handleChange}
-              onSubmit={handleSubmit}
-              cancelHref={route('skills.index')}
-              submitLabel="Save changes"
-              deleteHref={route('skills.destroy', skill.id)}
-              deleteLabel="Delete"
-            />
-
-            <div className="mt-4 flex justify-end">
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                onClick={() => setShowTranslations(true)}
-              >
-                Manage translations
-              </Button>
-            </div>
+        <PageContent className="overflow-hidden py-8" pageWidth="form">
+          <div className="mb-6">
+            <h1 className="text-xl leading-tight font-semibold">Edit skill</h1>
           </div>
-        </div>
+
+          <div className="mb-4">
+            <PageLink
+              href={route('skills.index')}
+              className="text-muted-foreground hover:text-foreground text-sm"
+            >
+              Back to skills
+            </PageLink>
+          </div>
+
+          <SkillForm
+            data={data}
+            errors={formErrors}
+            categories={categories}
+            processing={processing}
+            onChange={handleChange}
+            onSubmit={handleSubmit}
+            cancelHref={route('skills.index')}
+            submitLabel="Save changes"
+            deleteHref={route('skills.destroy', skill.id)}
+            deleteLabel="Delete"
+          />
+
+          <div className="mt-4 flex justify-end">
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={() => setShowTranslations(true)}
+            >
+              Manage translations
+            </Button>
+          </div>
+        </PageContent>
       </AuthenticatedLayout>
 
       <TranslationModal

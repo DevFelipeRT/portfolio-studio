@@ -1,4 +1,5 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import { PageContent } from '@/app/layouts/primitives';
 import { PageHead, PageLink, pageRouter } from '@/common/page-runtime';
 
 import { Button } from '@/components/ui/button';
@@ -41,8 +42,10 @@ export default function PageIndex({
   };
 
   return (
-    <AuthenticatedLayout
-      header={
+    <AuthenticatedLayout>
+      <PageHead title="Content pages" />
+
+      <PageContent className="space-y-6 py-8" pageWidth="container">
         <div className="flex items-center justify-between gap-3">
           <div>
             <h1 className="text-xl font-semibold tracking-tight">
@@ -61,11 +64,7 @@ export default function PageIndex({
             </PageLink>
           </Button>
         </div>
-      }
-    >
-      <PageHead title="Content pages" />
 
-      <div className="space-y-6">
         <PageFilters
           initialFilters={initialFilters}
           onApply={handleApplyFilters}
@@ -78,7 +77,7 @@ export default function PageIndex({
           }
           onShowInfo={(page) => setInfoPage(page)}
         />
-      </div>
+      </PageContent>
 
       <PageInfoModal
         open={Boolean(infoPage)}

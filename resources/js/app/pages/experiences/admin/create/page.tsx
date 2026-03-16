@@ -1,4 +1,5 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import { PageContent } from '@/app/layouts/primitives';
 import { useSupportedLocales } from '@/common/locale';
 import { useFormSubmit, type FormErrors } from '@/common/forms';
 import { PageHead, PageLink, usePageForm, usePageProps } from '@/common/page-runtime';
@@ -49,7 +50,7 @@ export default function Create() {
   };
 
   return (
-      <AuthenticatedLayout>
+    <AuthenticatedLayout>
       <PageHead title="New experience" />
 
       <CreateExperienceI18nContent
@@ -91,28 +92,32 @@ function CreateExperienceI18nContent({
   );
 
   return (
-    <div className="overflow-hidden">
-      <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="mb-4">
-          <PageLink
-            href={route('experiences.index')}
-            className="text-muted-foreground hover:text-foreground text-sm"
-          >
-            {tActions('backToIndex')}
-          </PageLink>
-        </div>
-
-        <ExperienceForm
-          data={data}
-          errors={formErrors}
-          processing={processing}
-          supportedLocales={supportedLocales}
-          cancelHref={route('experiences.index')}
-          submitLabel={tActions('save')}
-          onSubmit={onSubmit}
-          onChange={onChange}
-        />
+    <PageContent className="overflow-hidden py-8" pageWidth="detail">
+      <div className="mb-6">
+        <h1 className="text-xl leading-tight font-semibold">
+          New experience
+        </h1>
       </div>
-    </div>
+
+      <div className="mb-4">
+        <PageLink
+          href={route('experiences.index')}
+          className="text-muted-foreground hover:text-foreground text-sm"
+        >
+          {tActions('backToIndex')}
+        </PageLink>
+      </div>
+
+      <ExperienceForm
+        data={data}
+        errors={formErrors}
+        processing={processing}
+        supportedLocales={supportedLocales}
+        cancelHref={route('experiences.index')}
+        submitLabel={tActions('save')}
+        onSubmit={onSubmit}
+        onChange={onChange}
+      />
+    </PageContent>
   );
 }

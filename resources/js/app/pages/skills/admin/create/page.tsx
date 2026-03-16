@@ -1,6 +1,7 @@
 // resources/js/Pages/Skills/Create.tsx
 
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import { PageContent } from '@/app/layouts/primitives';
 import { useFormSubmit, type FormErrors } from '@/common/forms';
 import { PageHead, PageLink, usePageForm, usePageProps } from '@/common/page-runtime';
 import type { SkillFormData } from '@/modules/skills/core/forms';
@@ -40,36 +41,34 @@ export default function Create({ categories }: CreateSkillProps) {
   };
 
   return (
-    <AuthenticatedLayout
-      header={
-        <h1 className="text-xl leading-tight font-semibold">New skill</h1>
-      }
-    >
+    <AuthenticatedLayout>
       <PageHead title="New skill" />
 
-      <div className="overflow-hidden">
-        <div className="mx-auto max-w-xl px-4 py-8 sm:px-6 lg:px-8">
-          <div className="mb-4">
-            <PageLink
-              href={route('skills.index')}
-              className="text-muted-foreground hover:text-foreground text-sm"
-            >
-              Back to skills
-            </PageLink>
-          </div>
-
-          <SkillForm
-            data={data}
-            errors={formErrors}
-            categories={categories}
-            processing={processing}
-            onChange={handleChange}
-            onSubmit={handleSubmit}
-            cancelHref={route('skills.index')}
-            submitLabel="Save"
-          />
+      <PageContent className="overflow-hidden py-8" pageWidth="form">
+        <div className="mb-6">
+          <h1 className="text-xl leading-tight font-semibold">New skill</h1>
         </div>
-      </div>
+
+        <div className="mb-4">
+          <PageLink
+            href={route('skills.index')}
+            className="text-muted-foreground hover:text-foreground text-sm"
+          >
+            Back to skills
+          </PageLink>
+        </div>
+
+        <SkillForm
+          data={data}
+          errors={formErrors}
+          categories={categories}
+          processing={processing}
+          onChange={handleChange}
+          onSubmit={handleSubmit}
+          cancelHref={route('skills.index')}
+          submitLabel="Save"
+        />
+      </PageContent>
     </AuthenticatedLayout>
   );
 }

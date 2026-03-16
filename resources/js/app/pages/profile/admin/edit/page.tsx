@@ -1,4 +1,5 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import { PageContent } from '@/app/layouts/primitives';
 import { PageHead } from '@/common/page-runtime';
 import DeleteUserForm from '@/modules/profile/ui/DeleteUserForm';
 import UpdatePasswordForm from '@/modules/profile/ui/UpdatePasswordForm';
@@ -10,16 +11,14 @@ export default function Edit({
   status,
 }: PageProps<{ mustVerifyEmail: boolean; status?: string }>) {
   return (
-    <AuthenticatedLayout
-      header={
-        <h2 className="text-xl leading-tight font-semibold text-gray-800 dark:text-gray-200">
-          Profile
-        </h2>
-      }
-    >
+    <AuthenticatedLayout>
       <PageHead title="Profile" />
 
-      <div className="space-y-4">
+      <PageContent className="space-y-4 py-8" pageWidth="detail">
+        <div>
+          <h1 className="text-xl leading-tight font-semibold">Profile</h1>
+        </div>
+
         <div className="bg-card border-border border p-4 shadow sm:rounded-lg sm:p-8">
           <UpdateProfileInformationForm
             mustVerifyEmail={mustVerifyEmail}
@@ -35,7 +34,7 @@ export default function Edit({
         <div className="bg-card border-border border p-4 shadow sm:rounded-lg sm:p-8">
           <DeleteUserForm className="max-w-xl" />
         </div>
-      </div>
+      </PageContent>
     </AuthenticatedLayout>
   );
 }

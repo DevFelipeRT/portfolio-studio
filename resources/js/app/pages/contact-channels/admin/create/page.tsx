@@ -1,4 +1,5 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import { PageContent } from '@/app/layouts/primitives';
 import type { FormErrors } from '@/common/forms';
 import { PageHead, PageLink, usePageForm, usePageProps } from '@/common/page-runtime';
 import type { ContactChannelFormData } from '@/modules/contact-channels/core/forms';
@@ -42,7 +43,7 @@ export default function Create({ channelTypes }: CreateContactChannelProps) {
   };
 
   return (
-    <AuthenticatedLayout header={<CreateContactChannelHeader />}>
+    <AuthenticatedLayout>
       <CreateContactChannelContent
         channelTypes={channelTypes}
         data={data}
@@ -96,29 +97,31 @@ function CreateContactChannelContent({
     <>
       <PageHead title={tActions('newChannel')} />
 
-      <div className="overflow-hidden">
-        <div className="mx-auto max-w-xl px-4 py-8 sm:px-6 lg:px-8">
-          <div className="mb-4">
-            <PageLink
-              href={route('contact-channels.index')}
-              className="text-muted-foreground hover:text-foreground text-sm"
-            >
-              {tActions('backToIndex')}
-            </PageLink>
-          </div>
-
-          <ContactChannelForm
-            data={data}
-            errors={formErrors}
-            channelTypes={channelTypes}
-            processing={processing}
-            onChange={onChange}
-            onSubmit={onSubmit}
-            cancelHref={route('contact-channels.index')}
-            submitLabel={tActions('save')}
-          />
+      <PageContent className="overflow-hidden py-8" pageWidth="form">
+        <div className="mb-6">
+          <CreateContactChannelHeader />
         </div>
-      </div>
+
+        <div className="mb-4">
+          <PageLink
+            href={route('contact-channels.index')}
+            className="text-muted-foreground hover:text-foreground text-sm"
+          >
+            {tActions('backToIndex')}
+          </PageLink>
+        </div>
+
+        <ContactChannelForm
+          data={data}
+          errors={formErrors}
+          channelTypes={channelTypes}
+          processing={processing}
+          onChange={onChange}
+          onSubmit={onSubmit}
+          cancelHref={route('contact-channels.index')}
+          submitLabel={tActions('save')}
+        />
+      </PageContent>
     </>
   );
 }

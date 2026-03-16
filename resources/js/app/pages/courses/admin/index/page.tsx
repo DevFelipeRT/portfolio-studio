@@ -1,4 +1,5 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import { PageContent } from '@/app/layouts/primitives';
 import { PageHead } from '@/common/page-runtime';
 import type { Course } from '@/modules/courses/core/types';
 import { CourseOverlay } from '@/modules/courses/ui/CourseOverlay';
@@ -43,26 +44,16 @@ export default function Index({ courses }: CoursesIndexProps) {
   };
 
   return (
-    <AuthenticatedLayout
-      header={
-        <h1 className="text-xl leading-tight font-semibold">
-          Course management
-        </h1>
-      }
-    >
+    <AuthenticatedLayout>
       <PageHead title="Courses" />
 
-      <div className="overflow-hidden">
-        <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
-          <CoursesHeader />
+      <PageContent className="overflow-hidden py-8" pageWidth="container">
+        <CoursesHeader />
 
-          {!hasCourses && <CoursesEmptyState />}
+        {!hasCourses && <CoursesEmptyState />}
 
-          {hasCourses && (
-            <CoursesTable items={items} onRowClick={handleRowClick} />
-          )}
-        </div>
-      </div>
+        {hasCourses && <CoursesTable items={items} onRowClick={handleRowClick} />}
+      </PageContent>
 
       <CourseOverlay
         open={isOverlayOpen}

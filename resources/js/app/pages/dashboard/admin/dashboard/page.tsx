@@ -1,4 +1,5 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import { PageContent } from '@/app/layouts/primitives';
 import { PageHead } from '@/common/page-runtime';
 import { RichTextEditor } from '@/common/rich-text/RichTextEditor';
 import { RichTextRenderer } from '@/common/rich-text/RichTextRenderer';
@@ -8,14 +9,14 @@ export default function Dashboard() {
   const [editorValue, setEditorValue] = useState('');
 
   return (
-    <AuthenticatedLayout
-      header={
-        <h1 className="text-xl leading-tight font-semibold">Dashboard</h1>
-      }
-    >
+    <AuthenticatedLayout>
       <PageHead title="Dashboard" />
 
-      <div className="space-y-6">
+      <PageContent className="space-y-6 py-8" pageWidth="default">
+        <div>
+          <h1 className="text-xl leading-tight font-semibold">Dashboard</h1>
+        </div>
+
         <div className="text-muted-foreground text-sm">You&apos;re logged in!</div>
 
         <section className="bg-muted/40 space-y-4 rounded-md border p-6">
@@ -65,7 +66,7 @@ export default function Dashboard() {
             </div>
           </div>
         </section>
-      </div>
+      </PageContent>
     </AuthenticatedLayout>
   );
 }
