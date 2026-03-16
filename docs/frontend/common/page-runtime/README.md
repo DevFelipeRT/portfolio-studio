@@ -76,6 +76,7 @@ It also exports runtime-neutral types such as:
 - `PageRouter`
 - `PageFormDataValues`
 - `PageFormHook`
+- `PageLinkProps`
 
 The intended import path for consumers is:
 
@@ -221,5 +222,6 @@ Current constraints include:
 - some project areas still import Inertia directly and will be migrated gradually
 - the application shell and localization policy are intentionally outside this module
 - the default adapter is still statically bound to Inertia even though app policy moved to `app/shell`
+- some legacy page entrypoints still import Inertia directly and are being migrated incrementally
 
 These trade-offs are intentional. The current goal is to establish a clean technical boundary and enable safe incremental migration.

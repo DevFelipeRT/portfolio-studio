@@ -143,6 +143,7 @@ The current boot policy is:
 - store initial runtime metadata via `initializeAppRuntimeState(...)`
 - create an initialized i18n runtime
 - preload `common` bundles plus the `layouts` scope
+- keep runtime metadata synchronized from live page props through the shell-decorated page component after mount
 
 Evidence:
 
@@ -161,6 +162,8 @@ The shell-facing boundary is:
 
 - `resources/js/app/shell/registry/pageRegistry.ts`
 
+The shell now owns the registry construction and manifest loading, while
+`app/pages` keeps only the page manifests that register individual entries.
 This keeps the bootstrap layer from depending directly on `app/pages`.
 
 ## Relationship to `common/page-runtime` and `app/bootstrap`

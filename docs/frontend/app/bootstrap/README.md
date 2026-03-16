@@ -63,7 +63,8 @@ The current browser boot sequence is:
    - the parsed initial page
    - `resolveDocumentTitle`
    - a page resolver created from `getPageRegistry()`
-5. The `setup(...)` callback mounts the React app and refreshes runtime state from `initialPage.props`.
+5. The `setup(...)` callback mounts the React app.
+6. The shell-decorated page component synchronizes runtime state from live page props during each render, including client-side navigations.
 
 Evidence:
 
@@ -108,7 +109,6 @@ When changing this layer:
 Current constraints include:
 
 - the bootstrap still knows that the concrete runtime is Inertia
-- the React mount step still refreshes shell runtime state from `initialPage.props`
 - the initial page is currently read from a script element, matching the CSR-first architecture
 
 These trade-offs are intentional. The layer is meant to stay thin while giving the rest of the application a technology-neutral architectural vocabulary.
