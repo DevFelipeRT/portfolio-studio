@@ -1,0 +1,1 @@
+export { createInertiaAdapter } from './createInertiaAdapter';
