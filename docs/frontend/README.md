@@ -5,18 +5,18 @@ This document is an overview of cross-cutting frontend architecture and conventi
 ## Tech stack (evidence-based)
 
 - React + TypeScript + Vite (`package.json`, `resources/js/app.tsx`, `vite.config.js`, `tsconfig.json`)
-- Inertia client adapter: `@inertiajs/react` (`package.json`, `resources/js/app/inertia/InertiaApp.tsx`)
+- Inertia client adapter: `@inertiajs/react` (`package.json`, `resources/js/app/bootstrap/bootApplication.tsx`)
 - HTTP client: Axios (`package.json`, `resources/js/**/core/api/*.ts`)
 - UI primitives: Radix-based components + Tailwind (`package.json`, `resources/css/app.css`, `tailwind.config.ts`)
 
 ## Entry points (Inertia + Vite)
 
 - Frontend entry: `resources/js/app.tsx`
-- Inertia boot: `resources/js/app/inertia/InertiaApp.tsx`
+- Browser boot: `resources/js/app/bootstrap/bootApplication.tsx`
 - Root HTML shell: `resources/views/app.blade.php`
 - CSS entry: `resources/css/app.css`
 
-Inertia SSR is configured via `config/inertia.php` (env-controlled). Evidence: `resources/js/app/inertia/InertiaApp.tsx`, `resources/views/app.blade.php`, `config/inertia.php`.
+Inertia SSR is configured via `config/inertia.php` (env-controlled). Evidence: `resources/js/app/bootstrap/bootApplication.tsx`, `resources/views/app.blade.php`, `config/inertia.php`.
 
 ## Page registry (Inertia page resolution)
 
@@ -31,15 +31,16 @@ Backend controllers render pages using the same page keys via `Inertia::render(.
 
 ## Frontend structure (app vs modules)
 
-- `resources/js/app/`: application shell, layouts, navigation, Inertia integration
+- `resources/js/app/`: application shell, bootstrap wiring, layouts, navigation
 - `resources/js/modules/`: domain-oriented feature modules (admin UI + public CMS sections)
-- `resources/js/common/`: shared utilities (i18n, rich text, etc.)
+- `resources/js/common/`: shared utilities such as i18n, rich text, and the `page-runtime` facade used to keep most frontend code decoupled from direct Inertia imports
 - `resources/js/components/`: reusable UI primitives
 
 Evidence: folder structure under `resources/js/`.
 
 ## Common frontend docs
 
+- App frontend docs index: [`docs/frontend/app/README.md`](./app/README.md)
 - Shared frontend docs index: [`docs/frontend/common/README.md`](./common/README.md)
 - Shared i18n runtime: [`docs/frontend/common/i18n/README.md`](./common/i18n/README.md)
 
@@ -57,7 +58,7 @@ Note: the frontend currently doesn’t read `props.ziggy` directly (it relies on
 
 ## Localization (i18n)
 
-Localization metadata (locale + supported locales) is shared to the client via the Inertia middleware, and frontend i18n code lives under `resources/js/common/i18n/`. The backend now also sends an explicit `localization.scope` discriminator (`system` or `public`), and `resources/js/app/inertia/runtime/localizationContext.ts` is the canonical frontend boundary that normalizes this request context before boot, preload, or locale switching consume it. Evidence: `app/Modules/Inertia/Http/Middleware/HandleInertiaRequests.php`, `resources/js/app/inertia/runtime/localizationContext.ts`, `resources/js/common/i18n/`.
+Localization metadata (locale + supported locales) is shared to the client via the Inertia middleware, and frontend i18n code lives under `resources/js/common/i18n/`. The backend now also sends an explicit `localization.scope` discriminator (`system` or `public`), and `resources/js/app/shell/runtime/localizationContext.ts` is the canonical frontend boundary that normalizes this request context before boot, preload, or locale switching consume it. Evidence: `app/Modules/Inertia/Http/Middleware/HandleInertiaRequests.php`, `resources/js/app/shell/runtime/localizationContext.ts`, `resources/js/common/i18n/`.
 
 Translation bundles are loaded lazily via Vite `import.meta.glob` and follow the convention `.../locales/<locale>/<namespace>.ts`. Namespaces are intentionally free-form (modules may organize them however they want, e.g. `forms`, `table`, `list`) as long as they follow that folder/file naming convention.
 
@@ -68,11 +69,12 @@ The canonical frontend i18n flow is now split into:
 - `resources/js/common/i18n/preloading/*` for common/scoped/fallback bundle preloading and locale bundle caching
 - `resources/js/common/i18n/registry/*` for lazy scope definition loading and preloader registration
 - `resources/js/common/i18n/react/*` for runtime-backed React providers, gates, and hooks
-- `resources/js/app/inertia/runtime/*` for Inertia request-context normalization and boot/runtime helpers
+- `resources/js/app/shell/runtime/*` for app request-context normalization and runtime helpers
+- `resources/js/app/bootstrap/*` for browser bootstrapping and Inertia wiring
 
 The app uses i18next/react-i18next for translation resolution and keeps the same bundle file convention. Evidence: `resources/js/common/i18n/i18next/preloader.ts`, `resources/js/common/i18n/i18next/i18next.ts`, `resources/js/common/i18n/preloading/bundle/bundleLoaders.ts`.
 
-At runtime, the app treats public and system pages differently: the shell (`common` + `layouts`) is preloaded before the first mount for both, public pages remain non-blocking because CMS content is already localized by the backend, and system/admin pages can gate only the page subtree when they declare module scopes through `Page.i18n` / `Page.getI18nScope`. See [`docs/frontend/common/i18n/README.md`](./common/i18n/README.md) for the module-specific behavior and authoring contract. Evidence: `resources/js/app/inertia/InertiaApp.tsx`, `resources/js/app/inertia/page/PageComponent.tsx`, `resources/js/app/inertia/page/utils/WithI18nProvider.tsx`.
+At runtime, the app treats public and system pages differently: the shell (`common` + `layouts`) is preloaded before the first mount for both, public pages remain non-blocking because CMS content is already localized by the backend, and system/admin pages can gate only the page subtree when they declare module scopes through `Page.i18n` / `Page.getI18nScope`. See [`docs/frontend/common/i18n/README.md`](./common/i18n/README.md) for the module-specific behavior and authoring contract. Evidence: `resources/js/app/bootstrap/bootApplication.tsx`, `resources/js/app/shell/page/decoratePageComponent.tsx`, `resources/js/app/shell/page/wrapWithShellProviders.tsx`.
 
 Build config keeps locale bundles code-split by locale. Evidence: `vite.config.js`.
 

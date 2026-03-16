@@ -18,7 +18,7 @@ The authenticated layout header renders the system language selector (`resources
 
 ## Data source (Inertia shared props)
 
-The backend exposes the active request locale pipeline through `page.props.localization.scope = 'system'` for authenticated/admin requests, and `resources/js/app/inertia/runtime/localizationContext.ts` normalizes that into the runtime context consumed by the admin header.
+The backend exposes the active request locale pipeline through `page.props.localization.scope = 'system'` for authenticated/admin requests, and `resources/js/app/shell/runtime/localizationContext.ts` normalizes that into the runtime context consumed by the admin header.
 
 `LocaleSwitcher` receives the resolved system-locale persistence policy from that normalized Inertia context and uses:
 

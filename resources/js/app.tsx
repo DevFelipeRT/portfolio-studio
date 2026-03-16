@@ -1,6 +1,6 @@
 import '../css/app.css';
 import './bootstrap';
 
-import { bootInertiaApp } from './app/inertia';
+import { bootApplication } from './app/bootstrap';
 
-void bootInertiaApp();
+void bootApplication();

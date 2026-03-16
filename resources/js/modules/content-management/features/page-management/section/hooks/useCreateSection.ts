@@ -1,5 +1,5 @@
 import type { CreateSectionPayload } from '@/modules/content-management/features/page-management/section/types';
-import { router } from '@inertiajs/react';
+import { pageRouter } from '@/common/page-runtime';
 import React from 'react';
 
 interface UseCreateSectionOptions {
@@ -16,7 +16,7 @@ export function useCreateSection(
 ) {
   return React.useCallback(
     (payload: CreateSectionPayload): void => {
-      router.post(
+      pageRouter.post(
         route('admin.content.sections.store'),
         {
           page_id: pageId,

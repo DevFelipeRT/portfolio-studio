@@ -4,7 +4,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
-import { Link } from '@inertiajs/react';
+import { PageLink } from '@/common/page-runtime';
 import { ChevronDown } from 'lucide-react';
 import type { MouseEvent } from 'react';
 import { useEffect, useState } from 'react';
@@ -74,13 +74,13 @@ export function MobileGroupSubmenu({
 
     return (
       <div key={child.id} className={mobileWrapperClass(isActive)}>
-        <Link
+        <PageLink
           href={child.href}
           className={mobileButtonClass(isActive)}
           onClick={onClose}
         >
           {child.label}
-        </Link>
+        </PageLink>
       </div>
     );
   };
@@ -130,7 +130,7 @@ export function MobileGroupSubmenu({
     >
       {'href' in item ? (
         <div className="flex w-full items-stretch">
-          <Link
+          <PageLink
             href={item.href}
             className={[
               mobileTriggerClass(isHighlighted),
@@ -139,7 +139,7 @@ export function MobileGroupSubmenu({
             onClick={onClose}
           >
             {item.label}
-          </Link>
+          </PageLink>
 
           <CollapsibleTrigger asChild>
             <Button

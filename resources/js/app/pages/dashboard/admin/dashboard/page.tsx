@@ -1,7 +1,7 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import { PageHead } from '@/common/page-runtime';
 import { RichTextEditor } from '@/common/rich-text/RichTextEditor';
 import { RichTextRenderer } from '@/common/rich-text/RichTextRenderer';
-import { Head } from '@inertiajs/react';
 import { useState } from 'react';
 
 export default function Dashboard() {
@@ -13,7 +13,7 @@ export default function Dashboard() {
         <h1 className="text-xl leading-tight font-semibold">Dashboard</h1>
       }
     >
-      <Head title="Dashboard" />
+      <PageHead title="Dashboard" />
 
       <div className="space-y-6">
         <div className="text-muted-foreground text-sm">You&apos;re logged in!</div>

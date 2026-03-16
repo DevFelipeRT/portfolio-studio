@@ -1,7 +1,7 @@
 // resources/js/Pages/Messages/Index.tsx
 
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
-import { Head, router } from '@inertiajs/react';
+import { PageHead, pageRouter } from '@/common/page-runtime';
 import { useMemo, useState } from 'react';
 
 import type { Message } from '@/modules/messages/core/types';
@@ -47,7 +47,7 @@ export default function Index({ messages }: MessagesIndexProps) {
     if (!message.seen) {
       markLocallyAsSeen(message.id);
 
-      router.patch(
+      pageRouter.patch(
         route('messages.mark-as-seen', message.id),
         {},
         {
@@ -85,7 +85,7 @@ export default function Index({ messages }: MessagesIndexProps) {
       ),
     );
 
-    router.patch(
+    pageRouter.patch(
       route(
         nextImportant
           ? 'messages.mark-as-important'
@@ -111,7 +111,7 @@ export default function Index({ messages }: MessagesIndexProps) {
       ),
     );
 
-    router.patch(
+    pageRouter.patch(
       route(
         nextSeen ? 'messages.mark-as-seen' : 'messages.mark-as-unseen',
         message.id,
@@ -131,7 +131,7 @@ export default function Index({ messages }: MessagesIndexProps) {
       return;
     }
 
-    router.delete(route('messages.destroy', message.id), {
+    pageRouter.delete(route('messages.destroy', message.id), {
       preserveScroll: true,
       preserveState: true,
       onSuccess: () => {
@@ -148,7 +148,7 @@ export default function Index({ messages }: MessagesIndexProps) {
         </h1>
       }
     >
-      <Head title="Messages" />
+      <PageHead title="Messages" />
 
       <div className="overflow-hidden">
         <MessagesHeader total={items.length} />

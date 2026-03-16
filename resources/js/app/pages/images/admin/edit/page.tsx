@@ -2,10 +2,10 @@
 
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import type { FormErrors } from '@/common/forms';
+import { PageHead, PageLink, usePageForm, usePageProps } from '@/common/page-runtime';
 import type { ImageFormData } from '@/modules/images/core/forms';
 import type { Image } from '@/modules/images/core/types';
 import { ImageForm } from '@/modules/images/ui/form/image';
-import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import React from 'react';
 
 interface EditImagePageProps {
@@ -23,12 +23,12 @@ export default function Edit({ image }: EditImagePageProps) {
     caption: image.caption ?? '',
   };
 
-  const { data, setData, put, processing, transform } = useForm<ImageFormData>(
+  const { data, setData, put, processing, transform } = usePageForm<ImageFormData>(
     initial,
   );
-  const { errors: formErrors } = usePage().props as {
+  const { errors: formErrors } = usePageProps<{
     errors: FormErrors<keyof ImageFormData>;
-  };
+  }>();
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
@@ -47,17 +47,17 @@ export default function Edit({ image }: EditImagePageProps) {
 
   return (
     <AuthenticatedLayout>
-      <Head title="Edit image" />
+      <PageHead title="Edit image" />
 
       <div className="overflow-hidden">
         <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
           <div className="mb-4">
-            <Link
+            <PageLink
               href={route('images.index')}
               className="text-muted-foreground hover:text-foreground text-sm"
             >
               Back to images
-            </Link>
+            </PageLink>
           </div>
 
           <ImageForm

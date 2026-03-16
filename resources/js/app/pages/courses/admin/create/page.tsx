@@ -1,8 +1,8 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import { useFormSubmit, type FormErrors } from '@/common/forms';
+import { PageHead, PageLink, usePageForm, usePageProps } from '@/common/page-runtime';
 import type { CourseFormData } from '@/modules/courses/core/forms';
 import { CourseForm } from '@/modules/courses/ui/form/course';
-import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { ChevronLeft } from 'lucide-react';
 import React from 'react';
 
@@ -29,14 +29,14 @@ const defaultCourseFormData: CourseFormData = {
 };
 
 export default function Create({ course_categories }: CreateCourseProps) {
-  const { data, setData, post, processing } = useForm<CourseFormData>(
+  const { data, setData, post, processing } = usePageForm<CourseFormData>(
     'courses.create',
     defaultCourseFormData,
   );
   const submitForm = useFormSubmit();
-  const { errors: formErrors } = usePage().props as {
+  const { errors: formErrors } = usePageProps<{
     errors: FormErrors<keyof CourseFormData>;
-  };
+  }>();
 
   /**
    * Submits the new course data to the backend.
@@ -56,18 +56,18 @@ export default function Create({ course_categories }: CreateCourseProps) {
         <h1 className="text-xl leading-tight font-semibold">New Course</h1>
       }
     >
-      <Head title="New Course" />
+      <PageHead title="New Course" />
 
       <div className="overflow-hidden">
         <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
           <div className="mb-4">
-            <Link
+            <PageLink
               href={route('courses.index')}
               className="text-muted-foreground hover:text-foreground inline-flex items-center text-sm transition-colors"
             >
               <ChevronLeft className="mr-1 h-4 w-4" />
               Back to courses
-            </Link>
+            </PageLink>
           </div>
 
           <CourseForm

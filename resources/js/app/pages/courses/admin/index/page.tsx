@@ -1,10 +1,10 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import { PageHead } from '@/common/page-runtime';
 import type { Course } from '@/modules/courses/core/types';
 import { CourseOverlay } from '@/modules/courses/ui/CourseOverlay';
 import { CoursesEmptyState } from '@/modules/courses/ui/CoursesEmptyState';
 import { CoursesHeader } from '@/modules/courses/ui/CoursesHeader';
 import { CoursesTable } from '@/modules/courses/ui/table/CoursesTable';
-import { Head } from '@inertiajs/react';
 import React from 'react';
 
 interface CoursesIndexProps {
@@ -50,7 +50,7 @@ export default function Index({ courses }: CoursesIndexProps) {
         </h1>
       }
     >
-      <Head title="Courses" />
+      <PageHead title="Courses" />
 
       <div className="overflow-hidden">
         <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">

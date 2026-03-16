@@ -1,10 +1,10 @@
 import { Button } from '@/components/ui/button';
 import GuestLayout from '@/app/layouts/GuestLayout';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { PageHead, PageLink, usePageForm } from '@/common/page-runtime';
 import { FormEventHandler } from 'react';
 
 export default function VerifyEmail({ status }: { status?: string }) {
-  const { post, processing } = useForm({});
+  const { post, processing } = usePageForm({});
 
   const submit: FormEventHandler = (e) => {
     e.preventDefault();
@@ -14,7 +14,7 @@ export default function VerifyEmail({ status }: { status?: string }) {
 
   return (
     <GuestLayout>
-      <Head title="Email Verification" />
+      <PageHead title="Email Verification" />
 
       <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
         Thanks for signing up! Before getting started, could you verify your
@@ -34,9 +34,9 @@ export default function VerifyEmail({ status }: { status?: string }) {
           <Button disabled={processing}>Resend Verification Email</Button>
 
           <Button variant="link" asChild className="px-0 text-sm">
-            <Link href={route('logout')} method="post" as="button">
+            <PageLink href={route('logout')} method="post" as="button">
               Log Out
-            </Link>
+            </PageLink>
           </Button>
         </div>
       </form>

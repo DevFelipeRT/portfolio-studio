@@ -5,7 +5,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Link } from '@inertiajs/react';
+import { PageLink } from '@/common/page-runtime';
 import { MoreVertical, Pencil, Trash2 } from 'lucide-react';
 
 interface CourseRowActionsProps {
@@ -34,17 +34,17 @@ export function CoursesRowActions({ courseId }: CourseRowActionsProps) {
                 onClick={(e) => e.stopPropagation()}
             >
                 <DropdownMenuItem asChild>
-                    <Link
+                    <PageLink
                         href={route('courses.edit', courseId)}
                         className="cursor-pointer"
                     >
                         <Pencil className="mr-2 h-4 w-4" />
                         <span>Edit course</span>
-                    </Link>
+                    </PageLink>
                 </DropdownMenuItem>
 
                 <DropdownMenuItem asChild>
-                    <Link
+                    <PageLink
                         href={route('courses.destroy', courseId)}
                         method="delete"
                         as="button"
@@ -52,7 +52,7 @@ export function CoursesRowActions({ courseId }: CourseRowActionsProps) {
                     >
                         <Trash2 className="mr-2 h-4 w-4" />
                         <span>Delete course</span>
-                    </Link>
+                    </PageLink>
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>

@@ -1,6 +1,7 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import type { FormErrors } from '@/common/forms';
 import { LocaleSwapDialog } from '@/common/LocaleSwapDialog';
+import { PageHead, PageLink, usePageForm, usePageProps } from '@/common/page-runtime';
 import { Button } from '@/components/ui/button';
 import { listCourseTranslations } from '@/modules/courses/core/api/translations';
 import type { CourseFormData } from '@/modules/courses/core/forms';
@@ -11,7 +12,6 @@ import {
 } from '@/modules/courses/i18n';
 import { CourseForm } from '@/modules/courses/ui/form/course';
 import { TranslationModal } from '@/modules/courses/ui/translation-modal/TranslationModal';
-import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { ChevronLeft } from 'lucide-react';
 import React from 'react';
 
@@ -28,7 +28,7 @@ interface EditCourseProps {
  * Initializes the form state with the provided course data.
  */
 export default function Edit({ course, course_categories }: EditCourseProps) {
-  const { data, setData, put, processing } = useForm<CourseFormData>({
+  const { data, setData, put, processing } = usePageForm<CourseFormData>({
     locale: course.locale,
     confirm_swap: false,
     name: course.name,
@@ -40,9 +40,9 @@ export default function Edit({ course, course_categories }: EditCourseProps) {
     completed_at: course.completed_at ?? null,
     display: Boolean(course.display),
   });
-  const { errors: formErrors } = usePage().props as {
+  const { errors: formErrors } = usePageProps<{
     errors: FormErrors<keyof CourseFormData>;
-  };
+  }>();
 
   /**
    * Submits the updated course data to the backend.
@@ -123,7 +123,7 @@ export default function Edit({ course, course_categories }: EditCourseProps) {
         </h1>
       }
     >
-      <Head title={`Edit - ${data.name}`} />
+      <PageHead title={`Edit - ${data.name}`} />
 
       <EditCourseI18nContent
         data={data}
@@ -211,13 +211,13 @@ function EditCourseI18nContent({
     <div className="overflow-hidden">
       <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-          <Link
+          <PageLink
             href={route('courses.index')}
             className="text-muted-foreground hover:text-foreground inline-flex items-center text-sm transition-colors"
           >
             <ChevronLeft className="mr-1 h-4 w-4" />
             Back to courses
-          </Link>
+          </PageLink>
 
           <Button type="button" variant="secondary" onClick={onOpenTranslations}>
             {tTranslations('manage')}

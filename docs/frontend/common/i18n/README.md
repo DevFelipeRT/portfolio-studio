@@ -64,16 +64,16 @@ During the Inertia boot sequence, the frontend resolves the localization context
 
 Current flow:
 
-1. `resources/js/app/inertia/InertiaApp.tsx` resolves the request context with `resolveInertiaLocalizationContext(...)`.
+1. `resources/js/app/bootstrap/bootApplication.tsx` initializes the shell with `resolveAppLocalizationContext(...)`.
 2. `createInitializedI18nRuntime(...)` normalizes `supportedLocales`, `defaultLocale`, and `fallbackLocale`.
 3. `preloadI18nBundles(...)` preloads the shell with `includeCommon: true` and `scopeIds: ['layouts']`.
-4. The application mounts with `I18nRuntimeProvider` through the standard page decoration flow in `resources/js/app/inertia/page/PageComponent.tsx`.
+4. The application mounts with `I18nRuntimeProvider` through the standard page decoration flow in `resources/js/app/shell/page/decoratePageComponent.tsx`.
 
 In practice, this guarantees that shared shell translations from `common` and `layouts` are available on first render.
 
 ## Inertia integration
 
-The canonical request localization boundary is `resources/js/app/inertia/runtime/localizationContext.ts`.
+The canonical request localization boundary is `resources/js/app/shell/runtime/localizationContext.ts`.
 
 It normalizes:
 
@@ -140,7 +140,7 @@ The project distinguishes between public pages and system/admin pages:
 - public pages do not block the main subtree on frontend scope preloading because CMS content already arrives localized from the backend
 - system pages may wait for the scopes declared by the page
 
-This behavior is implemented in `resources/js/app/inertia/page/utils/pageI18nContentResolver.tsx`:
+This behavior is implemented in `resources/js/app/shell/page/resolvePageI18nContent.tsx`:
 
 - the content always receives the shared provider
 - `I18nScopeGate` is only applied when the localization profile is `system`

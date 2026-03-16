@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import GuestLayout from '@/app/layouts/GuestLayout';
-import { Head, useForm } from '@inertiajs/react';
+import { PageHead, usePageForm } from '@/common/page-runtime';
 import { FormEventHandler } from 'react';
 
 export default function ResetPassword({
@@ -12,7 +12,7 @@ export default function ResetPassword({
   token: string;
   email: string;
 }) {
-  const { data, setData, post, processing, errors, reset } = useForm({
+  const { data, setData, post, processing, errors, reset } = usePageForm({
     token: token,
     email: email,
     password: '',
@@ -29,7 +29,7 @@ export default function ResetPassword({
 
   return (
     <GuestLayout>
-      <Head title="Reset Password" />
+      <PageHead title="Reset Password" />
 
       <form onSubmit={submit}>
         <div>

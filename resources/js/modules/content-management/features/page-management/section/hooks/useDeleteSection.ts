@@ -1,4 +1,4 @@
-import { router } from '@inertiajs/react';
+import { pageRouter } from '@/common/page-runtime';
 import React from 'react';
 
 interface UseDeleteSectionOptions {
@@ -12,7 +12,7 @@ interface UseDeleteSectionOptions {
 export function useDeleteSection(options: UseDeleteSectionOptions = {}) {
   return React.useCallback(
     (sectionId: number): void => {
-      router.delete(route('admin.content.sections.destroy', sectionId), {
+      pageRouter.delete(route('admin.content.sections.destroy', sectionId), {
         preserveScroll: options.preserveScroll ?? true,
         preserveState: options.preserveState ?? true,
       });

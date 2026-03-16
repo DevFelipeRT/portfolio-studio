@@ -1,5 +1,6 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import type { FormErrors } from '@/common/forms';
+import { PageHead, pageRouter, usePageForm, usePageProps } from '@/common/page-runtime';
 import { Button } from '@/components/ui/button';
 import {
   PageForm,
@@ -27,8 +28,6 @@ import type {
   PageSectionDto,
 } from '@/modules/content-management/types';
 import { defaultStringNormalizer } from '@/modules/content-management/utils/strings';
-import type { FormDataValues } from '@inertiajs/core';
-import { Head, router, useForm, usePage } from '@inertiajs/react';
 import { Trash2 } from 'lucide-react';
 import React from 'react';
 
@@ -45,7 +44,7 @@ export default function PageEdit({
   sections,
   availableTemplates,
 }: PageEditViewModelProps) {
-  const { data, setData, put, processing } = useForm<PageFormData>({
+  const { data, setData, put, processing } = usePageForm<PageFormData>({
     slug: page.slug,
     internal_name: page.internal_name,
     title: page.title,
@@ -56,9 +55,9 @@ export default function PageEdit({
     is_published: page.is_published,
     is_indexable: page.is_indexable,
   });
-  const { errors: formErrors } = usePage().props as {
+  const { errors: formErrors } = usePageProps<{
     errors: FormErrors<keyof PageFormData>;
-  };
+  }>();
 
   const createDialog = useCreateSectionDialogController();
   const editDialog = useEditSectionDialogController();
@@ -81,7 +80,7 @@ export default function PageEdit({
     field: K,
     value: PageFormData[K],
   ): void => {
-    setData(field, value as FormDataValues<PageFormData, K>);
+    setData(field, value);
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
@@ -101,7 +100,7 @@ export default function PageEdit({
       return;
     }
 
-    router.delete(route('admin.content.pages.destroy', page.id));
+    pageRouter.delete(route('admin.content.pages.destroy', page.id));
   };
 
   /** Sections: create */
@@ -165,7 +164,7 @@ export default function PageEdit({
         </div>
       }
     >
-      <Head title={`Edit page – ${page.title}`} />
+      <PageHead title={`Edit page – ${page.title}`} />
 
       <div className="mx-auto flex max-w-5xl flex-col gap-6 pb-10">
         <PageForm

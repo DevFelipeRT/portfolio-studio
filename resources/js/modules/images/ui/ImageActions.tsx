@@ -8,7 +8,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Link } from '@inertiajs/react';
+import { PageLink } from '@/common/page-runtime';
 import { Eye, MoreVertical, Pencil, Trash2 } from 'lucide-react';
 
 interface ImageActionsProps {
@@ -64,10 +64,10 @@ export function ImageActions({ image, onView, onDelete }: ImageActionsProps) {
                 </DropdownMenuItem>
 
                 <DropdownMenuItem asChild>
-                    <Link href={route('images.edit', image.id)}>
+                    <PageLink href={route('images.edit', image.id)}>
                         <Pencil className="mr-2 h-4 w-4" />
                         <span>Edit metadata</span>
-                    </Link>
+                    </PageLink>
                 </DropdownMenuItem>
 
                 <DropdownMenuItem

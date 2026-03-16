@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { Link } from '@inertiajs/react';
+import { PageLink } from '@/common/page-runtime';
 
 interface ExistingImageCardModel {
   id: number;
@@ -45,7 +45,7 @@ export function ExistingImageCard({
               size="sm"
               className="text-destructive hover:text-destructive"
             >
-              <Link
+              <PageLink
                 href={route('initiatives.images.destroy', {
                   initiative: initiativeId,
                   image: image.id,
@@ -54,7 +54,7 @@ export function ExistingImageCard({
                 as="button"
               >
                 Delete image
-              </Link>
+              </PageLink>
             </Button>
           </div>
         </CardFooter>

@@ -1,9 +1,9 @@
 import { Button } from '@/components/ui/button';
+import { PageHead, PageLink, pageRouter } from '@/common/page-runtime';
 import type { Skill, SkillCategory } from '@/modules/skills/core/types';
 import { SkillsTable } from '@/modules/skills/ui/table/SkillsTable';
 import { SkillCategoriesSection } from '@/modules/skills/ui/sections/SkillCategoriesSection';
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
-import { Head, Link, router } from '@inertiajs/react';
 
 interface SkillsIndexProps {
   skills: Skill[];
@@ -14,7 +14,7 @@ export default function Index({ skills, categories }: SkillsIndexProps) {
   const hasSkills = skills.length > 0;
 
   const handleEdit = (skill: Skill): void => {
-    router.get(route('skills.edit', skill.id));
+    pageRouter.get(route('skills.edit', skill.id));
   };
 
   const handleDelete = (skill: Skill, event?: React.MouseEvent): void => {
@@ -24,7 +24,7 @@ export default function Index({ skills, categories }: SkillsIndexProps) {
       return;
     }
 
-    router.delete(route('skills.destroy', skill.id));
+    pageRouter.delete(route('skills.destroy', skill.id));
   };
 
   return (
@@ -33,7 +33,7 @@ export default function Index({ skills, categories }: SkillsIndexProps) {
         <h1 className="text-xl leading-tight font-semibold">Skill catalog</h1>
       }
     >
-      <Head title="Skills" />
+      <PageHead title="Skills" />
 
       <div className="space-y-10 overflow-hidden">
         <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -43,9 +43,9 @@ export default function Index({ skills, categories }: SkillsIndexProps) {
             </p>
           </div>
 
-          <Link href={route('skills.create')}>
+          <PageLink href={route('skills.create')}>
             <Button size="sm">New skill</Button>
-          </Link>
+          </PageLink>
         </div>
 
         {!hasSkills && (

@@ -2,9 +2,9 @@
 
 import { useFormsTranslation } from '@/common/forms/hooks/useFormsTranslation';
 import { I18N_NAMESPACES } from '@/common/i18n';
+import { PageLink } from '@/common/page-runtime';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Link } from '@inertiajs/react';
 import { Loader2 } from 'lucide-react';
 import type { ReactNode } from 'react';
 
@@ -74,15 +74,15 @@ export function FormActions({
         variant="ghost"
         disabled={disableCancelWhenProcessing && processing}
       >
-        <Link href={cancelHref}>{resolvedCancelLabel}</Link>
+        <PageLink href={cancelHref}>{resolvedCancelLabel}</PageLink>
       </Button>
     ) : (
-      <Link
+      <PageLink
         href={cancelHref}
         className="text-muted-foreground hover:text-foreground text-sm"
       >
         {resolvedCancelLabel}
-      </Link>
+      </PageLink>
     );
 
   const submitControl = (
@@ -103,14 +103,14 @@ export function FormActions({
   return (
     <Container className={containerClassName}>
       {showDelete ? (
-        <Link
+        <PageLink
           href={deleteHref!}
           method="delete"
           as="button"
           className="text-destructive text-sm hover:underline"
         >
           {resolvedDeleteLabel}
-        </Link>
+        </PageLink>
       ) : null}
 
       <div className={rightGroupClassName}>

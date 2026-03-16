@@ -1,13 +1,13 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import type { FormErrors } from '@/common/forms';
 import { LocaleSwapDialog } from '@/common/LocaleSwapDialog';
+import { PageHead, PageLink, usePageForm, usePageProps } from '@/common/page-runtime';
 import { Button } from '@/components/ui/button';
 import { listSkillCategoryTranslations } from '@/modules/skills/core/api/translations';
 import type { SkillCategoryFormData } from '@/modules/skills/core/forms';
 import type { SkillCategory } from '@/modules/skills/core/types';
 import { SkillCategoryForm } from '@/modules/skills/ui/form/skill-category';
 import { TranslationModal } from '@/modules/skills/ui/TranslationModal';
-import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import React from 'react';
 
 interface EditSkillCategoryProps {
@@ -21,15 +21,15 @@ export default function Edit({ category }: EditSkillCategoryProps) {
   const [translationLocales, setTranslationLocales] = React.useState<string[]>(
     [],
   );
-  const { data, setData, put, processing } = useForm<SkillCategoryFormData>({
+  const { data, setData, put, processing } = usePageForm<SkillCategoryFormData>({
     name: category.name,
     slug: category.slug ?? '',
     locale: category.locale,
     confirm_swap: false,
   });
-  const { errors: formErrors } = usePage().props as {
+  const { errors: formErrors } = usePageProps<{
     errors: FormErrors<keyof SkillCategoryFormData>;
-  };
+  }>();
 
   React.useEffect(() => {
     let mounted = true;
@@ -87,17 +87,17 @@ export default function Edit({ category }: EditSkillCategoryProps) {
           </h1>
         }
       >
-        <Head title={`Edit skill category: ${category.name}`} />
+        <PageHead title={`Edit skill category: ${category.name}`} />
 
         <div className="overflow-hidden">
           <div className="mx-auto max-w-xl px-4 py-8 sm:px-6 lg:px-8">
             <div className="mb-4">
-              <Link
+              <PageLink
                 href={route('skills.index')}
                 className="text-muted-foreground hover:text-foreground text-sm"
               >
                 Back to skills
-              </Link>
+              </PageLink>
             </div>
 
             <SkillCategoryForm

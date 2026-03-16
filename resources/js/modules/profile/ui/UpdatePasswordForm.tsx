@@ -1,8 +1,8 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { usePageForm } from '@/common/page-runtime';
 import { Transition } from '@headlessui/react';
-import { useForm } from '@inertiajs/react';
 import { FormEventHandler, useRef } from 'react';
 
 export default function UpdatePasswordForm({
@@ -21,7 +21,7 @@ export default function UpdatePasswordForm({
         reset,
         processing,
         recentlySuccessful,
-    } = useForm({
+    } = usePageForm({
         current_password: '',
         password: '',
         password_confirmation: '',

@@ -2,7 +2,7 @@ import {
   NavigationMenuItem,
   NavigationMenuLink,
 } from '@/components/ui/navigation-menu';
-import { Link } from '@inertiajs/react';
+import { PageLink } from '@/common/page-runtime';
 import type { NavigationLinkItem } from '../../../types';
 import { desktopItemClass, desktopTriggerClass } from '../styles';
 
@@ -16,7 +16,7 @@ export function DesktopLinkItem({ item }: DesktopLinkItemProps) {
   return (
     <NavigationMenuItem className={desktopItemClass(isActive)}>
       <NavigationMenuLink asChild className={desktopTriggerClass(isActive)}>
-        <Link href={item.href}>{item.label}</Link>
+        <PageLink href={item.href}>{item.label}</PageLink>
       </NavigationMenuLink>
     </NavigationMenuItem>
   );

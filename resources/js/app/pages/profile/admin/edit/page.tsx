@@ -1,9 +1,9 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import { PageHead } from '@/common/page-runtime';
 import DeleteUserForm from '@/modules/profile/ui/DeleteUserForm';
 import UpdatePasswordForm from '@/modules/profile/ui/UpdatePasswordForm';
 import UpdateProfileInformationForm from '@/modules/profile/ui/UpdateProfileInformationForm';
 import { PageProps } from '@/types';
-import { Head } from '@inertiajs/react';
 
 export default function Edit({
   mustVerifyEmail,
@@ -17,7 +17,7 @@ export default function Edit({
         </h2>
       }
     >
-      <Head title="Profile" />
+      <PageHead title="Profile" />
 
       <div className="space-y-4">
         <div className="bg-card border-border border p-4 shadow sm:rounded-lg sm:p-8">

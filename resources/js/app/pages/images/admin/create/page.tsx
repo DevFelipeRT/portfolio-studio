@@ -2,9 +2,9 @@
 
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import { useFormSubmit, type FormErrors } from '@/common/forms';
+import { PageHead, PageLink, usePageForm, usePageProps } from '@/common/page-runtime';
 import type { ImageFormData } from '@/modules/images/core/forms';
 import { ImageForm } from '@/modules/images/ui/form/image';
-import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import React from 'react';
 
 /**
@@ -18,14 +18,14 @@ export default function Create() {
     caption: '',
   };
 
-  const { data, setData, post, processing } = useForm<ImageFormData>(
+  const { data, setData, post, processing } = usePageForm<ImageFormData>(
     'images.create',
     defaultValues,
   );
   const submitForm = useFormSubmit();
-  const { errors: formErrors } = usePage().props as {
+  const { errors: formErrors } = usePageProps<{
     errors: FormErrors<keyof ImageFormData>;
-  };
+  }>();
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     submitForm(event, post, route('images.store'), { forceFormData: true });
@@ -33,17 +33,17 @@ export default function Create() {
 
   return (
     <AuthenticatedLayout>
-      <Head title="New image" />
+      <PageHead title="New image" />
 
       <div className="overflow-hidden">
         <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
           <div className="mb-4">
-            <Link
+            <PageLink
               href={route('images.index')}
               className="text-muted-foreground hover:text-foreground text-sm"
             >
               Back to images
-            </Link>
+            </PageLink>
           </div>
 
           <ImageForm

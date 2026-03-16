@@ -7,7 +7,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Link } from '@inertiajs/react';
+import { PageLink } from '@/common/page-runtime';
 import {
     ChevronRight,
     Eye,
@@ -54,10 +54,10 @@ export function InitiativeActions({
                     onClick={(event) => event.stopPropagation()}
                 >
                     <DropdownMenuItem asChild>
-                        <Link href={route('initiatives.edit', initiative.id)}>
+                        <PageLink href={route('initiatives.edit', initiative.id)}>
                             <Pencil className="mr-2 h-4 w-4" />
                             <span>Edit</span>
-                        </Link>
+                        </PageLink>
                     </DropdownMenuItem>
 
                     <DropdownMenuItem

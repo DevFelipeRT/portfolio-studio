@@ -1,8 +1,8 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { usePageForm } from '@/common/page-runtime';
 import Modal from '@/components/ui/modal';
-import { useForm } from '@inertiajs/react';
 import { FormEventHandler, useRef, useState } from 'react';
 
 export default function DeleteUserForm({
@@ -21,7 +21,7 @@ export default function DeleteUserForm({
         reset,
         errors,
         clearErrors,
-    } = useForm({
+    } = usePageForm({
         password: '',
     });
 

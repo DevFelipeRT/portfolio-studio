@@ -9,8 +9,8 @@ import {
 } from '@/app/navigation';
 import { useNavigationSheet } from '@/app/navigation/useNavigationSheet';
 import { useLayoutsTranslation } from '@/app/layouts/i18n';
+import { useCurrentPage } from '@/common/page-runtime';
 import { useIsMobile } from '@/hooks/useMobile';
-import { usePage } from '@inertiajs/react';
 import { PropsWithChildren } from 'react';
 import Footer from './partials/Footer';
 import Header from './partials/Header';
@@ -40,9 +40,9 @@ function PublicLayoutI18nContent({
   children,
   navigationItems,
 }: PublicLayoutProps) {
-  const page = usePage();
+  const page = useCurrentPage();
   const { auth } = page.props as SharedProps;
-  const { url } = page;
+  const url = page.url ?? '';
   const isMobile = useIsMobile();
   const { isSheetOpen, setIsSheetOpen } = useNavigationSheet(url);
   const { translate: translateFromNavigation } =

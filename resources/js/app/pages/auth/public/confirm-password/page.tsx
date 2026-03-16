@@ -2,11 +2,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import GuestLayout from '@/app/layouts/GuestLayout';
-import { Head, useForm } from '@inertiajs/react';
+import { PageHead, usePageForm } from '@/common/page-runtime';
 import { FormEventHandler } from 'react';
 
 export default function ConfirmPassword() {
-  const { data, setData, post, processing, errors, reset } = useForm({
+  const { data, setData, post, processing, errors, reset } = usePageForm({
     password: '',
   });
 
@@ -20,7 +20,7 @@ export default function ConfirmPassword() {
 
   return (
     <GuestLayout>
-      <Head title="Confirm Password" />
+      <PageHead title="Confirm Password" />
 
       <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
         This is a secure area of the application. Please confirm your password

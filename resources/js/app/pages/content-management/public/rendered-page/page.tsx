@@ -1,5 +1,6 @@
 // resources/js/app/pages/content-management/public/RenderedPage.tsx
 import PublicLayout from '@/app/layouts/PublicLayout';
+import { PageHead } from '@/common/page-runtime';
 import { RenderedPageLoadingState } from './partials/RenderedPageLoadingState';
 import {
   buildNavigationItems,
@@ -14,7 +15,6 @@ import type {
   TemplateDefinitionDto,
 } from '@/modules/content-management/types';
 import { defaultStringNormalizer } from '@/modules/content-management/utils/strings';
-import { Head } from '@inertiajs/react';
 import { JSX } from 'react';
 
 // TEMP (DEV): set to `true` to keep the loader visible while testing UI.
@@ -57,7 +57,7 @@ export default function RenderedPage({
   return (
     <PublicLayout navigationItems={navigationItems}>
       <PageRenderingContextProvider value={renderingContext}>
-        <Head title={headTitle}>
+        <PageHead title={headTitle}>
           {headDescription && (
             <meta name="description" content={headDescription} />
           )}
@@ -69,7 +69,7 @@ export default function RenderedPage({
               <meta property="og:image" content={headImageUrl} />
             </>
           )}
-        </Head>
+        </PageHead>
 
         {sectionSlotLayoutManager.render(visibleSections, templates)}
       </PageRenderingContextProvider>

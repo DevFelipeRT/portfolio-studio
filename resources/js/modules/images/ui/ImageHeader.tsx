@@ -1,6 +1,6 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Link } from '@inertiajs/react';
+import { PageLink } from '@/common/page-runtime';
 import { Plus } from 'lucide-react';
 
 interface ImageHeaderProps {
@@ -28,10 +28,10 @@ export function ImageHeader({ total, createRoute }: ImageHeaderProps) {
                 </div>
 
                 <Button asChild size="sm">
-                    <Link href={createRoute}>
+                    <PageLink href={createRoute}>
                         <Plus className="mr-2 h-4 w-4" />
                         Upload image
-                    </Link>
+                    </PageLink>
                 </Button>
             </div>
         </div>

@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Link } from '@inertiajs/react';
+import { PageLink } from '@/common/page-runtime';
 import { Plus } from 'lucide-react';
 
 interface ImagesEmptyStateProps {
@@ -26,10 +26,10 @@ export function ImagesEmptyState({ createRoute }: ImagesEmptyStateProps) {
                 </div>
 
                 <Button asChild size="sm">
-                    <Link href={createRoute}>
+                    <PageLink href={createRoute}>
                         <Plus className="mr-2 h-4 w-4" />
                         Upload image
-                    </Link>
+                    </PageLink>
                 </Button>
             </CardContent>
         </Card>

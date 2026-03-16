@@ -1,12 +1,11 @@
 'use client';
 
 import type {
-  InertiaPageComponent,
-  InertiaPageProps,
+  AppPageComponent,
+  AppPageProps,
   PageModule,
-} from '@/app/inertia/types';
-import { resolveInertiaLocalizationContext } from '@/app/inertia';
-import { pageRegistry } from '@/app/pages/pageRegistryProvider';
+} from '@/app/shell';
+import { getPageRegistry, resolveAppLocalizationContext } from '@/app/shell';
 import type {
   UseSetLocaleOptions as BaseUseSetLocaleOptions,
   SetLocaleHandler,
@@ -16,7 +15,10 @@ import {
   useSetLocale as useBaseSetLocale,
   type Locale,
 } from '@/common/locale';
-import { usePage } from '@inertiajs/react';
+import {
+  useCurrentPage,
+  usePageComponentName,
+} from '@/common/page-runtime';
 import { useCallback } from 'react';
 import {
   preloadI18nBundles,
@@ -34,31 +36,30 @@ export type { SetLocaleHandler } from '@/common/locale';
 export function useSetI18nLocale(
   options?: UseSetLocaleOptions,
 ): SetLocaleHandler {
-  const page = usePage();
+  const page = useCurrentPage();
+  const componentName = usePageComponentName();
 
   const preloadCurrentPageLocale = useCallback(
     async (resolvedLocale: string): Promise<void> => {
-      const componentName =
-        typeof page.component === 'string' ? page.component.trim() : '';
+      const normalizedComponentName = componentName.trim();
 
-      if (!componentName) {
+      if (!normalizedComponentName) {
         return;
       }
 
-      const loader = pageRegistry[componentName];
+      const loader = getPageRegistry()[normalizedComponentName];
       if (!loader) {
         return;
       }
 
       const loadedModule = (await loader()) as PageModule;
-      const currentPage = loadedModule.default as InertiaPageComponent;
-      const currentPageProps = (page.props ?? {}) as InertiaPageProps;
+      const currentPage = loadedModule.default as AppPageComponent;
+      const currentPageProps = (page.props ?? {}) as AppPageProps;
 
       const staticIds = currentPage.i18n ?? [];
       const dynamicIds = currentPage.getI18nScope?.(currentPageProps) ?? [];
       const scopedIds = [...staticIds, ...dynamicIds];
-      const localizationContext =
-        resolveInertiaLocalizationContext(currentPageProps);
+      const localizationContext = resolveAppLocalizationContext(currentPageProps);
 
       if (scopedIds.length === 0) {
         return;
@@ -74,7 +75,7 @@ export function useSetI18nLocale(
         includeCommon: false,
       });
     },
-    [page.component, page.props],
+    [componentName, page.props],
   );
 
   return useBaseSetLocale({
@@ -82,9 +83,10 @@ export function useSetI18nLocale(
     preloadLocale: useCallback(
       async (resolvedLocale: string): Promise<void> => {
         const locale = resolvedLocale as Locale;
-        const currentPageProps = (page.props ?? {}) as InertiaPageProps;
-        const localizationContext =
-          resolveInertiaLocalizationContext(currentPageProps);
+        const currentPageProps = (page.props ?? {}) as AppPageProps;
+        const localizationContext = resolveAppLocalizationContext(
+          currentPageProps,
+        );
         const fallbackLocale = canonicalizeLocale(
           localizationContext.fallbackLocale ?? '',
         );

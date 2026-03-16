@@ -3,13 +3,13 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import type { FormErrors } from '@/common/forms';
 import { LocaleSwapDialog } from '@/common/LocaleSwapDialog';
+import { PageHead, PageLink, usePageForm, usePageProps } from '@/common/page-runtime';
 import { Button } from '@/components/ui/button';
 import { listSkillTranslations } from '@/modules/skills/core/api/translations';
 import type { SkillFormData } from '@/modules/skills/core/forms';
 import type { Skill, SkillCategory } from '@/modules/skills/core/types';
 import { SkillForm } from '@/modules/skills/ui/form/skill';
 import { TranslationModal } from '@/modules/skills/ui/TranslationModal';
-import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import React from 'react';
 
 interface EditSkillProps {
@@ -24,15 +24,15 @@ export default function Edit({ skill, categories }: EditSkillProps) {
   const [translationLocales, setTranslationLocales] = React.useState<string[]>(
     [],
   );
-  const { data, setData, put, processing } = useForm<SkillFormData>({
+  const { data, setData, put, processing } = usePageForm<SkillFormData>({
     name: skill.name,
     locale: skill.locale,
     confirm_swap: false,
     skill_category_id: skill.skill_category_id ?? '',
   });
-  const { errors: formErrors } = usePage().props as {
+  const { errors: formErrors } = usePageProps<{
     errors: FormErrors<keyof SkillFormData>;
-  };
+  }>();
 
   React.useEffect(() => {
     let mounted = true;
@@ -88,17 +88,17 @@ export default function Edit({ skill, categories }: EditSkillProps) {
           <h1 className="text-xl leading-tight font-semibold">Edit skill</h1>
         }
       >
-        <Head title={`Edit skill: ${skill.name}`} />
+        <PageHead title={`Edit skill: ${skill.name}`} />
 
         <div className="overflow-hidden">
           <div className="mx-auto max-w-xl px-4 py-8 sm:px-6 lg:px-8">
             <div className="mb-4">
-              <Link
+              <PageLink
                 href={route('skills.index')}
                 className="text-muted-foreground hover:text-foreground text-sm"
               >
                 Back to skills
-              </Link>
+              </PageLink>
             </div>
 
             <SkillForm

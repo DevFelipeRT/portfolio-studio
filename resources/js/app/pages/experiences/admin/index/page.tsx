@@ -1,6 +1,6 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import { PageHead, PageLink } from '@/common/page-runtime';
 import type { Experience } from '@/modules/experiences/core/types';
-import { Head, Link } from '@inertiajs/react';
 
 interface ExperiencesIndexProps {
   experiences: Experience[];
@@ -33,7 +33,7 @@ export default function Index({ experiences }: ExperiencesIndexProps) {
         </h1>
       }
     >
-      <Head title="Experiences" />
+      <PageHead title="Experiences" />
 
       <div className="overflow-hidden">
         <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -44,12 +44,12 @@ export default function Index({ experiences }: ExperiencesIndexProps) {
             </p>
           </div>
 
-          <Link
+          <PageLink
             href={route('experiences.create')}
             className="bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-ring inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium shadow-sm transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
           >
             New experience
-          </Link>
+          </PageLink>
         </div>
 
         {!hasExperiences && (
@@ -112,21 +112,21 @@ export default function Index({ experiences }: ExperiencesIndexProps) {
 
                     <td className="px-4 py-3 align-top">
                       <div className="flex justify-end gap-3 text-xs">
-                        <Link
+                        <PageLink
                           href={route('experiences.edit', experience.id)}
                           className="text-primary font-medium hover:underline"
                         >
                           Edit
-                        </Link>
+                        </PageLink>
 
-                        <Link
+                        <PageLink
                           href={route('experiences.destroy', experience.id)}
                           method="delete"
                           as="button"
                           className="text-destructive font-medium hover:underline"
                         >
                           Delete
-                        </Link>
+                        </PageLink>
                       </div>
                     </td>
                   </tr>

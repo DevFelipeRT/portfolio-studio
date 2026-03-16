@@ -1,5 +1,5 @@
 import type { UpdateSectionPayload } from '@/modules/content-management/features/page-management/section/types';
-import { router } from '@inertiajs/react';
+import { pageRouter } from '@/common/page-runtime';
 import React from 'react';
 
 interface UseUpdateSectionOptions {
@@ -13,7 +13,7 @@ interface UseUpdateSectionOptions {
 export function useUpdateSection(options: UseUpdateSectionOptions = {}) {
   return React.useCallback(
     (sectionId: number, payload: UpdateSectionPayload): void => {
-      router.put(
+      pageRouter.put(
         route('admin.content.sections.update', sectionId),
         {
           template_key: payload.template_key,
