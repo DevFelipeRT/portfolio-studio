@@ -1,7 +1,7 @@
-import type { VisitOptions } from '@inertiajs/core';
+import type { PageVisitOptions } from '@/common/page-runtime';
 import React from 'react';
 
-type InertiaSubmitMethod = (url: string, options?: VisitOptions) => void;
+type PageSubmitMethod = (url: string, options?: PageVisitOptions) => void;
 
 export type UseFormSubmitOptions = {
   preserveState?: boolean;
@@ -28,9 +28,9 @@ export function useFormSubmit(options: UseFormSubmitOptions = {}) {
   return React.useCallback(
     (
       event: React.FormEvent<HTMLFormElement>,
-      submit: InertiaSubmitMethod,
+      submit: PageSubmitMethod,
       url: string,
-      visitOptions: VisitOptions = {},
+      visitOptions: PageVisitOptions = {},
     ): void => {
       event.preventDefault();
 
@@ -51,4 +51,3 @@ export function useFormSubmit(options: UseFormSubmitOptions = {}) {
     [preserveScroll, preserveState, scrollBehavior, scrollToTopOnError],
   );
 }
-

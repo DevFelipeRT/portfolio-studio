@@ -13,9 +13,9 @@ import { useLayoutsTranslation } from '@/app/layouts/i18n';
 import { I18N_NAMESPACES, useTranslation } from '@/common/i18n';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Toaster } from '@/components/ui/sonner';
+import { useCurrentPage } from '@/common/page-runtime';
 import { navigationConfig } from '@/config/navigation';
 import { useIsMobile } from '@/hooks/useMobile';
-import { usePage } from '@inertiajs/react';
 import { PropsWithChildren, ReactNode, useEffect } from 'react';
 import { toast } from 'sonner';
 import Footer from './partials/Footer';
@@ -127,9 +127,9 @@ function AuthenticatedI18nContent({
   header,
   children,
 }: PropsWithChildren<{ header?: ReactNode }>) {
-  const page = usePage();
+  const page = useCurrentPage();
   const { auth, errors, status } = page.props as SharedProps;
-  const { url } = page;
+  const url = page.url ?? '';
   const { translate: translateFeedback } = useTranslation(I18N_NAMESPACES.feedback);
   const { translate: translateState } = useTranslation(I18N_NAMESPACES.state);
   const isMobile = useIsMobile();

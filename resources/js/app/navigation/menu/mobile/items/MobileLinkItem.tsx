@@ -1,4 +1,4 @@
-import { Link } from '@inertiajs/react';
+import { PageLink } from '@/common/page-runtime';
 import type { NavigationLinkItem } from '../../../types';
 import { mobileButtonClass, mobileWrapperClass } from '../styles';
 
@@ -12,13 +12,13 @@ export function MobileLinkItem({ item, onClose }: MobileLinkItemProps) {
 
   return (
     <div className={mobileWrapperClass(isActive)}>
-      <Link
+      <PageLink
         href={item.href}
         className={mobileButtonClass(isActive)}
         onClick={onClose}
       >
         {item.label}
-      </Link>
+      </PageLink>
     </div>
   );
 }

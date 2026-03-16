@@ -1,4 +1,4 @@
-import { usePage } from '@inertiajs/react';
+import { usePageProps } from '@/common/page-runtime';
 import type {
   InertiaLocalizationContext,
   InertiaPageProps,
@@ -75,5 +75,5 @@ export function isPublicLocalizationContext(
 }
 
 export function useInertiaLocalizationContext(): InertiaLocalizationContext {
-  return resolveInertiaLocalizationContext(usePage().props as InertiaPageProps);
+  return resolveInertiaLocalizationContext(usePageProps<InertiaPageProps>());
 }

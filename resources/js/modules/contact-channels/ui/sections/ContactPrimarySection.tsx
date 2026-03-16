@@ -11,7 +11,7 @@ import type {
   SectionImage,
 } from '@/modules/content-management/types';
 import { SectionHeader, useFieldValueResolver } from '@/modules/content-management/features/page-rendering';
-import { useForm } from '@inertiajs/react';
+import { usePageForm } from '@/common/page-runtime';
 import { Github, Linkedin, Link2, Mail, MessageCircle, PhoneCall } from 'lucide-react';
 import type { ComponentType, FormEvent, JSX, SVGProps } from 'react';
 
@@ -99,7 +99,7 @@ export function ContactPrimarySection({
     processing,
     errors,
     reset,
-  } = useForm({
+  } = usePageForm({
     name: '',
     email: '',
     message: '',

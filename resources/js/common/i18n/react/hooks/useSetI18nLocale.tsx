@@ -16,7 +16,10 @@ import {
   useSetLocale as useBaseSetLocale,
   type Locale,
 } from '@/common/locale';
-import { usePage } from '@inertiajs/react';
+import {
+  useCurrentPage,
+  usePageComponentName,
+} from '@/common/page-runtime';
 import { useCallback } from 'react';
 import {
   preloadI18nBundles,
@@ -34,18 +37,18 @@ export type { SetLocaleHandler } from '@/common/locale';
 export function useSetI18nLocale(
   options?: UseSetLocaleOptions,
 ): SetLocaleHandler {
-  const page = usePage();
+  const page = useCurrentPage();
+  const componentName = usePageComponentName();
 
   const preloadCurrentPageLocale = useCallback(
     async (resolvedLocale: string): Promise<void> => {
-      const componentName =
-        typeof page.component === 'string' ? page.component.trim() : '';
+      const normalizedComponentName = componentName.trim();
 
-      if (!componentName) {
+      if (!normalizedComponentName) {
         return;
       }
 
-      const loader = pageRegistry[componentName];
+      const loader = pageRegistry[normalizedComponentName];
       if (!loader) {
         return;
       }
@@ -74,7 +77,7 @@ export function useSetI18nLocale(
         includeCommon: false,
       });
     },
-    [page.component, page.props],
+    [componentName, page.props],
   );
 
   return useBaseSetLocale({

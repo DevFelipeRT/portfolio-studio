@@ -1,7 +1,7 @@
 import type { InertiaPageProps } from '@/app/inertia/types';
 import type { FormErrors } from '@/common/forms/types';
 import { resolveFieldErrorMessage } from '@/common/forms/field/error/fieldErrorMessage';
-import { usePage } from '@inertiajs/react';
+import { usePageProps } from '@/common/page-runtime';
 import React from 'react';
 
 type UseFormLocaleFieldInput = {
@@ -40,7 +40,7 @@ export function useFormLocaleField({
   errorId = 'locale-error',
   onChange,
 }: UseFormLocaleFieldInput): FormLocaleFieldState {
-  const page = usePage().props as InertiaPageProps;
+  const page = usePageProps<InertiaPageProps>();
 
   const initialLocale = React.useMemo(() => {
     const candidate =

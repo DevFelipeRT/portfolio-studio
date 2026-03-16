@@ -6,7 +6,7 @@ import { ModeToggle } from '@/app/layouts/partials/theme/ModeToggle';
 import { UserMenu } from '@/app/layouts/partials/UserMenu';
 import { LocaleSwitcher } from '@/common/locale';
 import { useLayoutsTranslation } from '@/app/layouts/i18n';
-import { Link, router, usePage } from '@inertiajs/react';
+import { PageLink, pageRouter, usePageProps } from '@/common/page-runtime';
 import { PropsWithChildren } from 'react';
 
 type AuthUser = {
@@ -35,7 +35,7 @@ export default function Header({ children }: PropsWithChildren) {
 }
 
 function HeaderI18nContent({ children }: PropsWithChildren) {
-  const props = usePage().props as SharedProps;
+  const props = usePageProps<SharedProps>();
   const user = props.auth.user;
   const localizationContext = useInertiaLocalizationContext();
 
@@ -55,13 +55,13 @@ function HeaderI18nContent({ children }: PropsWithChildren) {
       <div className="3xl:h-20 mx-auto flex h-14 max-w-7xl items-center gap-3 px-4 sm:h-16 sm:px-6 lg:px-8">
         {/* Brand area */}
         <div className="order-1 flex flex-1 items-center gap-3">
-          <Link
+          <PageLink
             href="/"
             className="flex items-center gap-3"
             aria-label={homeLabel}
           >
             <ApplicationLogo className="fill-current" />
-          </Link>
+          </PageLink>
         </div>
 
         {/* Navigation */}
@@ -86,7 +86,7 @@ function HeaderI18nContent({ children }: PropsWithChildren) {
               localizationContext.persistence.persistClientCookie
             }
             reload={() => {
-              router.visit(window.location.href, {
+              pageRouter.visit(window.location.href, {
                 replace: true,
                 preserveScroll: true,
                 preserveState: true,

@@ -1,6 +1,6 @@
 'use client';
 
-import { Link, usePage } from '@inertiajs/react';
+import { PageLink, useCurrentPage } from '@/common/page-runtime';
 import { CircleUser, LayoutGrid, LogOut, MoreVertical } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -60,7 +60,7 @@ function resetBodyPointerEvents(): void {
  * modal-like components such as Sheet or Sidebar.
  */
 export function UserMenu({ user, variant = 'full' }: UserMenuProps) {
-  const { url } = usePage();
+  const { url } = useCurrentPage();
   const [isOpen, setIsOpen] = useState(false);
 
   const { translate } = useLayoutsTranslation('userMenu');
@@ -176,31 +176,31 @@ export function UserMenu({ user, variant = 'full' }: UserMenuProps) {
         <DropdownMenuGroup>
           {route().current('home') && (
             <DropdownMenuItem asChild onSelect={handleItemSelect}>
-              <Link
+              <PageLink
                 href={route('dashboard')}
                 className="flex w-full items-center"
               >
                 <LayoutGrid className="mr-2 h-4 w-4" />
                 <span>{dashboardLabel}</span>
-              </Link>
+              </PageLink>
             </DropdownMenuItem>
           )}
 
           <DropdownMenuItem asChild onSelect={handleItemSelect}>
-            <Link
+            <PageLink
               href={route('profile.edit')}
               className="flex w-full items-center"
             >
               <CircleUser className="mr-2 h-4 w-4" />
               <span>{profileLabel}</span>
-            </Link>
+            </PageLink>
           </DropdownMenuItem>
         </DropdownMenuGroup>
 
         <DropdownMenuSeparator />
 
         <DropdownMenuItem asChild onSelect={handleItemSelect}>
-          <Link
+          <PageLink
             href={route('logout')}
             method="post"
             as="button"
@@ -208,7 +208,7 @@ export function UserMenu({ user, variant = 'full' }: UserMenuProps) {
           >
             <LogOut className="mr-2 h-4 w-4" />
             <span>{logoutLabel}</span>
-          </Link>
+          </PageLink>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
