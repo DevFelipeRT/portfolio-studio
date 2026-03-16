@@ -2,7 +2,9 @@ import type {
   TemplateDefinitionDto,
 } from '@/modules/content-management/types';
 import type { JSX } from 'react';
-import type { FieldValueResolver, SectionRenderModel } from '../../types';
+import type {
+  FieldValueResolver,
+} from '../../types';
 
 /**
  * Generic fallback renderer for template-driven sections.
@@ -11,10 +13,8 @@ import type { FieldValueResolver, SectionRenderModel } from '../../types';
  * normalization rules as component-driven sections.
  */
 export function renderGenericTemplateSection(
-  renderModel: SectionRenderModel,
   template: TemplateDefinitionDto | undefined,
   fieldValueResolver: FieldValueResolver,
-  className?: string,
 ): JSX.Element | null {
   if (!template) {
     return null;
@@ -49,16 +49,8 @@ export function renderGenericTemplateSection(
     return null;
   }
 
-  const sectionId = renderModel.anchor ?? undefined;
-
-  const baseSectionClassName = 'm-0';
-  const resolvedSectionClassName =
-    [baseSectionClassName, className].filter(Boolean).join(' ').trim() ||
-    undefined;
-
   return (
-    <section id={sectionId} className={resolvedSectionClassName}>
-      <div className="container mx-auto">
+    <div>
         {template.label && (
           <h2 className="mb-6 text-2xl font-semibold">{template.label}</h2>
         )}
@@ -68,7 +60,6 @@ export function renderGenericTemplateSection(
           </p>
         )}
         {renderedFields}
-      </div>
-    </section>
+    </div>
   );
 }

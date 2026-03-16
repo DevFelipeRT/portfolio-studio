@@ -28,7 +28,6 @@ interface CardsGridItem {
  */
 export function CardsGridSection({
   section: renderModel,
-  className,
 }: SectionComponentProps): JSX.Element | null {
   const fieldResolver = useFieldValueResolver();
   const targetId = renderModel.anchor || `cards-grid-${renderModel.id}`;
@@ -102,15 +101,10 @@ export function CardsGridSection({
     return null;
   }
 
-  const resolvedSectionClasses = ['flex flex-col gap-8', className]
-    .filter(Boolean)
-    .join(' ')
-    .trim();
-
   const gridColumnsClass = columns === 2 ? 'md:grid-cols-2' : 'md:grid-cols-3';
 
   return (
-    <section className={resolvedSectionClasses} id={targetId}>
+    <div className="flex flex-col gap-8" id={targetId}>
       <SectionHeader
         eyebrow={eyebrow}
         title={title}
@@ -147,6 +141,6 @@ export function CardsGridSection({
           </Card>
         ))}
       </div>
-    </section>
+    </div>
   );
 }

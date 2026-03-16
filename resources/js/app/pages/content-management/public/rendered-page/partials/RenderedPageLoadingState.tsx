@@ -1,5 +1,6 @@
 'use client';
 
+import { ContentContainer } from '../../../../../layouts/primitives';
 import { I18N_NAMESPACES, useTranslation } from '@/common/i18n';
 import { Spinner } from '@/components/ui/spinner';
 import { cn } from '@/lib/utils';
@@ -31,7 +32,10 @@ export function RenderedPageLoadingState({
         className,
       )}
     >
-      <div className="flex w-full max-w-sm flex-col items-center gap-3">
+      <ContentContainer
+        contentWidth="reading"
+        className="flex max-w-sm flex-col items-center gap-3 px-0"
+      >
         <div className="bg-primary-muted/50 flex size-12 items-center justify-center rounded-full">
           <Spinner
             aria-hidden="true"
@@ -50,7 +54,7 @@ export function RenderedPageLoadingState({
             </div>
           ) : null}
         </div>
-      </div>
+      </ContentContainer>
     </div>
   );
 }

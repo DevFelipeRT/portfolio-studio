@@ -4,7 +4,6 @@ import { DateDisplay } from '@/components/ui/date-display';
 import { TimelineItem } from '@/components/ui/timeline-item';
 import {
   SectionHeader,
-  type SectionComponentProps,
   useFieldValueResolver,
 } from '@/modules/content-management/features/page-rendering';
 import type { SectionDataValue } from '@/modules/content-management/types';
@@ -74,14 +73,9 @@ function ExperiencePeriodDisplay({
  * Experiences are expected to be provided in section data by the backend layer
  * integrating with the experiences.visible.v1 capability.
  */
-export function ExperienceTimelineSection({
-  section: renderModel,
-  className,
-}: SectionComponentProps): JSX.Element | null {
+export function ExperienceTimelineSection(): JSX.Element | null {
   const fieldResolver = useFieldValueResolver();
   const locale = useGetLocale();
-
-  const targetId = renderModel.anchor || `experience-${renderModel.id}`;
 
   const rawExperiences =
     fieldResolver.getFieldValue<SectionDataValue>('experiences');
@@ -132,19 +126,8 @@ export function ExperienceTimelineSection({
     return null;
   }
 
-  const baseSectionClassName = 'flex flex-col gap-10';
-
-  const resolvedSectionClassName = [baseSectionClassName, className]
-    .filter(Boolean)
-    .join(' ')
-    .trim();
-
   return (
-    <section
-      id={targetId}
-      className={resolvedSectionClassName}
-      aria-label={sectionLabel}
-    >
+    <div className="flex flex-col gap-10" aria-label={sectionLabel}>
       <SectionHeader
         eyebrow={eyebrow}
         title={title}
@@ -183,6 +166,6 @@ export function ExperienceTimelineSection({
           ))}
         </div>
       )}
-    </section>
+    </div>
   );
 }

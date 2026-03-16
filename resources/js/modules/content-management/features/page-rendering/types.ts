@@ -6,6 +6,18 @@ import type {
 } from '@/modules/content-management/types';
 import type { ComponentRegistryProvider } from '@/modules/content-management/types/provider';
 import type { ComponentType } from 'react';
+import type {
+  ContentWidth,
+  SectionSpacing,
+  SectionSurface,
+} from '../../../../app/layouts/primitives';
+
+export type SectionLayoutOptions = {
+  contentWidth: Exclude<ContentWidth, 'full'>;
+  surface?: SectionSurface;
+  bleed?: boolean;
+  spacing?: SectionSpacing;
+};
 
 export type SectionRenderModel = Pick<PageSectionDto, 'id' | 'anchor'> & {
   templateKey: string;
@@ -14,8 +26,6 @@ export type SectionRenderModel = Pick<PageSectionDto, 'id' | 'anchor'> & {
 export type SectionComponentProps = {
   section: SectionRenderModel;
   template?: TemplateDefinitionDto;
-  anchorId?: string;
-  className?: string;
 };
 
 export type SectionComponentRegistry = Record<
