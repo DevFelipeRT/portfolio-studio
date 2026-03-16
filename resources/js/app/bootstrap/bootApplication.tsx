@@ -3,7 +3,6 @@ import { createElement, type ComponentType } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
   getPageRegistry,
-  initializeAppRuntimeState,
   initializeShell,
   resolveDocumentTitle,
   type AppPageProps,
@@ -32,9 +31,6 @@ type InertiaSetupProps = {
  */
 function renderApplication(el: Element, App: unknown, props: unknown): void {
   const appProps = (props ?? {}) as InertiaSetupProps;
-  const initialProps = (appProps.initialPage?.props ?? {}) as AppPageProps;
-  initializeAppRuntimeState(initialProps);
-
   const root = createRoot(el);
   const AppComponent = App as ComponentType<Record<string, unknown>>;
   root.render(createElement(AppComponent, appProps));

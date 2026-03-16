@@ -1,4 +1,8 @@
 /**
  * Public shell registry surface for page-resolution consumers.
  */
-export { getPageRegistry } from './pageRegistry';
+export {
+  getPageRegistry,
+  PageRegistryProvider,
+  type PageRegistryManifest,
+} from './pageRegistry';

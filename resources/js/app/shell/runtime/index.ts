@@ -12,5 +12,9 @@ export {
   APP_LOCALIZATION_PROFILES,
   resolveAppLocalizationProfile,
 } from './localizationProfiles';
-export { getAppRuntimeState, initializeAppRuntimeState } from './runtimeState';
+export {
+  getAppRuntimeState,
+  initializeAppRuntimeState,
+  syncAppRuntimeState,
+} from './runtimeState';
 export { resolveDocumentTitle } from './title';

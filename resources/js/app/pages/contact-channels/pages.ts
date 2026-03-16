@@ -1,4 +1,4 @@
-import { PageRegistryProvider } from '@/app/pages/pageRegistryProvider';
+import type { PageRegistryProvider } from '@/app/shell/registry';
 
 export function registerPages(provider: PageRegistryProvider): void {
   provider.registerMany({

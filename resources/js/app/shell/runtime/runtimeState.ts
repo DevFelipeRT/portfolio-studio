@@ -34,16 +34,23 @@ export function getAppRuntimeState(): AppRuntimeState {
 }
 
 /**
- * The runtime-state initializer that derives application metadata from page
- * props.
+ * The runtime-state synchronizer that derives application metadata from the
+ * current page props snapshot.
+ */
+export function syncAppRuntimeState(props: AppPageProps): void {
+  state = {
+    propsCache: props,
+    localizationContext: resolveAppLocalizationContext(props),
+    titleTemplate: props.websiteSettings?.metaTitleTemplate ?? null,
+    siteName: props.websiteSettings?.siteName ?? null,
+    defaultMetaTitle: props.websiteSettings?.defaultMetaTitle ?? null,
+    ownerName: props.websiteSettings?.ownerName ?? null,
+  };
+}
+
+/**
+ * The runtime-state initializer used during shell boot before the first mount.
  */
 export function initializeAppRuntimeState(initialProps: AppPageProps): void {
-  state = {
-    propsCache: initialProps,
-    localizationContext: resolveAppLocalizationContext(initialProps),
-    titleTemplate: initialProps.websiteSettings?.metaTitleTemplate ?? null,
-    siteName: initialProps.websiteSettings?.siteName ?? null,
-    defaultMetaTitle: initialProps.websiteSettings?.defaultMetaTitle ?? null,
-    ownerName: initialProps.websiteSettings?.ownerName ?? null,
-  };
+  syncAppRuntimeState(initialProps);
 }

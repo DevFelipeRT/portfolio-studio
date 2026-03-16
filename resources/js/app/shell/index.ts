@@ -22,6 +22,7 @@ export {
   resolveAppLocalizationContext,
   resolveAppLocalizationProfile,
   resolveDocumentTitle,
+  syncAppRuntimeState,
   useAppLocalizationContext,
 } from './runtime';
 export {
@@ -36,4 +37,8 @@ export {
   initializeShell,
   preloadShellBundles,
 } from './boot';
-export { getPageRegistry } from './registry';
+export {
+  getPageRegistry,
+  PageRegistryProvider,
+  type PageRegistryManifest,
+} from './registry';

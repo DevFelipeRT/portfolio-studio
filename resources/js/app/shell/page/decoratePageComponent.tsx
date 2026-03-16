@@ -1,5 +1,6 @@
 import type { ReactElement } from 'react';
 import type { AppPageComponent, AppPageProps } from '../types';
+import { syncAppRuntimeState } from '../runtime';
 import { resolveLayoutContent } from './resolveLayoutContent';
 import { resolvePageI18nContent } from './resolvePageI18nContent';
 import { wrapWithShellProviders } from './wrapWithShellProviders';
@@ -11,9 +12,11 @@ import { wrapWithShellProviders } from './wrapWithShellProviders';
 export function decoratePageComponent(
   Component: AppPageComponent,
 ): AppPageComponent {
-  const WrappedPage = (props: Record<string, unknown>) => (
-    <Component {...props} />
-  );
+  const WrappedPage = (props: Record<string, unknown>) => {
+    syncAppRuntimeState(props as AppPageProps);
+
+    return <Component {...props} />;
+  };
 
   WrappedPage.displayName = `Shell(${Component.displayName ?? Component.name ?? 'Page'})`;
   WrappedPage.layout = (page: ReactElement<Record<string, unknown>>) => {
