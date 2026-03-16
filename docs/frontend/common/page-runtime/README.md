@@ -41,7 +41,7 @@ It is not responsible for:
 - page registry orchestration
 - Inertia boot and page resolution
 
-Those concerns still live outside this module today, mainly under `resources/js/app/inertia/*`, and are expected to move later into an application-shell layer.
+Those concerns now live outside this module under `resources/js/app/shell/*` and `resources/js/app/bootstrap/*`.
 
 ## Module structure
 
@@ -186,16 +186,15 @@ The current options shape includes the behaviors already used by the application
 
 This API is intentionally a practical first pass. It is designed around current project usage, not full one-to-one exposure of the Inertia router surface.
 
-## Relationship to `app/inertia`
-
-`common/page-runtime` does not replace `resources/js/app/inertia` yet.
+## Relationship to `app/shell` and `app/bootstrap`
 
 Today the separation is:
 
 - `common/page-runtime`: technical page runtime facade for shared consumption
-- `app/inertia`: framework-specific boot, request context, page resolution, and other current Inertia-specific integration points
+- `app/shell`: application-specific runtime policy, localization context, title policy, and page decoration
+- `app/bootstrap`: browser boot, initial page reading, and minimal Inertia wiring
 
-This split exists so the project can gradually shrink `app/inertia` into a thinner adapter layer later, without forcing a big-bang frontend refactor now.
+This split keeps the adapter boundary reusable while the app shell stays independent from direct `@inertiajs/react` imports.
 
 ## Authoring guidance
 
@@ -220,7 +219,7 @@ Current constraints include:
 - the default adapter is still statically bound to Inertia
 - `usePageForm` currently focuses on the subset of behavior needed by migrated consumers
 - some project areas still import Inertia directly and will be migrated gradually
-- the application shell and localization policy are still outside this module
-- `app/inertia` remains larger than the long-term target because boot/runtime separation is a later step
+- the application shell and localization policy are intentionally outside this module
+- the default adapter is still statically bound to Inertia even though app policy moved to `app/shell`
 
 These trade-offs are intentional. The current goal is to establish a clean technical boundary and enable safe incremental migration.

@@ -12,7 +12,7 @@ The application uses Inertia for a React-based UI while keeping Laravel routing/
 
 Use client-side rendering (CSR) by default for the initial visit:
 
-- The initial page payload is embedded into the root Blade view (`resources/views/app.blade.php`) and read by the client at boot time (`resources/js/app/inertia/InertiaApp.tsx`).
+- The initial page payload is embedded into the root Blade view (`resources/views/app.blade.php`) and read by the client at boot time (`resources/js/app/bootstrap/bootApplication.tsx`).
 - Inertia SSR exists as a configurable option but is disabled by default via `config/inertia.php`.
 
 ## Consequences
@@ -24,6 +24,5 @@ Use client-side rendering (CSR) by default for the initial visit:
 
 - SSR config default: `config/inertia.php`
 - Root payload embedding: `resources/views/app.blade.php`
-- Client boot reading initial page: `resources/js/app/inertia/InertiaApp.tsx`
+- Client boot reading initial page: `resources/js/app/bootstrap/bootApplication.tsx`
 - SEO endpoints: `app/Modules/WebsiteSettings/Routes/public.php`
-

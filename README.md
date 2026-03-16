@@ -181,7 +181,7 @@ Portfolio data modules documented under [`docs/modules/`](docs/modules/) include
 
 **Frontend**
 - React + TypeScript (`package.json`, `tsconfig.json`)
-- Inertia React adapter (`package.json`, `resources/js/app/inertia/InertiaApp.tsx`)
+- Inertia React adapter (`package.json`, `resources/js/app/bootstrap/bootApplication.tsx`)
 - Vite (`vite.config.js`)
 - Tailwind CSS (`resources/css/app.css`, `tailwind.config.ts`)
 
@@ -198,7 +198,7 @@ Portfolio data modules documented under [`docs/modules/`](docs/modules/) include
 - Inertia shared props and request-aware behavior via `App\Modules\Inertia\Http\Middleware\HandleInertiaRequests` (`bootstrap/app.php`, `app/Modules/Inertia/Http/Middleware/HandleInertiaRequests.php`)
 
 **Frontend**
-- App bootstraps from `resources/js/app.tsx` and sets up Inertia in `resources/js/app/inertia/InertiaApp.tsx`
+- App bootstraps from `resources/js/app.tsx` through `resources/js/app/bootstrap/bootApplication.tsx`
 - Inertia pages are registered through a page registry provider (`resources/js/app/pages/pageRegistryProvider.ts`)
 - Client-side navigation uses Ziggy’s `route(...)` helper (shared via `resources/views/app.blade.php`, `app/Modules/Inertia/Http/Middleware/HandleInertiaRequests.php`)
 
