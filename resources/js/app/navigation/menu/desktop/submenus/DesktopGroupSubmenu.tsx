@@ -4,7 +4,7 @@ import {
   NavigationMenuLink,
   NavigationMenuTrigger,
 } from '@/components/ui/navigation-menu';
-import { Link } from '@inertiajs/react';
+import { PageLink } from '@/common/page-runtime';
 import type { MouseEvent } from 'react';
 import { buildSectionIdentity } from '../../../section-tracking/sectionIdentity';
 import type {
@@ -56,7 +56,7 @@ export function DesktopGroupSubmenu({
     return (
       <li key={child.id}>
         <NavigationMenuLink asChild className={submenuLinkClass(isActiveChild)}>
-          <Link href={child.href}>{child.label}</Link>
+          <PageLink href={child.href}>{child.label}</PageLink>
         </NavigationMenuLink>
       </li>
     );

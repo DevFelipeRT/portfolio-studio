@@ -1,4 +1,4 @@
-import { Link } from '@inertiajs/react';
+import { PageLink } from '@/common/page-runtime';
 import { PlusCircle } from 'lucide-react';
 
 /**
@@ -13,13 +13,13 @@ export function CoursesHeader() {
                 </p>
             </div>
 
-            <Link
+            <PageLink
                 href={route('courses.create')}
                 className="bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-ring inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium shadow-sm transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
             >
                 <PlusCircle className="mr-2 h-4 w-4" />
                 New course
-            </Link>
+            </PageLink>
         </div>
     );
 }

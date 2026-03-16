@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { PageLink } from '@/common/page-runtime';
 import { useProjectsTranslation, PROJECTS_NAMESPACES } from '@/modules/projects/i18n';
-import { Link } from '@inertiajs/react';
 
 interface ExistingProjectImageCardModel {
   id: number;
@@ -49,7 +49,7 @@ export function ExistingProjectImageCard({
               size="sm"
               className="text-destructive hover:text-destructive"
             >
-              <Link
+              <PageLink
                 href={route('projects.images.destroy', {
                   project: projectId,
                   image: image.id,
@@ -58,7 +58,7 @@ export function ExistingProjectImageCard({
                 as="button"
               >
                 {tActions('deleteImage')}
-              </Link>
+              </PageLink>
             </Button>
           </div>
         </CardFooter>

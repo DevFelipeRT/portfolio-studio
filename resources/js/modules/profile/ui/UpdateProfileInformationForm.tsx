@@ -1,8 +1,8 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { PageLink, usePageForm, usePageProps } from '@/common/page-runtime';
 import { Transition } from '@headlessui/react';
-import { Link, useForm, usePage } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
 
 export default function UpdateProfileInformation({
@@ -14,10 +14,19 @@ export default function UpdateProfileInformation({
     status?: string;
     className?: string;
 }) {
-    const user = usePage().props.auth.user;
+    const { auth } = usePageProps<{
+        auth: {
+            user: {
+                name: string;
+                email: string;
+                email_verified_at: string | null;
+            };
+        };
+    }>();
+    const user = auth.user;
 
     const { data, setData, patch, errors, processing, recentlySuccessful } =
-        useForm({
+        usePageForm({
             name: user.name,
             email: user.email,
         });
@@ -85,14 +94,14 @@ export default function UpdateProfileInformation({
                     <div>
                         <p className="mt-2 text-sm text-gray-800 dark:text-gray-200">
                             Your email address is unverified.
-                            <Link
+                            <PageLink
                                 href={route('verification.send')}
                                 method="post"
                                 as="button"
                                 className="text-muted-foreground ml-1 text-sm underline hover:text-foreground"
                             >
                                 Click here to re-send the verification email.
-                            </Link>
+                            </PageLink>
                         </p>
 
                         {status === 'verification-link-sent' && (

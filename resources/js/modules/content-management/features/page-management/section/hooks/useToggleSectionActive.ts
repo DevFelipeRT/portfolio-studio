@@ -1,4 +1,4 @@
-import { router } from '@inertiajs/react';
+import { pageRouter } from '@/common/page-runtime';
 import React from 'react';
 
 interface UseToggleSectionActiveOptions {
@@ -14,7 +14,7 @@ export function useToggleSectionActive(
 ) {
   return React.useCallback(
     (sectionId: number, nextIsActive: boolean): void => {
-      router.post(
+      pageRouter.post(
         route('admin.content.sections.toggle-active', sectionId),
         { is_active: nextIsActive },
         {

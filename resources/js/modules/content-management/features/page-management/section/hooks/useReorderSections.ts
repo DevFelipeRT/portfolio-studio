@@ -1,4 +1,4 @@
-import { router } from '@inertiajs/react';
+import { pageRouter } from '@/common/page-runtime';
 import React from 'react';
 
 import type { PageSectionDto } from '@/modules/content-management/types';
@@ -34,7 +34,7 @@ export function useReorderSections(options: UseReorderSectionsOptions = {}) {
       orderedIds: Array<PageSectionDto['id']>,
       callbacks: ReorderSectionsCallbacks = {},
     ): void => {
-      router.post(
+      pageRouter.post(
         route('admin.content.sections.reorder'),
         {
           page_id: pageId,

@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
+import { PageLink, pageRouter } from '@/common/page-runtime';
 import type { SkillCategory } from '@/modules/skills/core/types';
-import { Link, router } from '@inertiajs/react';
 import React from 'react';
 
 type SkillCategoriesSectionProps = {
@@ -17,7 +17,7 @@ export function SkillCategoriesSection({
     const hasCategories = categories.length > 0;
 
     const handleEdit = (category: SkillCategory): void => {
-        router.get(route('skill-categories.edit', category.id));
+        pageRouter.get(route('skill-categories.edit', category.id));
     };
 
     const handleDelete = (
@@ -34,7 +34,7 @@ export function SkillCategoriesSection({
             return;
         }
 
-        router.delete(route('skill-categories.destroy', category.id));
+        pageRouter.delete(route('skill-categories.destroy', category.id));
     };
 
     return (
@@ -49,11 +49,11 @@ export function SkillCategoriesSection({
                     </p>
                 </div>
 
-                <Link href={route('skill-categories.create')}>
+                <PageLink href={route('skill-categories.create')}>
                     <Button size="sm" variant="secondary">
                         New category
                     </Button>
-                </Link>
+                </PageLink>
             </div>
 
             {!hasCategories && (

@@ -6,7 +6,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Link, router } from '@inertiajs/react';
+import { PageLink, pageRouter } from '@/common/page-runtime';
 import { ExternalLink, Home, MoreVertical, Pencil, Trash2 } from 'lucide-react';
 
 interface PageActionsProps {
@@ -39,7 +39,7 @@ export function PageActions({
       return;
     }
 
-    router.delete(route('admin.content.pages.destroy', pageId), {
+    pageRouter.delete(route('admin.content.pages.destroy', pageId), {
       preserveScroll: true,
       preserveState: true,
     });
@@ -80,20 +80,20 @@ export function PageActions({
         <DropdownMenuSeparator />
 
         <DropdownMenuItem asChild>
-          <Link
+          <PageLink
             href={route('admin.content.pages.edit', pageId)}
             className="cursor-pointer"
           >
             <Pencil className="mr-2 h-4 w-4" />
             <span>Edit</span>
-          </Link>
+          </PageLink>
         </DropdownMenuItem>
 
         {showSetHome && (
           <>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <Link
+              <PageLink
                 href={route('admin.content.pages.set-home', pageId)}
                 method="post"
                 as="button"
@@ -102,7 +102,7 @@ export function PageActions({
               >
                 <Home className="mr-2 h-4 w-4" />
                 <span>Set as home</span>
-              </Link>
+              </PageLink>
             </DropdownMenuItem>
           </>
         )}
