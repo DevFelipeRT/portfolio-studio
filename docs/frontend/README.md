@@ -33,7 +33,7 @@ Backend controllers render pages using the same page keys via `Inertia::render(.
 
 - `resources/js/app/`: application shell, layouts, navigation, Inertia integration
 - `resources/js/modules/`: domain-oriented feature modules (admin UI + public CMS sections)
-- `resources/js/common/`: shared utilities (i18n, rich text, etc.)
+- `resources/js/common/`: shared utilities such as i18n, rich text, and the `page-runtime` facade used to keep most frontend code decoupled from direct Inertia imports
 - `resources/js/components/`: reusable UI primitives
 
 Evidence: folder structure under `resources/js/`.
