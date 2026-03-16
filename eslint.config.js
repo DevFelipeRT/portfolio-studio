@@ -30,6 +30,35 @@ export default [
     },
   },
   {
+    files: ["resources/js/**/*.{ts,tsx}"],
+    ignores: [
+      "resources/js/app/bootstrap/**/*",
+      "resources/js/app/pages/**/*",
+      "resources/js/common/page-runtime/adapters/inertia/**/*",
+      "resources/js/types/global.d.ts",
+      "resources/js/modules/profile/ui/**/*",
+    ],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [
+            {
+              name: "@inertiajs/react",
+              message:
+                "Use '@/common/page-runtime' for runtime access, or keep framework wiring inside app/bootstrap and the Inertia adapter.",
+            },
+            {
+              name: "@inertiajs/core",
+              message:
+                "Keep direct Inertia core imports inside app/bootstrap or common/page-runtime/adapters/inertia.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
     files: ["**/*.json"],
     language: "json/json",
     ...json.configs.recommended,
