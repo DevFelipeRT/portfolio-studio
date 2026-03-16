@@ -1,11 +1,11 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import { useSupportedLocales } from '@/common/locale';
 import { useFormSubmit, type FormErrors } from '@/common/forms';
+import { PageHead, PageLink, usePageForm, usePageProps } from '@/common/page-runtime';
 import type { ExperienceFormData } from '@/modules/experiences/core/forms';
 import { useExperiencesTranslation } from '@/modules/experiences/i18n';
 import { EXPERIENCES_NAMESPACES } from '@/modules/experiences/i18n';
 import { ExperienceForm } from '@/modules/experiences/ui/form/experience';
-import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import React from 'react';
 
 type ExperienceEditableField =
@@ -31,14 +31,14 @@ const defaultExperienceFormData: ExperienceFormData = {
 
 export default function Create() {
   const supportedLocales = useSupportedLocales();
-  const { data, setData, post, processing } = useForm<ExperienceFormData>(
+  const { data, setData, post, processing } = usePageForm<ExperienceFormData>(
     'experiences.create',
     defaultExperienceFormData,
   );
   const submitForm = useFormSubmit();
-  const { errors: formErrors } = usePage().props as {
+  const { errors: formErrors } = usePageProps<{
     errors: FormErrors<keyof ExperienceFormData>;
-  };
+  }>();
   const setExperienceData = setData as <K extends ExperienceEditableField>(
     field: K,
     value: ExperienceFormData[K],
@@ -50,7 +50,7 @@ export default function Create() {
 
   return (
       <AuthenticatedLayout>
-      <Head title="New experience" />
+      <PageHead title="New experience" />
 
       <CreateExperienceI18nContent
         data={data}
@@ -94,12 +94,12 @@ function CreateExperienceI18nContent({
     <div className="overflow-hidden">
       <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="mb-4">
-          <Link
+          <PageLink
             href={route('experiences.index')}
             className="text-muted-foreground hover:text-foreground text-sm"
           >
             {tActions('backToIndex')}
-          </Link>
+          </PageLink>
         </div>
 
         <ExperienceForm

@@ -1,7 +1,7 @@
 // resources/js/Pages/Initiatives/Index.tsx
 
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
-import { Head, router } from '@inertiajs/react';
+import { PageHead, pageRouter } from '@/common/page-runtime';
 import { useMemo, useState } from 'react';
 
 import type { Initiative } from '@/modules/initiatives/core/types';
@@ -85,7 +85,7 @@ export default function Index({ initiatives }: InitiativesIndexProps) {
       ),
     );
 
-    router.patch(
+    pageRouter.patch(
       route('initiatives.toggle-display', initiative.id),
       {},
       {
@@ -105,7 +105,7 @@ export default function Index({ initiatives }: InitiativesIndexProps) {
       return;
     }
 
-    router.delete(route('initiatives.destroy', initiative.id), {
+    pageRouter.delete(route('initiatives.destroy', initiative.id), {
       preserveScroll: true,
       preserveState: true,
       onSuccess: () => {
@@ -127,7 +127,7 @@ export default function Index({ initiatives }: InitiativesIndexProps) {
         <h1 className="text-xl leading-tight font-semibold">Initiatives</h1>
       }
     >
-      <Head title="Initiatives" />
+      <PageHead title="Initiatives" />
 
       <div className="space-y-4 overflow-hidden">
         <InitiativeHeader

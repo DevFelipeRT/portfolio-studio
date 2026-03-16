@@ -1,5 +1,5 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
-import { Head, Link, router } from '@inertiajs/react';
+import { PageHead, PageLink, pageRouter } from '@/common/page-runtime';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -30,7 +30,7 @@ export default function PageIndex({
   });
 
   const handleApplyFilters = (nextFilters: PageListFiltersType): void => {
-    router.get(
+    pageRouter.get(
       route('admin.content.pages.index'),
       buildPageListQueryParams(nextFilters),
       {
@@ -55,15 +55,15 @@ export default function PageIndex({
           </div>
 
           <Button asChild className="gap-2">
-            <Link href={route('admin.content.pages.create')}>
+            <PageLink href={route('admin.content.pages.create')}>
               <Plus className="h-4 w-4" />
               New page
-            </Link>
+            </PageLink>
           </Button>
         </div>
       }
     >
-      <Head title="Content pages" />
+      <PageHead title="Content pages" />
 
       <div className="space-y-6">
         <PageFilters

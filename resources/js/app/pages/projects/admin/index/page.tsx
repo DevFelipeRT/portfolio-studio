@@ -1,11 +1,11 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import { PageHead, PageLink } from '@/common/page-runtime';
 import {
   PROJECTS_NAMESPACES,
   useProjectsTranslation,
 } from '@/modules/projects/i18n';
 import type { Project } from '@/modules/projects/core/types';
 import type { Skill } from '@/modules/skills/core/types';
-import { Head, Link } from '@inertiajs/react';
 
 interface ProjectsIndexProps {
   projects: Project[];
@@ -17,9 +17,6 @@ export default function Index({ projects }: ProjectsIndexProps) {
 
 function ProjectsIndexI18nContent({ projects }: ProjectsIndexProps) {
   const hasProjects = projects.length > 0;
-  const { translate: tSections } = useProjectsTranslation(
-    PROJECTS_NAMESPACES.sections,
-  );
   const { translate: tForm } = useProjectsTranslation(PROJECTS_NAMESPACES.form);
   const { translate: tActions } = useProjectsTranslation(
     PROJECTS_NAMESPACES.actions,
@@ -38,16 +35,14 @@ function ProjectsIndexI18nContent({ projects }: ProjectsIndexProps) {
   };
 
   return (
-    <AuthenticatedLayout
-      header={
-        <h1 className="text-xl leading-tight font-semibold">
-          {tSections('managementTitle')}
-        </h1>
-      }
-    >
-        <Head title="Projects" />
+    <>
+        <PageHead title="Projects" />
 
         <div className="overflow-hidden">
+          <div className="mb-6">
+            <ProjectsIndexHeader />
+          </div>
+
           <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-muted-foreground mt-1 text-sm">
@@ -55,12 +50,12 @@ function ProjectsIndexI18nContent({ projects }: ProjectsIndexProps) {
               </p>
             </div>
 
-            <Link
+            <PageLink
               href={route('projects.create')}
               className="bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-ring inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium shadow-sm transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
             >
               {tActions('newProject')}
-            </Link>
+            </PageLink>
           </div>
 
           {!hasProjects && (
@@ -140,21 +135,21 @@ function ProjectsIndexI18nContent({ projects }: ProjectsIndexProps) {
 
                     <td className="px-4 py-3 align-top">
                       <div className="flex justify-end gap-3 text-xs">
-                        <Link
+                        <PageLink
                           href={route('projects.edit', project.id)}
                           className="text-primary font-medium hover:underline"
                         >
                           {tActions('edit')}
-                        </Link>
+                        </PageLink>
 
-                        <Link
+                        <PageLink
                           href={route('projects.destroy', project.id)}
                           method="delete"
                           as="button"
                           className="text-destructive font-medium hover:underline"
                         >
                           {tActions('delete')}
-                        </Link>
+                        </PageLink>
                       </div>
                     </td>
                   </tr>
@@ -164,8 +159,23 @@ function ProjectsIndexI18nContent({ projects }: ProjectsIndexProps) {
           </div>
         )}
       </div>
-    </AuthenticatedLayout>
+    </>
   );
 }
 
 Index.i18n = ['projects'];
+Index.layout = (page: React.ReactNode) => (
+  <AuthenticatedLayout>{page}</AuthenticatedLayout>
+);
+
+function ProjectsIndexHeader() {
+  const { translate: tSections } = useProjectsTranslation(
+    PROJECTS_NAMESPACES.sections,
+  );
+
+  return (
+    <h1 className="text-xl leading-tight font-semibold">
+      {tSections('managementTitle')}
+    </h1>
+  );
+}

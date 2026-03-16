@@ -1,6 +1,7 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import type { FormErrors } from '@/common/forms';
 import { LocaleSwapDialog } from '@/common/LocaleSwapDialog';
+import { PageHead, PageLink, usePageForm, usePageProps } from '@/common/page-runtime';
 import { Button } from '@/components/ui/button';
 import { listContactChannelTranslations } from '@/modules/contact-channels/core/api/translations';
 import type { ContactChannelFormData } from '@/modules/contact-channels/core/forms';
@@ -12,7 +13,6 @@ import { useContactChannelsTranslation } from '@/modules/contact-channels/i18n';
 import { CONTACT_CHANNELS_NAMESPACES } from '@/modules/contact-channels/i18n';
 import { ContactChannelForm } from '@/modules/contact-channels/ui/form/contact-channel';
 import { TranslationModal } from '@/modules/contact-channels/ui/TranslationModal';
-import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import React from 'react';
 
 interface EditContactChannelProps {
@@ -32,7 +32,7 @@ export default function Edit({
   );
 
   const { data, setData, put, processing } =
-    useForm<ContactChannelFormData>({
+    usePageForm<ContactChannelFormData>({
       locale: channel.locale,
       confirm_swap: false,
       channel_type: channel.channel_type,
@@ -41,9 +41,9 @@ export default function Edit({
       is_active: channel.is_active,
       sort_order: channel.sort_order,
     });
-  const { errors: formErrors } = usePage().props as {
+  const { errors: formErrors } = usePageProps<{
     errors: FormErrors<keyof ContactChannelFormData>;
-  };
+  }>();
 
   React.useEffect(() => {
     let mounted = true;
@@ -184,17 +184,17 @@ function EditContactChannelContent({
 
   return (
     <>
-      <Head title={tActions('editChannel')} />
+      <PageHead title={tActions('editChannel')} />
 
       <div className="overflow-hidden">
         <div className="mx-auto max-w-xl px-4 py-8 sm:px-6 lg:px-8">
           <div className="mb-4">
-            <Link
+            <PageLink
               href={route('contact-channels.index')}
               className="text-muted-foreground hover:text-foreground text-sm"
             >
               {tActions('backToIndex')}
-            </Link>
+            </PageLink>
           </div>
 
           <ContactChannelForm

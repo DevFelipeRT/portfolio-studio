@@ -2,6 +2,7 @@ import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import type { FormErrors } from '@/common/forms';
 import { useSupportedLocales } from '@/common/locale';
 import { LocaleSwapDialog } from '@/common/LocaleSwapDialog';
+import { PageHead, PageLink, usePageForm, usePageProps } from '@/common/page-runtime';
 import { Button } from '@/components/ui/button';
 import { listInitiativeTranslations } from '@/modules/initiatives/core/api/translations';
 import type {
@@ -11,7 +12,6 @@ import type {
 import type { Initiative } from '@/modules/initiatives/core/types';
 import { InitiativeForm } from '@/modules/initiatives/ui/form/initiative';
 import { TranslationModal } from '@/modules/initiatives/ui/translation-modal/TranslationModal';
-import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import React from 'react';
 
 interface EditInitiativeProps {
@@ -22,7 +22,7 @@ export default function Edit({ initiative }: EditInitiativeProps) {
   const supportedLocales = useSupportedLocales();
 
   const { data, setData, post, processing, transform } =
-    useForm<InitiativeFormData>({
+    usePageForm<InitiativeFormData>({
       locale: initiative.locale,
       confirm_swap: false,
       name: initiative.name,
@@ -32,10 +32,10 @@ export default function Edit({ initiative }: EditInitiativeProps) {
       start_date: initiative.start_date,
       end_date: initiative.end_date ?? null,
       images: [],
-    });
-  const { errors: formErrors } = usePage().props as {
+  });
+  const { errors: formErrors } = usePageProps<{
     errors: FormErrors<keyof InitiativeFormData>;
-  };
+  }>();
 
   function changeField<K extends keyof InitiativeFormData>(
     key: K,
@@ -177,17 +177,17 @@ export default function Edit({ initiative }: EditInitiativeProps) {
 
   return (
     <AuthenticatedLayout>
-      <Head title="Edit initiative" />
+      <PageHead title="Edit initiative" />
 
       <div className="overflow-hidden">
         <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
           <div className="mb-4 flex items-center justify-between gap-3">
-            <Link
+            <PageLink
               href={route('initiatives.index')}
               className="text-muted-foreground hover:text-foreground text-sm"
             >
               Back to initiatives
-            </Link>
+            </PageLink>
 
             <Button
               type="button"

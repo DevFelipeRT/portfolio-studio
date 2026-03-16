@@ -1,19 +1,19 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import type { FormErrors } from '@/common/forms';
+import { PageHead, PageLink, usePageForm, usePageProps } from '@/common/page-runtime';
 import type { SkillCategoryFormData } from '@/modules/skills/core/forms';
 import { SkillCategoryForm } from '@/modules/skills/ui/form/skill-category';
-import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import React from 'react';
 
 export default function Create() {
-  const { data, setData, post, processing } = useForm<SkillCategoryFormData>({
+  const { data, setData, post, processing } = usePageForm<SkillCategoryFormData>({
     name: '',
     slug: '',
     locale: '',
   });
-  const { errors: formErrors } = usePage().props as {
+  const { errors: formErrors } = usePageProps<{
     errors: FormErrors<keyof SkillCategoryFormData>;
-  };
+  }>();
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
@@ -38,17 +38,17 @@ export default function Create() {
         </h1>
       }
     >
-      <Head title="New skill category" />
+      <PageHead title="New skill category" />
 
       <div className="overflow-hidden">
         <div className="mx-auto max-w-xl px-4 py-8 sm:px-6 lg:px-8">
           <div className="mb-4">
-            <Link
+            <PageLink
               href={route('skills.index')}
               className="text-muted-foreground hover:text-foreground text-sm"
             >
               Back to skills
-            </Link>
+            </PageLink>
           </div>
 
           <SkillCategoryForm

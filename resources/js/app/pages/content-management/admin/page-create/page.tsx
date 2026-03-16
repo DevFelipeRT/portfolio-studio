@@ -1,11 +1,10 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import { useFormSubmit, type FormErrors } from '@/common/forms';
+import { PageHead, usePageForm, usePageProps } from '@/common/page-runtime';
 import {
   PageForm,
   type PageFormData,
 } from '@/modules/content-management/features/page-management/page/PageForm';
-import { Head, useForm, usePage } from '@inertiajs/react';
-import type { FormDataValues } from '@inertiajs/core';
 import React from 'react';
 
 const defaultPageFormData: PageFormData = {
@@ -21,20 +20,20 @@ const defaultPageFormData: PageFormData = {
 };
 
 export default function PageCreate() {
-  const { data, setData, post, processing, reset } = useForm<PageFormData>(
+  const { data, setData, post, processing, reset } = usePageForm<PageFormData>(
     'admin.content.pages.create',
     defaultPageFormData,
   );
-  const { errors: formErrors } = usePage().props as {
+  const { errors: formErrors } = usePageProps<{
     errors: FormErrors<keyof PageFormData>;
-  };
+  }>();
   const submitForm = useFormSubmit();
 
   const handleChange = <K extends keyof PageFormData>(
     field: K,
     value: PageFormData[K],
   ): void => {
-    setData(field, value as FormDataValues<PageFormData, K>);
+    setData(field, value);
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
@@ -56,7 +55,7 @@ export default function PageCreate() {
         </div>
       }
     >
-      <Head title="Create page" />
+      <PageHead title="Create page" />
 
       <div className="mx-auto max-w-4xl space-y-6">
         <PageForm

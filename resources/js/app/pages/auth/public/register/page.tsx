@@ -2,11 +2,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import GuestLayout from '@/app/layouts/GuestLayout';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { PageHead, PageLink, usePageForm } from '@/common/page-runtime';
 import { FormEventHandler } from 'react';
 
 export default function Register() {
-  const { data, setData, post, processing, errors, reset } = useForm({
+  const { data, setData, post, processing, errors, reset } = usePageForm({
     name: '',
     email: '',
     password: '',
@@ -23,7 +23,7 @@ export default function Register() {
 
   return (
     <GuestLayout>
-      <Head title="Register" />
+      <PageHead title="Register" />
 
       <form onSubmit={submit}>
         <div>
@@ -105,12 +105,12 @@ export default function Register() {
         </div>
 
         <div className="mt-4 flex items-center justify-end gap-3">
-          <Link
+          <PageLink
             href={route('login')}
             className="text-muted-foreground hover:text-foreground text-sm underline"
           >
             Already registered?
-          </Link>
+          </PageLink>
 
           <Button disabled={processing}>Register</Button>
         </div>

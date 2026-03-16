@@ -2,6 +2,7 @@ import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import { useSupportedLocales } from '@/common/locale';
 import { LocaleSwapDialog } from '@/common/LocaleSwapDialog';
 import type { FormErrors } from '@/common/forms';
+import { PageHead, PageLink, usePageForm, usePageProps } from '@/common/page-runtime';
 import { Button } from '@/components/ui/button';
 import { listExperienceTranslations } from '@/modules/experiences/core/api/translations';
 import type { ExperienceFormData } from '@/modules/experiences/core/forms';
@@ -10,7 +11,6 @@ import { useExperiencesTranslation } from '@/modules/experiences/i18n';
 import { EXPERIENCES_NAMESPACES } from '@/modules/experiences/i18n';
 import { ExperienceForm } from '@/modules/experiences/ui/form/experience';
 import { TranslationModal } from '@/modules/experiences/ui/TranslationModal';
-import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import React from 'react';
 
 interface EditExperienceProps {
@@ -29,7 +29,7 @@ type ExperienceEditableField =
 
 export default function Edit({ experience }: EditExperienceProps) {
   const supportedLocales = useSupportedLocales();
-  const { data, setData, put, processing } = useForm<ExperienceFormData>({
+  const { data, setData, put, processing } = usePageForm<ExperienceFormData>({
     locale: experience.locale,
     confirm_swap: false,
     position: experience.position,
@@ -40,9 +40,9 @@ export default function Edit({ experience }: EditExperienceProps) {
     end_date: experience.end_date ?? '',
     display: experience.display,
   });
-  const { errors: formErrors } = usePage().props as {
+  const { errors: formErrors } = usePageProps<{
     errors: FormErrors<keyof ExperienceFormData>;
-  };
+  }>();
   const setExperienceData = setData as <K extends ExperienceEditableField>(
     field: K,
     value: ExperienceFormData[K],
@@ -113,7 +113,7 @@ export default function Edit({ experience }: EditExperienceProps) {
 
   return (
       <AuthenticatedLayout>
-      <Head title="Edit experience" />
+      <PageHead title="Edit experience" />
 
       <EditExperienceI18nContent
         experience={experience}
@@ -207,12 +207,12 @@ function EditExperienceI18nContent({
     <div className="overflow-hidden">
       <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="mb-4 flex items-center justify-between gap-3">
-          <Link
+          <PageLink
             href={route('experiences.index')}
             className="text-muted-foreground hover:text-foreground text-sm"
           >
             {tActions('backToIndex')}
-          </Link>
+          </PageLink>
 
           <Button type="button" variant="secondary" onClick={onOpenTranslations}>
             {tTranslations('manage')}

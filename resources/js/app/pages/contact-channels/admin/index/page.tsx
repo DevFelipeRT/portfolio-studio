@@ -1,8 +1,8 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import { PageHead, PageLink } from '@/common/page-runtime';
 import type { ContactChannel } from '@/modules/contact-channels/core/types';
 import { useContactChannelsTranslation } from '@/modules/contact-channels/i18n';
 import { CONTACT_CHANNELS_NAMESPACES } from '@/modules/contact-channels/i18n';
-import { Head, Link } from '@inertiajs/react';
 
 interface ContactChannelsIndexProps {
   channels: ContactChannel[];
@@ -43,7 +43,7 @@ function ContactChannelsIndexI18nContent({ channels }: ContactChannelsIndexProps
         </h1>
       }
     >
-      <Head title={tForm('sections.managementTitle')} />
+      <PageHead title={tForm('sections.managementTitle')} />
 
       <div className="overflow-hidden">
         <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -53,12 +53,12 @@ function ContactChannelsIndexI18nContent({ channels }: ContactChannelsIndexProps
             </p>
           </div>
 
-          <Link
+          <PageLink
             href={route('contact-channels.create')}
             className="bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-ring inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium shadow-sm transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
           >
             {tActions('newChannel')}
-          </Link>
+          </PageLink>
         </div>
 
         {!hasChannels && (
@@ -111,14 +111,14 @@ function ContactChannelsIndexI18nContent({ channels }: ContactChannelsIndexProps
                     </td>
                     <td className="px-4 py-3 align-top">
                       <div className="flex justify-end gap-3 text-xs">
-                        <Link
+                        <PageLink
                           href={route('contact-channels.edit', channel.id)}
                           className="text-primary font-medium hover:underline"
                         >
                           {tActions('edit')}
-                        </Link>
+                        </PageLink>
 
-                        <Link
+                        <PageLink
                           href={route(
                             'contact-channels.toggle-active',
                             channel.id,
@@ -133,16 +133,16 @@ function ContactChannelsIndexI18nContent({ channels }: ContactChannelsIndexProps
                           {channel.is_active
                             ? tActions('deactivate')
                             : tActions('activate')}
-                        </Link>
+                        </PageLink>
 
-                        <Link
+                        <PageLink
                           href={route('contact-channels.destroy', channel.id)}
                           method="delete"
                           as="button"
                           className="text-destructive font-medium hover:underline"
                         >
                           {tActions('delete')}
-                        </Link>
+                        </PageLink>
                       </div>
                     </td>
                   </tr>

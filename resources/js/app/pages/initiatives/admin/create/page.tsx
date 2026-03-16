@@ -1,12 +1,12 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import { useSupportedLocales } from '@/common/locale';
 import { useFormSubmit, type FormErrors } from '@/common/forms';
+import { PageHead, PageLink, usePageForm, usePageProps } from '@/common/page-runtime';
 import type {
   InitiativeFormData,
   InitiativeImageInput,
 } from '@/modules/initiatives/core/forms';
 import { InitiativeForm } from '@/modules/initiatives/ui/form/initiative';
-import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import React from 'react';
 
 const defaultInitiativeFormData: InitiativeFormData = {
@@ -23,11 +23,11 @@ const defaultInitiativeFormData: InitiativeFormData = {
 export default function Create() {
   const supportedLocales = useSupportedLocales();
   const { data, setData, post, processing, transform } =
-    useForm<InitiativeFormData>('initiatives.create', defaultInitiativeFormData);
+    usePageForm<InitiativeFormData>('initiatives.create', defaultInitiativeFormData);
   const submitForm = useFormSubmit();
-  const { errors: formErrors } = usePage().props as {
+  const { errors: formErrors } = usePageProps<{
     errors: FormErrors<keyof InitiativeFormData>;
-  };
+  }>();
 
   function changeField<K extends keyof InitiativeFormData>(
     key: K,
@@ -103,17 +103,17 @@ export default function Create() {
   };
   return (
     <AuthenticatedLayout>
-      <Head title="New initiative" />
+      <PageHead title="New initiative" />
 
       <div className="overflow-hidden">
         <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
           <div className="mb-4">
-            <Link
+            <PageLink
               href={route('initiatives.index')}
               className="text-muted-foreground hover:text-foreground text-sm"
             >
               Back to initiatives
-            </Link>
+            </PageLink>
           </div>
 
           <InitiativeForm

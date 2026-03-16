@@ -1,11 +1,11 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import type { FormErrors } from '@/common/forms';
+import { PageHead, PageLink, usePageForm, usePageProps } from '@/common/page-runtime';
 import type { ContactChannelFormData } from '@/modules/contact-channels/core/forms';
 import type { ContactChannelTypeOption } from '@/modules/contact-channels/core/types';
 import { useContactChannelsTranslation } from '@/modules/contact-channels/i18n';
 import { CONTACT_CHANNELS_NAMESPACES } from '@/modules/contact-channels/i18n';
 import { ContactChannelForm } from '@/modules/contact-channels/ui/form/contact-channel';
-import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import React from 'react';
 
 interface CreateContactChannelProps {
@@ -14,7 +14,7 @@ interface CreateContactChannelProps {
 
 export default function Create({ channelTypes }: CreateContactChannelProps) {
   const { data, setData, post, processing } =
-    useForm<ContactChannelFormData>({
+    usePageForm<ContactChannelFormData>({
       locale: '',
       channel_type: channelTypes[0]?.value ?? '',
       label: '',
@@ -22,9 +22,9 @@ export default function Create({ channelTypes }: CreateContactChannelProps) {
       is_active: true,
       sort_order: 0,
     });
-  const { errors: formErrors } = usePage().props as {
+  const { errors: formErrors } = usePageProps<{
     errors: FormErrors<keyof ContactChannelFormData>;
-  };
+  }>();
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
@@ -94,17 +94,17 @@ function CreateContactChannelContent({
 
   return (
     <>
-      <Head title={tActions('newChannel')} />
+      <PageHead title={tActions('newChannel')} />
 
       <div className="overflow-hidden">
         <div className="mx-auto max-w-xl px-4 py-8 sm:px-6 lg:px-8">
           <div className="mb-4">
-            <Link
+            <PageLink
               href={route('contact-channels.index')}
               className="text-muted-foreground hover:text-foreground text-sm"
             >
               {tActions('backToIndex')}
-            </Link>
+            </PageLink>
           </div>
 
           <ContactChannelForm

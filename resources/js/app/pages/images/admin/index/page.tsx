@@ -1,7 +1,7 @@
 // resources/js/Pages/Images/Index.tsx
 
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
-import { Head, router } from '@inertiajs/react';
+import { PageHead, pageRouter } from '@/common/page-runtime';
 import { useState } from 'react';
 
 import type { Image } from '@/modules/images/core/types';
@@ -74,7 +74,7 @@ export default function Index({ images, filters }: ImagesIndexProps) {
       return;
     }
 
-    router.delete(route('images.destroy', image.id), {
+    pageRouter.delete(route('images.destroy', image.id), {
       preserveScroll: true,
       onSuccess: () => {
         if (selectedImage && selectedImage.id === image.id) {
@@ -94,7 +94,7 @@ export default function Index({ images, filters }: ImagesIndexProps) {
       per_page: values.per_page.trim(),
     };
 
-    router.get(route('images.index'), payload, {
+    pageRouter.get(route('images.index'), payload, {
       preserveScroll: true,
       preserveState: true,
       replace: true,
@@ -102,7 +102,7 @@ export default function Index({ images, filters }: ImagesIndexProps) {
   };
 
   const handleResetFilters = () => {
-    router.get(
+    pageRouter.get(
       route('images.index'),
       {},
       {
@@ -115,7 +115,7 @@ export default function Index({ images, filters }: ImagesIndexProps) {
 
   const handlePageChange = (page: number) => {
     const query = buildFilterQueryFromProps(filters);
-    router.get(
+    pageRouter.get(
       route('images.index'),
       {
         ...query,
@@ -143,7 +143,7 @@ export default function Index({ images, filters }: ImagesIndexProps) {
     <AuthenticatedLayout
       header={<h1 className="text-lg font-semibold tracking-tight">Images</h1>}
     >
-      <Head title="Images" />
+      <PageHead title="Images" />
 
       <div className="space-y-4 overflow-hidden">
         <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">

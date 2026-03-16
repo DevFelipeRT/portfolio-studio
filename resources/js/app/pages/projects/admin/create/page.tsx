@@ -1,6 +1,7 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import { useFormSubmit, type FormErrors } from '@/common/forms';
 import { useSupportedLocales } from '@/common/locale';
+import { PageHead, PageLink, usePageForm, usePageProps } from '@/common/page-runtime';
 import type {
   ImageInput,
   ProjectFormData,
@@ -9,7 +10,6 @@ import { useProjectsTranslation } from '@/modules/projects/i18n';
 import { PROJECTS_NAMESPACES } from '@/modules/projects/i18n';
 import { ProjectForm } from '@/modules/projects/ui/form/project';
 import type { Skill } from '@/modules/skills/core/types';
-import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import React from 'react';
 
 interface CreateProjectProps {
@@ -31,14 +31,14 @@ const defaultProjectFormData: ProjectFormData = {
 
 export default function Create({ skills }: CreateProjectProps) {
   const supportedLocales = useSupportedLocales();
-  const { data, setData, post, processing } = useForm<ProjectFormData>(
+  const { data, setData, post, processing } = usePageForm<ProjectFormData>(
     'projects.create',
     defaultProjectFormData,
   );
   const submitForm = useFormSubmit();
-  const { errors: formErrors } = usePage().props as {
+  const { errors: formErrors } = usePageProps<{
     errors: FormErrors<keyof ProjectFormData>;
-  };
+  }>();
 
   function changeField<K extends keyof ProjectFormData>(
     key: K,
@@ -102,8 +102,8 @@ export default function Create({ skills }: CreateProjectProps) {
   };
 
   return (
-    <AuthenticatedLayout header={<CreateProjectHeader />}>
-      <Head title="New project" />
+    <>
+      <PageHead title="New project" />
 
       <CreateProjectContent
         skills={skills}
@@ -119,11 +119,14 @@ export default function Create({ skills }: CreateProjectProps) {
         onUpdateImageAlt={updateImageAlt}
         onUpdateImageFile={updateImageFile}
       />
-    </AuthenticatedLayout>
+    </>
   );
 }
 
 Create.i18n = ['projects'];
+Create.layout = (page: React.ReactNode) => (
+  <AuthenticatedLayout>{page}</AuthenticatedLayout>
+);
 
 function CreateProjectHeader() {
   const { translate: tActions } = useProjectsTranslation(
@@ -178,13 +181,17 @@ function CreateProjectContent({
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
       <div className="overflow-hidden">
+        <div className="mb-6">
+          <CreateProjectHeader />
+        </div>
+
         <div className="mb-4">
-          <Link
+          <PageLink
             href={route('projects.index')}
             className="text-muted-foreground hover:text-foreground text-sm"
           >
             {tActions('backToIndex')}
-          </Link>
+          </PageLink>
         </div>
 
         <ProjectForm

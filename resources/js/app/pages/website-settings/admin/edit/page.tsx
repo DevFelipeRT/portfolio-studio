@@ -1,5 +1,6 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import { useFormSubmit, type FormErrors } from '@/common/forms';
+import { PageHead, usePageForm, usePageProps } from '@/common/page-runtime';
 import type { WebsiteSettingsPageProps } from '@/modules/website-settings/types';
 import { WebsiteSettingsForm } from '@/modules/website-settings/form/website-settings';
 import {
@@ -7,7 +8,6 @@ import {
   syncLocaleMaps,
   type WebsiteSettingsFormData,
 } from '@/modules/website-settings/forms';
-import { Head, useForm, usePage } from '@inertiajs/react';
 import React from 'react';
 
 export default function Edit({ settings, locales }: WebsiteSettingsPageProps) {
@@ -17,11 +17,11 @@ export default function Edit({ settings, locales }: WebsiteSettingsPageProps) {
   );
 
   const { data, setData, put, processing, setDefaults } =
-    useForm<WebsiteSettingsFormData>(initialData);
+    usePageForm<WebsiteSettingsFormData>(initialData);
   const submitForm = useFormSubmit();
-  const { errors: formErrors } = usePage().props as {
+  const { errors: formErrors } = usePageProps<{
     errors: FormErrors;
-  };
+  }>();
 
   const handleChange = (
     field: keyof WebsiteSettingsFormData,
@@ -51,7 +51,7 @@ export default function Edit({ settings, locales }: WebsiteSettingsPageProps) {
         </h1>
       }
     >
-      <Head title="Website settings" />
+      <PageHead title="Website settings" />
 
       <div className="overflow-hidden">
         <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">

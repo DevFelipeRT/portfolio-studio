@@ -3,7 +3,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import GuestLayout from '@/app/layouts/GuestLayout';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { PageHead, PageLink, usePageForm } from '@/common/page-runtime';
 import { FormEventHandler } from 'react';
 
 export default function Login({
@@ -13,7 +13,7 @@ export default function Login({
   status?: string;
   canResetPassword: boolean;
 }) {
-  const { data, setData, post, processing, errors, reset } = useForm({
+  const { data, setData, post, processing, errors, reset } = usePageForm({
     email: '',
     password: '',
     remember: false as boolean,
@@ -29,7 +29,7 @@ export default function Login({
 
   return (
     <GuestLayout>
-      <Head title="Log in" />
+      <PageHead title="Log in" />
 
       {status && (
         <div className="mb-4 text-sm font-medium text-green-600">{status}</div>
@@ -91,12 +91,12 @@ export default function Login({
 
         <div className="mt-4 flex items-center justify-end gap-3">
           {canResetPassword && (
-            <Link
+            <PageLink
               href={route('password.request')}
               className="text-muted-foreground hover:text-foreground text-sm underline"
             >
               Forgot your password?
-            </Link>
+            </PageLink>
           )}
 
           <Button disabled={processing}>Log in</Button>

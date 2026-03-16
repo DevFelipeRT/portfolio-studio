@@ -2,6 +2,7 @@ import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import type { FormErrors } from '@/common/forms';
 import { useSupportedLocales } from '@/common/locale';
 import { LocaleSwapDialog } from '@/common/LocaleSwapDialog';
+import { PageHead, PageLink, usePageForm, usePageProps } from '@/common/page-runtime';
 import { Button } from '@/components/ui/button';
 import { listProjectTranslations } from '@/modules/projects/core/api/translations';
 import type {
@@ -14,7 +15,6 @@ import { PROJECTS_NAMESPACES } from '@/modules/projects/i18n';
 import { ProjectForm } from '@/modules/projects/ui/form/project';
 import { TranslationModal } from '@/modules/projects/ui/TranslationModal';
 import type { Skill } from '@/modules/skills/core/types';
-import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import React from 'react';
 
 interface EditProjectProps {
@@ -34,7 +34,7 @@ export default function Edit({ project, skills }: EditProjectProps) {
   );
 
   const { data, setData, post, processing, transform } =
-    useForm<ProjectFormData>({
+    usePageForm<ProjectFormData>({
       locale: project.locale,
       confirm_swap: false,
       name: project.name,
@@ -47,9 +47,9 @@ export default function Edit({ project, skills }: EditProjectProps) {
       skill_ids: initialSkillIds,
       images: [],
     });
-  const { errors: formErrors } = usePage().props as {
+  const { errors: formErrors } = usePageProps<{
     errors: FormErrors<keyof ProjectFormData>;
-  };
+  }>();
 
   function changeField<K extends keyof ProjectFormData>(
     key: K,
@@ -179,8 +179,8 @@ export default function Edit({ project, skills }: EditProjectProps) {
   };
 
   return (
-    <AuthenticatedLayout header={<EditProjectHeader />}>
-      <Head title={`Edit project: ${project.name}`} />
+    <>
+      <PageHead title={`Edit project: ${project.name}`} />
 
       <EditProjectContent
         project={project}
@@ -234,11 +234,14 @@ export default function Edit({ project, skills }: EditProjectProps) {
           }}
         />
       )}
-    </AuthenticatedLayout>
+    </>
   );
 }
 
 Edit.i18n = ['projects'];
+Edit.layout = (page: React.ReactNode) => (
+  <AuthenticatedLayout>{page}</AuthenticatedLayout>
+);
 
 function EditProjectHeader() {
   const { translate: tActions } = useProjectsTranslation(
@@ -308,13 +311,17 @@ function EditProjectContent({
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
       <div className="overflow-hidden">
+        <div className="mb-6">
+          <EditProjectHeader />
+        </div>
+
         <div className="mb-4 flex items-center justify-between gap-3">
-          <Link
+          <PageLink
             href={route('projects.index')}
             className="text-muted-foreground hover:text-foreground text-sm"
           >
             {tActions('backToIndex')}
-          </Link>
+          </PageLink>
 
           <Button type="button" variant="secondary" onClick={onOpenTranslations}>
             {tTranslations('manage')}
