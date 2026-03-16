@@ -1,6 +1,7 @@
 // resources/js/Pages/Initiatives/Index.tsx
 
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import { PageContent } from '@/app/layouts/primitives';
 import { PageHead, pageRouter } from '@/common/page-runtime';
 import { useMemo, useState } from 'react';
 
@@ -122,14 +123,13 @@ export default function Index({ initiatives }: InitiativesIndexProps) {
   }
 
   return (
-    <AuthenticatedLayout
-      header={
-        <h1 className="text-xl leading-tight font-semibold">Initiatives</h1>
-      }
-    >
+    <AuthenticatedLayout>
       <PageHead title="Initiatives" />
 
-      <div className="space-y-4 overflow-hidden">
+      <PageContent
+        className="space-y-4 overflow-hidden py-8"
+        pageWidth="container"
+      >
         <InitiativeHeader
           total={items.length}
           visibleCount={visibleCount}
@@ -148,7 +148,7 @@ export default function Index({ initiatives }: InitiativesIndexProps) {
             onDelete={handleDelete}
           />
         )}
-      </div>
+      </PageContent>
 
       <InitiativeOverlay
         open={overlayOpen}

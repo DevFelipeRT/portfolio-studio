@@ -1,6 +1,8 @@
 // resources/js/Layouts/PublicLayout.tsx
 
 import { MobileSidebar } from '@/app/layouts/partials/MobileSidebar';
+import { FooterBar } from '@/app/layouts/regions/FooterBar';
+import { HeaderBar } from '@/app/layouts/regions/HeaderBar';
 import { ThemeProvider } from '@/app/layouts/partials/theme/ThemeProvider';
 import {
   Navigation,
@@ -12,8 +14,6 @@ import { useLayoutsTranslation } from '@/app/layouts/i18n';
 import { useCurrentPage } from '@/common/page-runtime';
 import { useIsMobile } from '@/hooks/useMobile';
 import { PropsWithChildren } from 'react';
-import Footer from './partials/Footer';
-import Header from './partials/Header';
 
 type SharedProps = {
   auth: {
@@ -62,7 +62,7 @@ function PublicLayoutI18nContent({
   return (
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
       <div className="text-foreground flex min-h-dvh w-full flex-col">
-        <Header>
+        <HeaderBar>
           {!isMobile ? (
             <Navigation items={navItems} />
           ) : (
@@ -79,15 +79,11 @@ function PublicLayoutI18nContent({
               />
             </MobileSidebar>
           )}
-        </Header>
+        </HeaderBar>
 
-        <main className="w-full flex flex-1">
-          <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-4 sm:px-6 lg:px-8">
-            {children}
-          </div>
-        </main>
+        <main className="flex w-full flex-1 flex-col">{children}</main>
 
-        <Footer />
+        <FooterBar />
       </div>
     </ThemeProvider>
   );

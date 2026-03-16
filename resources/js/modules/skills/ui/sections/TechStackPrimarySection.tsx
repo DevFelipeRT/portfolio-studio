@@ -1,6 +1,5 @@
 import {
     SectionHeader,
-    type SectionComponentProps,
     useFieldValueResolver,
 } from '@/modules/content-management/features/page-rendering';
 import { SkillBadge } from '@/modules/skills/ui/SkillBadge';
@@ -24,13 +23,8 @@ type CapabilitySkillGroup = {
  * Header content is resolved through the section field resolver,
  * with static defaults as final fallback.
  */
-export function TechStackPrimarySection({
-    section: renderModel,
-    className,
-}: SectionComponentProps): JSX.Element | null {
+export function TechStackPrimarySection(): JSX.Element | null {
     const fieldResolver = useFieldValueResolver();
-
-    const targetId = renderModel.anchor || `tech-stack-${renderModel.id}`;
 
     const sectionLabel =
         fieldResolver.getFieldValue<string>('section_label') ??
@@ -61,19 +55,8 @@ export function TechStackPrimarySection({
         return null;
     }
 
-    const baseSectionClassName = 'flex flex-col gap-8';
-
-    const resolvedSectionClassName = [baseSectionClassName, className]
-        .filter(Boolean)
-        .join(' ')
-        .trim();
-
     return (
-        <section
-            id={targetId}
-            className={resolvedSectionClassName}
-            aria-label={sectionLabel}
-        >
+        <div className="flex flex-col gap-8" aria-label={sectionLabel}>
             <SectionHeader
                 eyebrow={eyebrow}
                 title={title}
@@ -111,6 +94,6 @@ export function TechStackPrimarySection({
                     })}
                 </div>
             )}
-        </section>
+        </div>
     );
 }

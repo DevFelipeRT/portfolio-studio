@@ -3,7 +3,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { SocialLinksBar, type SocialLinkItem } from '@/modules/contact-channels/ui/SocialLinksBar';
-import type { SectionComponentProps } from '@/modules/content-management/features/page-rendering';
 import type {
   SectionDataCollectionItem,
   SectionDataPrimitive,
@@ -22,13 +21,8 @@ import type { ComponentType, FormEvent, JSX, SVGProps } from 'react';
  * defaults when CMS values are not provided. Social links are provided
  * through the front-only section environment.
  */
-export function ContactPrimarySection({
-  section: renderModel,
-  className,
-}: SectionComponentProps): JSX.Element | null {
+export function ContactPrimarySection(): JSX.Element | null {
   const fieldResolver = useFieldValueResolver();
-
-  const targetId = renderModel.anchor || `contact-${renderModel.id}`;
 
   const sectionLabel =
     fieldResolver.getFieldValue<string>('section_label') ??
@@ -120,19 +114,8 @@ export function ContactPrimarySection({
     return null;
   }
 
-  const baseSectionClassName = 'flex flex-col gap-10';
-
-  const resolvedSectionClassName = [baseSectionClassName, className]
-    .filter(Boolean)
-    .join(' ')
-    .trim();
-
   return (
-    <section
-      id={targetId}
-      className={resolvedSectionClassName}
-      aria-label={sectionLabel}
-    >
+    <div className="flex flex-col gap-10" aria-label={sectionLabel}>
       <SectionHeader
         eyebrow={eyebrow}
         title={title}
@@ -260,7 +243,7 @@ export function ContactPrimarySection({
           </section>
         )}
       </div>
-    </section>
+    </div>
   );
 }
 

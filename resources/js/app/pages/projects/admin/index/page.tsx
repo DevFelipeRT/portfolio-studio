@@ -1,4 +1,5 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import { PageContent } from '@/app/layouts/primitives';
 import { PageHead, PageLink } from '@/common/page-runtime';
 import {
   PROJECTS_NAMESPACES,
@@ -36,59 +37,59 @@ function ProjectsIndexI18nContent({ projects }: ProjectsIndexProps) {
 
   return (
     <>
-        <PageHead title="Projects" />
+      <PageHead title="Projects" />
 
-        <div className="overflow-hidden">
-          <div className="mb-6">
-            <ProjectsIndexHeader />
-          </div>
+      <PageContent className="overflow-hidden py-8" pageWidth="container">
+        <div className="mb-6">
+          <ProjectsIndexHeader />
+        </div>
 
-          <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-muted-foreground mt-1 text-sm">
-                {tForm('help.managementSubtitle')}
-              </p>
-            </div>
-
-            <PageLink
-              href={route('projects.create')}
-              className="bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-ring inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium shadow-sm transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
-            >
-              {tActions('newProject')}
-            </PageLink>
-          </div>
-
-          {!hasProjects && (
-            <p className="text-muted-foreground text-sm">
-              {tForm('emptyState.index')}
+        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-muted-foreground mt-1 text-sm">
+              {tForm('help.managementSubtitle')}
             </p>
-          )}
+          </div>
 
-          {hasProjects && (
-            <div className="bg-card overflow-hidden rounded-lg border">
-              <table className="min-w-full divide-y text-sm">
-                <thead className="bg-muted/60">
-                  <tr>
-                    <th className="text-muted-foreground px-4 py-3 text-left font-medium">
-                      {tForm('fields.name.label')}
-                    </th>
-                    <th className="text-muted-foreground px-4 py-3 text-left font-medium">
-                      {tForm('fields.status.label')}
-                    </th>
-                    <th className="text-muted-foreground px-4 py-3 text-left font-medium">
-                      {tForm('fields.display.label')}
-                    </th>
-                    <th className="text-muted-foreground px-4 py-3 text-left font-medium">
-                      {tForm('fields.skill_ids.label')}
-                    </th>
-                    <th className="text-muted-foreground px-4 py-3 text-left font-medium">
-                      {tForm('fields.updated_at.label')}
-                    </th>
-                    <th className="text-muted-foreground px-4 py-3 text-right font-medium">
-                      {tForm('fields.actions.label')}
-                    </th>
-                  </tr>
-                </thead>
+          <PageLink
+            href={route('projects.create')}
+            className="bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-ring inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium shadow-sm transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+          >
+            {tActions('newProject')}
+          </PageLink>
+        </div>
+
+        {!hasProjects && (
+          <p className="text-muted-foreground text-sm">
+            {tForm('emptyState.index')}
+          </p>
+        )}
+
+        {hasProjects && (
+          <div className="bg-card overflow-hidden rounded-lg border">
+            <table className="min-w-full divide-y text-sm">
+              <thead className="bg-muted/60">
+                <tr>
+                  <th className="text-muted-foreground px-4 py-3 text-left font-medium">
+                    {tForm('fields.name.label')}
+                  </th>
+                  <th className="text-muted-foreground px-4 py-3 text-left font-medium">
+                    {tForm('fields.status.label')}
+                  </th>
+                  <th className="text-muted-foreground px-4 py-3 text-left font-medium">
+                    {tForm('fields.display.label')}
+                  </th>
+                  <th className="text-muted-foreground px-4 py-3 text-left font-medium">
+                    {tForm('fields.skill_ids.label')}
+                  </th>
+                  <th className="text-muted-foreground px-4 py-3 text-left font-medium">
+                    {tForm('fields.updated_at.label')}
+                  </th>
+                  <th className="text-muted-foreground px-4 py-3 text-right font-medium">
+                    {tForm('fields.actions.label')}
+                  </th>
+                </tr>
+              </thead>
 
               <tbody className="divide-y">
                 {projects.map((project) => (
@@ -158,7 +159,7 @@ function ProjectsIndexI18nContent({ projects }: ProjectsIndexProps) {
             </table>
           </div>
         )}
-      </div>
+      </PageContent>
     </>
   );
 }

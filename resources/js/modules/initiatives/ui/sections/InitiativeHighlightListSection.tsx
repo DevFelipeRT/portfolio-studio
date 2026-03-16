@@ -1,6 +1,5 @@
 import {
     SectionHeader,
-    type SectionComponentProps,
     useFieldValueResolver,
 } from '@/modules/content-management/features/page-rendering';
 import type { SectionDataValue } from '@/modules/content-management/types';
@@ -21,13 +20,8 @@ type CapabilityInitiative = {
  *
  * Primary source for all content is the section field resolver.
  */
-export function InitiativeHighlightListSection({
-    section: renderModel,
-    className,
-}: SectionComponentProps): JSX.Element | null {
+export function InitiativeHighlightListSection(): JSX.Element | null {
     const fieldResolver = useFieldValueResolver();
-
-    const targetId = renderModel.anchor || `initiatives-${renderModel.id}`;
 
     const highlightOnly =
         fieldResolver.getFieldValue<boolean>('highlight_only') ??
@@ -85,15 +79,8 @@ export function InitiativeHighlightListSection({
         return null;
     }
 
-    const baseSectionClassName = 'mx-auto space-y-8';
-
-    const resolvedSectionClassName = [baseSectionClassName, className]
-        .filter(Boolean)
-        .join(' ')
-        .trim();
-
     return (
-        <section id={targetId} className={resolvedSectionClassName}>
+        <div className="space-y-8">
             <SectionHeader
                 eyebrow={eyebrow}
                 title={title}
@@ -148,6 +135,6 @@ export function InitiativeHighlightListSection({
                     Nenhuma iniciativa retornada para esta seção.
                 </p>
             )}
-        </section>
+        </div>
     );
 }

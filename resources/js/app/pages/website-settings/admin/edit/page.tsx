@@ -1,4 +1,5 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import { PageContent } from '@/app/layouts/primitives';
 import { useFormSubmit, type FormErrors } from '@/common/forms';
 import { PageHead, usePageForm, usePageProps } from '@/common/page-runtime';
 import type { WebsiteSettingsPageProps } from '@/modules/website-settings/types';
@@ -44,28 +45,26 @@ export default function Edit({ settings, locales }: WebsiteSettingsPageProps) {
   };
 
   return (
-    <AuthenticatedLayout
-      header={
-        <h1 className="text-xl leading-tight font-semibold">
-          Website settings
-        </h1>
-      }
-    >
+    <AuthenticatedLayout>
       <PageHead title="Website settings" />
 
-      <div className="overflow-hidden">
-        <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
-          <WebsiteSettingsForm
-            data={data}
-            errors={formErrors}
-            processing={processing}
-            onChange={handleChange}
-            onSubmit={handleSubmit}
-            cancelHref={route('dashboard')}
-            locales={locales}
-          />
+      <PageContent className="overflow-hidden py-8" pageWidth="default">
+        <div className="mb-6">
+          <h1 className="text-xl leading-tight font-semibold">
+            Website settings
+          </h1>
         </div>
-      </div>
+
+        <WebsiteSettingsForm
+          data={data}
+          errors={formErrors}
+          processing={processing}
+          onChange={handleChange}
+          onSubmit={handleSubmit}
+          cancelHref={route('dashboard')}
+          locales={locales}
+        />
+      </PageContent>
     </AuthenticatedLayout>
   );
 }

@@ -1,4 +1,5 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import { PageContent } from '@/app/layouts/primitives';
 import { useSupportedLocales } from '@/common/locale';
 import { LocaleSwapDialog } from '@/common/LocaleSwapDialog';
 import type { FormErrors } from '@/common/forms';
@@ -112,7 +113,7 @@ export default function Edit({ experience }: EditExperienceProps) {
   };
 
   return (
-      <AuthenticatedLayout>
+    <AuthenticatedLayout>
       <PageHead title="Edit experience" />
 
       <EditExperienceI18nContent
@@ -204,39 +205,43 @@ function EditExperienceI18nContent({
   );
 
   return (
-    <div className="overflow-hidden">
-      <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="mb-4 flex items-center justify-between gap-3">
-          <PageLink
-            href={route('experiences.index')}
-            className="text-muted-foreground hover:text-foreground text-sm"
-          >
-            {tActions('backToIndex')}
-          </PageLink>
-
-          <Button type="button" variant="secondary" onClick={onOpenTranslations}>
-            {tTranslations('manage')}
-          </Button>
-
-          <span className="text-muted-foreground text-xs">
-            Editing: {experience.position} at {experience.company ?? '—'}
-          </span>
-        </div>
-
-        <ExperienceForm
-          data={data}
-          errors={formErrors}
-          processing={processing}
-          supportedLocales={supportedLocales}
-          cancelHref={route('experiences.index')}
-          submitLabel={tActions('saveChanges')}
-          localeDisabled={loadingTranslations || Boolean(localesLoadError)}
-          localeNote={localesLoadError}
-          onSubmit={onSubmit}
-          onChange={onChange}
-          onLocaleChange={onLocaleChange}
-        />
+    <PageContent className="overflow-hidden py-8" pageWidth="detail">
+      <div className="mb-6">
+        <h1 className="text-xl leading-tight font-semibold">
+          Edit experience
+        </h1>
       </div>
-    </div>
+
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <PageLink
+          href={route('experiences.index')}
+          className="text-muted-foreground hover:text-foreground text-sm"
+        >
+          {tActions('backToIndex')}
+        </PageLink>
+
+        <Button type="button" variant="secondary" onClick={onOpenTranslations}>
+          {tTranslations('manage')}
+        </Button>
+
+        <span className="text-muted-foreground text-xs">
+          Editing: {experience.position} at {experience.company ?? '—'}
+        </span>
+      </div>
+
+      <ExperienceForm
+        data={data}
+        errors={formErrors}
+        processing={processing}
+        supportedLocales={supportedLocales}
+        cancelHref={route('experiences.index')}
+        submitLabel={tActions('saveChanges')}
+        localeDisabled={loadingTranslations || Boolean(localesLoadError)}
+        localeNote={localesLoadError}
+        onSubmit={onSubmit}
+        onChange={onChange}
+        onLocaleChange={onLocaleChange}
+      />
+    </PageContent>
   );
 }

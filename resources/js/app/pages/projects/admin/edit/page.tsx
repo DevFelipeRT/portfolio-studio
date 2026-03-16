@@ -1,4 +1,5 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import { PageContent } from '@/app/layouts/primitives';
 import type { FormErrors } from '@/common/forms';
 import { useSupportedLocales } from '@/common/locale';
 import { LocaleSwapDialog } from '@/common/LocaleSwapDialog';
@@ -309,50 +310,48 @@ function EditProjectContent({
   );
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
-      <div className="overflow-hidden">
-        <div className="mb-6">
-          <EditProjectHeader />
-        </div>
-
-        <div className="mb-4 flex items-center justify-between gap-3">
-          <PageLink
-            href={route('projects.index')}
-            className="text-muted-foreground hover:text-foreground text-sm"
-          >
-            {tActions('backToIndex')}
-          </PageLink>
-
-          <Button type="button" variant="secondary" onClick={onOpenTranslations}>
-            {tTranslations('manage')}
-          </Button>
-        </div>
-
-        <ProjectForm
-          skills={skills}
-          existingImages={existingImages}
-          projectId={project.id}
-          data={data}
-          errors={formErrors}
-          processing={processing}
-          cancelHref={route('projects.index')}
-          submitLabel={tActions('saveChanges')}
-          supportedLocales={supportedLocales}
-          localeDisabled={loadingTranslations || Boolean(localesLoadError)}
-          onSubmit={onSubmit}
-          onChangeField={onChangeField}
-          onChangeLocale={onChangeLocale}
-          onChangeSkillIds={onChangeSkillIds}
-          onAddImageRow={onAddImageRow}
-          onRemoveImageRow={onRemoveImageRow}
-          onUpdateImageAlt={onUpdateImageAlt}
-          onUpdateImageFile={onUpdateImageFile}
-        />
-
-        {localesLoadError && (
-          <p className="text-muted-foreground mt-3 text-xs">{localesLoadError}</p>
-        )}
+    <PageContent className="overflow-hidden py-8" pageWidth="default">
+      <div className="mb-6">
+        <EditProjectHeader />
       </div>
-    </div>
+
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <PageLink
+          href={route('projects.index')}
+          className="text-muted-foreground hover:text-foreground text-sm"
+        >
+          {tActions('backToIndex')}
+        </PageLink>
+
+        <Button type="button" variant="secondary" onClick={onOpenTranslations}>
+          {tTranslations('manage')}
+        </Button>
+      </div>
+
+      <ProjectForm
+        skills={skills}
+        existingImages={existingImages}
+        projectId={project.id}
+        data={data}
+        errors={formErrors}
+        processing={processing}
+        cancelHref={route('projects.index')}
+        submitLabel={tActions('saveChanges')}
+        supportedLocales={supportedLocales}
+        localeDisabled={loadingTranslations || Boolean(localesLoadError)}
+        onSubmit={onSubmit}
+        onChangeField={onChangeField}
+        onChangeLocale={onChangeLocale}
+        onChangeSkillIds={onChangeSkillIds}
+        onAddImageRow={onAddImageRow}
+        onRemoveImageRow={onRemoveImageRow}
+        onUpdateImageAlt={onUpdateImageAlt}
+        onUpdateImageFile={onUpdateImageFile}
+      />
+
+      {localesLoadError && (
+        <p className="text-muted-foreground mt-3 text-xs">{localesLoadError}</p>
+      )}
+    </PageContent>
   );
 }

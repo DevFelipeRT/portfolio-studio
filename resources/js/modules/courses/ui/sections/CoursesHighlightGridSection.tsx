@@ -4,7 +4,6 @@ import { DateDisplay } from '@/components/ui/date-display';
 import { ExpandableCard } from '@/components/ui/expandable-card';
 import {
   SectionHeader,
-  type SectionComponentProps,
   useFieldValueResolver,
 } from '@/modules/content-management/features/page-rendering';
 import type { SectionDataValue } from '@/modules/content-management/types';
@@ -76,14 +75,9 @@ function CoursePeriodDisplay({
  * Courses are expected to be provided in section data by the backend layer
  * integrating with the courses.visible.v1 capability.
  */
-export function CoursesHighlightGridSection({
-  section: renderModel,
-  className,
-}: SectionComponentProps): JSX.Element | null {
+export function CoursesHighlightGridSection(): JSX.Element | null {
   const fieldResolver = useFieldValueResolver();
   const locale = useGetLocale();
-
-  const targetId = renderModel.anchor || `education-${renderModel.id}`;
 
   const rawCourses = fieldResolver.getFieldValue<SectionDataValue>('courses');
 
@@ -136,19 +130,8 @@ export function CoursesHighlightGridSection({
     return null;
   }
 
-  const baseSectionClassName = 'flex flex-col gap-10';
-
-  const resolvedSectionClassName = [baseSectionClassName, className]
-    .filter(Boolean)
-    .join(' ')
-    .trim();
-
   return (
-    <section
-      id={targetId}
-      className={resolvedSectionClassName}
-      aria-label={sectionLabel}
-    >
+    <div className="flex flex-col gap-10" aria-label={sectionLabel}>
       <SectionHeader
         eyebrow={eyebrow}
         title={title}
@@ -214,6 +197,6 @@ export function CoursesHighlightGridSection({
           })}
         </div>
       )}
-    </section>
+    </div>
   );
 }

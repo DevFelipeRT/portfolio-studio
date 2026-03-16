@@ -1,4 +1,5 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import { PageContent } from '@/app/layouts/primitives';
 import { useFormSubmit, type FormErrors } from '@/common/forms';
 import { PageHead, usePageForm, usePageProps } from '@/common/page-runtime';
 import {
@@ -43,8 +44,10 @@ export default function PageCreate() {
   };
 
   return (
-    <AuthenticatedLayout
-      header={
+    <AuthenticatedLayout>
+      <PageHead title="Create page" />
+
+      <PageContent pageWidth="editor" className="space-y-6">
         <div>
           <h1 className="text-xl font-semibold tracking-tight">
             Create content page
@@ -53,11 +56,7 @@ export default function PageCreate() {
             Define a new content-managed page before composing its sections.
           </p>
         </div>
-      }
-    >
-      <PageHead title="Create page" />
 
-      <div className="mx-auto max-w-4xl space-y-6">
         <PageForm
           mode="create"
           data={data}
@@ -66,7 +65,7 @@ export default function PageCreate() {
           onChange={handleChange}
           onSubmit={handleSubmit}
         />
-      </div>
+      </PageContent>
     </AuthenticatedLayout>
   );
 }

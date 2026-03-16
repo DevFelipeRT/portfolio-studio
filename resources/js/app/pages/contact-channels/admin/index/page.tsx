@@ -1,4 +1,5 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import { PageContent } from '@/app/layouts/primitives';
 import { PageHead, PageLink } from '@/common/page-runtime';
 import type { ContactChannel } from '@/modules/contact-channels/core/types';
 import { useContactChannelsTranslation } from '@/modules/contact-channels/i18n';
@@ -36,29 +37,31 @@ function ContactChannelsIndexI18nContent({ channels }: ContactChannelsIndexProps
   };
 
   return (
-    <AuthenticatedLayout
-      header={
-        <h1 className="text-xl leading-tight font-semibold">
-          {tForm('sections.managementTitle')}
-        </h1>
-      }
-    >
+    <AuthenticatedLayout>
       <PageHead title={tForm('sections.managementTitle')} />
 
-      <div className="overflow-hidden">
-        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <PageContent className="overflow-hidden py-8" pageWidth="container">
+        <div className="mb-6 space-y-6">
           <div>
-            <p className="text-muted-foreground mt-1 text-sm">
-              {tForm('help.managementSubtitle')}
-            </p>
+            <h1 className="text-xl leading-tight font-semibold">
+              {tForm('sections.managementTitle')}
+            </h1>
           </div>
 
-          <PageLink
-            href={route('contact-channels.create')}
-            className="bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-ring inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium shadow-sm transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
-          >
-            {tActions('newChannel')}
-          </PageLink>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-muted-foreground mt-1 text-sm">
+                {tForm('help.managementSubtitle')}
+              </p>
+            </div>
+
+            <PageLink
+              href={route('contact-channels.create')}
+              className="bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-ring inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium shadow-sm transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+            >
+              {tActions('newChannel')}
+            </PageLink>
+          </div>
         </div>
 
         {!hasChannels && (
@@ -151,7 +154,7 @@ function ContactChannelsIndexI18nContent({ channels }: ContactChannelsIndexProps
             </table>
           </div>
         )}
-      </div>
+      </PageContent>
     </AuthenticatedLayout>
   );
 }

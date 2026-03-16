@@ -1,6 +1,5 @@
 import {
     SectionHeader,
-    type SectionComponentProps,
     useFieldValueResolver,
 } from '@/modules/content-management/features/page-rendering';
 import type { SectionDataValue } from '@/modules/content-management/types';
@@ -24,13 +23,8 @@ type CapabilityProject = {
  *
  * Primary source for all content is the section field resolver.
  */
-export function ProjectHighlightListSection({
-    section: renderModel,
-    className,
-}: SectionComponentProps): JSX.Element | null {
+export function ProjectHighlightListSection(): JSX.Element | null {
     const fieldResolver = useFieldValueResolver();
-
-    const targetId = renderModel.anchor || `projects-${renderModel.id}`;
 
     const highlightOnly =
         fieldResolver.getFieldValue<boolean>('highlight_only') ??
@@ -89,19 +83,8 @@ export function ProjectHighlightListSection({
 
     const ariaLabel = title || description || undefined;
 
-    const baseSectionClassName = 'flex flex-col gap-8';
-
-    const resolvedSectionClasses = [baseSectionClassName, className]
-        .filter(Boolean)
-        .join(' ')
-        .trim();
-
     return (
-        <section
-            id={targetId}
-            className={resolvedSectionClasses}
-            aria-label={ariaLabel}
-        >
+        <div className="flex flex-col gap-8" aria-label={ariaLabel}>
             <SectionHeader
                 eyebrow={eyebrow}
                 title={title}
@@ -117,6 +100,6 @@ export function ProjectHighlightListSection({
                     Nenhum projeto retornado para esta seção.
                 </p>
             )}
-        </section>
+        </div>
     );
 }

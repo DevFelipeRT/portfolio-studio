@@ -1,4 +1,5 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import { PageContent } from '@/app/layouts/primitives';
 import type { FormErrors } from '@/common/forms';
 import { LocaleSwapDialog } from '@/common/LocaleSwapDialog';
 import { PageHead, PageLink, usePageForm, usePageProps } from '@/common/page-runtime';
@@ -116,13 +117,7 @@ export default function Edit({ course, course_categories }: EditCourseProps) {
   };
 
   return (
-    <AuthenticatedLayout
-      header={
-        <h1 className="text-xl leading-tight font-semibold">
-          Edit Course:{` ${data.name}`}
-        </h1>
-      }
-    >
+    <AuthenticatedLayout>
       <PageHead title={`Edit - ${data.name}`} />
 
       <EditCourseI18nContent
@@ -208,34 +203,38 @@ function EditCourseI18nContent({
   );
 
   return (
-    <div className="overflow-hidden">
-      <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-          <PageLink
-            href={route('courses.index')}
-            className="text-muted-foreground hover:text-foreground inline-flex items-center text-sm transition-colors"
-          >
-            <ChevronLeft className="mr-1 h-4 w-4" />
-            Back to courses
-          </PageLink>
-
-          <Button type="button" variant="secondary" onClick={onOpenTranslations}>
-            {tTranslations('manage')}
-          </Button>
-        </div>
-
-        <CourseForm
-          data={data}
-          errors={formErrors}
-          processing={processing}
-          categories={categories}
-          onChange={onChange}
-          onSubmit={onSubmit}
-          cancelHref={cancelHref}
-          onLocaleChange={onLocaleChange}
-          localeDisabled={loadingTranslations || Boolean(localesLoadError)}
-        />
+    <PageContent className="overflow-hidden py-8" pageWidth="default">
+      <div className="mb-6">
+        <h1 className="text-xl leading-tight font-semibold">
+          Edit Course:{` ${data.name}`}
+        </h1>
       </div>
-    </div>
+
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <PageLink
+          href={route('courses.index')}
+          className="text-muted-foreground hover:text-foreground inline-flex items-center text-sm transition-colors"
+        >
+          <ChevronLeft className="mr-1 h-4 w-4" />
+          Back to courses
+        </PageLink>
+
+        <Button type="button" variant="secondary" onClick={onOpenTranslations}>
+          {tTranslations('manage')}
+        </Button>
+      </div>
+
+      <CourseForm
+        data={data}
+        errors={formErrors}
+        processing={processing}
+        categories={categories}
+        onChange={onChange}
+        onSubmit={onSubmit}
+        cancelHref={cancelHref}
+        onLocaleChange={onLocaleChange}
+        localeDisabled={loadingTranslations || Boolean(localesLoadError)}
+      />
+    </PageContent>
   );
 }

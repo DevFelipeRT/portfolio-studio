@@ -1,4 +1,8 @@
 import { sectionRegistryProviders } from '@/config/sectionRegistryProviders';
+import {
+  Section,
+  SectionContent,
+} from '@/app/layouts/primitives';
 import type {
   PageSectionDto,
   TemplateDefinitionDto,
@@ -8,6 +12,7 @@ import { buildComponentRegistry } from '../../template/registry/componentRegistr
 import { createFieldValueResolver } from './field-value/fieldValueResolver';
 import { FieldValueResolverProvider } from './field-value/FieldValueResolverProvider';
 import { renderGenericTemplateSection } from './RenderGenericTemplateSection';
+import { resolveSectionLayout } from './sectionLayout';
 import { buildSectionRenderModel } from './sectionRenderModel';
 import { findTemplateDefinition } from './template/findTemplateDefinition';
 import { resolveTemplateComponent } from './template/resolveTemplateComponent';
@@ -30,8 +35,8 @@ export interface SectionRendererProps {
  * components can read CMS values with the correct precedence between
  * persisted section data and template defaults.
  *
- * Layout-related metadata (anchor id and class names) is passed down
- * to section components instead of wrapping them with an extra <section>.
+ * Layout-related metadata is resolved here so CMS sections share one
+ * structural contract for bleed, spacing, borders, and horizontal containment.
  */
 export function SectionRenderer({
   sections,
@@ -70,8 +75,12 @@ export function SectionRenderer({
           section.data ?? null,
           template,
         );
+        const layout = resolveSectionLayout(sectionModel.templateKey);
+        const sectionId =
+          sectionModel.anchor ??
+          `${sectionModel.templateKey.replace(/_/g, '-')}-${sectionModel.id}`;
 
-        const baseSectionClassName = 'm-0 border-b py-8 md:py-12 lg:py-16';
+        const baseSectionClassName = 'm-0 border-b';
         const resolvedSectionClassName =
           [baseSectionClassName, sectionClassName]
             .filter(Boolean)
@@ -82,14 +91,11 @@ export function SectionRenderer({
           <Component
             section={sectionModel}
             template={template}
-            className={resolvedSectionClassName}
           />
         ) : (
           renderGenericTemplateSection(
-            sectionModel,
             template,
             fieldValueResolver,
-            resolvedSectionClassName,
           )
         );
 
@@ -102,7 +108,17 @@ export function SectionRenderer({
             key={section.id}
             resolver={fieldValueResolver}
           >
-            {content}
+            <Section
+              id={sectionId}
+              className={resolvedSectionClassName}
+              spacing={layout.spacing}
+              surface={layout.surface}
+              bleed={layout.bleed}
+            >
+              <SectionContent contentWidth={layout.contentWidth}>
+                {content}
+              </SectionContent>
+            </Section>
           </FieldValueResolverProvider>
         );
       })}

@@ -1,19 +1,22 @@
-import { useLayoutsTranslation } from '@/app/layouts/i18n';
+import { useLayoutsTranslation } from '../i18n';
+import { ContentContainer } from '../primitives';
 
-export default function Footer() {
+export function FooterBar() {
   const { translate } = useLayoutsTranslation('footer');
-
   const madeByLabel = translate('madeBy', 'Made by Felipe Ruiz Terrazas.');
   const rightsLabel = translate('rights', 'All rights reserved');
 
   return (
-    <footer className="bg-background border-border text-muted-foreground border-t py-4 text-sm">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+    <footer className="bg-background border-border text-muted-foreground w-full border-t py-4 text-sm">
+      <ContentContainer
+        contentWidth="default"
+        className="flex items-center justify-between"
+      >
         <span>
           © {new Date().getFullYear()} Portfolio. {madeByLabel}
         </span>
         <span className="sm:inline">{rightsLabel}</span>
-      </div>
+      </ContentContainer>
     </footer>
   );
 }

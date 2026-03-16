@@ -1,4 +1,5 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import { PageContent } from '@/app/layouts/primitives';
 import { useSupportedLocales } from '@/common/locale';
 import { useFormSubmit, type FormErrors } from '@/common/forms';
 import { PageHead, PageLink, usePageForm, usePageProps } from '@/common/page-runtime';
@@ -105,34 +106,38 @@ export default function Create() {
     <AuthenticatedLayout>
       <PageHead title="New initiative" />
 
-      <div className="overflow-hidden">
-        <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
-          <div className="mb-4">
-            <PageLink
-              href={route('initiatives.index')}
-              className="text-muted-foreground hover:text-foreground text-sm"
-            >
-              Back to initiatives
-            </PageLink>
-          </div>
-
-          <InitiativeForm
-            submitLabel="Save initiative"
-            cancelHref={route('initiatives.index')}
-            existingImages={[]}
-            data={data}
-            errors={formErrors}
-            processing={processing}
-            supportedLocales={supportedLocales}
-            onSubmit={submit}
-            onChangeField={changeField}
-            onAddImageRow={addImageRow}
-            onRemoveImageRow={removeImageRow}
-            onUpdateImageAlt={updateImageAlt}
-            onUpdateImageFile={updateImageFile}
-          />
+      <PageContent className="overflow-hidden py-8" pageWidth="default">
+        <div className="mb-6">
+          <h1 className="text-xl leading-tight font-semibold">
+            New initiative
+          </h1>
         </div>
-      </div>
+
+        <div className="mb-4">
+          <PageLink
+            href={route('initiatives.index')}
+            className="text-muted-foreground hover:text-foreground text-sm"
+          >
+            Back to initiatives
+          </PageLink>
+        </div>
+
+        <InitiativeForm
+          submitLabel="Save initiative"
+          cancelHref={route('initiatives.index')}
+          existingImages={[]}
+          data={data}
+          errors={formErrors}
+          processing={processing}
+          supportedLocales={supportedLocales}
+          onSubmit={submit}
+          onChangeField={changeField}
+          onAddImageRow={addImageRow}
+          onRemoveImageRow={removeImageRow}
+          onUpdateImageAlt={updateImageAlt}
+          onUpdateImageFile={updateImageFile}
+        />
+      </PageContent>
     </AuthenticatedLayout>
   );
 }

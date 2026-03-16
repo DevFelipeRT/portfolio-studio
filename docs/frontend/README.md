@@ -38,6 +38,24 @@ Backend controllers render pages using the same page keys via `Inertia::render(.
 
 Evidence: folder structure under `resources/js/`.
 
+## Layout composition
+
+Layout structure and horizontal content alignment are now intentionally separated:
+
+- `resources/js/app/layouts/PublicLayout.tsx` and `resources/js/app/layouts/AuthenticatedLayout.tsx` own the shell regions (`header`, `main`, `footer`) but no longer impose a single `max-w-*` wrapper around arbitrary page content.
+- `resources/js/app/layouts/primitives/ContentContainer.tsx` is the shared source of truth for horizontal width and gutters (`reading`, `default`, `wide`, `full`).
+- `resources/js/app/layouts/primitives/PageContent.tsx` is the semantic body boundary for private/admin pages, composing `ContentContainer` and declaring the effective page measure (`form`, `detail`, `editor`, `default`, `wide`).
+- `resources/js/app/layouts/primitives/Section.tsx` and `resources/js/app/layouts/primitives/SectionContent.tsx` are the semantic building blocks for CMS and marketing-style sections, separating full-width section surfaces from aligned inner content.
+- `resources/js/app/layouts/regions/HeaderBar.tsx` and `resources/js/app/layouts/regions/FooterBar.tsx` keep shell regions full-width while aligning their inner content through `ContentContainer`.
+
+The intended boundary rules are:
+
+- public/CMS sections: `Section` defines the surface and `SectionContent` defines the inner measure
+- private/admin pages: `PageContent` defines the page body boundary
+- `ContentContainer` remains an infrastructure primitive used by semantic wrappers and shell regions, not the default final wrapper for page bodies
+
+For content-managed public pages, `resources/js/modules/content-management/features/page-rendering/rendering/section-renderer/SectionRenderer.tsx` now resolves section layout metadata centrally and passes width/surface/spacing intent down to section components and the generic fallback renderer. This keeps container policy out of the global shell and closer to the section contract.
+
 ## Common frontend docs
 
 - App frontend docs index: [`docs/frontend/app/README.md`](./app/README.md)

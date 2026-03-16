@@ -1,4 +1,5 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import { PageContent } from '@/app/layouts/primitives';
 import { useFormSubmit, type FormErrors } from '@/common/forms';
 import { useSupportedLocales } from '@/common/locale';
 import { PageHead, PageLink, usePageForm, usePageProps } from '@/common/page-runtime';
@@ -179,40 +180,38 @@ function CreateProjectContent({
   );
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
-      <div className="overflow-hidden">
-        <div className="mb-6">
-          <CreateProjectHeader />
-        </div>
-
-        <div className="mb-4">
-          <PageLink
-            href={route('projects.index')}
-            className="text-muted-foreground hover:text-foreground text-sm"
-          >
-            {tActions('backToIndex')}
-          </PageLink>
-        </div>
-
-        <ProjectForm
-          skills={skills}
-          existingImages={[]}
-          projectId={undefined}
-          data={data}
-          errors={formErrors}
-          processing={processing}
-          cancelHref={route('projects.index')}
-          submitLabel={tActions('saveProject')}
-          supportedLocales={supportedLocales}
-          onSubmit={onSubmit}
-          onChangeField={onChangeField}
-          onChangeSkillIds={onChangeSkillIds}
-          onAddImageRow={onAddImageRow}
-          onRemoveImageRow={onRemoveImageRow}
-          onUpdateImageAlt={onUpdateImageAlt}
-          onUpdateImageFile={onUpdateImageFile}
-        />
+    <PageContent className="overflow-hidden py-8" pageWidth="default">
+      <div className="mb-6">
+        <CreateProjectHeader />
       </div>
-    </div>
+
+      <div className="mb-4">
+        <PageLink
+          href={route('projects.index')}
+          className="text-muted-foreground hover:text-foreground text-sm"
+        >
+          {tActions('backToIndex')}
+        </PageLink>
+      </div>
+
+      <ProjectForm
+        skills={skills}
+        existingImages={[]}
+        projectId={undefined}
+        data={data}
+        errors={formErrors}
+        processing={processing}
+        cancelHref={route('projects.index')}
+        submitLabel={tActions('saveProject')}
+        supportedLocales={supportedLocales}
+        onSubmit={onSubmit}
+        onChangeField={onChangeField}
+        onChangeSkillIds={onChangeSkillIds}
+        onAddImageRow={onAddImageRow}
+        onRemoveImageRow={onRemoveImageRow}
+        onUpdateImageAlt={onUpdateImageAlt}
+        onUpdateImageFile={onUpdateImageFile}
+      />
+    </PageContent>
   );
 }

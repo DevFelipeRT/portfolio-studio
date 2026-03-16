@@ -4,6 +4,7 @@ import type { Skill, SkillCategory } from '@/modules/skills/core/types';
 import { SkillsTable } from '@/modules/skills/ui/table/SkillsTable';
 import { SkillCategoriesSection } from '@/modules/skills/ui/sections/SkillCategoriesSection';
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import { PageContent } from '@/app/layouts/primitives';
 
 interface SkillsIndexProps {
   skills: Skill[];
@@ -28,24 +29,32 @@ export default function Index({ skills, categories }: SkillsIndexProps) {
   };
 
   return (
-    <AuthenticatedLayout
-      header={
-        <h1 className="text-xl leading-tight font-semibold">Skill catalog</h1>
-      }
-    >
+    <AuthenticatedLayout>
       <PageHead title="Skills" />
 
-      <div className="space-y-10 overflow-hidden">
-        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <PageContent
+        className="space-y-10 overflow-hidden py-8"
+        pageWidth="container"
+      >
+        <div className="space-y-6">
           <div>
-            <p className="text-muted-foreground mt-1 text-sm">
-              Manage the reusable skills referenced by your portfolio projects.
-            </p>
+            <h1 className="text-xl leading-tight font-semibold">
+              Skill catalog
+            </h1>
           </div>
 
-          <PageLink href={route('skills.create')}>
-            <Button size="sm">New skill</Button>
-          </PageLink>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-muted-foreground mt-1 text-sm">
+                Manage the reusable skills referenced by your portfolio
+                projects.
+              </p>
+            </div>
+
+            <PageLink href={route('skills.create')}>
+              <Button size="sm">New skill</Button>
+            </PageLink>
+          </div>
         </div>
 
         {!hasSkills && (
@@ -63,7 +72,7 @@ export default function Index({ skills, categories }: SkillsIndexProps) {
         )}
 
         <SkillCategoriesSection categories={categories} />
-      </div>
+      </PageContent>
     </AuthenticatedLayout>
   );
 }

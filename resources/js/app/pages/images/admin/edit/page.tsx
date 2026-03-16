@@ -1,6 +1,7 @@
 // resources/js/Pages/Images/Edit.tsx
 
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import { PageContent } from '@/app/layouts/primitives';
 import type { FormErrors } from '@/common/forms';
 import { PageHead, PageLink, usePageForm, usePageProps } from '@/common/page-runtime';
 import type { ImageFormData } from '@/modules/images/core/forms';
@@ -49,31 +50,33 @@ export default function Edit({ image }: EditImagePageProps) {
     <AuthenticatedLayout>
       <PageHead title="Edit image" />
 
-      <div className="overflow-hidden">
-        <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
-          <div className="mb-4">
-            <PageLink
-              href={route('images.index')}
-              className="text-muted-foreground hover:text-foreground text-sm"
-            >
-              Back to images
-            </PageLink>
-          </div>
-
-          <ImageForm
-            mode="edit"
-            image={image}
-            data={data}
-            errors={formErrors}
-            processing={processing}
-            cancelHref={route('images.index')}
-            cancelLabel="Back to images"
-            submitLabel="Update image metadata"
-            onSubmit={handleSubmit}
-            onChange={(field, value) => setData(field, value as never)}
-          />
+      <PageContent className="overflow-hidden py-8" pageWidth="default">
+        <div className="mb-6">
+          <h1 className="text-xl leading-tight font-semibold">Edit image</h1>
         </div>
-      </div>
+
+        <div className="mb-4">
+          <PageLink
+            href={route('images.index')}
+            className="text-muted-foreground hover:text-foreground text-sm"
+          >
+            Back to images
+          </PageLink>
+        </div>
+
+        <ImageForm
+          mode="edit"
+          image={image}
+          data={data}
+          errors={formErrors}
+          processing={processing}
+          cancelHref={route('images.index')}
+          cancelLabel="Back to images"
+          submitLabel="Update image metadata"
+          onSubmit={handleSubmit}
+          onChange={(field, value) => setData(field, value as never)}
+        />
+      </PageContent>
     </AuthenticatedLayout>
   );
 }

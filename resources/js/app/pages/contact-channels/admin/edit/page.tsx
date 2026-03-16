@@ -1,4 +1,5 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import { PageContent } from '@/app/layouts/primitives';
 import type { FormErrors } from '@/common/forms';
 import { LocaleSwapDialog } from '@/common/LocaleSwapDialog';
 import { PageHead, PageLink, usePageForm, usePageProps } from '@/common/page-runtime';
@@ -94,7 +95,7 @@ export default function Edit({
   };
 
   return (
-    <AuthenticatedLayout header={<EditContactChannelHeader />}>
+    <AuthenticatedLayout>
       <EditContactChannelContent
         channel={channel}
         channelTypes={channelTypes}
@@ -186,42 +187,44 @@ function EditContactChannelContent({
     <>
       <PageHead title={tActions('editChannel')} />
 
-      <div className="overflow-hidden">
-        <div className="mx-auto max-w-xl px-4 py-8 sm:px-6 lg:px-8">
-          <div className="mb-4">
-            <PageLink
-              href={route('contact-channels.index')}
-              className="text-muted-foreground hover:text-foreground text-sm"
-            >
-              {tActions('backToIndex')}
-            </PageLink>
-          </div>
-
-          <ContactChannelForm
-            data={data}
-            errors={formErrors}
-            channelTypes={channelTypes}
-            processing={processing}
-            onChange={onChange}
-            onSubmit={onSubmit}
-            cancelHref={route('contact-channels.index')}
-            submitLabel={tActions('saveChanges')}
-            deleteHref={route('contact-channels.destroy', channel.id)}
-            deleteLabel={tActions('delete')}
-          />
-
-          <div className="mt-4 flex justify-end">
-            <Button
-              type="button"
-              variant="secondary"
-              size="sm"
-              onClick={onOpenTranslations}
-            >
-              {tActions('manageTranslations')}
-            </Button>
-          </div>
+      <PageContent className="overflow-hidden py-8" pageWidth="form">
+        <div className="mb-6">
+          <EditContactChannelHeader />
         </div>
-      </div>
+
+        <div className="mb-4">
+          <PageLink
+            href={route('contact-channels.index')}
+            className="text-muted-foreground hover:text-foreground text-sm"
+          >
+            {tActions('backToIndex')}
+          </PageLink>
+        </div>
+
+        <ContactChannelForm
+          data={data}
+          errors={formErrors}
+          channelTypes={channelTypes}
+          processing={processing}
+          onChange={onChange}
+          onSubmit={onSubmit}
+          cancelHref={route('contact-channels.index')}
+          submitLabel={tActions('saveChanges')}
+          deleteHref={route('contact-channels.destroy', channel.id)}
+          deleteLabel={tActions('delete')}
+        />
+
+        <div className="mt-4 flex justify-end">
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            onClick={onOpenTranslations}
+          >
+            {tActions('manageTranslations')}
+          </Button>
+        </div>
+      </PageContent>
     </>
   );
 }

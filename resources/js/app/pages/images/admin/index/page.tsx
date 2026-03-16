@@ -1,6 +1,7 @@
 // resources/js/Pages/Images/Index.tsx
 
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import { PageContent } from '@/app/layouts/primitives';
 import { PageHead, pageRouter } from '@/common/page-runtime';
 import { useState } from 'react';
 
@@ -140,40 +141,36 @@ export default function Index({ images, filters }: ImagesIndexProps) {
   };
 
   return (
-    <AuthenticatedLayout
-      header={<h1 className="text-lg font-semibold tracking-tight">Images</h1>}
-    >
+    <AuthenticatedLayout>
       <PageHead title="Images" />
 
-      <div className="space-y-4 overflow-hidden">
-        <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
-          <ImageHeader
-            total={images.total}
-            createRoute={route('images.create')}
+      <PageContent
+        className="space-y-4 overflow-hidden py-6"
+        pageWidth="wide"
+      >
+        <ImageHeader total={images.total} createRoute={route('images.create')} />
+
+        <ImageFilters
+          initialValues={initialFilterValues}
+          onApply={handleApplyFilters}
+          onReset={handleResetFilters}
+        />
+
+        {!hasItems && (
+          <ImagesEmptyState createRoute={route('images.create')} />
+        )}
+
+        {hasItems && (
+          <ImageList
+            items={images.data}
+            pagination={pagination}
+            onItemClick={handleItemClick}
+            onView={handleViewFromActions}
+            onDelete={handleDeleteFromActions}
+            onPageChange={handlePageChange}
           />
-
-          <ImageFilters
-            initialValues={initialFilterValues}
-            onApply={handleApplyFilters}
-            onReset={handleResetFilters}
-          />
-
-          {!hasItems && (
-            <ImagesEmptyState createRoute={route('images.create')} />
-          )}
-
-          {hasItems && (
-            <ImageList
-              items={images.data}
-              pagination={pagination}
-              onItemClick={handleItemClick}
-              onView={handleViewFromActions}
-              onDelete={handleDeleteFromActions}
-              onPageChange={handlePageChange}
-            />
-          )}
-        </div>
-      </div>
+        )}
+      </PageContent>
 
       <ImagePreviewDialog
         open={previewOpen}

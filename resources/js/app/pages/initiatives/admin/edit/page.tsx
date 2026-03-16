@@ -1,4 +1,5 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
+import { PageContent } from '@/app/layouts/primitives';
 import type { FormErrors } from '@/common/forms';
 import { useSupportedLocales } from '@/common/locale';
 import { LocaleSwapDialog } from '@/common/LocaleSwapDialog';
@@ -179,51 +180,55 @@ export default function Edit({ initiative }: EditInitiativeProps) {
     <AuthenticatedLayout>
       <PageHead title="Edit initiative" />
 
-      <div className="overflow-hidden">
-        <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
-          <div className="mb-4 flex items-center justify-between gap-3">
-            <PageLink
-              href={route('initiatives.index')}
-              className="text-muted-foreground hover:text-foreground text-sm"
-            >
-              Back to initiatives
-            </PageLink>
-
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => setTranslationOpen(true)}
-            >
-              Manage translations
-            </Button>
-          </div>
-
-          <InitiativeForm
-            submitLabel="Save changes"
-            cancelHref={route('initiatives.index')}
-            initiativeId={initiative.id}
-            existingImages={initiative.images ?? []}
-            data={data}
-            errors={formErrors}
-            processing={processing}
-            supportedLocales={supportedLocales}
-            localeDisabled={loadingTranslations || Boolean(localesLoadError)}
-            onSubmit={submit}
-            onChangeField={changeField}
-            onChangeLocale={handleLocaleChange}
-            onAddImageRow={addImageRow}
-            onRemoveImageRow={removeImageRow}
-            onUpdateImageAlt={updateImageAlt}
-            onUpdateImageFile={updateImageFile}
-          />
-
-          {localesLoadError && (
-            <p className="text-muted-foreground mt-3 text-xs">
-              {localesLoadError}
-            </p>
-          )}
+      <PageContent className="overflow-hidden py-8" pageWidth="default">
+        <div className="mb-6">
+          <h1 className="text-xl leading-tight font-semibold">
+            Edit initiative
+          </h1>
         </div>
-      </div>
+
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <PageLink
+            href={route('initiatives.index')}
+            className="text-muted-foreground hover:text-foreground text-sm"
+          >
+            Back to initiatives
+          </PageLink>
+
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => setTranslationOpen(true)}
+          >
+            Manage translations
+          </Button>
+        </div>
+
+        <InitiativeForm
+          submitLabel="Save changes"
+          cancelHref={route('initiatives.index')}
+          initiativeId={initiative.id}
+          existingImages={initiative.images ?? []}
+          data={data}
+          errors={formErrors}
+          processing={processing}
+          supportedLocales={supportedLocales}
+          localeDisabled={loadingTranslations || Boolean(localesLoadError)}
+          onSubmit={submit}
+          onChangeField={changeField}
+          onChangeLocale={handleLocaleChange}
+          onAddImageRow={addImageRow}
+          onRemoveImageRow={removeImageRow}
+          onUpdateImageAlt={updateImageAlt}
+          onUpdateImageFile={updateImageFile}
+        />
+
+        {localesLoadError && (
+          <p className="text-muted-foreground mt-3 text-xs">
+            {localesLoadError}
+          </p>
+        )}
+      </PageContent>
 
       <TranslationModal
         open={translationOpen}
