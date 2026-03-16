@@ -1,6 +1,9 @@
 // resources/js/Layouts/AuthenticatedLayout.tsx
 
 import { MobileSidebar } from '@/app/layouts/partials/MobileSidebar';
+import { ContentContainer } from '@/app/layouts/primitives';
+import { FooterBar } from '@/app/layouts/regions/FooterBar';
+import { HeaderBar } from '@/app/layouts/regions/HeaderBar';
 import { ThemeProvider } from '@/app/layouts/partials/theme/ThemeProvider';
 import {
   Navigation,
@@ -16,10 +19,8 @@ import { Toaster } from '@/components/ui/sonner';
 import { useCurrentPage } from '@/common/page-runtime';
 import { navigationConfig } from '@/config/navigation';
 import { useIsMobile } from '@/hooks/useMobile';
-import { PropsWithChildren, ReactNode, useEffect } from 'react';
+import { PropsWithChildren, useEffect } from 'react';
 import { toast } from 'sonner';
-import Footer from './partials/Footer';
-import Header from './partials/Header';
 
 type SharedProps = {
   auth: {
@@ -117,16 +118,14 @@ function mapConfigToNavigationItems(
 }
 
 export default function Authenticated({
-  header,
   children,
-}: PropsWithChildren<{ header?: ReactNode }>) {
-  return <AuthenticatedI18nContent header={header}>{children}</AuthenticatedI18nContent>;
+}: PropsWithChildren) {
+  return <AuthenticatedI18nContent>{children}</AuthenticatedI18nContent>;
 }
 
 function AuthenticatedI18nContent({
-  header,
   children,
-}: PropsWithChildren<{ header?: ReactNode }>) {
+}: PropsWithChildren) {
   const page = useCurrentPage();
   const { auth, errors, status } = page.props as SharedProps;
   const url = page.url ?? '';
@@ -173,7 +172,7 @@ function AuthenticatedI18nContent({
   return (
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
       <div className="text-foreground flex min-h-dvh w-full flex-col">
-        <Header>
+        <HeaderBar>
           {!isMobile ? (
             <Navigation items={navItems} />
           ) : (
@@ -190,18 +189,12 @@ function AuthenticatedI18nContent({
                 />
               </MobileSidebar>
           )}
-        </Header>
+        </HeaderBar>
 
         <main className="w-full grow py-4 sm:py-6">
-          {header && (
-            <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-              {header}
-            </div>
-          )}
-
-          <div className="mx-auto max-w-7xl grow px-4 sm:px-6 lg:px-8">
+          <div className="grow">
             {hasGlobalErrors && (
-              <div className="mb-4">
+              <ContentContainer contentWidth="default" className="mb-4">
                 <Alert variant="destructive">
                   <AlertTitle>
                     {translateState('error', 'Something went wrong.')}
@@ -210,14 +203,14 @@ function AuthenticatedI18nContent({
                     <p className="text-sm">{globalErrorMessages.join(' ')}</p>
                   </AlertDescription>
                 </Alert>
-              </div>
+              </ContentContainer>
             )}
 
             {children}
           </div>
         </main>
 
-        <Footer />
+        <FooterBar />
 
         <Toaster richColors closeButton />
       </div>

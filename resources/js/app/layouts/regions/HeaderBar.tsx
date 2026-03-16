@@ -1,13 +1,18 @@
 'use client';
 
-import ApplicationLogo from '@/app/layouts/partials/application-logo/ApplicationLogo';
-import { useAppLocalizationContext } from '@/app/shell';
-import { ModeToggle } from '@/app/layouts/partials/theme/ModeToggle';
-import { UserMenu } from '@/app/layouts/partials/UserMenu';
-import { LocaleSwitcher } from '@/common/locale';
-import { useLayoutsTranslation } from '@/app/layouts/i18n';
-import { PageLink, pageRouter, usePageProps } from '@/common/page-runtime';
-import { PropsWithChildren } from 'react';
+import type { PropsWithChildren } from 'react';
+import { useAppLocalizationContext } from '../../shell';
+import { LocaleSwitcher } from '../../../common/locale';
+import {
+  PageLink,
+  pageRouter,
+  usePageProps,
+} from '../../../common/page-runtime';
+import { useLayoutsTranslation } from '../i18n';
+import ApplicationLogo from '../partials/application-logo/ApplicationLogo';
+import { ModeToggle } from '../partials/theme/ModeToggle';
+import { UserMenu } from '../partials/UserMenu';
+import { ContentContainer } from '../primitives';
 
 type AuthUser = {
   name: string;
@@ -21,39 +26,26 @@ type SharedProps = {
   };
 };
 
-/**
- * Application header for the authenticated layout.
- *
- * Uses a height scale aligned with modern navigation bars:
- * - 56px (h-14) on smaller viewports.
- * - 64px (h-16) on medium and desktop viewports.
- * - 80px (h-20) on very large viewports (3xl and above).
- * The header is sticky at the top to remain persistent while scrolling.
- */
-export default function Header({ children }: PropsWithChildren) {
-  return <HeaderI18nContent>{children}</HeaderI18nContent>;
-}
-
-function HeaderI18nContent({ children }: PropsWithChildren) {
+export function HeaderBar({ children }: PropsWithChildren) {
   const props = usePageProps<SharedProps>();
   const user = props.auth.user;
   const localizationContext = useAppLocalizationContext();
-
   const { translate: tHeader } = useLayoutsTranslation('header');
   const { translate: tNavigation } = useLayoutsTranslation('navigation');
 
   const headerLabel = tHeader('landmarkLabel', 'Application header');
-
   const homeLabel = tHeader('brand.homeLabel', 'Go to home page');
 
   return (
     <header
       id="app-header"
-      className="border-border bg-popover/80 supports-[backdrop-filter]:bg-popover/60 sticky top-0 z-40 border-b backdrop-blur"
+      className="border-border bg-popover/80 supports-[backdrop-filter]:bg-popover/60 sticky top-0 z-40 w-full border-b backdrop-blur"
       aria-label={headerLabel}
     >
-      <div className="3xl:h-20 mx-auto flex h-14 max-w-7xl items-center gap-3 px-4 sm:h-16 sm:px-6 lg:px-8">
-        {/* Brand area */}
+      <ContentContainer
+        contentWidth="default"
+        className="3xl:h-20 flex h-14 items-center gap-3 sm:h-16"
+      >
         <div className="order-1 flex flex-1 items-center gap-3">
           <PageLink
             href="/"
@@ -64,7 +56,6 @@ function HeaderI18nContent({ children }: PropsWithChildren) {
           </PageLink>
         </div>
 
-        {/* Navigation */}
         <div
           className="order-3 flex items-center justify-center gap-4 md:order-2 md:flex-[2]"
           role="navigation"
@@ -73,7 +64,6 @@ function HeaderI18nContent({ children }: PropsWithChildren) {
           {children}
         </div>
 
-        {/* Mode toggle + user menu (desktop) */}
         <div className="order-2 flex flex-1 items-center justify-end gap-3 md:order-3">
           <ModeToggle />
           <LocaleSwitcher
@@ -102,7 +92,8 @@ function HeaderI18nContent({ children }: PropsWithChildren) {
             </div>
           )}
         </div>
-      </div>
+      </ContentContainer>
     </header>
   );
 }
+
