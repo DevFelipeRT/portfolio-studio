@@ -40,10 +40,16 @@ export function ExperienceForm({
   const { translate: tForm } = useExperiencesTranslation(
     EXPERIENCES_NAMESPACES.form,
   );
-  const summaryFields = getErrorSummaryFields(
-    errors,
-    tForm('fields.locale.label'),
-  );
+  const summaryFields = getErrorSummaryFields(errors, {
+    locale: tForm('fields.locale.label'),
+    position: tForm('fields.position.label'),
+    company: tForm('fields.company.label'),
+    summary: tForm('fields.summary.label'),
+    description: tForm('fields.description.label'),
+    start_date: tForm('fields.start_date.label'),
+    end_date: tForm('fields.end_date.label'),
+    display: tForm('fields.display.label'),
+  });
 
   return (
     <Form

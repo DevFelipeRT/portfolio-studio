@@ -4,6 +4,7 @@ import type { Message } from '@/modules/messages/core/types';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { normalizeIntlLocale } from '@/common/i18n/normalizeIntlLocale';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -12,6 +13,10 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { TableCell, TableRow } from '@/components/ui/table';
 import { useIsMobile } from '@/hooks/useMobile';
+import {
+    MESSAGES_NAMESPACES,
+    useMessagesTranslation,
+} from '@/modules/messages/i18n';
 import {
     CheckCircle2,
     ChevronRight,
@@ -42,8 +47,14 @@ export function MessagesRow({
     onToggleSeen,
     onDelete,
 }: MessagesRowProps) {
+    const { locale, translate: tMessages } = useMessagesTranslation(
+        MESSAGES_NAMESPACES.messages,
+    );
+    const { translate: tActions } = useMessagesTranslation(
+        MESSAGES_NAMESPACES.actions,
+    );
     const isMobile = useIsMobile();
-    const whenLabel = formatWhen(message.created_at, isMobile);
+    const whenLabel = formatWhen(message.created_at, isMobile, locale);
 
     function handleRowClick(): void {
         onRowClick(message);
@@ -75,14 +86,14 @@ export function MessagesRow({
                         <>
                             <CircleDot className="h-3.5 w-3.5" />
                             <span className="hidden whitespace-nowrap sm:inline">
-                                New
+                                {tMessages('status.new')}
                             </span>
                         </>
                     ) : (
                         <>
                             <CheckCircle2 className="h-3.5 w-3.5" />
                             <span className="hidden whitespace-nowrap sm:inline">
-                                Seen
+                                {tMessages('status.seen')}
                             </span>
                         </>
                     )}
@@ -100,14 +111,14 @@ export function MessagesRow({
                         <>
                             <Star className="h-3.5 w-3.5" />
                             <span className="ml-1 hidden whitespace-nowrap sm:inline">
-                                Important
+                                {tMessages('status.important')}
                             </span>
                         </>
                     ) : (
                         <>
                             <Minus className="h-3.5 w-3.5 sm:hidden" />
                             <span className="hidden whitespace-nowrap sm:inline">
-                                Regular
+                                {tMessages('status.regular')}
                             </span>
                         </>
                     )}
@@ -161,7 +172,9 @@ export function MessagesRow({
                                 onClick={(event) => event.stopPropagation()}
                             >
                                 <MoreVertical className="h-4 w-4" />
-                                <span className="sr-only">Open menu</span>
+                                <span className="sr-only">
+                                    {tActions('openMenu')}
+                                </span>
                             </Button>
                         </DropdownMenuTrigger>
 
@@ -178,8 +191,8 @@ export function MessagesRow({
                                 <Star className="mr-2 h-4 w-4" />
                                 <span>
                                     {message.important
-                                        ? 'Remove important'
-                                        : 'Mark as important'}
+                                        ? tActions('removeImportant')
+                                        : tActions('markAsImportant')}
                                 </span>
                             </DropdownMenuItem>
 
@@ -195,8 +208,8 @@ export function MessagesRow({
                                 )}
                                 <span>
                                     {message.seen
-                                        ? 'Mark as new'
-                                        : 'Mark as seen'}
+                                        ? tActions('markAsNew')
+                                        : tActions('markAsSeen')}
                                 </span>
                             </DropdownMenuItem>
 
@@ -205,7 +218,7 @@ export function MessagesRow({
                                 className="text-destructive focus:text-destructive"
                             >
                                 <Trash2 className="mr-2 h-4 w-4" />
-                                <span>Delete</span>
+                                <span>{tActions('delete')}</span>
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
@@ -229,8 +242,9 @@ function truncate(text: string, maxLength: number): string {
     return `${trimmed.slice(0, maxLength - 1)}…`;
 }
 
-function formatWhen(value: string, isMobile: boolean): string {
+function formatWhen(value: string, isMobile: boolean, locale: string): string {
     const date = new Date(value);
+    const normalizedLocale = normalizeIntlLocale(locale);
 
     if (Number.isNaN(date.getTime())) {
         return value;
@@ -244,20 +258,20 @@ function formatWhen(value: string, isMobile: boolean): string {
         date.getDate() === now.getDate();
 
     if (isSameDay) {
-        return date.toLocaleTimeString(undefined, {
+        return date.toLocaleTimeString(normalizedLocale, {
             hour: '2-digit',
             minute: '2-digit',
         });
     }
 
     if (isMobile) {
-        return date.toLocaleDateString(undefined, {
+        return date.toLocaleDateString(normalizedLocale, {
             day: '2-digit',
             month: '2-digit',
         });
     }
 
-    return date.toLocaleDateString(undefined, {
+    return date.toLocaleDateString(normalizedLocale, {
         day: '2-digit',
         month: '2-digit',
         year: 'numeric',

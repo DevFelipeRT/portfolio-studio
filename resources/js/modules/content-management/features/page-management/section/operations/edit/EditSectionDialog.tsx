@@ -8,6 +8,10 @@ import {
 } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
+import {
+  CONTENT_MANAGEMENT_NAMESPACES,
+  useContentManagementTranslation,
+} from '@/modules/content-management/i18n';
 import type {
   PageSectionDto,
   TemplateDefinitionDto,
@@ -40,6 +44,9 @@ export function EditSectionDialog({
   allowTemplateChange = true,
   onSubmit,
 }: EditSectionDialogProps) {
+  const { translate: tSections } = useContentManagementTranslation(
+    CONTENT_MANAGEMENT_NAMESPACES.sections,
+  );
   /**
    * Flow orchestration for the "edit section" dialog.
    *
@@ -86,16 +93,19 @@ export function EditSectionDialog({
         )}
       >
         <DialogHeader className="border-b p-6">
-          <DialogTitle>Edit section</DialogTitle>
+          <DialogTitle>{tSections('dialog.edit.title', 'Edit section')}</DialogTitle>
           <DialogDescription>
-            Update this section metadata and template content.
+            {tSections(
+              'dialog.edit.description',
+              'Update this section metadata and template content.',
+            )}
           </DialogDescription>
         </DialogHeader>
 
         <ScrollArea className="min-h-0 flex-1 px-5">
           {!section && (
             <p className="text-muted-foreground py-6 text-sm">
-              No section selected.
+              {tSections('dialog.edit.empty', 'No section selected.')}
             </p>
           )}
 

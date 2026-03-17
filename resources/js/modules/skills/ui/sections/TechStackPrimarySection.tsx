@@ -2,6 +2,7 @@ import {
     SectionHeader,
     useFieldValueResolver,
 } from '@/modules/content-management/features/page-rendering';
+import { SKILLS_NAMESPACES, useSkillsTranslation } from '@/modules/skills/i18n';
 import { SkillBadge } from '@/modules/skills/ui/SkillBadge';
 import type { JSX } from 'react';
 
@@ -24,21 +25,24 @@ type CapabilitySkillGroup = {
  * with static defaults as final fallback.
  */
 export function TechStackPrimarySection(): JSX.Element | null {
+    const { translate: tForm } = useSkillsTranslation(SKILLS_NAMESPACES.form);
     const fieldResolver = useFieldValueResolver();
 
     const sectionLabel =
         fieldResolver.getFieldValue<string>('section_label') ??
-        'Skills used across my projects';
+        tForm('public.sectionLabel');
 
-    const eyebrow = fieldResolver.getFieldValue<string>('eyebrow') ?? 'Tech stack';
+    const eyebrow =
+        fieldResolver.getFieldValue<string>('eyebrow') ??
+        tForm('public.eyebrow');
 
     const title =
         fieldResolver.getFieldValue<string>('title') ??
-        'Skills I work with on a daily basis.';
+        tForm('public.title');
 
     const description =
         fieldResolver.getFieldValue<string>('description') ??
-        'A selection of tools and frameworks that I use to design, build and operate web applications.';
+        tForm('public.description');
 
     const rawGroups = fieldResolver.getFieldValue<unknown>('groups');
 

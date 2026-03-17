@@ -8,6 +8,7 @@ export default {
   allCovered: 'Todos os locales suportados já possuem traduções.',
   loading: 'Carregando traduções...',
   confirmDelete: 'Excluir tradução de {{locale}}?',
+  addPanelTitle: 'Adicionar tradução',
   fields: {
     locale: 'Locale',
     position: 'Cargo',
@@ -31,8 +32,8 @@ export default {
   errors: {
     localeRequired: 'Selecione um locale.',
     atLeastOne: 'Informe ao menos um campo traduzido.',
+    unexpected: 'Erro inesperado. Tente novamente.',
   },
   confirmBaseLocaleSwitch:
     'Alterar o locale base para {{locale}} excluirá a tradução existente para esse locale. Deseja continuar?',
 };
-

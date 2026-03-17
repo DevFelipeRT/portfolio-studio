@@ -1,4 +1,8 @@
 import { TextInputField, type FormErrors } from '@/common/forms';
+import {
+  WEBSITE_SETTINGS_NAMESPACES,
+  useWebsiteSettingsTranslation,
+} from '@/modules/website-settings/i18n';
 import type { WebsiteSettingsSystemPages } from '@/modules/website-settings/types';
 
 interface SystemPagesSectionProps {
@@ -12,12 +16,18 @@ export function SystemPagesSection({
   pages,
   onChange,
 }: SystemPagesSectionProps) {
+  const { translate: tForm } = useWebsiteSettingsTranslation(
+    WEBSITE_SETTINGS_NAMESPACES.form,
+  );
+
   return (
     <section className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold">Páginas do sistema</h2>
+        <h2 className="text-lg font-semibold">
+          {tForm('sections.systemPages.title')}
+        </h2>
         <p className="text-muted-foreground text-sm">
-          Slugs ou identificadores de páginas transversais.
+          {tForm('sections.systemPages.description')}
         </p>
       </div>
 
@@ -27,8 +37,8 @@ export function SystemPagesSection({
           id="system_pages_not_found"
           value={pages.not_found ?? ''}
           errors={errors}
-          label="404"
-          placeholder="slug-404"
+          label={tForm('fields.system_pages_not_found.label')}
+          placeholder={tForm('fields.system_pages_not_found.placeholder')}
           onChange={(value) =>
             onChange({
               ...pages,
@@ -41,8 +51,8 @@ export function SystemPagesSection({
           id="system_pages_maintenance"
           value={pages.maintenance ?? ''}
           errors={errors}
-          label="Manutenção"
-          placeholder="slug-manutencao"
+          label={tForm('fields.system_pages_maintenance.label')}
+          placeholder={tForm('fields.system_pages_maintenance.placeholder')}
           onChange={(value) =>
             onChange({
               ...pages,
@@ -55,8 +65,8 @@ export function SystemPagesSection({
           id="system_pages_policies"
           value={pages.policies ?? ''}
           errors={errors}
-          label="Políticas"
-          placeholder="slug-politicas"
+          label={tForm('fields.system_pages_policies.label')}
+          placeholder={tForm('fields.system_pages_policies.placeholder')}
           onChange={(value) =>
             onChange({
               ...pages,

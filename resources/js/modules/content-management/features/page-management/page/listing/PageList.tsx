@@ -18,6 +18,10 @@ import { PageSlug } from './partials/PageSlug';
 import { StatusBadge } from './partials/StatusBadge';
 import { PageTitle } from './partials/PageTitle';
 import { EmptyState } from './partials/EmptyState';
+import {
+  CONTENT_MANAGEMENT_NAMESPACES,
+  useContentManagementTranslation,
+} from '@/modules/content-management/i18n';
 
 interface PageListProps {
   pages: Paginated<PageDto>;
@@ -40,6 +44,9 @@ interface PageListProps {
 export function PageList({ pages, homeSlug, onShowInfo }: PageListProps) {
   const hasItems = pages.data.length > 0;
   const locale = useGetLocale();
+  const { translate: tPages } = useContentManagementTranslation(
+    CONTENT_MANAGEMENT_NAMESPACES.pages,
+  );
   const columnCount = 6;
 
   return (
@@ -47,13 +54,23 @@ export function PageList({ pages, homeSlug, onShowInfo }: PageListProps) {
       <Table>
         <TableHeader>
           <TableRow className="bg-muted/50">
-            <TableHead className="w-[30%]">Title</TableHead>
-            <TableHead>Slug</TableHead>
-            <TableHead className="hidden md:table-cell">Locale</TableHead>
-            <TableHead className="hidden md:table-cell">Status</TableHead>
-            <TableHead className="hidden lg:table-cell">Last updated</TableHead>
+            <TableHead className="w-[30%]">
+              {tPages('listing.columns.title', 'Title')}
+            </TableHead>
+            <TableHead>{tPages('listing.columns.slug', 'Slug')}</TableHead>
+            <TableHead className="hidden md:table-cell">
+              {tPages('listing.columns.locale', 'Locale')}
+            </TableHead>
+            <TableHead className="hidden md:table-cell">
+              {tPages('listing.columns.status', 'Status')}
+            </TableHead>
+            <TableHead className="hidden lg:table-cell">
+              {tPages('listing.columns.lastUpdated', 'Last updated')}
+            </TableHead>
             <TableHead className="text-right">
-              <span className="sr-only">Row actions</span>
+              <span className="sr-only">
+                {tPages('listing.columns.rowActions', 'Row actions')}
+              </span>
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -62,7 +79,10 @@ export function PageList({ pages, homeSlug, onShowInfo }: PageListProps) {
           {!hasItems && (
             <EmptyState
               colSpan={columnCount}
-              message="No pages found for the current filters."
+              message={tPages(
+                'listing.empty',
+                'No pages found for the current filters.',
+              )}
             />
           )}
 
@@ -122,7 +142,12 @@ export function PageList({ pages, homeSlug, onShowInfo }: PageListProps) {
                       }}
                     >
                       <ExternalLink className="h-4 w-4" />
-                      <span className="sr-only">Open page in a new tab</span>
+                      <span className="sr-only">
+                        {tPages(
+                          'listing.openNewTab',
+                          'Open page in a new tab',
+                        )}
+                      </span>
                     </Button>
 
                     <PageActions

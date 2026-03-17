@@ -7,6 +7,10 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import {
+  CONTENT_MANAGEMENT_NAMESPACES,
+  useContentManagementTranslation,
+} from '@/modules/content-management/i18n';
 import type { TemplateDefinitionDto } from '@/modules/content-management/types';
 
 interface TemplateCardProps {
@@ -20,8 +24,13 @@ export function TemplateCard({
   isSelected,
   onSelect,
 }: TemplateCardProps) {
+  const { translate: tTemplates } = useContentManagementTranslation(
+    CONTENT_MANAGEMENT_NAMESPACES.templates,
+  );
   const originLabel =
-    template.origin === 'content-management' ? 'Generic' : template.origin;
+    template.origin === 'content-management'
+      ? tTemplates('origin.generic', 'Generic')
+      : template.origin;
   const visibleSlots = (template.allowed_slots ?? []).slice(0, 3);
   const hiddenSlotCount = Math.max(
     (template.allowed_slots ?? []).length - visibleSlots.length,
@@ -63,7 +72,9 @@ export function TemplateCard({
               {description}
             </p>
           ) : (
-            <p className="text-muted-foreground/70 text-sm">No description</p>
+            <p className="text-muted-foreground/70 text-sm">
+              {tTemplates('noDescription', 'No description')}
+            </p>
           )}
         </CardContent>
         <CardFooter className="min-h-12 border-t p-4 pt-3">
@@ -82,7 +93,7 @@ export function TemplateCard({
             </div>
           ) : (
             <span className="text-muted-foreground/70 text-xs">
-              No slots restrictions
+              {tTemplates('noSlotsRestrictions', 'No slots restrictions')}
             </span>
           )}
         </CardFooter>

@@ -3,6 +3,7 @@ import * as React from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { IMAGES_NAMESPACES, useImagesTranslation } from '@/modules/images/i18n';
 
 export type ImageUsageFilter = 'orphans' | 'projects' | 'initiatives';
 
@@ -28,6 +29,8 @@ export function ImageFilters({
     onApply,
     onReset,
 }: ImageFiltersProps) {
+    const { translate: tActions } = useImagesTranslation(IMAGES_NAMESPACES.actions);
+    const { translate: tImages } = useImagesTranslation(IMAGES_NAMESPACES.images);
     const [search, setSearch] = React.useState(initialValues.search ?? '');
     const [usage, setUsage] = React.useState(initialValues.usage ?? '');
     const [mimeType, setMimeType] = React.useState(
@@ -73,64 +76,82 @@ export function ImageFilters({
         >
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
                 <div className="space-y-1">
-                    <Label htmlFor="image-filter-search">Search</Label>
+                    <Label htmlFor="image-filter-search">
+                        {tImages('filters.fields.search.label')}
+                    </Label>
                     <Input
                         id="image-filter-search"
                         type="text"
                         value={search}
                         onChange={(event) => setSearch(event.target.value)}
-                        placeholder="Filename, title, caption or alt text"
+                        placeholder={tImages('filters.fields.search.placeholder')}
                     />
                 </div>
 
                 <div className="space-y-1">
-                    <Label htmlFor="image-filter-usage">Usage</Label>
+                    <Label htmlFor="image-filter-usage">
+                        {tImages('filters.fields.usage.label')}
+                    </Label>
                     <select
                         id="image-filter-usage"
                         className="border-input bg-background ring-offset-background focus-visible:ring-ring placeholder:text-muted-foreground flex h-9 w-full rounded-md border px-3 py-1 text-sm shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                         value={usage}
                         onChange={(event) => setUsage(event.target.value)}
                     >
-                        <option value="">Any usage</option>
-                        <option value="orphans">Orphans only</option>
-                        <option value="projects">Used by projects</option>
-                        <option value="initiatives">Used by initiatives</option>
+                        <option value="">
+                            {tImages('filters.fields.usage.placeholder')}
+                        </option>
+                        <option value="orphans">
+                            {tImages('filters.fields.usage.options.orphans')}
+                        </option>
+                        <option value="projects">
+                            {tImages('filters.fields.usage.options.projects')}
+                        </option>
+                        <option value="initiatives">
+                            {tImages('filters.fields.usage.options.initiatives')}
+                        </option>
                     </select>
                 </div>
 
                 <div className="space-y-1">
-                    <Label htmlFor="image-filter-mime-type">MIME type</Label>
+                    <Label htmlFor="image-filter-mime-type">
+                        {tImages('filters.fields.mimeType.label')}
+                    </Label>
                     <Input
                         id="image-filter-mime-type"
                         type="text"
                         value={mimeType}
                         onChange={(event) => setMimeType(event.target.value)}
-                        placeholder="image/jpeg, image/png, ..."
+                        placeholder={tImages('filters.fields.mimeType.placeholder')}
                     />
                 </div>
 
                 <div className="space-y-1">
                     <Label htmlFor="image-filter-storage-disk">
-                        Storage disk
+                        {tImages('filters.fields.storageDisk.label')}
                     </Label>
                     <Input
                         id="image-filter-storage-disk"
                         type="text"
                         value={storageDisk}
                         onChange={(event) => setStorageDisk(event.target.value)}
-                        placeholder="public, s3, ..."
+                        placeholder={tImages(
+                            'filters.fields.storageDisk.placeholder',
+                        )}
                     />
                 </div>
 
                 <div className="space-y-1">
-                    <Label htmlFor="image-filter-per-page">Per page</Label>
+                    <Label htmlFor="image-filter-per-page">
+                        {tImages('filters.fields.perPage.label')}
+                    </Label>
                     <Input
                         id="image-filter-per-page"
                         type="number"
                         min={1}
                         value={perPage}
                         onChange={(event) => setPerPage(event.target.value)}
-                        placeholder="15"
+                        placeholder={tImages('filters.fields.perPage.placeholder')}
                     />
                 </div>
             </div>
@@ -142,11 +163,11 @@ export function ImageFilters({
                     size="sm"
                     onClick={handleResetClick}
                 >
-                    Reset filters
+                    {tActions('resetFilters')}
                 </Button>
 
                 <Button type="submit" size="sm">
-                    Apply filters
+                    {tActions('applyFilters')}
                 </Button>
             </div>
         </form>

@@ -29,6 +29,12 @@ type ExperienceEditableField =
   | 'display';
 
 export default function Edit({ experience }: EditExperienceProps) {
+  const { translate: tActions } = useExperiencesTranslation(
+    EXPERIENCES_NAMESPACES.actions,
+  );
+  const { translate: tForm } = useExperiencesTranslation(
+    EXPERIENCES_NAMESPACES.form,
+  );
   const supportedLocales = useSupportedLocales();
   const { data, setData, put, processing } = usePageForm<ExperienceFormData>({
     locale: experience.locale,
@@ -83,9 +89,7 @@ export default function Edit({ experience }: EditExperienceProps) {
         }
       } catch {
         if (mounted) {
-          setLocalesLoadError(
-            'Unable to load translations for locale conflict checks.',
-          );
+          setLocalesLoadError(tForm('errors.translationsLoad'));
         }
       } finally {
         if (mounted) {
@@ -99,7 +103,7 @@ export default function Edit({ experience }: EditExperienceProps) {
     return () => {
       mounted = false;
     };
-  }, [experience.id]);
+  }, [experience.id, tForm]);
 
   const handleLocaleChange = (nextLocale: string): void => {
     if (nextLocale !== data.locale && translationLocales.includes(nextLocale)) {
@@ -114,7 +118,7 @@ export default function Edit({ experience }: EditExperienceProps) {
 
   return (
     <AuthenticatedLayout>
-      <PageHead title="Edit experience" />
+      <PageHead title={tActions('editExperience')} />
 
       <EditExperienceI18nContent
         experience={experience}
@@ -203,12 +207,15 @@ function EditExperienceI18nContent({
   const { translate: tTranslations } = useExperiencesTranslation(
     EXPERIENCES_NAMESPACES.translations,
   );
+  const { translate: tForm } = useExperiencesTranslation(
+    EXPERIENCES_NAMESPACES.form,
+  );
 
   return (
     <PageContent className="overflow-hidden py-8" pageWidth="detail">
       <div className="mb-6">
         <h1 className="text-xl leading-tight font-semibold">
-          Edit experience
+          {tActions('editExperience')}
         </h1>
       </div>
 
@@ -225,7 +232,10 @@ function EditExperienceI18nContent({
         </Button>
 
         <span className="text-muted-foreground text-xs">
-          Editing: {experience.position} at {experience.company ?? '—'}
+          {tForm('status.editing', {
+            position: experience.position,
+            company: experience.company ?? tForm('values.empty'),
+          })}
         </span>
       </div>
 

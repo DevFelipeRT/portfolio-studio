@@ -1,4 +1,8 @@
 import type { PageSectionDto } from '@/modules/content-management/types';
+import {
+  CONTENT_MANAGEMENT_NAMESPACES,
+  useContentManagementTranslation,
+} from '@/modules/content-management/i18n';
 
 import { useSortableSectionRow } from '../hooks';
 import { getSectionRowMeta } from '../utils';
@@ -33,6 +37,9 @@ export function SectionItem({
   onRemove,
   onReorder,
 }: SectionItemProps) {
+  const { translate: tSections } = useContentManagementTranslation(
+    CONTENT_MANAGEMENT_NAMESPACES.sections,
+  );
   const handleMoveUp = (): void => {
     if (!onReorder || reorderLocked) {
       return;
@@ -87,7 +94,11 @@ export function SectionItem({
         </div>
 
         <div className="text-muted-foreground flex flex-wrap items-center gap-2 text-xs">
-          <span>Position {section.position ?? '-'}</span>
+          <span>
+            {tSections('list.position', 'Position {{value}}', {
+              value: String(section.position ?? '-'),
+            })}
+          </span>
           {section.locale && (
             <span className="tracking-wide uppercase">{section.locale}</span>
           )}

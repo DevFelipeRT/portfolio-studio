@@ -1,5 +1,9 @@
 import { Button } from '@/components/ui/button';
 import {
+    COURSES_NAMESPACES,
+    useCoursesTranslation,
+} from '@/modules/courses/i18n';
+import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
@@ -13,6 +17,8 @@ interface CourseRowActionsProps {
 }
 
 export function CoursesRowActions({ courseId }: CourseRowActionsProps) {
+    const { translate: tActions } = useCoursesTranslation(COURSES_NAMESPACES.actions);
+
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -24,7 +30,7 @@ export function CoursesRowActions({ courseId }: CourseRowActionsProps) {
                     onClick={(e) => e.stopPropagation()}
                 >
                     <MoreVertical className="h-4 w-4" />
-                    <span className="sr-only">Open menu</span>
+                    <span className="sr-only">{tActions('openMenu')}</span>
                 </Button>
             </DropdownMenuTrigger>
 
@@ -39,7 +45,7 @@ export function CoursesRowActions({ courseId }: CourseRowActionsProps) {
                         className="cursor-pointer"
                     >
                         <Pencil className="mr-2 h-4 w-4" />
-                        <span>Edit course</span>
+                        <span>{tActions('editCourse')}</span>
                     </PageLink>
                 </DropdownMenuItem>
 
@@ -51,7 +57,7 @@ export function CoursesRowActions({ courseId }: CourseRowActionsProps) {
                         className="text-destructive focus:text-destructive w-full cursor-pointer"
                     >
                         <Trash2 className="mr-2 h-4 w-4" />
-                        <span>Delete course</span>
+                        <span>{tActions('deleteCourse')}</span>
                     </PageLink>
                 </DropdownMenuItem>
             </DropdownMenuContent>

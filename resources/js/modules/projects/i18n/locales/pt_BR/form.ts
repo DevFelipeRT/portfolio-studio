@@ -51,6 +51,21 @@ export default {
   },
   emptyState: {
     index: 'Nenhum projeto foi criado ainda.',
+    publicSection: 'Nenhum projeto foi retornado para esta seção.',
+  },
+  values: {
+    empty: '\u2014',
+  },
+  carousel: {
+    progress: '{{current}} de {{total}}',
+  },
+  card: {
+    untitled: 'Projeto sem título',
+    noSummary: 'Nenhum resumo disponível.',
+    noSkills: 'Nenhuma skill listada ainda.',
+  },
+  errors: {
+    translationsLoad:
+      'Não foi possível carregar as traduções para verificar conflitos de locale.',
   },
 };
-

@@ -41,6 +41,52 @@ export default {
     display: {
       label: 'Publicly visible on portfolio',
     },
+    status: {
+      label: 'Status',
+    },
+    visibility: {
+      label: 'Visibility',
+    },
+    actions: {
+      label: 'Actions',
+    },
+  },
+  help: {
+    managementSubtitle: 'Manage the courses displayed on your portfolio.',
+  },
+  emptyState: {
+    index: 'No courses have been created yet.',
+  },
+  table: {
+    title: 'All courses',
+    description: 'A list of all courses and certificates registered.',
+    columns: {
+      course: 'Course',
+      started_at: 'Start date',
+      completed_at: 'End date',
+    },
+  },
+  status: {
+    planned: 'Planned',
+    in_progress: 'In Progress',
+    completed: 'Completed',
+  },
+  visibility: {
+    public: 'Public',
+    private: 'Private',
+    hidden: 'Hidden',
+    notHighlighted: 'Not currently highlighted',
+  },
+  overlay: {
+    about: 'About the course',
+    noDescription: 'No detailed description provided.',
+  },
+  values: {
+    empty: '\u2014',
+    present: 'Present',
+  },
+  errors: {
+    translationsLoad:
+      'Unable to load translations for locale conflict checks.',
   },
 };
-

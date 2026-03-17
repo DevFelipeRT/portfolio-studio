@@ -27,6 +27,10 @@ interface EditProjectProps {
  * Edit project page that wires Inertia form state to the reusable ProjectForm.
  */
 export default function Edit({ project, skills }: EditProjectProps) {
+  const { translate: tActions } = useProjectsTranslation(
+    PROJECTS_NAMESPACES.actions,
+  );
+  const { translate: tForm } = useProjectsTranslation(PROJECTS_NAMESPACES.form);
   const supportedLocales = useSupportedLocales();
   const existingImages: ProjectImage[] = project.images ?? [];
 
@@ -150,9 +154,7 @@ export default function Edit({ project, skills }: EditProjectProps) {
         }
       } catch {
         if (mounted) {
-          setLocalesLoadError(
-            'Unable to load translations for locale conflict checks.',
-          );
+          setLocalesLoadError(tForm('errors.translationsLoad'));
         }
       } finally {
         if (mounted) {
@@ -166,7 +168,7 @@ export default function Edit({ project, skills }: EditProjectProps) {
     return () => {
       mounted = false;
     };
-  }, [project.id]);
+  }, [project.id, tForm]);
 
   const handleLocaleChange = (nextLocale: string): void => {
     if (nextLocale !== data.locale && translationLocales.includes(nextLocale)) {
@@ -181,7 +183,7 @@ export default function Edit({ project, skills }: EditProjectProps) {
 
   return (
     <>
-      <PageHead title={`Edit project: ${project.name}`} />
+      <PageHead title={tActions('editProjectTitle', { name: project.name })} />
 
       <EditProjectContent
         project={project}
@@ -244,17 +246,6 @@ Edit.layout = (page: React.ReactNode) => (
   <AuthenticatedLayout>{page}</AuthenticatedLayout>
 );
 
-function EditProjectHeader() {
-  const { translate: tActions } = useProjectsTranslation(
-    PROJECTS_NAMESPACES.actions,
-  );
-  return (
-    <h1 className="text-xl leading-tight font-semibold">
-      {tActions('editProject')}
-    </h1>
-  );
-}
-
 type EditProjectContentProps = {
   project: Project;
   skills: Skill[];
@@ -312,7 +303,9 @@ function EditProjectContent({
   return (
     <PageContent className="overflow-hidden py-8" pageWidth="default">
       <div className="mb-6">
-        <EditProjectHeader />
+        <h1 className="text-xl leading-tight font-semibold">
+          {tActions('editProjectTitle', { name: project.name })}
+        </h1>
       </div>
 
       <div className="mb-4 flex items-center justify-between gap-3">
@@ -339,6 +332,7 @@ function EditProjectContent({
         submitLabel={tActions('saveChanges')}
         supportedLocales={supportedLocales}
         localeDisabled={loadingTranslations || Boolean(localesLoadError)}
+        localeNote={localesLoadError}
         onSubmit={onSubmit}
         onChangeField={onChangeField}
         onChangeLocale={onChangeLocale}
@@ -348,10 +342,6 @@ function EditProjectContent({
         onUpdateImageAlt={onUpdateImageAlt}
         onUpdateImageFile={onUpdateImageFile}
       />
-
-      {localesLoadError && (
-        <p className="text-muted-foreground mt-3 text-xs">{localesLoadError}</p>
-      )}
     </PageContent>
   );
 }

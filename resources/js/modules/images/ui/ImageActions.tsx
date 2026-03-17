@@ -9,6 +9,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { PageLink } from '@/common/page-runtime';
+import { IMAGES_NAMESPACES, useImagesTranslation } from '@/modules/images/i18n';
 import { Eye, MoreVertical, Pencil, Trash2 } from 'lucide-react';
 
 interface ImageActionsProps {
@@ -21,6 +22,7 @@ interface ImageActionsProps {
  * Dropdown menu exposing contextual actions for a single image.
  */
 export function ImageActions({ image, onView, onDelete }: ImageActionsProps) {
+    const { translate: tActions } = useImagesTranslation(IMAGES_NAMESPACES.actions);
     const handleTriggerClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.stopPropagation();
     };
@@ -49,7 +51,7 @@ export function ImageActions({ image, onView, onDelete }: ImageActionsProps) {
                     onClick={handleTriggerClick}
                 >
                     <MoreVertical className="h-4 w-4" />
-                    <span className="sr-only">Open image actions menu</span>
+                    <span className="sr-only">{tActions('openMenu')}</span>
                 </Button>
             </DropdownMenuTrigger>
 
@@ -60,13 +62,13 @@ export function ImageActions({ image, onView, onDelete }: ImageActionsProps) {
             >
                 <DropdownMenuItem onClick={handleViewClick}>
                     <Eye className="mr-2 h-4 w-4" />
-                    <span>View details</span>
+                    <span>{tActions('viewDetails')}</span>
                 </DropdownMenuItem>
 
                 <DropdownMenuItem asChild>
                     <PageLink href={route('images.edit', image.id)}>
                         <Pencil className="mr-2 h-4 w-4" />
-                        <span>Edit metadata</span>
+                        <span>{tActions('editMetadata')}</span>
                     </PageLink>
                 </DropdownMenuItem>
 
@@ -75,7 +77,7 @@ export function ImageActions({ image, onView, onDelete }: ImageActionsProps) {
                     className="text-destructive focus:text-destructive"
                 >
                     <Trash2 className="mr-2 h-4 w-4" />
-                    <span>Delete image</span>
+                    <span>{tActions('deleteImage')}</span>
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>

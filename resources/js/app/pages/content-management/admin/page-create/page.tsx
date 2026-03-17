@@ -6,6 +6,10 @@ import {
   PageForm,
   type PageFormData,
 } from '@/modules/content-management/features/page-management/page/PageForm';
+import {
+  CONTENT_MANAGEMENT_NAMESPACES,
+  useContentManagementTranslation,
+} from '@/modules/content-management/i18n';
 import React from 'react';
 
 const defaultPageFormData: PageFormData = {
@@ -21,6 +25,9 @@ const defaultPageFormData: PageFormData = {
 };
 
 export default function PageCreate() {
+  const { translate: tPages } = useContentManagementTranslation(
+    CONTENT_MANAGEMENT_NAMESPACES.pages,
+  );
   const { data, setData, post, processing, reset } = usePageForm<PageFormData>(
     'admin.content.pages.create',
     defaultPageFormData,
@@ -45,15 +52,18 @@ export default function PageCreate() {
 
   return (
     <AuthenticatedLayout>
-      <PageHead title="Create page" />
+      <PageHead title={tPages('create.headTitle', 'Create page')} />
 
       <PageContent pageWidth="editor" className="space-y-6">
         <div>
           <h1 className="text-xl font-semibold tracking-tight">
-            Create content page
+            {tPages('create.title', 'Create content page')}
           </h1>
           <p className="text-muted-foreground mt-1 text-sm">
-            Define a new content-managed page before composing its sections.
+            {tPages(
+              'create.description',
+              'Define a new content-managed page before composing its sections.',
+            )}
           </p>
         </div>
 
@@ -69,3 +79,5 @@ export default function PageCreate() {
     </AuthenticatedLayout>
   );
 }
+
+PageCreate.i18n = ['content-management'];

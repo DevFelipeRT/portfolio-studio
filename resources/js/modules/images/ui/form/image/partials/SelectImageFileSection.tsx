@@ -1,5 +1,6 @@
 import { FileInputField, type FormErrors } from '@/common/forms';
 import type { ImageFormData } from '@/modules/images/core/forms';
+import { IMAGES_NAMESPACES, useImagesTranslation } from '@/modules/images/i18n';
 
 type SelectImageFileSectionProps = {
   errors: FormErrors<keyof ImageFormData>;
@@ -10,16 +11,18 @@ export function SelectImageFileSection({
   errors,
   onChange,
 }: SelectImageFileSectionProps) {
+  const { translate: tForm } = useImagesTranslation(IMAGES_NAMESPACES.form);
+
   return (
     <section className="space-y-4">
-      <h2 className="text-lg font-medium">Image file</h2>
+      <h2 className="text-lg font-medium">{tForm('sections.file.title')}</h2>
 
       <FileInputField
         name="file"
         id="image-file"
         errors={errors}
-        label="File"
-        placeholder="Select file"
+        label={tForm('fields.file.label')}
+        placeholder={tForm('fields.file.placeholder')}
         required
         accept="image/*"
         errorId="image-file-error"
@@ -31,8 +34,7 @@ export function SelectImageFileSection({
 
       <div className="space-y-1.5">
         <p className="text-muted-foreground text-xs">
-          Choose an image file to upload. Supported types will be validated on
-          the server.
+          {tForm('sections.file.help')}
         </p>
       </div>
     </section>

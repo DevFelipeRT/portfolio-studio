@@ -1,4 +1,8 @@
 import type { Initiative } from '@/modules/initiatives/core/types';
+import {
+    INITIATIVES_NAMESPACES,
+    useInitiativesTranslation,
+} from '@/modules/initiatives/i18n';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -32,6 +36,9 @@ export function InitiativeActions({
     onToggleDisplay,
     onDelete,
 }: InitiativeActionsProps) {
+    const { translate: tActions } = useInitiativesTranslation(
+        INITIATIVES_NAMESPACES.actions,
+    );
     return (
         <div className="flex items-center justify-end gap-1">
             <DropdownMenu>
@@ -44,7 +51,7 @@ export function InitiativeActions({
                         onClick={(event) => event.stopPropagation()}
                     >
                         <MoreVertical className="h-4 w-4" />
-                        <span className="sr-only">Open menu</span>
+                        <span className="sr-only">{tActions('openMenu')}</span>
                     </Button>
                 </DropdownMenuTrigger>
 
@@ -56,7 +63,7 @@ export function InitiativeActions({
                     <DropdownMenuItem asChild>
                         <PageLink href={route('initiatives.edit', initiative.id)}>
                             <Pencil className="mr-2 h-4 w-4" />
-                            <span>Edit</span>
+                            <span>{tActions('edit')}</span>
                         </PageLink>
                     </DropdownMenuItem>
 
@@ -70,8 +77,8 @@ export function InitiativeActions({
                         )}
                         <span>
                             {initiative.display
-                                ? 'Hide from landing'
-                                : 'Show on landing'}
+                                ? tActions('hideFromLanding')
+                                : tActions('showOnLanding')}
                         </span>
                     </DropdownMenuItem>
 
@@ -80,7 +87,7 @@ export function InitiativeActions({
                         className="text-destructive focus:text-destructive"
                     >
                         <Trash2 className="mr-2 h-4 w-4" />
-                        <span>Delete</span>
+                        <span>{tActions('delete')}</span>
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>

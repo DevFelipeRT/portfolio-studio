@@ -1,4 +1,8 @@
 import { Button } from '@/components/ui/button';
+import {
+  CONTENT_MANAGEMENT_NAMESPACES,
+  useContentManagementTranslation,
+} from '@/modules/content-management/i18n';
 import type { PageSectionDto } from '@/modules/content-management/types';
 import { Eye, EyeOff, Pencil, Trash2 } from 'lucide-react';
 
@@ -19,6 +23,9 @@ export function SectionToolbar({
   onRemove,
 }: SectionToolbarProps) {
   const isActive = section.is_active;
+  const { translate: tSections } = useContentManagementTranslation(
+    CONTENT_MANAGEMENT_NAMESPACES.sections,
+  );
 
   return (
     <div className="flex items-center gap-1">
@@ -27,7 +34,11 @@ export function SectionToolbar({
         variant="ghost"
         size="icon"
         onClick={() => onToggleActive?.(section)}
-        aria-label={isActive ? 'Deactivate section' : 'Activate section'}
+        aria-label={
+          isActive
+            ? tSections('toolbar.deactivate', 'Deactivate section')
+            : tSections('toolbar.activate', 'Activate section')
+        }
       >
         {isActive ? (
           <Eye className="h-4 w-4" />
@@ -41,7 +52,7 @@ export function SectionToolbar({
         variant="ghost"
         size="icon"
         onClick={() => onEdit?.(section)}
-        aria-label="Edit section"
+        aria-label={tSections('toolbar.edit', 'Edit section')}
       >
         <Pencil className="h-4 w-4" />
       </Button>
@@ -51,7 +62,7 @@ export function SectionToolbar({
         variant="ghost"
         size="icon"
         onClick={() => onRemove?.(section)}
-        aria-label="Remove section"
+        aria-label={tSections('toolbar.remove', 'Remove section')}
       >
         <Trash2 className="text-destructive h-4 w-4" />
       </Button>

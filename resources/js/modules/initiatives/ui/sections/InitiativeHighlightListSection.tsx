@@ -3,6 +3,10 @@ import {
     useFieldValueResolver,
 } from '@/modules/content-management/features/page-rendering';
 import type { SectionDataValue } from '@/modules/content-management/types';
+import {
+    INITIATIVES_NAMESPACES,
+    useInitiativesTranslation,
+} from '@/modules/initiatives/i18n';
 import { JSX } from 'react';
 
 type CapabilityInitiative = {
@@ -21,6 +25,7 @@ type CapabilityInitiative = {
  * Primary source for all content is the section field resolver.
  */
 export function InitiativeHighlightListSection(): JSX.Element | null {
+    const { translate: tForm } = useInitiativesTranslation(INITIATIVES_NAMESPACES.form);
     const fieldResolver = useFieldValueResolver();
 
     const highlightOnly =
@@ -36,7 +41,7 @@ export function InitiativeHighlightListSection(): JSX.Element | null {
         }
 
         if (highlightOnly === true) {
-            return 'Iniciativas em destaque';
+            return tForm('card.highlightEyebrow');
         }
 
         return undefined;
@@ -132,7 +137,7 @@ export function InitiativeHighlightListSection(): JSX.Element | null {
                 </div>
             ) : (
                 <p className="text-muted-foreground text-sm">
-                    Nenhuma iniciativa retornada para esta seção.
+                    {tForm('emptyState.publicSection')}
                 </p>
             )}
         </div>

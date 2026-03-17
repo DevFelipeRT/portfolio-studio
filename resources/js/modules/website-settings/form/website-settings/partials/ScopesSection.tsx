@@ -1,4 +1,8 @@
 import { CheckboxField, type FormErrors } from '@/common/forms';
+import {
+  WEBSITE_SETTINGS_NAMESPACES,
+  useWebsiteSettingsTranslation,
+} from '@/modules/website-settings/i18n';
 
 interface ScopesSectionProps {
   errors: FormErrors;
@@ -15,12 +19,16 @@ export function ScopesSection({
   onPublicEnabledChange,
   onPrivateEnabledChange,
 }: ScopesSectionProps) {
+  const { translate: tForm } = useWebsiteSettingsTranslation(
+    WEBSITE_SETTINGS_NAMESPACES.form,
+  );
+
   return (
     <section className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold">Escopos</h2>
+        <h2 className="text-lg font-semibold">{tForm('sections.scopes.title')}</h2>
         <p className="text-muted-foreground text-sm">
-          Habilite ou desabilite escopos globais.
+          {tForm('sections.scopes.description')}
         </p>
       </div>
 
@@ -30,7 +38,7 @@ export function ScopesSection({
           id="public_scope_enabled"
           value={publicEnabled}
           errors={errors}
-          label="Escopo público"
+          label={tForm('fields.public_scope_enabled.label')}
           className="flex items-center gap-3 rounded-md border p-4"
           onChange={onPublicEnabledChange}
         />
@@ -39,7 +47,7 @@ export function ScopesSection({
           id="private_scope_enabled"
           value={privateEnabled}
           errors={errors}
-          label="Escopo privado"
+          label={tForm('fields.private_scope_enabled.label')}
           className="flex items-center gap-3 rounded-md border p-4"
           onChange={onPrivateEnabledChange}
         />

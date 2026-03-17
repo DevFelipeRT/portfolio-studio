@@ -5,6 +5,7 @@ export default {
   existing: 'Traduções existentes',
   empty: 'Nenhuma tradução ainda.',
   add: 'Adicionar tradução',
+  addPanelTitle: 'Adicionar tradução',
   allCovered: 'Todos os locales suportados já possuem traduções.',
   loading: 'Carregando traduções...',
   confirmDelete: 'Excluir tradução de {{locale}}?',
@@ -33,6 +34,6 @@ export default {
   errors: {
     localeRequired: 'Selecione um locale.',
     atLeastOne: 'Informe ao menos um campo traduzido.',
+    unexpected: 'Erro inesperado. Tente novamente.',
   },
 };
-

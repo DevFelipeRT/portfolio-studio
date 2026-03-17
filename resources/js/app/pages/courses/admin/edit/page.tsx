@@ -29,6 +29,10 @@ interface EditCourseProps {
  * Initializes the form state with the provided course data.
  */
 export default function Edit({ course, course_categories }: EditCourseProps) {
+  const { translate: tActions } = useCoursesTranslation(
+    COURSES_NAMESPACES.actions,
+  );
+  const { translate: tForm } = useCoursesTranslation(COURSES_NAMESPACES.form);
   const { data, setData, put, processing } = usePageForm<CourseFormData>({
     locale: course.locale,
     confirm_swap: false,
@@ -87,9 +91,7 @@ export default function Edit({ course, course_categories }: EditCourseProps) {
         }
       } catch {
         if (mounted) {
-          setLocalesLoadError(
-            'Unable to load translations for locale conflict checks.',
-          );
+          setLocalesLoadError(tForm('errors.translationsLoad'));
         }
       } finally {
         if (mounted) {
@@ -103,7 +105,7 @@ export default function Edit({ course, course_categories }: EditCourseProps) {
     return () => {
       mounted = false;
     };
-  }, [course.id]);
+  }, [course.id, tForm]);
 
   const handleLocaleChange = (nextLocale: string): void => {
     if (nextLocale !== data.locale && translationLocales.includes(nextLocale)) {
@@ -118,7 +120,13 @@ export default function Edit({ course, course_categories }: EditCourseProps) {
 
   return (
     <AuthenticatedLayout>
-      <PageHead title={`Edit - ${data.name}`} />
+      <PageHead
+        title={
+          data.name
+            ? tActions('editCourseTitle', { name: data.name })
+            : tActions('editCourse')
+        }
+      />
 
       <EditCourseI18nContent
         data={data}
@@ -201,12 +209,17 @@ function EditCourseI18nContent({
   const { translate: tTranslations } = useCoursesTranslation(
     COURSES_NAMESPACES.translations,
   );
+  const { translate: tActions } = useCoursesTranslation(
+    COURSES_NAMESPACES.actions,
+  );
 
   return (
     <PageContent className="overflow-hidden py-8" pageWidth="default">
       <div className="mb-6">
         <h1 className="text-xl leading-tight font-semibold">
-          Edit Course:{` ${data.name}`}
+          {data.name
+            ? tActions('editCourseTitle', { name: data.name })
+            : tActions('editCourse')}
         </h1>
       </div>
 
@@ -216,7 +229,7 @@ function EditCourseI18nContent({
           className="text-muted-foreground hover:text-foreground inline-flex items-center text-sm transition-colors"
         >
           <ChevronLeft className="mr-1 h-4 w-4" />
-          Back to courses
+          {tActions('backToIndex')}
         </PageLink>
 
         <Button type="button" variant="secondary" onClick={onOpenTranslations}>
@@ -234,6 +247,7 @@ function EditCourseI18nContent({
         cancelHref={cancelHref}
         onLocaleChange={onLocaleChange}
         localeDisabled={loadingTranslations || Boolean(localesLoadError)}
+        localeNote={localesLoadError}
       />
     </PageContent>
   );

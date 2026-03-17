@@ -1,4 +1,8 @@
 import { SelectField, type FormErrors } from '@/common/forms';
+import {
+  WEBSITE_SETTINGS_NAMESPACES,
+  useWebsiteSettingsTranslation,
+} from '@/modules/website-settings/i18n';
 
 interface LocalesSectionProps {
   errors: FormErrors;
@@ -17,13 +21,16 @@ export function LocalesSection({
   onDefaultLocaleChange,
   onFallbackLocaleChange,
 }: LocalesSectionProps) {
+  const { translate: tForm } = useWebsiteSettingsTranslation(
+    WEBSITE_SETTINGS_NAMESPACES.form,
+  );
+
   return (
     <section className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold">Locales</h2>
+        <h2 className="text-lg font-semibold">{tForm('sections.locales.title')}</h2>
         <p className="text-muted-foreground text-sm">
-          Define o locale padrão (fixo ou automático) e o fallback usado quando
-          não há conteúdo.
+          {tForm('sections.locales.description')}
         </p>
       </div>
 
@@ -33,10 +40,10 @@ export function LocalesSection({
           id="default_locale"
           value={defaultLocale}
           errors={errors}
-          label="Locale padrão"
-          placeholder="Selecione"
+          label={tForm('fields.default_locale.label')}
+          placeholder={tForm('fields.default_locale.placeholder')}
           options={[
-            { value: 'auto', label: 'Automático' },
+            { value: 'auto', label: tForm('options.auto') },
             ...localeCandidates.map((locale) => ({
               value: locale,
               label: locale,
@@ -50,8 +57,8 @@ export function LocalesSection({
           id="fallback_locale"
           value={fallbackLocale}
           errors={errors}
-          label="Locale fallback"
-          placeholder="Selecione"
+          label={tForm('fields.fallback_locale.label')}
+          placeholder={tForm('fields.fallback_locale.placeholder')}
           options={localeCandidates.map((locale) => ({
             value: locale,
             label: locale,

@@ -3,10 +3,15 @@ import { PageContent } from '@/app/layouts/primitives';
 import type { FormErrors } from '@/common/forms';
 import { PageHead, PageLink, usePageForm, usePageProps } from '@/common/page-runtime';
 import type { SkillCategoryFormData } from '@/modules/skills/core/forms';
+import { SKILLS_NAMESPACES, useSkillsTranslation } from '@/modules/skills/i18n';
 import { SkillCategoryForm } from '@/modules/skills/ui/form/skill-category';
 import React from 'react';
 
 export default function Create() {
+  const { translate: tActions } = useSkillsTranslation(SKILLS_NAMESPACES.actions);
+  const { translate: tSections } = useSkillsTranslation(
+    SKILLS_NAMESPACES.sections,
+  );
   const { data, setData, post, processing } = usePageForm<SkillCategoryFormData>({
     name: '',
     slug: '',
@@ -33,12 +38,12 @@ export default function Create() {
 
   return (
     <AuthenticatedLayout>
-      <PageHead title="New skill category" />
+      <PageHead title={tSections('createCategoryTitle')} />
 
       <PageContent className="overflow-hidden py-8" pageWidth="form">
         <div className="mb-6">
           <h1 className="text-xl leading-tight font-semibold">
-            New skill category
+            {tSections('createCategoryTitle')}
           </h1>
         </div>
 
@@ -47,7 +52,7 @@ export default function Create() {
             href={route('skills.index')}
             className="text-muted-foreground hover:text-foreground text-sm"
           >
-            Back to skills
+            {tActions('backToIndex')}
           </PageLink>
         </div>
 
@@ -58,9 +63,11 @@ export default function Create() {
           onChange={handleChange}
           onSubmit={handleSubmit}
           cancelHref={route('skills.index')}
-          submitLabel="Save"
+          submitLabel={tActions('save')}
         />
       </PageContent>
     </AuthenticatedLayout>
   );
 }
+
+Create.i18n = ['skills'];

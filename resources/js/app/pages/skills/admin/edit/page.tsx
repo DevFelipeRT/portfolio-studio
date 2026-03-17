@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { listSkillTranslations } from '@/modules/skills/core/api/translations';
 import type { SkillFormData } from '@/modules/skills/core/forms';
 import type { Skill, SkillCategory } from '@/modules/skills/core/types';
+import { SKILLS_NAMESPACES, useSkillsTranslation } from '@/modules/skills/i18n';
 import { SkillForm } from '@/modules/skills/ui/form/skill';
 import { TranslationModal } from '@/modules/skills/ui/TranslationModal';
 import React from 'react';
@@ -19,6 +20,10 @@ interface EditSkillProps {
 }
 
 export default function Edit({ skill, categories }: EditSkillProps) {
+  const { translate: tActions } = useSkillsTranslation(SKILLS_NAMESPACES.actions);
+  const { translate: tSections } = useSkillsTranslation(
+    SKILLS_NAMESPACES.sections,
+  );
   const [showTranslations, setShowTranslations] = React.useState(false);
   const [swapDialogOpen, setSwapDialogOpen] = React.useState(false);
   const [pendingLocale, setPendingLocale] = React.useState<string | null>(null);
@@ -85,11 +90,13 @@ export default function Edit({ skill, categories }: EditSkillProps) {
   return (
     <>
       <AuthenticatedLayout>
-        <PageHead title={`Edit skill: ${skill.name}`} />
+        <PageHead title={tActions('editSkill')} />
 
         <PageContent className="overflow-hidden py-8" pageWidth="form">
           <div className="mb-6">
-            <h1 className="text-xl leading-tight font-semibold">Edit skill</h1>
+            <h1 className="text-xl leading-tight font-semibold">
+              {tSections('editSkillTitle')}
+            </h1>
           </div>
 
           <div className="mb-4">
@@ -97,7 +104,7 @@ export default function Edit({ skill, categories }: EditSkillProps) {
               href={route('skills.index')}
               className="text-muted-foreground hover:text-foreground text-sm"
             >
-              Back to skills
+              {tActions('backToIndex')}
             </PageLink>
           </div>
 
@@ -109,9 +116,9 @@ export default function Edit({ skill, categories }: EditSkillProps) {
             onChange={handleChange}
             onSubmit={handleSubmit}
             cancelHref={route('skills.index')}
-            submitLabel="Save changes"
+            submitLabel={tActions('saveChanges')}
             deleteHref={route('skills.destroy', skill.id)}
-            deleteLabel="Delete"
+            deleteLabel={tActions('delete')}
           />
 
           <div className="mt-4 flex justify-end">
@@ -121,7 +128,7 @@ export default function Edit({ skill, categories }: EditSkillProps) {
               size="sm"
               onClick={() => setShowTranslations(true)}
             >
-              Manage translations
+              {tActions('manageTranslations')}
             </Button>
           </div>
         </PageContent>
@@ -162,3 +169,5 @@ export default function Edit({ skill, categories }: EditSkillProps) {
     </>
   );
 }
+
+Edit.i18n = ['skills'];

@@ -1,5 +1,6 @@
 import * as React from 'react';
 import type { Image } from '@/modules/images/core/types';
+import { IMAGES_NAMESPACES, useImagesTranslation } from '@/modules/images/i18n';
 import { ImageActions } from './ImageActions';
 
 import { Badge } from '@/components/ui/badge';
@@ -34,6 +35,8 @@ export function ImageList({
     onDelete,
     onPageChange,
 }: ImageListProps) {
+    const { translate: tActions } = useImagesTranslation(IMAGES_NAMESPACES.actions);
+    const { translate: tImages } = useImagesTranslation(IMAGES_NAMESPACES.images);
     const handleCardClick = (image: Image) => {
         if (onItemClick) {
             onItemClick(image);
@@ -79,7 +82,9 @@ export function ImageList({
                     const title =
                         image.image_title ??
                         image.original_filename ??
-                        `Image #${image.id.toString()}`;
+                        tImages('list.titleWithId', {
+                            id: image.id.toString(),
+                        });
 
                     const fileSizeLabel = formatFileSize(image.file_size_bytes);
                     const dimensionsLabel = formatDimensions(
@@ -151,7 +156,7 @@ export function ImageList({
                                         />
                                     ) : (
                                         <div className="text-muted-foreground flex h-40 w-full items-center justify-center text-xs">
-                                            No preview available.
+                                            {tImages('list.noPreview')}
                                         </div>
                                     )}
                                 </div>
@@ -180,22 +185,14 @@ export function ImageList({
                     <div>
                         {pagination.total > 0 ? (
                             <span>
-                                Showing{' '}
-                                <span className="font-medium">
-                                    {pagination.from ?? 0}
-                                </span>{' '}
-                                to{' '}
-                                <span className="font-medium">
-                                    {pagination.to ?? 0}
-                                </span>{' '}
-                                of{' '}
-                                <span className="font-medium">
-                                    {pagination.total}
-                                </span>{' '}
-                                images
+                                {tImages('list.pagination.showing', {
+                                    from: pagination.from ?? 0,
+                                    to: pagination.to ?? 0,
+                                    total: pagination.total,
+                                })}
                             </span>
                         ) : (
-                            <span>No images to display.</span>
+                            <span>{tImages('list.pagination.empty')}</span>
                         )}
                     </div>
 
@@ -207,18 +204,14 @@ export function ImageList({
                             disabled={pagination.currentPage <= 1}
                             onClick={handlePreviousPage}
                         >
-                            Previous
+                            {tActions('previous')}
                         </Button>
 
                         <span className="text-[0.75rem]">
-                            Page{' '}
-                            <span className="font-medium">
-                                {pagination.currentPage}
-                            </span>{' '}
-                            of{' '}
-                            <span className="font-medium">
-                                {pagination.lastPage}
-                            </span>
+                            {tImages('list.pagination.pageOf', {
+                                current: pagination.currentPage,
+                                total: pagination.lastPage,
+                            })}
                         </span>
 
                         <Button
@@ -230,7 +223,7 @@ export function ImageList({
                             }
                             onClick={handleNextPage}
                         >
-                            Next
+                            {tActions('next')}
                         </Button>
                     </div>
                 </div>

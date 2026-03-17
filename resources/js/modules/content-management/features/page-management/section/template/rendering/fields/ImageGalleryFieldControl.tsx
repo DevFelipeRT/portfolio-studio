@@ -1,4 +1,8 @@
 import { Textarea } from '@/components/ui/textarea';
+import {
+  CONTENT_MANAGEMENT_NAMESPACES,
+  useContentManagementTranslation,
+} from '@/modules/content-management/i18n';
 import { parseCommaSeparatedPositiveIntegers } from '@/modules/content-management/utils/numbers';
 import type { TemplateFieldControlProps } from '../../types';
 import { FieldFrame } from './partials/FieldFrame';
@@ -13,6 +17,9 @@ export function ImageGalleryFieldControl({
   onChange,
   field,
 }: TemplateFieldControlProps) {
+  const { translate: tTemplates } = useContentManagementTranslation(
+    CONTENT_MANAGEMENT_NAMESPACES.templates,
+  );
   const numericValue = value as number[];
   const displayValue =
     numericValue.length > 0
@@ -28,7 +35,10 @@ export function ImageGalleryFieldControl({
       id={field.name}
       label={field.label}
       required={field.required}
-      helperText="Enter image IDs separated by commas. The order will be used as the gallery ordering."
+      helperText={tTemplates(
+        'helpers.imageGallery',
+        'Enter image IDs separated by commas. The order will be used as the gallery ordering.',
+      )}
     >
       <Textarea
         id={field.name}

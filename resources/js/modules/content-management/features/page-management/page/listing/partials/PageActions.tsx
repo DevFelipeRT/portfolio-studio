@@ -1,5 +1,9 @@
 import { Button } from '@/components/ui/button';
 import {
+  CONTENT_MANAGEMENT_NAMESPACES,
+  useContentManagementTranslation,
+} from '@/modules/content-management/i18n';
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -30,12 +34,27 @@ export function PageActions({
   publicUrl,
   showSetHome,
 }: PageActionsProps) {
+  const { translate: tActions } = useContentManagementTranslation(
+    CONTENT_MANAGEMENT_NAMESPACES.actions,
+  );
+  const { translate: tPages } = useContentManagementTranslation(
+    CONTENT_MANAGEMENT_NAMESPACES.pages,
+  );
+
   const handleTriggerClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
   };
 
   const handleDelete = (): void => {
-    if (!window.confirm(`Delete "${pageTitle}"? This cannot be undone.`)) {
+    if (
+      !window.confirm(
+        tPages(
+          'listing.deleteConfirm',
+          'Delete "{{title}}"? This cannot be undone.',
+          { title: pageTitle },
+        ),
+      )
+    ) {
       return;
     }
 
@@ -56,7 +75,7 @@ export function PageActions({
           onClick={handleTriggerClick}
         >
           <MoreVertical className="h-4 w-4" />
-          <span className="sr-only">Open menu</span>
+          <span className="sr-only">{tActions('openMenu', 'Open menu')}</span>
         </Button>
       </DropdownMenuTrigger>
 
@@ -73,7 +92,7 @@ export function PageActions({
             className="cursor-pointer"
           >
             <ExternalLink className="mr-2 h-4 w-4" />
-            <span>Open page</span>
+            <span>{tActions('openPage', 'Open page')}</span>
           </a>
         </DropdownMenuItem>
 
@@ -85,7 +104,7 @@ export function PageActions({
             className="cursor-pointer"
           >
             <Pencil className="mr-2 h-4 w-4" />
-            <span>Edit</span>
+            <span>{tActions('edit', 'Edit')}</span>
           </PageLink>
         </DropdownMenuItem>
 
@@ -101,7 +120,7 @@ export function PageActions({
                 className="w-full cursor-pointer"
               >
                 <Home className="mr-2 h-4 w-4" />
-                <span>Set as home</span>
+                <span>{tActions('setAsHome', 'Set as home')}</span>
               </PageLink>
             </DropdownMenuItem>
           </>
@@ -120,7 +139,7 @@ export function PageActions({
           className="text-destructive focus:text-destructive"
         >
           <Trash2 className="mr-2 h-4 w-4" />
-          <span>Delete</span>
+          <span>{tActions('delete', 'Delete')}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

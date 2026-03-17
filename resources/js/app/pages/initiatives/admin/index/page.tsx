@@ -7,6 +7,10 @@ import { useMemo, useState } from 'react';
 
 import type { Initiative } from '@/modules/initiatives/core/types';
 import { InitiativeHeader } from '@/modules/initiatives/ui/InitiativeHeader';
+import {
+  INITIATIVES_NAMESPACES,
+  useInitiativesTranslation,
+} from '@/modules/initiatives/i18n';
 import { InitiativeOverlay } from '@/modules/initiatives/ui/overlay/InitiativeOverlay';
 import { InitiativesEmptyState } from '@/modules/initiatives/ui/InitiativesEmptyState';
 import { InitiativesTable } from '@/modules/initiatives/ui/table/InitiativesTable';
@@ -19,6 +23,9 @@ interface InitiativesIndexProps {
  * Initiatives index page for listing and managing portfolio initiatives.
  */
 export default function Index({ initiatives }: InitiativesIndexProps) {
+  const { translate: tSections } = useInitiativesTranslation(
+    INITIATIVES_NAMESPACES.sections,
+  );
   const [items, setItems] = useState<Initiative[]>(() => [...initiatives]);
   const [selectedInitiative, setSelectedInitiative] =
     useState<Initiative | null>(null);
@@ -124,7 +131,7 @@ export default function Index({ initiatives }: InitiativesIndexProps) {
 
   return (
     <AuthenticatedLayout>
-      <PageHead title="Initiatives" />
+      <PageHead title={tSections('managementTitle')} />
 
       <PageContent
         className="space-y-4 overflow-hidden py-8"
@@ -158,3 +165,5 @@ export default function Index({ initiatives }: InitiativesIndexProps) {
     </AuthenticatedLayout>
   );
 }
+
+Index.i18n = ['initiatives'];

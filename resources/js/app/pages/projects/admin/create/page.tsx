@@ -31,6 +31,9 @@ const defaultProjectFormData: ProjectFormData = {
 };
 
 export default function Create({ skills }: CreateProjectProps) {
+  const { translate: tActions } = useProjectsTranslation(
+    PROJECTS_NAMESPACES.actions,
+  );
   const supportedLocales = useSupportedLocales();
   const { data, setData, post, processing } = usePageForm<ProjectFormData>(
     'projects.create',
@@ -104,7 +107,7 @@ export default function Create({ skills }: CreateProjectProps) {
 
   return (
     <>
-      <PageHead title="New project" />
+      <PageHead title={tActions('newProject')} />
 
       <CreateProjectContent
         skills={skills}

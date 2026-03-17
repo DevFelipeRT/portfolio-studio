@@ -7,6 +7,10 @@ import type {
   InitiativeFormData,
   InitiativeImageInput,
 } from '@/modules/initiatives/core/forms';
+import {
+  INITIATIVES_NAMESPACES,
+  useInitiativesTranslation,
+} from '@/modules/initiatives/i18n';
 import { InitiativeForm } from '@/modules/initiatives/ui/form/initiative';
 import React from 'react';
 
@@ -22,6 +26,9 @@ const defaultInitiativeFormData: InitiativeFormData = {
 };
 
 export default function Create() {
+  const { translate: tActions } = useInitiativesTranslation(
+    INITIATIVES_NAMESPACES.actions,
+  );
   const supportedLocales = useSupportedLocales();
   const { data, setData, post, processing, transform } =
     usePageForm<InitiativeFormData>('initiatives.create', defaultInitiativeFormData);
@@ -104,12 +111,12 @@ export default function Create() {
   };
   return (
     <AuthenticatedLayout>
-      <PageHead title="New initiative" />
+      <PageHead title={tActions('newInitiative')} />
 
       <PageContent className="overflow-hidden py-8" pageWidth="default">
         <div className="mb-6">
           <h1 className="text-xl leading-tight font-semibold">
-            New initiative
+            {tActions('newInitiative')}
           </h1>
         </div>
 
@@ -118,12 +125,12 @@ export default function Create() {
             href={route('initiatives.index')}
             className="text-muted-foreground hover:text-foreground text-sm"
           >
-            Back to initiatives
+            {tActions('backToIndex')}
           </PageLink>
         </div>
 
         <InitiativeForm
-          submitLabel="Save initiative"
+          submitLabel={tActions('saveInitiative')}
           cancelHref={route('initiatives.index')}
           existingImages={[]}
           data={data}
@@ -141,3 +148,5 @@ export default function Create() {
     </AuthenticatedLayout>
   );
 }
+
+Create.i18n = ['initiatives'];

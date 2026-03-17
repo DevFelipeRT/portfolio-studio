@@ -6,6 +6,7 @@ import { RichTextSection } from '../components/RichTextSection';
 
 export const contentManagementSectionRegistryProvider: ComponentRegistryProvider<SectionComponentRegistry> =
   {
+    i18n: ['content-management'],
     getSectionRegistry(): SectionComponentRegistry {
       return {
         hero_primary: HeroPrimarySection,

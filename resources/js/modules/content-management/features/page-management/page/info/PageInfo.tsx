@@ -2,6 +2,10 @@ import { useGetLocale } from '@/common/locale';
 import { Badge } from '@/components/ui/badge';
 import { DateDisplay } from '@/components/ui/date-display';
 import { Separator } from '@/components/ui/separator';
+import {
+  CONTENT_MANAGEMENT_NAMESPACES,
+  useContentManagementTranslation,
+} from '@/modules/content-management/i18n';
 import type { PageDto } from '@/modules/content-management/types';
 import type { ReactNode } from 'react';
 
@@ -40,15 +44,22 @@ function InfoRow({
  */
 export function PageInfo({ page }: PageInfoProps) {
   const locale = useGetLocale();
+  const { translate: tPages } = useContentManagementTranslation(
+    CONTENT_MANAGEMENT_NAMESPACES.pages,
+  );
 
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-2">
         <Badge variant={page.is_published ? 'default' : 'outline'}>
-          {page.is_published ? 'Published' : 'Draft'}
+          {page.is_published
+            ? tPages('info.badges.published', 'Published')
+            : tPages('info.badges.draft', 'Draft')}
         </Badge>
         <Badge variant={page.is_indexable ? 'secondary' : 'outline'}>
-          {page.is_indexable ? 'Indexable' : 'Noindex'}
+          {page.is_indexable
+            ? tPages('info.badges.indexable', 'Indexable')
+            : tPages('info.badges.noindex', 'Noindex')}
         </Badge>
         <span className="bg-muted text-muted-foreground inline-flex rounded px-2 py-0.5 font-mono text-xs">
           {page.locale}
@@ -59,19 +70,19 @@ export function PageInfo({ page }: PageInfoProps) {
 
       <div className="space-y-3 text-sm">
         <InfoRow
-          label="Title"
+          label={tPages('info.fields.title', 'Title')}
           value={<span className="font-medium">{page.title}</span>}
         />
         <InfoRow
-          label="Internal name"
+          label={tPages('info.fields.internalName', 'Internal name')}
           value={<span className="font-mono text-xs">{page.internal_name}</span>}
         />
         <InfoRow
-          label="Slug"
+          label={tPages('info.fields.slug', 'Slug')}
           value={<span className="font-mono text-xs">{page.slug}</span>}
         />
         <InfoRow
-          label="Layout key"
+          label={tPages('info.fields.layoutKey', 'Layout key')}
           value={
             page.layout_key ? (
               <span className="font-mono text-xs">{page.layout_key}</span>
@@ -86,7 +97,7 @@ export function PageInfo({ page }: PageInfoProps) {
 
       <div className="space-y-3 text-sm">
         <InfoRow
-          label="Meta title"
+          label={tPages('info.fields.metaTitle', 'Meta title')}
           value={
             page.meta_title ? (
               <span>{page.meta_title}</span>
@@ -96,7 +107,7 @@ export function PageInfo({ page }: PageInfoProps) {
           }
         />
         <InfoRow
-          label="Meta description"
+          label={tPages('info.fields.metaDescription', 'Meta description')}
           value={
             page.meta_description ? (
               <span className="whitespace-pre-wrap">{page.meta_description}</span>
@@ -106,7 +117,7 @@ export function PageInfo({ page }: PageInfoProps) {
           }
         />
         <InfoRow
-          label="Meta image URL"
+          label={tPages('info.fields.metaImageUrl', 'Meta image URL')}
           value={
             page.meta_image_url ? (
               <a
@@ -128,7 +139,7 @@ export function PageInfo({ page }: PageInfoProps) {
 
       <div className="space-y-3 text-sm">
         <InfoRow
-          label="Published at"
+          label={tPages('info.fields.publishedAt', 'Published at')}
           value={
             <DateDisplay
               value={page.published_at}
@@ -139,7 +150,7 @@ export function PageInfo({ page }: PageInfoProps) {
           }
         />
         <InfoRow
-          label="Created at"
+          label={tPages('info.fields.createdAt', 'Created at')}
           value={
             <DateDisplay
               value={page.created_at}
@@ -150,7 +161,7 @@ export function PageInfo({ page }: PageInfoProps) {
           }
         />
         <InfoRow
-          label="Updated at"
+          label={tPages('info.fields.updatedAt', 'Updated at')}
           value={
             <DateDisplay
               value={page.updated_at}

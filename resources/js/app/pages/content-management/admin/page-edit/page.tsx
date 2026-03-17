@@ -24,6 +24,10 @@ import {
   useEditSectionDialogController,
   useSectionListController,
 } from '@/modules/content-management/features/page-management/section/operations';
+import {
+  CONTENT_MANAGEMENT_NAMESPACES,
+  useContentManagementTranslation,
+} from '@/modules/content-management/i18n';
 import type {
   PageEditViewModelProps,
   PageSectionDto,
@@ -45,6 +49,12 @@ export default function PageEdit({
   sections,
   availableTemplates,
 }: PageEditViewModelProps) {
+  const { translate: tPages } = useContentManagementTranslation(
+    CONTENT_MANAGEMENT_NAMESPACES.pages,
+  );
+  const { translate: tSections } = useContentManagementTranslation(
+    CONTENT_MANAGEMENT_NAMESPACES.sections,
+  );
   const { data, setData, put, processing } = usePageForm<PageFormData>({
     slug: page.slug,
     internal_name: page.internal_name,
@@ -95,7 +105,10 @@ export default function PageEdit({
   const handleDeletePage = (): void => {
     if (
       !window.confirm(
-        'Are you sure you want to delete this page and all its sections?',
+        tPages(
+          'edit.deleteConfirm',
+          'Are you sure you want to delete this page and all its sections?',
+        ),
       )
     ) {
       return;
@@ -133,7 +146,14 @@ export default function PageEdit({
 
   /** Sections: delete */
   const handleRemoveSection = (section: PageSectionDto): void => {
-    if (!window.confirm('Are you sure you want to delete this section?')) {
+    if (
+      !window.confirm(
+        tSections(
+          'deleteConfirm',
+          'Are you sure you want to delete this section?',
+        ),
+      )
+    ) {
       return;
     }
 
@@ -142,7 +162,11 @@ export default function PageEdit({
 
   return (
     <AuthenticatedLayout>
-      <PageHead title={`Edit page – ${page.title}`} />
+      <PageHead
+        title={tPages('edit.headTitle', 'Edit page - {{title}}', {
+          title: page.title,
+        })}
+      />
 
       <PageContent
         pageWidth="default"
@@ -152,10 +176,13 @@ export default function PageEdit({
         <div className="flex items-center justify-between gap-3">
           <div>
             <h1 className="text-xl font-semibold tracking-tight">
-              Edit content page
+              {tPages('edit.title', 'Edit content page')}
             </h1>
             <p className="text-muted-foreground mt-1 text-sm">
-              Update this page metadata and manage its sections.
+              {tPages(
+                'edit.description',
+                'Update this page metadata and manage its sections.',
+              )}
             </p>
           </div>
 
@@ -166,7 +193,7 @@ export default function PageEdit({
             onClick={handleDeletePage}
           >
             <Trash2 className="h-4 w-4" />
-            Delete page
+            {tPages('edit.deleteCta', 'Delete page')}
           </Button>
         </div>
 
@@ -215,3 +242,5 @@ export default function PageEdit({
     </AuthenticatedLayout>
   );
 }
+
+PageEdit.i18n = ['content-management'];

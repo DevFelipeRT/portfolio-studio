@@ -6,6 +6,7 @@ import {
 } from '@/common/forms';
 import { SelectField, TextInputField } from '@/common/forms';
 import { useSupportedLocales } from '@/common/locale';
+import { SKILLS_NAMESPACES, useSkillsTranslation } from '@/modules/skills/i18n';
 
 import { getErrorSummaryFields } from './errorSummaryFields';
 import type { SkillFormProps } from './types';
@@ -25,7 +26,8 @@ export function SkillForm({
   deleteHref,
   deleteLabel = 'Delete',
 }: SkillFormProps) {
-  const summaryFields = getErrorSummaryFields(errors);
+  const { translate: tForm } = useSkillsTranslation(SKILLS_NAMESPACES.form);
+  const summaryFields = getErrorSummaryFields(errors, tForm);
   const supportedLocales = useSupportedLocales();
 
   return (
@@ -33,7 +35,7 @@ export function SkillForm({
 
       <FormHeader
         className="min-h-6"
-        title={<h2 className="sr-only">Translations</h2>}
+        title={<h2 className="sr-only">{tForm('fields.locale.label')}</h2>}
         localeFieldProps={{
           value: data.locale,
           locales: supportedLocales,
@@ -49,7 +51,7 @@ export function SkillForm({
         id="name"
         value={data.name}
         errors={errors}
-        label="Name"
+        label={tForm('fields.name.label')}
         required
         disabled={processing}
         autoFocus
@@ -61,12 +63,15 @@ export function SkillForm({
         id="category"
         value={data.skill_category_id === '' ? '__none__' : String(data.skill_category_id)}
         errors={errors}
-        label="Category"
-        placeholder="Select a category"
+        label={tForm('fields.category.label')}
+        placeholder={tForm('fields.category.placeholder')}
         disabled={processing}
         errorId="skill-category-id-error"
         options={[
-          { value: '__none__', label: 'Uncategorized' },
+          {
+            value: '__none__',
+            label: tForm('fields.category.uncategorized'),
+          },
           ...categories.map((category) => ({
             value: String(category.id),
             label: category.name,

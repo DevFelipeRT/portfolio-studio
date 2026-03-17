@@ -6,6 +6,10 @@ import { PageHead, pageRouter } from '@/common/page-runtime';
 import { useMemo, useState } from 'react';
 
 import type { Message } from '@/modules/messages/core/types';
+import {
+  MESSAGES_NAMESPACES,
+  useMessagesTranslation,
+} from '@/modules/messages/i18n';
 import { MessageOverlay } from '@/modules/messages/ui/MessageOverlay';
 import { MessagesEmptyState } from '@/modules/messages/ui/MessagesEmptyState';
 import { MessagesHeader } from '@/modules/messages/ui/MessagesHeader';
@@ -19,6 +23,9 @@ interface MessagesIndexProps {
  * Messages index page for listing and managing contact messages.
  */
 export default function Index({ messages }: MessagesIndexProps) {
+  const { translate: tMessages } = useMessagesTranslation(
+    MESSAGES_NAMESPACES.messages,
+  );
   const [items, setItems] = useState<Message[]>(() => [...messages]);
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
   const [overlayOpen, setOverlayOpen] = useState(false);
@@ -128,7 +135,7 @@ export default function Index({ messages }: MessagesIndexProps) {
   function handleDelete(message: Message, event?: React.MouseEvent): void {
     event?.stopPropagation();
 
-    if (!window.confirm('Are you sure you want to delete this message?')) {
+    if (!window.confirm(tMessages('confirm.delete'))) {
       return;
     }
 
@@ -143,7 +150,7 @@ export default function Index({ messages }: MessagesIndexProps) {
 
   return (
     <AuthenticatedLayout>
-      <PageHead title="Messages" />
+      <PageHead title={tMessages('page.title')} />
 
       <PageContent className="overflow-hidden py-8" pageWidth="container">
         <MessagesHeader total={items.length} />
@@ -169,3 +176,5 @@ export default function Index({ messages }: MessagesIndexProps) {
     </AuthenticatedLayout>
   );
 }
+
+Index.i18n = ['messages'];

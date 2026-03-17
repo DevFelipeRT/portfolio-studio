@@ -1,4 +1,8 @@
 import { Button } from '@/components/ui/button';
+import {
+  CONTENT_MANAGEMENT_NAMESPACES,
+  useContentManagementTranslation,
+} from '@/modules/content-management/i18n';
 
 type DialogStep = 'select' | 'configure';
 
@@ -19,14 +23,17 @@ export function CreateSectionFooter({
   onChangeTemplate,
   onConfirm,
 }: CreateSectionFooterProps) {
+  const { translate: tActions } = useContentManagementTranslation(
+    CONTENT_MANAGEMENT_NAMESPACES.actions,
+  );
   if (step === 'select') {
     return (
       <>
         <Button type="button" variant="outline" onClick={onClose}>
-          Cancel
+          {tActions('cancel', 'Cancel')}
         </Button>
         <Button type="button" onClick={onContinue} disabled={!canContinue}>
-          Continue
+          {tActions('continue', 'Continue')}
         </Button>
       </>
     );
@@ -35,10 +42,10 @@ export function CreateSectionFooter({
   return (
     <>
       <Button type="button" variant="outline" onClick={onChangeTemplate}>
-        Change template
+        {tActions('changeTemplate', 'Change template')}
       </Button>
       <Button type="button" onClick={onConfirm} disabled={!canContinue}>
-        Create section
+        {tActions('createSection', 'Create section')}
       </Button>
     </>
   );

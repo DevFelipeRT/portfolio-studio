@@ -8,6 +8,10 @@ import {
 } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
+import {
+  CONTENT_MANAGEMENT_NAMESPACES,
+  useContentManagementTranslation,
+} from '@/modules/content-management/i18n';
 import type { TemplateDefinitionDto } from '@/modules/content-management/types';
 import {
   ConfigureSectionStep,
@@ -43,6 +47,9 @@ export function CreateSectionDialog({
   navigationGroups = [],
   onSubmit,
 }: CreateSectionDialogProps) {
+  const { translate: tSections } = useContentManagementTranslation(
+    CONTENT_MANAGEMENT_NAMESPACES.sections,
+  );
   /**
    * Flow orchestration for the "create section" dialog.
    *
@@ -98,11 +105,17 @@ export function CreateSectionDialog({
         )}
       >
         <DialogHeader className="border-b p-6">
-          <DialogTitle>Add section</DialogTitle>
+          <DialogTitle>{tSections('dialog.create.title', 'Add section')}</DialogTitle>
           <DialogDescription>
             {step === 'select'
-              ? 'Choose a template to preview.'
-              : 'Configure the selected template and place it on the page.'}
+              ? tSections(
+                  'dialog.create.selectDescription',
+                  'Choose a template to preview.',
+                )
+              : tSections(
+                  'dialog.create.configureDescription',
+                  'Configure the selected template and place it on the page.',
+                )}
           </DialogDescription>
         </DialogHeader>
 

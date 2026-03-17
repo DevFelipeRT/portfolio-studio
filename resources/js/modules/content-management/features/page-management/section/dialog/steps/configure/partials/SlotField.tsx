@@ -1,6 +1,10 @@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
+  CONTENT_MANAGEMENT_NAMESPACES,
+  useContentManagementTranslation,
+} from '@/modules/content-management/i18n';
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -23,15 +27,23 @@ export function SlotField({
   slot,
   onSlotChange,
 }: SlotFieldProps) {
+  const { translate: tSections } = useContentManagementTranslation(
+    CONTENT_MANAGEMENT_NAMESPACES.sections,
+  );
   const id = `${idPrefix}-slot`;
 
   return (
     <div className="space-y-1.5">
-      <Label htmlFor={id}>Slot</Label>
+      <Label htmlFor={id}>{tSections('fields.slot', 'Slot')}</Label>
       {hasSlotOptions ? (
         <Select value={slot} onValueChange={onSlotChange}>
           <SelectTrigger id={id}>
-            <SelectValue placeholder="Select a slot" />
+            <SelectValue
+              placeholder={tSections(
+                'fields.slotPlaceholder',
+                'Select a slot',
+              )}
+            />
           </SelectTrigger>
           <SelectContent>
             {allowedSlots.map((slotOption) => (
@@ -46,7 +58,10 @@ export function SlotField({
           id={id}
           value={slot}
           onChange={(event) => onSlotChange(event.target.value)}
-          placeholder="hero, main, footer"
+          placeholder={tSections(
+            'fields.slotInputPlaceholder',
+            'hero, main, footer',
+          )}
         />
       )}
     </div>

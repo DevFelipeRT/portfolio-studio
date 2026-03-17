@@ -8,6 +8,7 @@ export default {
   allCovered: 'All supported locales already have translations.',
   loading: 'Loading translations...',
   confirmDelete: 'Delete translation for {{locale}}?',
+  addPanelTitle: 'Add translation',
   fields: {
     locale: 'Locale',
     position: 'Position',
@@ -31,8 +32,8 @@ export default {
   errors: {
     localeRequired: 'Select a locale.',
     atLeastOne: 'Provide at least one translated field.',
+    unexpected: 'Unexpected error. Please try again.',
   },
   confirmBaseLocaleSwitch:
     'Changing the base locale to {{locale}} will delete the existing translation for that locale. Continue?',
 };
-

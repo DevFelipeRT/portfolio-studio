@@ -1,5 +1,9 @@
 import { CollectionField, TextInputField, type FormErrors } from '@/common/forms';
 import { Button } from '@/components/ui/button';
+import {
+  WEBSITE_SETTINGS_NAMESPACES,
+  useWebsiteSettingsTranslation,
+} from '@/modules/website-settings/i18n';
 import type { WebsiteSettingsLink } from '@/modules/website-settings/types';
 
 interface InstitutionalLinksSectionProps {
@@ -13,6 +17,10 @@ export function InstitutionalLinksSection({
   links,
   onChange,
 }: InstitutionalLinksSectionProps) {
+  const { translate: tForm } = useWebsiteSettingsTranslation(
+    WEBSITE_SETTINGS_NAMESPACES.form,
+  );
+
   const handleLinkChange = (
     index: number,
     field: 'label' | 'url',
@@ -36,9 +44,11 @@ export function InstitutionalLinksSection({
   return (
     <section className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold">Links institucionais</h2>
+        <h2 className="text-lg font-semibold">
+          {tForm('sections.institutionalLinks.title')}
+        </h2>
         <p className="text-muted-foreground text-sm">
-          Links globais usados no site inteiro.
+          {tForm('sections.institutionalLinks.description')}
         </p>
       </div>
 
@@ -48,12 +58,12 @@ export function InstitutionalLinksSection({
         errors={errors as FormErrors<string>}
         emptyState={
           <p className="text-muted-foreground text-sm">
-            Nenhum link cadastrado.
+            {tForm('sections.institutionalLinks.empty')}
           </p>
         }
         actions={
           <Button type="button" variant="outline" onClick={handleAddLink}>
-            Adicionar link
+            {tForm('actions.addLink')}
           </Button>
         }
         renderItem={(link, index) => (
@@ -66,8 +76,8 @@ export function InstitutionalLinksSection({
               id={`link-label-${index}`}
               value={link.label ?? ''}
               errors={errors}
-              label="Label"
-              placeholder="Suporte"
+              label={tForm('fields.institutional_link_label.label')}
+              placeholder={tForm('fields.institutional_link_label.placeholder')}
               onChange={(value) => handleLinkChange(index, 'label', value)}
             />
             <TextInputField
@@ -75,8 +85,8 @@ export function InstitutionalLinksSection({
               id={`link-url-${index}`}
               value={link.url ?? ''}
               errors={errors}
-              label="URL"
-              placeholder="https://meusite.com/suporte"
+              label={tForm('fields.institutional_link_url.label')}
+              placeholder={tForm('fields.institutional_link_url.placeholder')}
               onChange={(value) => handleLinkChange(index, 'url', value)}
             />
             <div className="flex items-end">
@@ -85,7 +95,7 @@ export function InstitutionalLinksSection({
                 variant="ghost"
                 onClick={() => handleRemoveLink(index)}
               >
-                Remover
+                {tForm('actions.remove')}
               </Button>
             </div>
           </div>

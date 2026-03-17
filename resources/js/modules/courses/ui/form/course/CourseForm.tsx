@@ -27,6 +27,7 @@ export interface CourseFormProps {
   cancelHref: string;
   onLocaleChange?(locale: string): void;
   localeDisabled?: boolean;
+  localeNote?: string | null;
 }
 
 /**
@@ -43,6 +44,7 @@ export function CourseForm({
   cancelHref,
   onLocaleChange,
   localeDisabled = false,
+  localeNote = null,
 }: CourseFormProps) {
   const { translate: tSections } = useCoursesTranslation(
     COURSES_NAMESPACES.sections,
@@ -86,6 +88,10 @@ export function CourseForm({
             onChange: handleLocaleValueChange,
           }}
         />
+
+        {localeNote && (
+          <p className="text-muted-foreground text-xs">{localeNote}</p>
+        )}
 
         <div className="grid gap-4 md:grid-cols-2">
           <TextInputField

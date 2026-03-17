@@ -15,11 +15,13 @@ export default {
     back: 'Voltar',
     save: 'Salvar tradução',
     saveChanges: 'Salvar alterações',
+    saving: 'Salvando...',
     delete: 'Excluir',
   },
   errors: {
     localeAndLabelRequired: 'Selecione um locale e informe uma label.',
     labelRequired: 'A label da tradução não pode ser vazia.',
+    unexpected: 'Ocorreu um erro inesperado. Tente novamente.',
   },
   confirmDelete: 'Excluir tradução de {{locale}}?',
 };

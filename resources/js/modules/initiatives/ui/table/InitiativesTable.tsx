@@ -1,6 +1,10 @@
 // resources/js/Pages/Initiatives/Partials/InitiativesTable.tsx
 
 import type { Initiative } from '@/modules/initiatives/core/types';
+import {
+    INITIATIVES_NAMESPACES,
+    useInitiativesTranslation,
+} from '@/modules/initiatives/i18n';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -30,6 +34,7 @@ export function InitiativesTable({
     onToggleDisplay,
     onDelete,
 }: InitiativesTableProps) {
+    const { translate: tForm } = useInitiativesTranslation(INITIATIVES_NAMESPACES.form);
     const baseClass = 'text-muted-foreground text-xs font-medium';
 
     return (
@@ -37,11 +42,10 @@ export function InitiativesTable({
             <CardHeader className="flex flex-row items-center justify-between gap-4">
                 <div>
                     <CardTitle className="text-base">
-                        Initiatives overview
+                        {tForm('table.title')}
                     </CardTitle>
                     <p className="text-muted-foreground mt-1 text-xs">
-                        Manage initiatives that will be highlighted in your
-                        portfolio.
+                        {tForm('table.description')}
                     </p>
                 </div>
             </CardHeader>
@@ -55,7 +59,7 @@ export function InitiativesTable({
                             <TableHead
                                 className={cn(baseClass, 'min-w-0 sm:w-64')}
                             >
-                                <span>Name</span>
+                                <span>{tForm('fields.name.label')}</span>
                             </TableHead>
 
                             <TableHead
@@ -64,7 +68,7 @@ export function InitiativesTable({
                                     'w-40 text-left sm:w-44',
                                 )}
                             >
-                                <span>Date / Period</span>
+                                <span>{tForm('fields.period.label')}</span>
                             </TableHead>
 
                             <TableHead
@@ -73,7 +77,7 @@ export function InitiativesTable({
                                     'w-24 text-left sm:w-32',
                                 )}
                             >
-                                <span>Display</span>
+                                <span>{tForm('fields.display_count.label')}</span>
                             </TableHead>
 
                             <TableHead
@@ -82,13 +86,13 @@ export function InitiativesTable({
                                     'w-20 text-left sm:w-24',
                                 )}
                             >
-                                <span>Images</span>
+                                <span>{tForm('fields.image_count.label')}</span>
                             </TableHead>
 
                             <TableHead
                                 className={cn(baseClass, 'w-16 text-right')}
                             >
-                                <span className="sr-only">Menu</span>
+                                <span className="sr-only">{tForm('table.menu')}</span>
                             </TableHead>
                         </TableRow>
                     </TableHeader>

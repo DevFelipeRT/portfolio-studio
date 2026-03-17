@@ -8,6 +8,7 @@ export default {
   allCovered: 'All supported locales already have translations.',
   loading: 'Loading translations...',
   confirmDelete: 'Delete translation for {{locale}}?',
+  addPanelTitle: 'Add translation',
   fields: {
     locale: 'Locale',
     name: 'Course title',
@@ -31,6 +32,6 @@ export default {
   errors: {
     localeRequired: 'Select a locale.',
     atLeastOne: 'Provide at least one translated field.',
+    unexpected: 'Unexpected error. Please try again.',
   },
 };
-

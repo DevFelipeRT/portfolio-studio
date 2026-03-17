@@ -1,4 +1,5 @@
 import { Badge } from '@/components/ui/badge';
+import { normalizeIntlLocale } from '@/common/i18n/normalizeIntlLocale';
 import {
     Dialog,
     DialogContent,
@@ -7,6 +8,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
+import { IMAGES_NAMESPACES, useImagesTranslation } from '@/modules/images/i18n';
 import type { Image } from '@/modules/images/core/types';
 
 interface ImagePreviewDialogProps {
@@ -23,6 +25,9 @@ export function ImagePreviewDialog({
     image,
     onOpenChange,
 }: ImagePreviewDialogProps) {
+    const { locale, translate: tImages } = useImagesTranslation(
+        IMAGES_NAMESPACES.images,
+    );
     if (!image) {
         return null;
     }
@@ -30,15 +35,15 @@ export function ImagePreviewDialog({
     const title =
         image.image_title ??
         image.original_filename ??
-        `Image #${image.id.toString()}`;
+        tImages('list.titleWithId', { id: image.id.toString() });
 
     const fileSizeLabel = formatFileSize(image.file_size_bytes);
     const dimensionsLabel = formatDimensions(
         image.image_width,
         image.image_height,
     );
-    const createdMeta = formatDateTime(image.created_at);
-    const updatedMeta = formatDateTime(image.updated_at);
+    const createdMeta = formatDateTime(image.created_at, locale);
+    const updatedMeta = formatDateTime(image.updated_at, locale);
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -57,38 +62,36 @@ export function ImagePreviewDialog({
                     <DialogDescription className="text-muted-foreground mt-2 space-y-1 text-xs">
                         {createdMeta && (
                             <p>
-                                Created on {createdMeta.dateLabel}
-                                {createdMeta.timeLabel && (
-                                    <>
-                                        {' at '}
-                                        {createdMeta.timeLabel}
-                                    </>
-                                )}
+                                {createdMeta.timeLabel
+                                    ? tImages('dialog.createdOnWithTime', {
+                                          date: createdMeta.dateLabel,
+                                          time: createdMeta.timeLabel,
+                                      })
+                                    : tImages('dialog.createdOn', {
+                                          date: createdMeta.dateLabel,
+                                      })}
                             </p>
                         )}
 
                         {updatedMeta && (
                             <p>
-                                Last updated on {updatedMeta.dateLabel}
-                                {updatedMeta.timeLabel && (
-                                    <>
-                                        {' at '}
-                                        {updatedMeta.timeLabel}
-                                    </>
-                                )}
+                                {updatedMeta.timeLabel
+                                    ? tImages('dialog.updatedOnWithTime', {
+                                          date: updatedMeta.dateLabel,
+                                          time: updatedMeta.timeLabel,
+                                      })
+                                    : tImages('dialog.updatedOn', {
+                                          date: updatedMeta.dateLabel,
+                                      })}
                             </p>
                         )}
 
                         {image.storage_disk && image.storage_path && (
                             <p>
-                                Stored on disk{' '}
-                                <span className="font-medium">
-                                    {image.storage_disk}
-                                </span>{' '}
-                                at{' '}
-                                <span className="font-mono text-[0.7rem]">
-                                    {image.storage_path}
-                                </span>
+                                {tImages('dialog.storedOnDiskAt', {
+                                    disk: image.storage_disk,
+                                    path: image.storage_path,
+                                })}
                             </p>
                         )}
                     </DialogDescription>
@@ -99,7 +102,7 @@ export function ImagePreviewDialog({
                 <div className="flex flex-col gap-6 md:flex-row">
                     <section className="md:w-1/2">
                         <p className="text-muted-foreground mb-2 text-xs font-medium tracking-wide uppercase">
-                            Preview
+                            {tImages('dialog.sections.preview')}
                         </p>
 
                         <div className="bg-muted/60 flex items-center justify-center overflow-hidden rounded-md border">
@@ -111,7 +114,7 @@ export function ImagePreviewDialog({
                                 />
                             ) : (
                                 <div className="text-muted-foreground flex h-48 w-full items-center justify-center text-xs">
-                                    No preview available for this image.
+                                    {tImages('dialog.noPreview')}
                                 </div>
                             )}
                         </div>
@@ -126,32 +129,32 @@ export function ImagePreviewDialog({
                     <section className="space-y-4 md:w-1/2">
                         <div>
                             <p className="text-muted-foreground mb-2 text-xs font-medium tracking-wide uppercase">
-                                Metadata
+                                {tImages('dialog.sections.metadata')}
                             </p>
 
                             <dl className="grid gap-2 text-xs sm:grid-cols-2">
                                 <MetadataRow
-                                    label="Original filename"
+                                    label={tImages('dialog.fields.originalFilename')}
                                     value={image.original_filename}
                                 />
                                 <MetadataRow
-                                    label="Alt text"
+                                    label={tImages('dialog.fields.altText')}
                                     value={image.alt_text}
                                 />
                                 <MetadataRow
-                                    label="Title"
+                                    label={tImages('dialog.fields.title')}
                                     value={image.image_title}
                                 />
                                 <MetadataRow
-                                    label="File size"
+                                    label={tImages('dialog.fields.fileSize')}
                                     value={fileSizeLabel}
                                 />
                                 <MetadataRow
-                                    label="Dimensions"
+                                    label={tImages('dialog.fields.dimensions')}
                                     value={dimensionsLabel}
                                 />
                                 <MetadataRow
-                                    label="MIME type"
+                                    label={tImages('dialog.fields.mimeType')}
                                     value={image.mime_type}
                                 />
                             </dl>
@@ -159,16 +162,16 @@ export function ImagePreviewDialog({
 
                         <div>
                             <p className="text-muted-foreground mb-2 text-xs font-medium tracking-wide uppercase">
-                                Identifiers
+                                {tImages('dialog.sections.identifiers')}
                             </p>
 
                             <dl className="grid gap-2 text-xs sm:grid-cols-2">
                                 <MetadataRow
-                                    label="Image ID"
+                                    label={tImages('dialog.fields.imageId')}
                                     value={image.id.toString()}
                                 />
                                 <MetadataRow
-                                    label="Storage disk"
+                                    label={tImages('dialog.fields.storageDisk')}
                                     value={image.storage_disk}
                                 />
                             </dl>
@@ -241,6 +244,7 @@ function formatDimensions(
 
 function formatDateTime(
     value: string | null | undefined,
+    locale: string,
 ): { dateLabel: string; timeLabel: string | null } | null {
     if (!value) {
         return null;
@@ -251,13 +255,15 @@ function formatDateTime(
         return null;
     }
 
-    const dateLabel = date.toLocaleDateString(undefined, {
+    const resolvedLocale = normalizeIntlLocale(locale);
+
+    const dateLabel = date.toLocaleDateString(resolvedLocale, {
         year: 'numeric',
         month: 'short',
         day: '2-digit',
     });
 
-    const timeLabel = date.toLocaleTimeString(undefined, {
+    const timeLabel = date.toLocaleTimeString(resolvedLocale, {
         hour: '2-digit',
         minute: '2-digit',
     });

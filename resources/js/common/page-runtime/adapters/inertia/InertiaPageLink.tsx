@@ -1,7 +1,9 @@
 import { Link } from '@inertiajs/react';
-import type { ComponentProps, JSX } from 'react';
+import { forwardRef, type ComponentProps, type JSX } from 'react';
 import type { PageLinkProps } from '../../types';
 
-export function InertiaPageLink(props: PageLinkProps): JSX.Element {
-  return <Link {...(props as ComponentProps<typeof Link>)} />;
-}
+export const InertiaPageLink = forwardRef<HTMLElement, PageLinkProps>(
+  function InertiaPageLink(props, ref): JSX.Element {
+    return <Link {...(props as ComponentProps<typeof Link>)} ref={ref as never} />;
+  },
+);

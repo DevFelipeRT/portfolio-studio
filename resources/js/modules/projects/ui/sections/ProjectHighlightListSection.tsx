@@ -5,6 +5,10 @@ import {
 import type { SectionDataValue } from '@/modules/content-management/types';
 import { ProjectCarousel } from '@/modules/projects/ui/ProjectCarousel';
 import type { Project } from '@/modules/projects/core/types';
+import {
+    PROJECTS_NAMESPACES,
+    useProjectsTranslation,
+} from '@/modules/projects/i18n';
 import { JSX } from 'react';
 
 type CapabilityProject = {
@@ -24,6 +28,10 @@ type CapabilityProject = {
  * Primary source for all content is the section field resolver.
  */
 export function ProjectHighlightListSection(): JSX.Element | null {
+    const { translate: tForm } = useProjectsTranslation(PROJECTS_NAMESPACES.form);
+    const { translate: tSections } = useProjectsTranslation(
+        PROJECTS_NAMESPACES.sections,
+    );
     const fieldResolver = useFieldValueResolver();
 
     const highlightOnly =
@@ -39,7 +47,7 @@ export function ProjectHighlightListSection(): JSX.Element | null {
         }
 
         if (highlightOnly === true) {
-            return 'Projetos em destaque';
+            return tSections('public.highlightEyebrow');
         }
 
         return undefined;
@@ -97,7 +105,7 @@ export function ProjectHighlightListSection(): JSX.Element | null {
                 <ProjectCarousel projects={limitedProjects} />
             ) : (
                 <p className="text-muted-foreground text-sm">
-                    Nenhum projeto retornado para esta seção.
+                    {tForm('emptyState.publicSection')}
                 </p>
             )}
         </div>

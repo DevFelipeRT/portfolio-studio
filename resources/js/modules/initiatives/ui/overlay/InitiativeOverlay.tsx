@@ -9,6 +9,10 @@ import {
 import { Separator } from '@/components/ui/separator';
 import type { Initiative } from '@/modules/initiatives/core/types';
 import { RichTextRenderer } from '@/common/rich-text/RichTextRenderer';
+import {
+    INITIATIVES_NAMESPACES,
+    useInitiativesTranslation,
+} from '@/modules/initiatives/i18n';
 
 interface InitiativeOverlayProps {
     open: boolean;
@@ -24,11 +28,15 @@ export function InitiativeOverlay({
     initiative,
     onOpenChange,
 }: InitiativeOverlayProps) {
+    const { translate: tForm } = useInitiativesTranslation(INITIATIVES_NAMESPACES.form);
     if (!initiative) {
         return null;
     }
 
-    const { periodLabel, dateLabel, timeLabel } = buildDateMetadata(initiative);
+    const { periodLabel, dateLabel, timeLabel } = buildDateMetadata(
+        initiative,
+        tForm,
+    );
 
     const images = initiative.images ?? [];
 
@@ -40,7 +48,9 @@ export function InitiativeOverlay({
                         <span className="font-semibold">{initiative.name}</span>
 
                         <Badge variant="outline" className="text-xs">
-                            {initiative.display ? 'Visible' : 'Hidden'}
+                            {initiative.display
+                                ? tForm('values.visible')
+                                : tForm('values.hidden')}
                         </Badge>
                     </DialogTitle>
 
@@ -49,7 +59,10 @@ export function InitiativeOverlay({
 
                         {dateLabel && timeLabel && (
                             <p>
-                                Created on {dateLabel} at {timeLabel}
+                                {tForm('overlay.createdOn', {
+                                    date: dateLabel,
+                                    time: timeLabel,
+                                })}
                             </p>
                         )}
                     </DialogDescription>
@@ -60,7 +73,7 @@ export function InitiativeOverlay({
                 <div className="space-y-6">
                     <section>
                         <p className="text-muted-foreground mb-2 text-xs font-medium tracking-wide uppercase">
-                            Summary
+                            {tForm('overlay.summary')}
                         </p>
                         <p className="text-foreground text-sm">
                             {initiative.summary ?? ''}
@@ -69,7 +82,7 @@ export function InitiativeOverlay({
 
                     <section>
                         <p className="text-muted-foreground mb-2 text-xs font-medium tracking-wide uppercase">
-                            Details
+                            {tForm('overlay.details')}
                         </p>
                         <RichTextRenderer value={initiative.description ?? ''} />
                     </section>
@@ -77,7 +90,7 @@ export function InitiativeOverlay({
                     {images.length > 0 && (
                         <section>
                             <p className="text-muted-foreground mb-2 text-xs font-medium tracking-wide uppercase">
-                                Images
+                                {tForm('overlay.images')}
                             </p>
 
                             <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
@@ -108,7 +121,10 @@ export function InitiativeOverlay({
     );
 }
 
-function buildDateMetadata(initiative: Initiative): {
+function buildDateMetadata(
+    initiative: Initiative,
+    t: (key: string, params?: Record<string, string>) => string,
+): {
     periodLabel: string | null;
     dateLabel: string | null;
     timeLabel: string | null;
@@ -116,6 +132,7 @@ function buildDateMetadata(initiative: Initiative): {
     const periodLabel = formatPeriod(
         initiative.start_date,
         initiative.end_date,
+        t,
     );
 
     if (!initiative.created_at) {
@@ -153,6 +170,7 @@ function buildDateMetadata(initiative: Initiative): {
 function formatPeriod(
     start: string | null,
     end: string | null,
+    t: (key: string, params?: Record<string, string>) => string,
 ): string | null {
     if (!start) {
         return null;
@@ -172,7 +190,7 @@ function formatPeriod(
     });
 
     if (!endDate || Number.isNaN(endDate.getTime()) || end === start) {
-        return `Happened on ${startLabel}`;
+        return t('overlay.happenedOn', { date: startLabel });
     }
 
     const endLabel = endDate.toLocaleDateString(undefined, {
@@ -181,5 +199,5 @@ function formatPeriod(
         day: '2-digit',
     });
 
-    return `From ${startLabel} to ${endLabel}`;
+    return t('overlay.fromTo', { start: startLabel, end: endLabel });
 }

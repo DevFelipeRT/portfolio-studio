@@ -14,6 +14,10 @@ import {
     CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import { Separator } from '@/components/ui/separator';
+import {
+    PROJECTS_NAMESPACES,
+    useProjectsTranslation,
+} from '@/modules/projects/i18n';
 import { ChevronDown, ExternalLink, Github } from 'lucide-react';
 import { useState } from 'react';
 import type { Project } from '@/modules/projects/core/types';
@@ -33,6 +37,8 @@ export function ProjectCard({
     repository_url,
     live_url,
 }: Project) {
+    const { translate: tActions } = useProjectsTranslation(PROJECTS_NAMESPACES.actions);
+    const { translate: tForm } = useProjectsTranslation(PROJECTS_NAMESPACES.form);
     const hasImages = Array.isArray(images) && images.length > 0;
     const hasTech = Array.isArray(skills) && skills.length > 0;
     const hasActions = Boolean(repository_url || live_url);
@@ -41,16 +47,16 @@ export function ProjectCard({
     const displayName =
         typeof name === 'string' && name.trim().length > 0
             ? name
-            : 'Untitled project';
+            : tForm('card.untitled');
 
     const displayShortDescription =
         typeof summary === 'string' && summary.trim().length > 0
             ? summary
-            : 'No summary available.';
+            : tForm('card.noSummary');
 
     const effectiveTechStack = hasTech
         ? skills.map((skill) => skill.name)
-        : ['No skills listed yet.'];
+        : [tForm('card.noSkills')];
 
     const shouldRenderLongDescription =
         typeof description === 'string' && description.trim().length > 0;
@@ -110,7 +116,7 @@ export function ProjectCard({
                                             rel="noreferrer"
                                         >
                                             <Github className="mr-1.5 h-4 w-4" />
-                                            Repository
+                                            {tActions('repository')}
                                         </a>
                                     </Button>
                                 )}
@@ -123,7 +129,7 @@ export function ProjectCard({
                                             rel="noreferrer"
                                         >
                                             <ExternalLink className="mr-1.5 h-4 w-4" />
-                                            Live site
+                                            {tActions('liveSite')}
                                         </a>
                                     </Button>
                                 )}
@@ -151,8 +157,8 @@ export function ProjectCard({
                                     >
                                         <span className="text-muted-foreground group-hover:text-foreground/80 focus:text-foreground">
                                             {isOpen
-                                                ? 'Hide details'
-                                                : 'Show details'}
+                                                ? tActions('hideDetails')
+                                                : tActions('showDetails')}
                                         </span>
                                         <ChevronDown
                                             className={`text-muted-foreground hover:shadow-primary group-hover:text-primary group-hover:drop-shadow-primary h-4 w-4 transition-transform group-hover:drop-shadow-sm ${

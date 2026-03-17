@@ -4,5 +4,7 @@ export default {
   links: 'Links',
   skills: 'Skills',
   images: 'Images',
+  public: {
+    highlightEyebrow: 'Featured projects',
+  },
 };
-

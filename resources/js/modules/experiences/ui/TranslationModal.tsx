@@ -48,7 +48,7 @@ function normalizeError(error: unknown): string {
   if (typeof error === 'string') return error;
   const message = (error as { response?: { data?: { message?: string } } })
     ?.response?.data?.message;
-  return message ?? 'Unexpected error. Please try again.';
+  return message ?? '';
 }
 
 function normalizeText(value: string): string | null {
@@ -103,11 +103,11 @@ export function TranslationModal({
         })),
       );
     } catch (err) {
-      setError(normalizeError(err));
+      setError(normalizeError(err) || t('errors.unexpected'));
     } finally {
       setLoading(false);
     }
-  }, [open, experienceId]);
+  }, [open, experienceId, t]);
 
   React.useEffect(() => {
     void loadData();
@@ -203,7 +203,7 @@ export function TranslationModal({
       ]);
       resetNewFields();
     } catch (err) {
-      setError(normalizeError(err));
+      setError(normalizeError(err) || t('errors.unexpected'));
     } finally {
       setSaving(false);
     }
@@ -257,7 +257,7 @@ export function TranslationModal({
         ),
       );
     } catch (err) {
-      setError(normalizeError(err));
+      setError(normalizeError(err) || t('errors.unexpected'));
     } finally {
       setSaving(false);
     }
@@ -277,7 +277,7 @@ export function TranslationModal({
         current.filter((entry) => entry.locale !== item.locale),
       );
     } catch (err) {
-      setError(normalizeError(err));
+      setError(normalizeError(err) || t('errors.unexpected'));
     } finally {
       setSaving(false);
     }
@@ -388,7 +388,7 @@ export function TranslationModal({
                 <Button size="sm" variant="ghost" onClick={() => setView('list')}>
                   {t('actions.back')}
                 </Button>
-                <Label>{t('add')}</Label>
+                <Label>{t('addPanelTitle')}</Label>
               </div>
 
               <div className="grid gap-3 md:grid-cols-2">

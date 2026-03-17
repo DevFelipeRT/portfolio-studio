@@ -1,3 +1,7 @@
+import {
+  CONTENT_MANAGEMENT_NAMESPACES,
+  useContentManagementTranslation,
+} from '@/modules/content-management/i18n';
 import { parsePositiveIntegerStrict } from '@/modules/content-management/utils/numbers';
 import type { TemplateFieldControlProps } from '../../types';
 import { FieldFrame } from './partials/FieldFrame';
@@ -13,6 +17,9 @@ export function ImageFieldControl({
   onChange,
   field,
 }: TemplateFieldControlProps) {
+  const { translate: tTemplates } = useContentManagementTranslation(
+    CONTENT_MANAGEMENT_NAMESPACES.templates,
+  );
   const handleChange = (raw: string) => {
     const next = parsePositiveIntegerStrict(raw);
 
@@ -30,7 +37,10 @@ export function ImageFieldControl({
       id={field.name}
       label={field.label}
       required={field.required}
-      helperText="Use a valid image ID. A dedicated media picker can be integrated here later."
+      helperText={tTemplates(
+        'helpers.image',
+        'Use a valid image ID. A dedicated media picker can be integrated here later.',
+      )}
     >
       <input
         id={field.name}

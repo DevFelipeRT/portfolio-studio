@@ -17,6 +17,10 @@ import {
   updateInitiativeTranslation,
 } from '@/modules/initiatives/core/api/translations';
 import type { InitiativeTranslationItem } from '@/modules/initiatives/core/types';
+import {
+  INITIATIVES_NAMESPACES,
+  useInitiativesTranslation,
+} from '@/modules/initiatives/i18n';
 import { Loader2, Plus, Trash2 } from 'lucide-react';
 import React from 'react';
 import { RichTextEditor } from '@/common/rich-text/RichTextEditor';
@@ -43,7 +47,7 @@ function normalizeError(error: unknown): string {
   if (typeof error === 'string') return error;
   const message = (error as { response?: { data?: { message?: string } } })
     ?.response?.data?.message;
-  return message ?? 'Unexpected error. Please try again.';
+  return message ?? '';
 }
 
 function normalizeText(value: string): string | null {
@@ -58,6 +62,9 @@ export function TranslationModal({
   initiativeLabel,
   baseLocale,
 }: TranslationModalProps) {
+  const { translate: t } = useInitiativesTranslation(
+    INITIATIVES_NAMESPACES.translations,
+  );
   const [supportedLocales, setSupportedLocales] = React.useState<string[]>([]);
   const [translations, setTranslations] = React.useState<EditableTranslation[]>(
     [],
@@ -93,11 +100,11 @@ export function TranslationModal({
         })),
       );
     } catch (err) {
-      setError(normalizeError(err));
+      setError(normalizeError(err) || t('errors.unexpected'));
     } finally {
       setLoading(false);
     }
-  }, [open, initiativeId]);
+  }, [open, initiativeId, t]);
 
   React.useEffect(() => {
     void loadData();
@@ -156,12 +163,12 @@ export function TranslationModal({
 
   const handleCreate = async (): Promise<void> => {
     if (!newLocale) {
-      setError('Locale is required.');
+      setError(t('errors.localeRequired'));
       return;
     }
 
     if (!hasNewContent()) {
-      setError('Add at least one translated field.');
+      setError(t('errors.atLeastOne'));
       return;
     }
 
@@ -189,7 +196,7 @@ export function TranslationModal({
       ]);
       resetNewFields();
     } catch (err) {
-      setError(normalizeError(err));
+      setError(normalizeError(err) || t('errors.unexpected'));
     } finally {
       setSaving(false);
     }
@@ -201,7 +208,7 @@ export function TranslationModal({
     const description = item.draftDescription ?? '';
 
     if (name.trim() === '' && summary.trim() === '' && description.trim() === '') {
-      setError('Add at least one translated field.');
+      setError(t('errors.atLeastOne'));
       return;
     }
 
@@ -235,14 +242,14 @@ export function TranslationModal({
         ),
       );
     } catch (err) {
-      setError(normalizeError(err));
+      setError(normalizeError(err) || t('errors.unexpected'));
     } finally {
       setSaving(false);
     }
   };
 
   const handleDelete = async (item: EditableTranslation): Promise<void> => {
-    if (!window.confirm(`Delete translation for ${item.locale}?`)) {
+    if (!window.confirm(t('confirmDelete', { locale: item.locale }))) {
       return;
     }
 
@@ -255,7 +262,7 @@ export function TranslationModal({
         current.filter((entry) => entry.locale !== item.locale),
       );
     } catch (err) {
-      setError(normalizeError(err));
+      setError(normalizeError(err) || t('errors.unexpected'));
     } finally {
       setSaving(false);
     }
@@ -278,17 +285,17 @@ export function TranslationModal({
         }
       }}
       maxWidthClassName="max-w-3xl"
-      title="Manage translations"
+      title={t('title')}
       description={
         <>
-          Add localized content for{' '}
+          {t('subtitle')}{' '}
           <span className="font-medium text-foreground">{initiativeLabel}</span>.
         </>
       }
       headerAction={null}
       footer={
         <Button variant="secondary" onClick={handleClose} disabled={saving}>
-          Close
+          {t('actions.close')}
         </Button>
       }
     >
@@ -303,25 +310,25 @@ export function TranslationModal({
           {loading ? (
             <div className="text-muted-foreground flex items-center gap-2 text-sm">
               <Loader2 className="h-4 w-4 animate-spin" />
-              Loading translations...
+              {t('loading')}
             </div>
           ) : view === 'list' ? (
             <div className="space-y-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <Label>Existing translations</Label>
+                <Label>{t('existing')}</Label>
                 <Button
                   size="sm"
                   onClick={openAddPanel}
                   disabled={saving || availableLocales.length === 0}
                 >
                   <Plus className="mr-2 h-4 w-4" />
-                  Add translation
+                  {t('add')}
                 </Button>
               </div>
 
               {translations.length === 0 ? (
                 <p className="text-muted-foreground text-sm">
-                  No translations added yet.
+                  {t('empty')}
                 </p>
               ) : (
                 <div className="space-y-2">
@@ -342,7 +349,7 @@ export function TranslationModal({
                             </div>
                           ) : null}
                         </div>
-                        <span className="text-muted-foreground text-xs">Edit</span>
+                        <span className="text-muted-foreground text-xs">{t('actions.edit')}</span>
                       </button>
                       <Button
                         size="icon"
@@ -362,16 +369,16 @@ export function TranslationModal({
             <div className="space-y-4">
               <div className="flex items-center gap-2">
                 <Button size="sm" variant="ghost" onClick={() => setView('list')}>
-                  Back
+                  {t('actions.back')}
                 </Button>
-                <Label>Add translation</Label>
+                <Label>{t('addPanelTitle')}</Label>
               </div>
 
               <div className="grid gap-3 md:grid-cols-2">
                 <div className="space-y-1.5">
                   <Select value={newLocale} onValueChange={setNewLocale}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select locale" />
+                      <SelectValue placeholder={t('placeholders.locale')} />
                     </SelectTrigger>
                     <SelectContent>
                       {availableLocales.map((locale) => (
@@ -387,7 +394,7 @@ export function TranslationModal({
                   <Input
                     value={newName}
                     onChange={(event) => setNewName(event.target.value)}
-                    placeholder="Name"
+                    placeholder={t('placeholders.name')}
                   />
                 </div>
               </div>
@@ -396,7 +403,7 @@ export function TranslationModal({
                 <Textarea
                   value={newSummary}
                   onChange={(event) => setNewSummary(event.target.value)}
-                  placeholder="Summary"
+                  placeholder={t('placeholders.summary')}
                   rows={3}
                 />
               </div>
@@ -405,7 +412,7 @@ export function TranslationModal({
                 id="initiative-translation-new"
                 value={newDescription}
                 onChange={setNewDescription}
-                placeholder="Description"
+                placeholder={t('placeholders.description')}
               />
 
               <div className="flex flex-wrap items-center gap-2">
@@ -415,11 +422,11 @@ export function TranslationModal({
                   disabled={saving || availableLocales.length === 0}
                 >
                   <Plus className="mr-2 h-4 w-4" />
-                  Add translation
+                  {t('actions.add')}
                 </Button>
                 {availableLocales.length === 0 && (
                   <p className="text-muted-foreground text-xs">
-                    All locales are covered.
+                    {t('allCovered')}
                   </p>
                 )}
               </div>
@@ -428,14 +435,14 @@ export function TranslationModal({
             <div className="space-y-4">
               <div className="flex items-center gap-2">
                 <Button size="sm" variant="ghost" onClick={() => setView('list')}>
-                  Back
+                  {t('actions.back')}
                 </Button>
                 <Label>{activeTranslation.locale}</Label>
               </div>
 
               <div className="grid gap-3 md:grid-cols-2">
                 <div className="space-y-1.5">
-                  <Label>Name</Label>
+                  <Label>{t('fields.name')}</Label>
                   <Input
                     value={activeTranslation.draftName ?? ''}
                     onChange={(event) =>
@@ -451,7 +458,7 @@ export function TranslationModal({
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label>Summary</Label>
+                  <Label>{t('fields.summary')}</Label>
                   <Textarea
                     value={activeTranslation.draftSummary ?? ''}
                     onChange={(event) =>
@@ -472,7 +479,7 @@ export function TranslationModal({
               </div>
 
               <div className="space-y-1.5">
-                <Label>Description</Label>
+                <Label>{t('fields.description')}</Label>
                 <RichTextEditor
                   id={`initiative-translation-${activeTranslation.locale}`}
                   value={activeTranslation.draftDescription ?? ''}
@@ -485,7 +492,7 @@ export function TranslationModal({
                       ),
                     )
                   }
-                  placeholder="Describe this initiative"
+                  placeholder={t('placeholders.description')}
                 />
               </div>
 
@@ -496,7 +503,7 @@ export function TranslationModal({
                   onClick={() => handleUpdate(activeTranslation)}
                   disabled={saving}
                 >
-                  Save
+                  {t('actions.save')}
                 </Button>
               </div>
             </div>
