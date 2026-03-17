@@ -31,6 +31,9 @@ const defaultExperienceFormData: ExperienceFormData = {
 };
 
 export default function Create() {
+  const { translate: tActions } = useExperiencesTranslation(
+    EXPERIENCES_NAMESPACES.actions,
+  );
   const supportedLocales = useSupportedLocales();
   const { data, setData, post, processing } = usePageForm<ExperienceFormData>(
     'experiences.create',
@@ -51,7 +54,7 @@ export default function Create() {
 
   return (
     <AuthenticatedLayout>
-      <PageHead title="New experience" />
+      <PageHead title={tActions('newExperience')} />
 
       <CreateExperienceI18nContent
         data={data}
@@ -95,7 +98,7 @@ function CreateExperienceI18nContent({
     <PageContent className="overflow-hidden py-8" pageWidth="detail">
       <div className="mb-6">
         <h1 className="text-xl leading-tight font-semibold">
-          New experience
+          {tActions('newExperience')}
         </h1>
       </div>
 

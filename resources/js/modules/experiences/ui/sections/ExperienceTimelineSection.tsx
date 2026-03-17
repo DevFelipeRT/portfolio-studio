@@ -1,6 +1,10 @@
 import { useGetLocale } from '@/common/locale';
 import { RichTextRenderer } from '@/common/rich-text/RichTextRenderer';
 import { DateDisplay } from '@/components/ui/date-display';
+import {
+  EXPERIENCES_NAMESPACES,
+  useExperiencesTranslation,
+} from '@/modules/experiences/i18n';
 import { TimelineItem } from '@/components/ui/timeline-item';
 import {
   SectionHeader,
@@ -76,6 +80,12 @@ function ExperiencePeriodDisplay({
 export function ExperienceTimelineSection(): JSX.Element | null {
   const fieldResolver = useFieldValueResolver();
   const locale = useGetLocale();
+  const { translate: tForm } = useExperiencesTranslation(
+    EXPERIENCES_NAMESPACES.form,
+  );
+  const { translate: tSections } = useExperiencesTranslation(
+    EXPERIENCES_NAMESPACES.sections,
+  );
 
   const rawExperiences =
     fieldResolver.getFieldValue<SectionDataValue>('experiences');
@@ -103,24 +113,27 @@ export function ExperienceTimelineSection(): JSX.Element | null {
 
   const sectionLabel =
     fieldResolver.getFieldValue<string>('section_label') ??
-    'Professional experience timeline';
+    tSections('public.sectionLabel');
 
-  const eyebrow = fieldResolver.getFieldValue<string>('eyebrow') ?? 'Career';
+  const eyebrow =
+    fieldResolver.getFieldValue<string>('eyebrow') ??
+    tSections('public.eyebrow');
 
   const title =
-    fieldResolver.getFieldValue<string>('title') ?? 'Professional Experience';
+    fieldResolver.getFieldValue<string>('title') ?? tSections('public.title');
 
   const description =
     fieldResolver.getFieldValue<string>('subtitle') ??
     fieldResolver.getFieldValue<string>('description') ??
-    'A timeline of roles and responsibilities that shaped my professional journey.';
+    tSections('public.description');
 
   const emptyMessage =
     fieldResolver.getFieldValue<string>('empty_message') ??
-    'No professional experience available to display yet.';
+    tSections('public.emptyMessage');
 
   const presentLabel =
-    fieldResolver.getFieldValue<string>('present_label') ?? 'Present';
+    fieldResolver.getFieldValue<string>('present_label') ??
+    tForm('fields.period.present');
 
   if (!hasExperiences && !title && !description && !eyebrow) {
     return null;

@@ -25,6 +25,32 @@ export default {
     display: {
       label: 'Exibir no portfólio',
     },
+    period: {
+      label: 'Período',
+      present: 'Atual',
+    },
+    updated_at: {
+      label: 'Atualizado em',
+    },
+    actions: {
+      label: 'Ações',
+    },
+  },
+  help: {
+    managementSubtitle:
+      'Gerencie as experiências exibidas no seu portfólio e nas seções do currículo.',
+  },
+  emptyState: {
+    index: 'Nenhuma experiência foi criada ainda.',
+  },
+  values: {
+    empty: '\u2014',
+  },
+  status: {
+    editing: 'Editando: {{position}} em {{company}}',
+  },
+  errors: {
+    translationsLoad:
+      'Não foi possível carregar as traduções para verificar conflitos de locale.',
   },
 };
-
