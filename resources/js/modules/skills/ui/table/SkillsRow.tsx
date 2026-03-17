@@ -33,7 +33,11 @@ export function SkillsRow({
     const { translate: tActions } = useSkillsTranslation(SKILLS_NAMESPACES.actions);
     const { translate: tForm } = useSkillsTranslation(SKILLS_NAMESPACES.form);
     const isMobile = useIsMobile();
-    const updatedLabel = formatUpdatedAt(skill.updated_at, isMobile);
+    const updatedLabel = formatUpdatedAt(
+        skill.updated_at,
+        isMobile,
+        tForm('values.empty'),
+    );
     const categoryLabel =
         skill.category?.name ?? tForm('fields.category.uncategorized');
 
@@ -119,9 +123,10 @@ export function SkillsRow({
 function formatUpdatedAt(
     value: string | null | undefined,
     isMobile: boolean,
+    emptyLabel: string,
 ): string {
     if (!value) {
-        return tForm('values.empty');
+        return emptyLabel;
     }
 
     const date = new Date(value);
