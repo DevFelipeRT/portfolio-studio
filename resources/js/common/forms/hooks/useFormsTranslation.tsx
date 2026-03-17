@@ -20,6 +20,9 @@ type UseFormsTranslationResult = {
 /**
  * Like `useTranslation`, but safe to use even when the i18n provider isn't mounted
  * (e.g. in isolated form stories/tests). Falls back to the provided fallback text.
+ *
+ * The returned translate function is memoized and only changes when the
+ * effective locale or namespace changes.
  */
 export function useFormsTranslation(
   namespace: Namespace = I18N_NAMESPACES.form,

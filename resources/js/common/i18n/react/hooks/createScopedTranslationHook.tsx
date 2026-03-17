@@ -17,6 +17,12 @@ export type ScopedTranslationResult = {
   setLocale(nextLocale: string): string;
 };
 
+/**
+ * Creates a scope-bound translation hook backed by the shared i18n runtime.
+ *
+ * The returned API is memoized so `translate` and `setLocale` keep stable
+ * identities across renders unless the effective locale or namespace changes.
+ */
 export function createScopedTranslationHook(scopeId: string) {
   return function useScopedTranslation(
     namespace?: Namespace,

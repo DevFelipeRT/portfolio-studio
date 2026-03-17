@@ -190,11 +190,24 @@ Primary contract:
 - reads the current locale from context
 - resolves keys within `common.<namespace>`
 - accepts an optional per-call fallback
+- returns memoized handlers whose identities change only when the effective
+  locale or namespace changes
 
 Existing usage examples:
 
 - `useTranslation(I18N_NAMESPACES.i18n)`
 - `useTranslation(I18N_NAMESPACES.languageSelector)`
+
+Hooks created through `createScopedTranslationHook(...)` follow the same
+stability rule. This keeps React dependency arrays aligned with semantic i18n
+changes instead of incidental rerenders.
+
+Operational guidance:
+
+- data-loading effects should depend on domain inputs such as entity ids, not on
+  `translate` function references
+- async UI state should prefer flags, keys, or normalized error payloads over
+  storing already translated strings in state
 
 ### `I18nRuntimeProvider`
 
