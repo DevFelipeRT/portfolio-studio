@@ -1,5 +1,9 @@
 import { TextInputField, type FormErrors } from '@/common/forms';
 import type { WebsiteSettingsFormData } from '@/modules/website-settings/forms';
+import {
+  WEBSITE_SETTINGS_NAMESPACES,
+  useWebsiteSettingsTranslation,
+} from '@/modules/website-settings/i18n';
 
 import { LocalizedField } from './LocalizedField';
 
@@ -22,44 +26,47 @@ export function IdentitySection({
   onLocaleMapChange,
   onOwnerNameChange,
 }: IdentitySectionProps) {
+  const { translate: tForm } = useWebsiteSettingsTranslation(
+    WEBSITE_SETTINGS_NAMESPACES.form,
+  );
+
   return (
     <section className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold">Identidade do site</h2>
+        <h2 className="text-lg font-semibold">{tForm('sections.identity.title')}</h2>
         <p className="text-muted-foreground text-sm">
-          Informações públicas e responsáveis pelo branding global.
+          {tForm('sections.identity.description')}
         </p>
       </div>
 
       {locales.length === 0 && (
         <p className="text-muted-foreground text-sm">
-          Nenhum locale encontrado no CMS. Crie uma página pública para
-          habilitar campos localizados.
+          {tForm('sections.identity.emptyLocales')}
         </p>
       )}
 
       <LocalizedField
         id="site_name"
-        label="Nome do site"
+        label={tForm('fields.site_name.label')}
         locales={locales}
         values={data.site_name}
         onChange={(locale, value) =>
           onLocaleMapChange('site_name', locale, value)
         }
         errors={errors}
-        placeholder="Nome do site"
+        placeholder={tForm('fields.site_name.placeholder')}
       />
 
       <LocalizedField
         id="site_description"
-        label="Descrição do site"
+        label={tForm('fields.site_description.label')}
         locales={locales}
         values={data.site_description}
         onChange={(locale, value) =>
           onLocaleMapChange('site_description', locale, value)
         }
         errors={errors}
-        placeholder="Descrição curta"
+        placeholder={tForm('fields.site_description.placeholder')}
         type="textarea"
       />
 
@@ -68,8 +75,8 @@ export function IdentitySection({
         id="owner_name"
         value={data.owner_name}
         errors={errors}
-        label="Responsável / Owner"
-        placeholder="Nome do responsável"
+        label={tForm('fields.owner_name.label')}
+        placeholder={tForm('fields.owner_name.placeholder')}
         onChange={onOwnerNameChange}
       />
     </section>

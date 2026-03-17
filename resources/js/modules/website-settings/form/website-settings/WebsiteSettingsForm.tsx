@@ -1,4 +1,8 @@
 import { Form, FormActions, type FormErrors } from '@/common/forms';
+import {
+  WEBSITE_SETTINGS_NAMESPACES,
+  useWebsiteSettingsTranslation,
+} from '@/modules/website-settings/i18n';
 import React from 'react';
 
 import { getErrorSummaryFields } from './errorSummaryFields';
@@ -19,7 +23,13 @@ export function WebsiteSettingsForm({
   cancelHref,
   locales,
 }: WebsiteSettingsFormProps) {
-  const summaryFields = getErrorSummaryFields(errors);
+  const { translate: tActions } = useWebsiteSettingsTranslation(
+    WEBSITE_SETTINGS_NAMESPACES.actions,
+  );
+  const { translate: tForm } = useWebsiteSettingsTranslation(
+    WEBSITE_SETTINGS_NAMESPACES.form,
+  );
+  const summaryFields = getErrorSummaryFields(errors, tForm);
 
   const handleLocaleMapChange = (
     field:
@@ -141,8 +151,8 @@ export function WebsiteSettingsForm({
       <FormActions
         cancelHref={cancelHref}
         processing={processing}
-        cancelLabel="Cancelar"
-        submitLabel="Salvar alterações"
+        cancelLabel={tActions('cancel')}
+        submitLabel={tActions('saveChanges')}
       />
     </Form>
   );
