@@ -1,6 +1,7 @@
 // resources/js/Pages/Skills/Partials/SkillsTable.tsx
 
 import type { Skill } from '@/modules/skills/core/types';
+import { SKILLS_NAMESPACES, useSkillsTranslation } from '@/modules/skills/i18n';
 import { SkillsRow } from './SkillsRow';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -28,15 +29,16 @@ export function SkillsTable({
     onEdit,
     onDelete,
 }: SkillsTableProps) {
+    const { translate: tForm } = useSkillsTranslation(SKILLS_NAMESPACES.form);
     const baseClass = 'text-xs font-medium text-muted-foreground';
 
     return (
         <Card className="overflow-hidden border">
             <CardHeader className="flex flex-row items-center justify-between gap-4">
                 <div>
-                    <CardTitle className="text-base">Skills</CardTitle>
+                    <CardTitle className="text-base">{tForm('table.title')}</CardTitle>
                     <p className="text-muted-foreground mt-1 text-xs">
-                        Review and manage the skills used across your projects.
+                        {tForm('table.description')}
                     </p>
                 </div>
             </CardHeader>
@@ -50,7 +52,7 @@ export function SkillsTable({
                             <TableHead
                                 className={cn(baseClass, 'min-w-0 sm:w-48')}
                             >
-                                <span>Name</span>
+                                <span>{tForm('fields.name.label')}</span>
                             </TableHead>
 
                             <TableHead
@@ -59,7 +61,7 @@ export function SkillsTable({
                                     'w-24 text-left whitespace-nowrap sm:w-40',
                                 )}
                             >
-                                <span>Category</span>
+                                <span>{tForm('fields.category.label')}</span>
                             </TableHead>
 
                             <TableHead
@@ -68,7 +70,7 @@ export function SkillsTable({
                                     'w-20 text-center whitespace-nowrap sm:w-32',
                                 )}
                             >
-                                <span>Updated</span>
+                                <span>{tForm('fields.updated_at.label')}</span>
                             </TableHead>
 
                             <TableHead
@@ -77,7 +79,7 @@ export function SkillsTable({
                                     'w-16 text-right whitespace-nowrap',
                                 )}
                             >
-                                <span className="sr-only">Menu</span>
+                                <span className="sr-only">{tForm('table.menu')}</span>
                             </TableHead>
                         </TableRow>
                     </TableHeader>

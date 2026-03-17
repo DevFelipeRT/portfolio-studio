@@ -1,6 +1,7 @@
 // resources/js/Pages/Skills/Partials/SkillsRow.tsx
 
 import type { Skill } from '@/modules/skills/core/types';
+import { SKILLS_NAMESPACES, useSkillsTranslation } from '@/modules/skills/i18n';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -29,9 +30,12 @@ export function SkillsRow({
     onEdit,
     onDelete,
 }: SkillsRowProps) {
+    const { translate: tActions } = useSkillsTranslation(SKILLS_NAMESPACES.actions);
+    const { translate: tForm } = useSkillsTranslation(SKILLS_NAMESPACES.form);
     const isMobile = useIsMobile();
     const updatedLabel = formatUpdatedAt(skill.updated_at, isMobile);
-    const categoryLabel = skill.category?.name ?? 'Uncategorized';
+    const categoryLabel =
+        skill.category?.name ?? tForm('fields.category.uncategorized');
 
     function handleEdit(event: React.MouseEvent): void {
         event.stopPropagation();
@@ -83,7 +87,7 @@ export function SkillsRow({
                                 onClick={(event) => event.stopPropagation()}
                             >
                                 <MoreVertical className="h-4 w-4" />
-                                <span className="sr-only">Open menu</span>
+                                <span className="sr-only">{tActions('openMenu')}</span>
                             </Button>
                         </DropdownMenuTrigger>
 
@@ -94,7 +98,7 @@ export function SkillsRow({
                         >
                             <DropdownMenuItem onClick={handleEdit}>
                                 <Pencil className="mr-2 h-4 w-4" />
-                                <span>Edit</span>
+                                <span>{tActions('editSkill')}</span>
                             </DropdownMenuItem>
 
                             <DropdownMenuItem
@@ -102,7 +106,7 @@ export function SkillsRow({
                                 className="text-destructive focus:text-destructive"
                             >
                                 <Trash2 className="mr-2 h-4 w-4" />
-                                <span>Delete</span>
+                                <span>{tActions('delete')}</span>
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
@@ -117,7 +121,7 @@ function formatUpdatedAt(
     isMobile: boolean,
 ): string {
     if (!value) {
-        return '—';
+        return tForm('values.empty');
     }
 
     const date = new Date(value);

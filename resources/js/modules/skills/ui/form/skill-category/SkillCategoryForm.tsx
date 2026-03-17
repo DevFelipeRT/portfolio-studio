@@ -6,6 +6,7 @@ import {
 } from '@/common/forms';
 import { TextInputField } from '@/common/forms';
 import { useSupportedLocales } from '@/common/locale';
+import { SKILLS_NAMESPACES, useSkillsTranslation } from '@/modules/skills/i18n';
 
 import { getErrorSummaryFields } from './errorSummaryFields';
 import type { SkillCategoryFormProps } from './types';
@@ -24,7 +25,8 @@ export function SkillCategoryForm({
   deleteHref,
   deleteLabel = 'Delete',
 }: SkillCategoryFormProps) {
-  const summaryFields = getErrorSummaryFields(errors);
+  const { translate: tForm } = useSkillsTranslation(SKILLS_NAMESPACES.form);
+  const summaryFields = getErrorSummaryFields(errors, tForm);
   const supportedLocales = useSupportedLocales();
 
   return (
@@ -32,7 +34,7 @@ export function SkillCategoryForm({
 
       <FormHeader
         className="min-h-6"
-        title={<h2 className="sr-only">Translations</h2>}
+        title={<h2 className="sr-only">{tForm('fields.locale.label')}</h2>}
         localeFieldProps={{
           value: data.locale,
           locales: supportedLocales,
@@ -48,7 +50,7 @@ export function SkillCategoryForm({
         id="name"
         value={data.name}
         errors={errors}
-        label="Name"
+        label={tForm('fields.name.label')}
         required
         disabled={processing}
         autoFocus
@@ -60,8 +62,8 @@ export function SkillCategoryForm({
         id="slug"
         value={data.slug}
         errors={errors}
-        label="Slug"
-        placeholder="Leave blank to auto-generate"
+        label={tForm('fields.slug.label')}
+        placeholder={tForm('fields.slug.placeholder')}
         disabled={processing}
         onChange={(value) => onChange('slug', value)}
       />
