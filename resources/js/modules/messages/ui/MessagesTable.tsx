@@ -12,6 +12,10 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
+import {
+    MESSAGES_NAMESPACES,
+    useMessagesTranslation,
+} from '@/modules/messages/i18n';
 import { MessagesRow } from './MessagesRow';
 
 interface MessagesTableProps {
@@ -32,14 +36,19 @@ export function MessagesTable({
     onToggleSeen,
     onDelete,
 }: MessagesTableProps) {
+    const { translate: tMessages } = useMessagesTranslation(
+        MESSAGES_NAMESPACES.messages,
+    );
     const baseClass = 'text-muted-foreground text-xs font-medium';
     return (
         <Card className="overflow-hidden border">
             <CardHeader className="flex flex-row items-center justify-between gap-4">
                 <div>
-                    <CardTitle className="text-base">Inbox</CardTitle>
+                    <CardTitle className="text-base">
+                        {tMessages('table.title')}
+                    </CardTitle>
                     <p className="text-muted-foreground mt-1 text-xs">
-                        Review and manage messages sent from your landing page.
+                        {tMessages('table.description')}
                     </p>
                 </div>
             </CardHeader>
@@ -53,7 +62,7 @@ export function MessagesTable({
                             <TableHead
                                 className={cn(baseClass, 'min-w-0 sm:w-48')}
                             >
-                                <span>From</span>
+                                <span>{tMessages('table.columns.from')}</span>
                             </TableHead>
 
                             <TableHead
@@ -62,7 +71,7 @@ export function MessagesTable({
                                     'hidden w-full max-w-xl sm:table-cell',
                                 )}
                             >
-                                <span>Message</span>
+                                <span>{tMessages('table.columns.message')}</span>
                             </TableHead>
 
                             <TableHead
@@ -71,7 +80,7 @@ export function MessagesTable({
                                     'w-13 text-left sm:w-32',
                                 )}
                             >
-                                <span>Status</span>
+                                <span>{tMessages('table.columns.status')}</span>
                             </TableHead>
 
                             <TableHead
@@ -80,13 +89,15 @@ export function MessagesTable({
                                     'w-12 text-center md:w-18',
                                 )}
                             >
-                                <span>When</span>
+                                <span>{tMessages('table.columns.when')}</span>
                             </TableHead>
 
                             <TableHead
                                 className={cn(baseClass, 'w-21 text-right')}
                             >
-                                <span className="sr-only">Menu</span>
+                                <span className="sr-only">
+                                    {tMessages('table.columns.menu')}
+                                </span>
                             </TableHead>
                         </TableRow>
                     </TableHeader>
