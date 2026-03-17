@@ -43,7 +43,7 @@ export default function Edit({ initiative }: EditInitiativeProps) {
       start_date: initiative.start_date,
       end_date: initiative.end_date ?? null,
       images: [],
-  });
+    });
   const { errors: formErrors } = usePageProps<{
     errors: FormErrors<keyof InitiativeFormData>;
   }>();
@@ -138,16 +138,14 @@ export default function Edit({ initiative }: EditInitiativeProps) {
     [],
   );
   const [loadingTranslations, setLoadingTranslations] = React.useState(false);
-  const [localesLoadError, setLocalesLoadError] = React.useState<string | null>(
-    null,
-  );
+  const [hasLocalesLoadError, setHasLocalesLoadError] = React.useState(false);
 
   React.useEffect(() => {
     let mounted = true;
 
     const loadTranslations = async (): Promise<void> => {
       setLoadingTranslations(true);
-      setLocalesLoadError(null);
+      setHasLocalesLoadError(false);
       try {
         const items = await listInitiativeTranslations(initiative.id);
         if (mounted) {
@@ -157,7 +155,7 @@ export default function Edit({ initiative }: EditInitiativeProps) {
         }
       } catch {
         if (mounted) {
-          setLocalesLoadError(tForm('errors.translationsLoad'));
+          setHasLocalesLoadError(true);
         }
       } finally {
         if (mounted) {
@@ -171,7 +169,11 @@ export default function Edit({ initiative }: EditInitiativeProps) {
     return () => {
       mounted = false;
     };
-  }, [initiative.id, tForm]);
+  }, [initiative.id]);
+
+  const localeNote = hasLocalesLoadError
+    ? tForm('errors.translationsLoad')
+    : null;
 
   const handleLocaleChange = (nextLocale: string): void => {
     if (nextLocale !== data.locale && translationLocales.includes(nextLocale)) {
@@ -221,8 +223,8 @@ export default function Edit({ initiative }: EditInitiativeProps) {
           errors={formErrors}
           processing={processing}
           supportedLocales={supportedLocales}
-          localeDisabled={loadingTranslations || Boolean(localesLoadError)}
-          localeNote={localesLoadError}
+          localeDisabled={loadingTranslations || hasLocalesLoadError}
+          localeNote={localeNote}
           onSubmit={submit}
           onChangeField={changeField}
           onChangeLocale={handleLocaleChange}

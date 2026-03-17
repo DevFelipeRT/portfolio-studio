@@ -32,7 +32,6 @@ export default function Edit({ course, course_categories }: EditCourseProps) {
   const { translate: tActions } = useCoursesTranslation(
     COURSES_NAMESPACES.actions,
   );
-  const { translate: tForm } = useCoursesTranslation(COURSES_NAMESPACES.form);
   const { data, setData, put, processing } = usePageForm<CourseFormData>({
     locale: course.locale,
     confirm_swap: false,
@@ -72,16 +71,14 @@ export default function Edit({ course, course_categories }: EditCourseProps) {
     [],
   );
   const [loadingTranslations, setLoadingTranslations] = React.useState(false);
-  const [localesLoadError, setLocalesLoadError] = React.useState<string | null>(
-    null,
-  );
+  const [hasLocalesLoadError, setHasLocalesLoadError] = React.useState(false);
 
   React.useEffect(() => {
     let mounted = true;
 
     const loadTranslations = async (): Promise<void> => {
       setLoadingTranslations(true);
-      setLocalesLoadError(null);
+      setHasLocalesLoadError(false);
       try {
         const items = await listCourseTranslations(course.id);
         if (mounted) {
@@ -91,7 +88,7 @@ export default function Edit({ course, course_categories }: EditCourseProps) {
         }
       } catch {
         if (mounted) {
-          setLocalesLoadError(tForm('errors.translationsLoad'));
+          setHasLocalesLoadError(true);
         }
       } finally {
         if (mounted) {
@@ -105,7 +102,7 @@ export default function Edit({ course, course_categories }: EditCourseProps) {
     return () => {
       mounted = false;
     };
-  }, [course.id, tForm]);
+  }, [course.id]);
 
   const handleLocaleChange = (nextLocale: string): void => {
     if (nextLocale !== data.locale && translationLocales.includes(nextLocale)) {
@@ -135,7 +132,7 @@ export default function Edit({ course, course_categories }: EditCourseProps) {
         categories={course_categories ?? {}}
         cancelHref={cancelHref}
         loadingTranslations={loadingTranslations}
-        localesLoadError={localesLoadError}
+        hasLocalesLoadError={hasLocalesLoadError}
         onChange={setData}
         onSubmit={handleSubmit}
         onLocaleChange={handleLocaleChange}
@@ -186,7 +183,7 @@ type EditCourseI18nContentProps = {
   categories: Record<string, string>;
   cancelHref: string;
   loadingTranslations: boolean;
-  localesLoadError: string | null;
+  hasLocalesLoadError: boolean;
   onChange: (key: keyof CourseFormData, value: string | boolean | null) => void;
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
   onLocaleChange: (locale: string) => void;
@@ -200,7 +197,7 @@ function EditCourseI18nContent({
   categories,
   cancelHref,
   loadingTranslations,
-  localesLoadError,
+  hasLocalesLoadError,
   onChange,
   onSubmit,
   onLocaleChange,
@@ -212,6 +209,10 @@ function EditCourseI18nContent({
   const { translate: tActions } = useCoursesTranslation(
     COURSES_NAMESPACES.actions,
   );
+  const { translate: tForm } = useCoursesTranslation(COURSES_NAMESPACES.form);
+  const localeNote = hasLocalesLoadError
+    ? tForm('errors.translationsLoad')
+    : null;
 
   return (
     <PageContent className="overflow-hidden py-8" pageWidth="default">
@@ -246,8 +247,8 @@ function EditCourseI18nContent({
         onSubmit={onSubmit}
         cancelHref={cancelHref}
         onLocaleChange={onLocaleChange}
-        localeDisabled={loadingTranslations || Boolean(localesLoadError)}
-        localeNote={localesLoadError}
+        localeDisabled={loadingTranslations || hasLocalesLoadError}
+        localeNote={localeNote}
       />
     </PageContent>
   );

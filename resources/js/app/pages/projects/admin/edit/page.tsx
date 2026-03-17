@@ -30,7 +30,6 @@ export default function Edit({ project, skills }: EditProjectProps) {
   const { translate: tActions } = useProjectsTranslation(
     PROJECTS_NAMESPACES.actions,
   );
-  const { translate: tForm } = useProjectsTranslation(PROJECTS_NAMESPACES.form);
   const supportedLocales = useSupportedLocales();
   const existingImages: ProjectImage[] = project.images ?? [];
 
@@ -135,16 +134,14 @@ export default function Edit({ project, skills }: EditProjectProps) {
     [],
   );
   const [loadingTranslations, setLoadingTranslations] = React.useState(false);
-  const [localesLoadError, setLocalesLoadError] = React.useState<string | null>(
-    null,
-  );
+  const [hasLocalesLoadError, setHasLocalesLoadError] = React.useState(false);
 
   React.useEffect(() => {
     let mounted = true;
 
     const loadTranslations = async (): Promise<void> => {
       setLoadingTranslations(true);
-      setLocalesLoadError(null);
+      setHasLocalesLoadError(false);
       try {
         const items = await listProjectTranslations(project.id);
         if (mounted) {
@@ -154,7 +151,7 @@ export default function Edit({ project, skills }: EditProjectProps) {
         }
       } catch {
         if (mounted) {
-          setLocalesLoadError(tForm('errors.translationsLoad'));
+          setHasLocalesLoadError(true);
         }
       } finally {
         if (mounted) {
@@ -168,7 +165,7 @@ export default function Edit({ project, skills }: EditProjectProps) {
     return () => {
       mounted = false;
     };
-  }, [project.id, tForm]);
+  }, [project.id]);
 
   const handleLocaleChange = (nextLocale: string): void => {
     if (nextLocale !== data.locale && translationLocales.includes(nextLocale)) {
@@ -193,7 +190,7 @@ export default function Edit({ project, skills }: EditProjectProps) {
         data={data}
         formErrors={formErrors}
         processing={processing}
-        localesLoadError={localesLoadError}
+        hasLocalesLoadError={hasLocalesLoadError}
         loadingTranslations={loadingTranslations}
         onSubmit={submit}
         onChangeField={changeField}
@@ -254,7 +251,7 @@ type EditProjectContentProps = {
   data: ProjectFormData;
   formErrors: FormErrors<keyof ProjectFormData>;
   processing: boolean;
-  localesLoadError: string | null;
+  hasLocalesLoadError: boolean;
   loadingTranslations: boolean;
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
   onChangeField: <K extends keyof ProjectFormData>(
@@ -281,7 +278,7 @@ function EditProjectContent({
   data,
   formErrors,
   processing,
-  localesLoadError,
+  hasLocalesLoadError,
   loadingTranslations,
   onSubmit,
   onChangeField,
@@ -299,6 +296,10 @@ function EditProjectContent({
   const { translate: tTranslations } = useProjectsTranslation(
     PROJECTS_NAMESPACES.translations,
   );
+  const { translate: tForm } = useProjectsTranslation(PROJECTS_NAMESPACES.form);
+  const localeNote = hasLocalesLoadError
+    ? tForm('errors.translationsLoad')
+    : null;
 
   return (
     <PageContent className="overflow-hidden py-8" pageWidth="default">
@@ -331,8 +332,8 @@ function EditProjectContent({
         cancelHref={route('projects.index')}
         submitLabel={tActions('saveChanges')}
         supportedLocales={supportedLocales}
-        localeDisabled={loadingTranslations || Boolean(localesLoadError)}
-        localeNote={localesLoadError}
+        localeDisabled={loadingTranslations || hasLocalesLoadError}
+        localeNote={localeNote}
         onSubmit={onSubmit}
         onChangeField={onChangeField}
         onChangeLocale={onChangeLocale}
