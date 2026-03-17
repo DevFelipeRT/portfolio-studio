@@ -25,6 +25,12 @@ import {
   TranslationModalLayout,
   TranslationModalBody,
 } from '@/modules/translations/ui/TranslationModalParts';
+import {
+  createTranslationModalError,
+  getTranslationModalErrorMessage,
+  normalizeTranslationModalError,
+  type TranslationModalError,
+} from '@/modules/translations/ui/translationModalError';
 
 type TranslationModalProps = {
   open: boolean;
@@ -40,13 +46,6 @@ type EditableTranslation = ProjectTranslationItem & {
   draftDescription?: string;
   draftStatus?: string;
 };
-
-function normalizeError(error: unknown): string {
-  if (typeof error === 'string') return error;
-  const message = (error as { response?: { data?: { message?: string } } })
-    ?.response?.data?.message;
-  return message ?? '';
-}
 
 function normalizeText(value: string): string | null {
   const trimmed = value.trim();
@@ -74,41 +73,59 @@ export function TranslationModal({
   const [newStatus, setNewStatus] = React.useState<string>('');
   const [loading, setLoading] = React.useState(false);
   const [saving, setSaving] = React.useState(false);
-  const [error, setError] = React.useState<string | null>(null);
+  const [error, setError] = React.useState<TranslationModalError | null>(null);
   const [view, setView] = React.useState<'list' | 'add' | 'edit'>('list');
   const [activeLocale, setActiveLocale] = React.useState<string | null>(null);
-
-  const loadData = React.useCallback(async () => {
-    if (!open) return;
-    setLoading(true);
-    setError(null);
-
-    try {
-      const [locales, items] = await Promise.all([
-        fetchSupportedLocales(),
-        listProjectTranslations(projectId),
-      ]);
-
-      setSupportedLocales(locales);
-      setTranslations(
-        items.map((item) => ({
-          ...item,
-          draftName: item.name ?? '',
-          draftSummary: item.summary ?? '',
-          draftDescription: item.description ?? '',
-          draftStatus: item.status ?? '',
-        })),
-      );
-    } catch (err) {
-      setError(normalizeError(err) || t('errors.unexpected'));
-    } finally {
-      setLoading(false);
-    }
-  }, [open, projectId, t]);
+  const errorMessage = getTranslationModalErrorMessage(error, t);
 
   React.useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    let active = true;
+
+    const loadData = async (): Promise<void> => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const [locales, items] = await Promise.all([
+          fetchSupportedLocales(),
+          listProjectTranslations(projectId),
+        ]);
+
+        if (!active) {
+          return;
+        }
+
+        setSupportedLocales(locales);
+        setTranslations(
+          items.map((item) => ({
+            ...item,
+            draftName: item.name ?? '',
+            draftSummary: item.summary ?? '',
+            draftDescription: item.description ?? '',
+            draftStatus: item.status ?? '',
+          })),
+        );
+      } catch (err) {
+        if (active) {
+          setError(normalizeTranslationModalError(err));
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    };
+
     void loadData();
-  }, [loadData]);
+
+    return () => {
+      active = false;
+    };
+  }, [open, projectId]);
 
   const usedLocales = new Set(translations.map((item) => item.locale));
   const availableLocales = supportedLocales.filter(
@@ -165,12 +182,12 @@ export function TranslationModal({
 
   const handleCreate = async (): Promise<void> => {
     if (!newLocale) {
-      setError(t('errors.localeRequired'));
+      setError(createTranslationModalError('errors.localeRequired'));
       return;
     }
 
     if (!hasNewContent()) {
-      setError(t('errors.atLeastOne'));
+      setError(createTranslationModalError('errors.atLeastOne'));
       return;
     }
 
@@ -200,7 +217,7 @@ export function TranslationModal({
       ]);
       resetNewFields();
     } catch (err) {
-      setError(normalizeError(err) || t('errors.unexpected'));
+      setError(normalizeTranslationModalError(err));
     } finally {
       setSaving(false);
     }
@@ -218,7 +235,7 @@ export function TranslationModal({
       description.trim() === '' &&
       status.trim() === ''
     ) {
-      setError(t('errors.atLeastOne'));
+      setError(createTranslationModalError('errors.atLeastOne'));
       return;
     }
 
@@ -254,7 +271,7 @@ export function TranslationModal({
         ),
       );
     } catch (err) {
-      setError(normalizeError(err) || t('errors.unexpected'));
+      setError(normalizeTranslationModalError(err));
     } finally {
       setSaving(false);
     }
@@ -274,7 +291,7 @@ export function TranslationModal({
         current.filter((entry) => entry.locale !== item.locale),
       );
     } catch (err) {
-      setError(normalizeError(err) || t('errors.unexpected'));
+      setError(normalizeTranslationModalError(err));
     } finally {
       setSaving(false);
     }
@@ -315,9 +332,9 @@ export function TranslationModal({
     >
       <TranslationModalBody>
         <div className="space-y-4">
-          {error && (
+          {errorMessage && (
             <div className="bg-destructive/10 text-destructive border-destructive/20 rounded-md border px-3 py-2 text-sm">
-              {error}
+              {errorMessage}
             </div>
           )}
 

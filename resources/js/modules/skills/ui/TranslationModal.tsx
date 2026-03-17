@@ -27,6 +27,12 @@ import {
   TranslationModalLayout,
   TranslationModalBody,
 } from '@/modules/translations/ui/TranslationModalParts';
+import {
+  createTranslationModalError,
+  getTranslationModalErrorMessage,
+  normalizeTranslationModalError,
+  type TranslationModalError,
+} from '@/modules/translations/ui/translationModalError';
 
 export type TranslationEntityType = 'skill' | 'skill-category';
 
@@ -40,13 +46,6 @@ type TranslationModalProps = {
 };
 
 type EditableTranslation = TranslationItem & { draftName?: string };
-
-function normalizeError(error: unknown): string {
-  if (typeof error === 'string') return error;
-  const message = (error as { response?: { data?: { message?: string } } })
-    ?.response?.data?.message;
-  return message ?? '';
-}
 
 export function TranslationModal({
   open,
@@ -65,35 +64,55 @@ export function TranslationModal({
   const [newName, setNewName] = React.useState<string>('');
   const [loading, setLoading] = React.useState(false);
   const [saving, setSaving] = React.useState(false);
-  const [error, setError] = React.useState<string | null>(null);
+  const [error, setError] = React.useState<TranslationModalError | null>(null);
   const [view, setView] = React.useState<'list' | 'add' | 'edit'>('list');
   const [activeLocale, setActiveLocale] = React.useState<string | null>(null);
-
-  const loadData = React.useCallback(async () => {
-    if (!open) return;
-    setLoading(true);
-    setError(null);
-
-    try {
-      const [locales, items] = await Promise.all([
-        fetchSupportedLocales(),
-        entityType === 'skill'
-          ? listSkillTranslations(entityId)
-          : listSkillCategoryTranslations(entityId),
-      ]);
-
-      setSupportedLocales(locales);
-      setTranslations(items.map((item) => ({ ...item, draftName: item.name })));
-    } catch (err) {
-      setError(normalizeError(err) || t('errors.unexpected'));
-    } finally {
-      setLoading(false);
-    }
-  }, [open, entityId, entityType, t]);
+  const errorMessage = getTranslationModalErrorMessage(error, t);
 
   React.useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    let active = true;
+
+    const loadData = async (): Promise<void> => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const [locales, items] = await Promise.all([
+          fetchSupportedLocales(),
+          entityType === 'skill'
+            ? listSkillTranslations(entityId)
+            : listSkillCategoryTranslations(entityId),
+        ]);
+
+        if (!active) {
+          return;
+        }
+
+        setSupportedLocales(locales);
+        setTranslations(
+          items.map((item) => ({ ...item, draftName: item.name })),
+        );
+      } catch (err) {
+        if (active) {
+          setError(normalizeTranslationModalError(err));
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    };
+
     void loadData();
-  }, [loadData]);
+
+    return () => {
+      active = false;
+    };
+  }, [entityId, entityType, open]);
 
   const usedLocales = new Set(translations.map((item) => item.locale));
   const availableLocales = supportedLocales.filter(
@@ -120,7 +139,7 @@ export function TranslationModal({
 
   const handleCreate = async (): Promise<void> => {
     if (!newLocale || !newName.trim()) {
-      setError(t('errors.localeAndName'));
+      setError(createTranslationModalError('errors.localeAndName'));
       return;
     }
 
@@ -141,7 +160,7 @@ export function TranslationModal({
       setNewLocale('');
       setNewName('');
     } catch (err) {
-      setError(normalizeError(err) || t('errors.unexpected'));
+      setError(normalizeTranslationModalError(err));
     } finally {
       setSaving(false);
     }
@@ -163,7 +182,7 @@ export function TranslationModal({
 
   const handleUpdate = async (item: EditableTranslation): Promise<void> => {
     if (!item.draftName?.trim()) {
-      setError(t('errors.nameRequired'));
+      setError(createTranslationModalError('errors.nameRequired'));
       return;
     }
 
@@ -189,7 +208,7 @@ export function TranslationModal({
         ),
       );
     } catch (err) {
-      setError(normalizeError(err) || t('errors.unexpected'));
+      setError(normalizeTranslationModalError(err));
     } finally {
       setSaving(false);
     }
@@ -214,7 +233,7 @@ export function TranslationModal({
         current.filter((entry) => entry.locale !== item.locale),
       );
     } catch (err) {
-      setError(normalizeError(err) || t('errors.unexpected'));
+      setError(normalizeTranslationModalError(err));
     } finally {
       setSaving(false);
     }
@@ -254,9 +273,9 @@ export function TranslationModal({
     >
       <TranslationModalBody>
         <div className="space-y-4">
-          {error && (
+          {errorMessage && (
             <div className="bg-destructive/10 text-destructive border-destructive/20 rounded-md border px-3 py-2 text-sm">
-              {error}
+              {errorMessage}
             </div>
           )}
 

@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { I18N_NAMESPACES } from '@/common/i18n';
 import type { Namespace, PlaceholderValues } from '@/common/i18n/types';
 import { useGetLocale } from '@/common/locale';
@@ -19,43 +20,55 @@ type UseFormsTranslationResult = {
 /**
  * Like `useTranslation`, but safe to use even when the i18n provider isn't mounted
  * (e.g. in isolated form stories/tests). Falls back to the provided fallback text.
+ *
+ * The returned translate function is memoized and only changes when the
+ * effective locale or namespace changes.
  */
 export function useFormsTranslation(
   namespace: Namespace = I18N_NAMESPACES.form,
 ): UseFormsTranslationResult {
   const locale = useGetLocale();
   const { i18n } = useI18nextTranslation();
+  const resolvedNamespace = React.useMemo(
+    () => scopedNamespace('common', namespace),
+    [namespace],
+  );
 
-  const translate: TranslationFunction = (
-    key: string,
-    secondArgument?: PlaceholderValues | string,
-    thirdArgument?: PlaceholderValues,
-  ): string => {
-    let parameters: PlaceholderValues | undefined;
-    let fallbackText: string | undefined;
+  const translate = React.useCallback<TranslationFunction>(
+    (
+      key: string,
+      secondArgument?: PlaceholderValues | string,
+      thirdArgument?: PlaceholderValues,
+    ): string => {
+      let parameters: PlaceholderValues | undefined;
+      let fallbackText: string | undefined;
 
-    if (typeof secondArgument === 'string') {
-      fallbackText = secondArgument;
-      parameters = thirdArgument;
-    } else {
-      parameters = secondArgument;
-    }
+      if (typeof secondArgument === 'string') {
+        fallbackText = secondArgument;
+        parameters = thirdArgument;
+      } else {
+        parameters = secondArgument;
+      }
 
-    const ns = scopedNamespace('common', namespace);
-    if (!ns) {
-      return fallbackText ?? key;
-    }
+      if (!resolvedNamespace) {
+        return fallbackText ?? key;
+      }
 
-    return i18n.t(key, {
-      lng: locale,
-      ns,
-      ...(fallbackText !== undefined ? { defaultValue: fallbackText } : {}),
-      ...(parameters ? { ...parameters } : {}),
-    });
-  };
+      return i18n.t(key, {
+        lng: locale,
+        ns: resolvedNamespace,
+        ...(fallbackText !== undefined ? { defaultValue: fallbackText } : {}),
+        ...(parameters ? { ...parameters } : {}),
+      });
+    },
+    [i18n, locale, resolvedNamespace],
+  );
 
-  return {
-    locale,
-    translate,
-  };
+  return React.useMemo(
+    () => ({
+      locale,
+      translate,
+    }),
+    [locale, translate],
+  );
 }

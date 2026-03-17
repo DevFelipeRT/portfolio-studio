@@ -32,9 +32,6 @@ export default function Edit({ experience }: EditExperienceProps) {
   const { translate: tActions } = useExperiencesTranslation(
     EXPERIENCES_NAMESPACES.actions,
   );
-  const { translate: tForm } = useExperiencesTranslation(
-    EXPERIENCES_NAMESPACES.form,
-  );
   const supportedLocales = useSupportedLocales();
   const { data, setData, put, processing } = usePageForm<ExperienceFormData>({
     locale: experience.locale,
@@ -70,16 +67,14 @@ export default function Edit({ experience }: EditExperienceProps) {
     [],
   );
   const [loadingTranslations, setLoadingTranslations] = React.useState(false);
-  const [localesLoadError, setLocalesLoadError] = React.useState<string | null>(
-    null,
-  );
+  const [hasLocalesLoadError, setHasLocalesLoadError] = React.useState(false);
 
   React.useEffect(() => {
     let mounted = true;
 
     const loadTranslations = async (): Promise<void> => {
       setLoadingTranslations(true);
-      setLocalesLoadError(null);
+      setHasLocalesLoadError(false);
       try {
         const items = await listExperienceTranslations(experience.id);
         if (mounted) {
@@ -89,7 +84,7 @@ export default function Edit({ experience }: EditExperienceProps) {
         }
       } catch {
         if (mounted) {
-          setLocalesLoadError(tForm('errors.translationsLoad'));
+          setHasLocalesLoadError(true);
         }
       } finally {
         if (mounted) {
@@ -103,7 +98,7 @@ export default function Edit({ experience }: EditExperienceProps) {
     return () => {
       mounted = false;
     };
-  }, [experience.id, tForm]);
+  }, [experience.id]);
 
   const handleLocaleChange = (nextLocale: string): void => {
     if (nextLocale !== data.locale && translationLocales.includes(nextLocale)) {
@@ -126,7 +121,7 @@ export default function Edit({ experience }: EditExperienceProps) {
         formErrors={formErrors}
         processing={processing}
         supportedLocales={supportedLocales}
-        localesLoadError={localesLoadError}
+        hasLocalesLoadError={hasLocalesLoadError}
         loadingTranslations={loadingTranslations}
         onSubmit={submit}
         onChange={setExperienceData}
@@ -177,7 +172,7 @@ type EditExperienceI18nContentProps = {
   formErrors: FormErrors<keyof ExperienceFormData>;
   processing: boolean;
   supportedLocales: readonly string[];
-  localesLoadError: string | null;
+  hasLocalesLoadError: boolean;
   loadingTranslations: boolean;
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
   onChange: <K extends ExperienceEditableField>(
@@ -194,7 +189,7 @@ function EditExperienceI18nContent({
   formErrors,
   processing,
   supportedLocales,
-  localesLoadError,
+  hasLocalesLoadError,
   loadingTranslations,
   onSubmit,
   onChange,
@@ -210,6 +205,9 @@ function EditExperienceI18nContent({
   const { translate: tForm } = useExperiencesTranslation(
     EXPERIENCES_NAMESPACES.form,
   );
+  const localeNote = hasLocalesLoadError
+    ? tForm('errors.translationsLoad')
+    : null;
 
   return (
     <PageContent className="overflow-hidden py-8" pageWidth="detail">
@@ -246,8 +244,8 @@ function EditExperienceI18nContent({
         supportedLocales={supportedLocales}
         cancelHref={route('experiences.index')}
         submitLabel={tActions('saveChanges')}
-        localeDisabled={loadingTranslations || Boolean(localesLoadError)}
-        localeNote={localesLoadError}
+        localeDisabled={loadingTranslations || hasLocalesLoadError}
+        localeNote={localeNote}
         onSubmit={onSubmit}
         onChange={onChange}
         onLocaleChange={onLocaleChange}
