@@ -51,6 +51,21 @@ export default {
   },
   emptyState: {
     index: 'No projects have been created yet.',
+    publicSection: 'No projects were returned for this section.',
+  },
+  values: {
+    empty: '\u2014',
+  },
+  carousel: {
+    progress: '{{current}} of {{total}}',
+  },
+  card: {
+    untitled: 'Untitled project',
+    noSummary: 'No summary available.',
+    noSkills: 'No skills listed yet.',
+  },
+  errors: {
+    translationsLoad:
+      'Unable to load translations for locale conflict checks.',
   },
 };
-

@@ -2,6 +2,7 @@ export default {
   backToIndex: 'Voltar para projetos',
   newProject: 'Novo projeto',
   editProject: 'Editar projeto',
+  editProjectTitle: 'Editar projeto: {{name}}',
   saveProject: 'Salvar projeto',
   saveChanges: 'Salvar alterações',
   edit: 'Editar',
@@ -11,5 +12,8 @@ export default {
   addImage: 'Adicionar imagem',
   remove: 'Remover',
   deleteImage: 'Excluir imagem',
+  repository: 'Repositório',
+  liveSite: 'Site no ar',
+  showDetails: 'Mostrar detalhes',
+  hideDetails: 'Ocultar detalhes',
 };
-

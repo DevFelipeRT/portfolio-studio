@@ -19,6 +19,9 @@ export default function Index({ projects }: ProjectsIndexProps) {
 function ProjectsIndexI18nContent({ projects }: ProjectsIndexProps) {
   const hasProjects = projects.length > 0;
   const { translate: tForm } = useProjectsTranslation(PROJECTS_NAMESPACES.form);
+  const { translate: tSections } = useProjectsTranslation(
+    PROJECTS_NAMESPACES.sections,
+  );
   const { translate: tActions } = useProjectsTranslation(
     PROJECTS_NAMESPACES.actions,
   );
@@ -37,7 +40,7 @@ function ProjectsIndexI18nContent({ projects }: ProjectsIndexProps) {
 
   return (
     <>
-      <PageHead title="Projects" />
+      <PageHead title={tSections('managementTitle')} />
 
       <PageContent className="overflow-hidden py-8" pageWidth="container">
         <div className="mb-6">
@@ -131,7 +134,7 @@ function ProjectsIndexI18nContent({ projects }: ProjectsIndexProps) {
                     </td>
 
                     <td className="text-muted-foreground px-4 py-3 align-top text-xs whitespace-nowrap">
-                      {project.updated_at ?? '—'}
+                      {project.updated_at ?? tForm('values.empty')}
                     </td>
 
                     <td className="px-4 py-3 align-top">

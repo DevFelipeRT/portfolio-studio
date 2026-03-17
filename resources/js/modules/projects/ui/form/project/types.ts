@@ -14,6 +14,7 @@ export interface ProjectFormProps {
   submitLabel: string;
   supportedLocales: readonly string[];
   localeDisabled?: boolean;
+  localeNote?: string | null;
   projectId?: number;
   onSubmit(event: React.FormEvent<HTMLFormElement>): void;
   onChangeField<K extends keyof ProjectFormData>(

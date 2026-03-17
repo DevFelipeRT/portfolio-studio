@@ -30,6 +30,7 @@ export function ProjectForm({
   submitLabel,
   supportedLocales,
   localeDisabled = false,
+  localeNote = null,
   projectId,
   onSubmit,
   onChangeField,
@@ -75,6 +76,10 @@ export function ProjectForm({
             },
           }}
         />
+
+        {localeNote && (
+          <p className="text-muted-foreground text-xs">{localeNote}</p>
+        )}
 
         <div className="grid gap-4 md:grid-cols-2">
           <TextInputField

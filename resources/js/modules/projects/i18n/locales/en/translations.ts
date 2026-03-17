@@ -5,6 +5,7 @@ export default {
   existing: 'Existing translations',
   empty: 'No translations yet.',
   add: 'Add translation',
+  addPanelTitle: 'Add translation',
   allCovered: 'All supported locales already have translations.',
   loading: 'Loading translations...',
   confirmDelete: 'Delete translation for {{locale}}?',
@@ -33,6 +34,6 @@ export default {
   errors: {
     localeRequired: 'Select a locale.',
     atLeastOne: 'Provide at least one translated field.',
+    unexpected: 'Unexpected error. Please try again.',
   },
 };
-

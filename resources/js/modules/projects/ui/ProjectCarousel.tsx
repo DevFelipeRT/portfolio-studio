@@ -1,6 +1,10 @@
 import { Button } from '@/components/ui/button';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import type { Project } from '@/modules/projects/core/types';
+import {
+    PROJECTS_NAMESPACES,
+    useProjectsTranslation,
+} from '@/modules/projects/i18n';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { ProjectCard } from './ProjectCard';
@@ -13,6 +17,7 @@ interface ProjectCarouselProps {
  * ProjectCarousel renders a horizontal slider of project cards using shadcn ScrollArea.
  */
 export function ProjectCarousel({ projects }: ProjectCarouselProps) {
+    const { translate: tForm } = useProjectsTranslation(PROJECTS_NAMESPACES.form);
     const viewportRef = useRef<HTMLDivElement | null>(null);
     const [activeIndex, setActiveIndex] = useState(0);
 
@@ -61,7 +66,10 @@ export function ProjectCarousel({ projects }: ProjectCarouselProps) {
         <div className="space-y-4">
             <div className="flex items-center justify-between gap-2">
                 <p className="text-muted-foreground text-xs">
-                    {activeIndex + 1} of {projects.length}
+                    {tForm('carousel.progress', {
+                        current: activeIndex + 1,
+                        total: projects.length,
+                    })}
                 </p>
 
                 <div className="flex items-center gap-2">
