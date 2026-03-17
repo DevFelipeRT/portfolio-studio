@@ -1,4 +1,8 @@
 import type { Course } from '@/modules/courses/core/types';
+import {
+    COURSES_NAMESPACES,
+    useCoursesTranslation,
+} from '@/modules/courses/i18n';
 import { CoursesRow } from './CoursesRow';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -21,15 +25,16 @@ interface CoursesTableProps {
  * CoursesTable renders the list of courses within a card container.
  */
 export function CoursesTable({ items, onRowClick }: CoursesTableProps) {
+    const { translate: tForm } = useCoursesTranslation(COURSES_NAMESPACES.form);
     const baseClass = 'text-muted-foreground text-xs font-medium text-nowrap';
 
     return (
         <Card className="overflow-hidden border">
             <CardHeader className="flex flex-row items-center justify-between gap-4">
                 <div>
-                    <CardTitle className="text-base">All Courses</CardTitle>
+                    <CardTitle className="text-base">{tForm('table.title')}</CardTitle>
                     <p className="text-muted-foreground mt-1 text-xs">
-                        A list of all courses and certificates registered.
+                        {tForm('table.description')}
                     </p>
                 </div>
             </CardHeader>
@@ -43,7 +48,7 @@ export function CoursesTable({ items, onRowClick }: CoursesTableProps) {
                             <TableHead
                                 className={cn(baseClass, 'min-w-0 sm:w-1/3')}
                             >
-                                <span>Course</span>
+                                <span>{tForm('table.columns.course')}</span>
                             </TableHead>
 
                             <TableHead
@@ -52,7 +57,7 @@ export function CoursesTable({ items, onRowClick }: CoursesTableProps) {
                                     'hidden sm:table-cell',
                                 )}
                             >
-                                <span>Start Date</span>
+                                <span>{tForm('table.columns.started_at')}</span>
                             </TableHead>
 
                             <TableHead
@@ -61,7 +66,7 @@ export function CoursesTable({ items, onRowClick }: CoursesTableProps) {
                                     'hidden sm:table-cell',
                                 )}
                             >
-                                <span>End Date</span>
+                                <span>{tForm('table.columns.completed_at')}</span>
                             </TableHead>
 
                             <TableHead
@@ -70,7 +75,7 @@ export function CoursesTable({ items, onRowClick }: CoursesTableProps) {
                                     'text-center md:text-left',
                                 )}
                             >
-                                <span>Status</span>
+                                <span>{tForm('fields.status.label')}</span>
                             </TableHead>
 
                             <TableHead
@@ -79,13 +84,13 @@ export function CoursesTable({ items, onRowClick }: CoursesTableProps) {
                                     'text-center md:text-left',
                                 )}
                             >
-                                <span>Visibility</span>
+                                <span>{tForm('fields.visibility.label')}</span>
                             </TableHead>
 
                             <TableHead
                                 className={cn(baseClass, 'w-21 text-right')}
                             >
-                                <span className="sr-only">Actions</span>
+                                <span className="sr-only">{tForm('fields.actions.label')}</span>
                             </TableHead>
                         </TableRow>
                     </TableHeader>

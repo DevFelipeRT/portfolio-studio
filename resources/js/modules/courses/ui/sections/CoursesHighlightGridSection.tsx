@@ -3,6 +3,10 @@ import { Badge } from '@/components/ui/badge';
 import { DateDisplay } from '@/components/ui/date-display';
 import { ExpandableCard } from '@/components/ui/expandable-card';
 import {
+  COURSES_NAMESPACES,
+  useCoursesTranslation,
+} from '@/modules/courses/i18n';
+import {
   SectionHeader,
   useFieldValueResolver,
 } from '@/modules/content-management/features/page-rendering';
@@ -78,6 +82,10 @@ function CoursePeriodDisplay({
 export function CoursesHighlightGridSection(): JSX.Element | null {
   const fieldResolver = useFieldValueResolver();
   const locale = useGetLocale();
+  const { translate: tForm } = useCoursesTranslation(COURSES_NAMESPACES.form);
+  const { translate: tSections } = useCoursesTranslation(
+    COURSES_NAMESPACES.sections,
+  );
 
   const rawCourses = fieldResolver.getFieldValue<SectionDataValue>('courses');
 
@@ -102,29 +110,32 @@ export function CoursesHighlightGridSection(): JSX.Element | null {
 
   const sectionLabel =
     fieldResolver.getFieldValue<string>('section_label') ??
-    'Academic degree and technical courses';
+    tSections('public.sectionLabel');
 
-  const eyebrow = fieldResolver.getFieldValue<string>('eyebrow') ?? 'Education';
+  const eyebrow =
+    fieldResolver.getFieldValue<string>('eyebrow') ??
+    tSections('public.eyebrow');
 
   const title =
     fieldResolver.getFieldValue<string>('title') ??
-    'Academic Degree & Technical Courses';
+    tSections('public.title');
 
   const subtitle =
     fieldResolver.getFieldValue<string>('subtitle') ??
     fieldResolver.getFieldValue<string>('description') ??
-    'Academic background and complementary technical courses that strengthen my profile as a software developer.';
+    tSections('public.description');
 
   const emptyMessage =
     fieldResolver.getFieldValue<string>('empty_message') ??
-    'No education records available to display yet.';
+    tSections('public.emptyMessage');
 
   const presentLabel =
-    fieldResolver.getFieldValue<string>('present_label') ?? 'Present';
+    fieldResolver.getFieldValue<string>('present_label') ??
+    tForm('values.present');
 
   const notHighlightedLabel =
     fieldResolver.getFieldValue<string>('not_highlighted_label') ??
-    'Not currently highlighted';
+    tForm('visibility.notHighlighted');
 
   if (!hasCourses && !title && !subtitle && !eyebrow) {
     return null;

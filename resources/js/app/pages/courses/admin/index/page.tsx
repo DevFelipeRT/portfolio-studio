@@ -2,6 +2,10 @@ import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import { PageContent } from '@/app/layouts/primitives';
 import { PageHead } from '@/common/page-runtime';
 import type { Course } from '@/modules/courses/core/types';
+import {
+  COURSES_NAMESPACES,
+  useCoursesTranslation,
+} from '@/modules/courses/i18n';
 import { CourseOverlay } from '@/modules/courses/ui/CourseOverlay';
 import { CoursesEmptyState } from '@/modules/courses/ui/CoursesEmptyState';
 import { CoursesHeader } from '@/modules/courses/ui/CoursesHeader';
@@ -15,6 +19,9 @@ interface CoursesIndexProps {
 }
 
 export default function Index({ courses }: CoursesIndexProps) {
+  const { translate: tSections } = useCoursesTranslation(
+    COURSES_NAMESPACES.sections,
+  );
   const items = courses.data ?? [];
   const hasCourses = items.length > 0;
 
@@ -45,7 +52,7 @@ export default function Index({ courses }: CoursesIndexProps) {
 
   return (
     <AuthenticatedLayout>
-      <PageHead title="Courses" />
+      <PageHead title={tSections('managementTitle')} />
 
       <PageContent className="overflow-hidden py-8" pageWidth="container">
         <CoursesHeader />

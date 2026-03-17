@@ -8,6 +8,7 @@ export default {
   allCovered: 'Todos os locales suportados já possuem traduções.',
   loading: 'Carregando traduções...',
   confirmDelete: 'Excluir tradução de {{locale}}?',
+  addPanelTitle: 'Adicionar tradução',
   fields: {
     locale: 'Locale',
     name: 'Título do curso',
@@ -31,6 +32,6 @@ export default {
   errors: {
     localeRequired: 'Selecione um locale.',
     atLeastOne: 'Informe ao menos um campo traduzido.',
+    unexpected: 'Erro inesperado. Tente novamente.',
   },
 };
-

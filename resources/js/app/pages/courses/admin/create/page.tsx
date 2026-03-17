@@ -3,6 +3,10 @@ import { PageContent } from '@/app/layouts/primitives';
 import { useFormSubmit, type FormErrors } from '@/common/forms';
 import { PageHead, PageLink, usePageForm, usePageProps } from '@/common/page-runtime';
 import type { CourseFormData } from '@/modules/courses/core/forms';
+import {
+  COURSES_NAMESPACES,
+  useCoursesTranslation,
+} from '@/modules/courses/i18n';
 import { CourseForm } from '@/modules/courses/ui/form/course';
 import { ChevronLeft } from 'lucide-react';
 import React from 'react';
@@ -30,6 +34,12 @@ const defaultCourseFormData: CourseFormData = {
 };
 
 export default function Create({ course_categories }: CreateCourseProps) {
+  const { translate: tActions } = useCoursesTranslation(
+    COURSES_NAMESPACES.actions,
+  );
+  const { translate: tSections } = useCoursesTranslation(
+    COURSES_NAMESPACES.sections,
+  );
   const { data, setData, post, processing } = usePageForm<CourseFormData>(
     'courses.create',
     defaultCourseFormData,
@@ -53,11 +63,13 @@ export default function Create({ course_categories }: CreateCourseProps) {
 
   return (
     <AuthenticatedLayout>
-      <PageHead title="New Course" />
+      <PageHead title={tSections('createTitle')} />
 
       <PageContent className="overflow-hidden py-8" pageWidth="default">
         <div className="mb-6">
-          <h1 className="text-xl leading-tight font-semibold">New Course</h1>
+          <h1 className="text-xl leading-tight font-semibold">
+            {tSections('createTitle')}
+          </h1>
         </div>
 
         <div className="mb-4">
@@ -66,7 +78,7 @@ export default function Create({ course_categories }: CreateCourseProps) {
             className="text-muted-foreground hover:text-foreground inline-flex items-center text-sm transition-colors"
           >
             <ChevronLeft className="mr-1 h-4 w-4" />
-            Back to courses
+            {tActions('backToIndex')}
           </PageLink>
         </div>
 

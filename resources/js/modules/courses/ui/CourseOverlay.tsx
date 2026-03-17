@@ -1,4 +1,5 @@
 import type { Course } from '@/modules/courses/core/types';
+import { COURSES_NAMESPACES, useCoursesTranslation } from '@/modules/courses/i18n';
 
 import { Badge } from '@/components/ui/badge';
 import {
@@ -26,6 +27,8 @@ export function CourseOverlay({
     course,
     onOpenChange,
 }: CourseOverlayProps) {
+    const { translate: tForm } = useCoursesTranslation(COURSES_NAMESPACES.form);
+
     if (!course) {
         return null;
     }
@@ -45,7 +48,7 @@ export function CourseOverlay({
                     className="gap-1 border-transparent bg-blue-100 text-blue-700 hover:bg-blue-100/80 dark:bg-blue-900/30 dark:text-blue-300"
                 >
                     <CircleDashed className="h-3 w-3" />
-                    In Progress
+                    {tForm('status.in_progress')}
                 </Badge>
             );
         }
@@ -60,7 +63,7 @@ export function CourseOverlay({
                     className="gap-1 border-transparent bg-green-100 text-green-700 hover:bg-green-100/80 dark:bg-green-900/30 dark:text-green-300"
                 >
                     <CheckCircle2 className="h-3 w-3" />
-                    Completed
+                    {tForm('status.completed')}
                 </Badge>
             );
         }
@@ -71,7 +74,7 @@ export function CourseOverlay({
                 className="gap-1 border-transparent bg-blue-100 text-blue-700 hover:bg-blue-100/80 dark:bg-blue-900/30 dark:text-blue-300"
             >
                 <CircleDashed className="h-3 w-3" />
-                In Progress
+                {tForm('status.in_progress')}
             </Badge>
         );
     }
@@ -108,7 +111,7 @@ export function CourseOverlay({
                                         {details.started_at}
                                         {details.completed_at
                                             ? ` – ${details.completed_at}`
-                                            : ' – Present'}
+                                            : ` – ${tForm('values.present')}`}
                                     </span>
                                 </div>
 
@@ -117,7 +120,9 @@ export function CourseOverlay({
                                         details.display ? 'default' : 'outline'
                                     }
                                 >
-                                    {details.display ? 'Public' : 'Hidden'}
+                                    {details.display
+                                        ? tForm('visibility.public')
+                                        : tForm('visibility.hidden')}
                                 </Badge>
                             </div>
 
@@ -134,13 +139,13 @@ export function CourseOverlay({
 
                 <div className="max-h-[60vh] overflow-y-auto text-sm leading-relaxed">
                     <p className="text-muted-foreground mb-2 text-xs font-medium tracking-wide uppercase">
-                        About the course
+                        {tForm('overlay.about')}
                     </p>
 
                     <div className="text-foreground whitespace-pre-line">
                         {details.description || (
                             <span className="text-muted-foreground italic">
-                                No detailed description provided.
+                                {tForm('overlay.noDescription')}
                             </span>
                         )}
                     </div>

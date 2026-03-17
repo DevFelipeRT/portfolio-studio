@@ -2,6 +2,10 @@ import { useTranslation } from '@/common/i18n';
 import { DateDisplay } from '@/components/ui/date-display';
 import { TableCell, TableRow } from '@/components/ui/table';
 import type { Course } from '@/modules/courses/core/types';
+import {
+  COURSES_NAMESPACES,
+  useCoursesTranslation,
+} from '@/modules/courses/i18n';
 import { CalendarDays, ChevronRight } from 'lucide-react';
 import { CourseStatus, CourseStatusBadge } from './CourseStatusBadge';
 import { CourseVisibilityBadge } from './CourseVisibilityBadge';
@@ -17,6 +21,7 @@ interface CoursesRowProps {
  */
 export function CoursesRow({ course, onRowClick }: CoursesRowProps) {
   const { locale } = useTranslation();
+  const { translate: tForm } = useCoursesTranslation(COURSES_NAMESPACES.form);
   const status = course.status as CourseStatus;
   const visibility = course.display ? 'public' : 'private';
 
@@ -54,7 +59,7 @@ export function CoursesRow({ course, onRowClick }: CoursesRowProps) {
             />
           </div>
         ) : (
-          <span className="opacity-50">—</span>
+          <span className="opacity-50">{tForm('values.empty')}</span>
         )}
       </TableCell>
 

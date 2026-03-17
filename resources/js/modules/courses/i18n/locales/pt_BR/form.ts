@@ -41,6 +41,52 @@ export default {
     display: {
       label: 'Visível publicamente no portfólio',
     },
+    status: {
+      label: 'Status',
+    },
+    visibility: {
+      label: 'Visibilidade',
+    },
+    actions: {
+      label: 'Ações',
+    },
+  },
+  help: {
+    managementSubtitle: 'Gerencie os cursos exibidos no seu portfólio.',
+  },
+  emptyState: {
+    index: 'Nenhum curso foi criado ainda.',
+  },
+  table: {
+    title: 'Todos os cursos',
+    description: 'Uma lista de todos os cursos e certificados cadastrados.',
+    columns: {
+      course: 'Curso',
+      started_at: 'Data de início',
+      completed_at: 'Data de término',
+    },
+  },
+  status: {
+    planned: 'Planejado',
+    in_progress: 'Em andamento',
+    completed: 'Concluído',
+  },
+  visibility: {
+    public: 'Público',
+    private: 'Privado',
+    hidden: 'Oculto',
+    notHighlighted: 'Não destacado no momento',
+  },
+  overlay: {
+    about: 'Sobre o curso',
+    noDescription: 'Nenhuma descrição detalhada foi informada.',
+  },
+  values: {
+    empty: '\u2014',
+    present: 'Atual',
+  },
+  errors: {
+    translationsLoad:
+      'Não foi possível carregar as traduções para verificar conflitos de locale.',
   },
 };
-
