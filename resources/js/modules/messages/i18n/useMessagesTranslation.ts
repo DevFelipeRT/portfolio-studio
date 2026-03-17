@@ -1,66 +1,17 @@
 'use client';
 
-import type { PlaceholderValues } from '@/common/i18n';
 import type { Namespace } from '@/common/i18n/types';
-import { getI18next } from '@/common/i18n/i18next/i18next';
-import { scopedNamespace } from '@/common/i18n/i18next/scopedNamespace';
-import { useGetLocale } from '@/common/locale';
+import {
+  createScopedTranslationHook,
+  type ScopedTranslationResult,
+} from '@/common/i18n/react/hooks/createScopedTranslationHook';
 
-type TranslationFunction = {
-  (key: string, params?: PlaceholderValues): string;
-  (key: string, fallback: string, params?: PlaceholderValues): string;
-};
+export type UseMessagesTranslationResult = ScopedTranslationResult;
 
-export interface UseMessagesTranslationResult {
-  locale: string;
-  translate: TranslationFunction;
-  setLocale(nextLocale: string): string;
-}
+const useMessagesTranslationBase = createScopedTranslationHook('messages');
 
 export function useMessagesTranslation(
   namespace?: Namespace,
 ): UseMessagesTranslationResult {
-  const locale = useGetLocale();
-
-  const translateWithNamespace: TranslationFunction = (
-    key: string,
-    secondArgument?: PlaceholderValues | string,
-    thirdArgument?: PlaceholderValues,
-  ): string => {
-    let parameters: PlaceholderValues | undefined;
-    let fallbackText: string | undefined;
-
-    if (typeof secondArgument === 'string') {
-      fallbackText = secondArgument;
-      parameters = thirdArgument;
-    } else {
-      parameters = secondArgument;
-    }
-
-    const ns = scopedNamespace('messages', namespace);
-    if (!ns) {
-      return fallbackText ?? key;
-    }
-
-    return getI18next().t(key, {
-      lng: locale,
-      ns,
-      ...(fallbackText !== undefined ? { defaultValue: fallbackText } : {}),
-      ...(parameters ? { ...parameters } : {}),
-    });
-  };
-
-  return {
-    locale,
-    translate: translateWithNamespace,
-    setLocale(nextLocale: string): string {
-      const trimmed = nextLocale.trim();
-      if (!trimmed) {
-        return trimmed;
-      }
-
-      void getI18next().changeLanguage(trimmed);
-      return trimmed;
-    },
-  };
+  return useMessagesTranslationBase(namespace);
 }
