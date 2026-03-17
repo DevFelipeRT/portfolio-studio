@@ -1,4 +1,8 @@
 import type { TemplateDefinitionDto } from '@/modules/content-management/types';
+import {
+  CONTENT_MANAGEMENT_NAMESPACES,
+  useContentManagementTranslation,
+} from '@/modules/content-management/i18n';
 import { TemplateFilters } from './partials/TemplateFilters';
 import { TemplateGrid } from './partials/TemplateGrid';
 import type { TemplateFilterMode } from './types';
@@ -27,6 +31,10 @@ export function SelectStep({
   onOriginFilterChange,
   onSelectTemplate,
 }: SelectStepProps) {
+  const { translate: tTemplates } = useContentManagementTranslation(
+    CONTENT_MANAGEMENT_NAMESPACES.templates,
+  );
+
   return (
     <div className="mx-1 my-4 space-y-6">
       <TemplateFilters
@@ -39,7 +47,10 @@ export function SelectStep({
 
       {visibleTemplates.length === 0 ? (
         <p className="text-muted-foreground text-sm">
-          No templates match the selected filter.
+          {tTemplates(
+            'emptyMatch',
+            'No templates match the selected filter.',
+          )}
         </p>
       ) : (
         <TemplateGrid

@@ -1,4 +1,8 @@
 import { Button } from '@/components/ui/button';
+import {
+  CONTENT_MANAGEMENT_NAMESPACES,
+  useContentManagementTranslation,
+} from '@/modules/content-management/i18n';
 import { ArrowDown, ArrowUp, GripVertical } from 'lucide-react';
 import type { ButtonHTMLAttributes, Ref } from 'react';
 
@@ -24,6 +28,10 @@ export function ReorderSectionControl({
   dragHandleProps,
   dragHandleRef,
 }: ReorderSectionControlProps) {
+  const { translate: tSections } = useContentManagementTranslation(
+    CONTENT_MANAGEMENT_NAMESPACES.sections,
+  );
+
   return (
     <div className="flex flex-col items-center gap-1 pr-1">
       <Button
@@ -32,7 +40,7 @@ export function ReorderSectionControl({
         size="icon"
         disabled={!canMoveUp || locked}
         onClick={onMoveUp}
-        aria-label="Move section up"
+        aria-label={tSections('reorder.moveUp', 'Move section up')}
         className="h-6 w-6"
       >
         <ArrowUp className="h-3 w-3" />
@@ -47,7 +55,7 @@ export function ReorderSectionControl({
             ? 'cursor-not-allowed opacity-60'
             : 'cursor-grab active:cursor-grabbing'
         }`}
-        aria-label="Drag to reorder section"
+        aria-label={tSections('reorder.drag', 'Drag to reorder section')}
         aria-disabled={locked}
         {...dragHandleProps}
       >
@@ -60,7 +68,7 @@ export function ReorderSectionControl({
         size="icon"
         disabled={!canMoveDown || locked}
         onClick={onMoveDown}
-        aria-label="Move section down"
+        aria-label={tSections('reorder.moveDown', 'Move section down')}
         className="h-6 w-6"
       >
         <ArrowDown className="h-3 w-3" />

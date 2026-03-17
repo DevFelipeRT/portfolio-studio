@@ -5,6 +5,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  CONTENT_MANAGEMENT_NAMESPACES,
+  useContentManagementTranslation,
+} from '@/modules/content-management/i18n';
 import type { TemplateDefinitionDto } from '@/modules/content-management/types';
 import { normalizeSlotKey } from '@/modules/content-management/utils/strings';
 import React from 'react';
@@ -38,6 +42,9 @@ export function TemplateSelector({
   filterBySlot = null,
   className,
 }: TemplateSelectorProps) {
+  const { translate: tTemplates } = useContentManagementTranslation(
+    CONTENT_MANAGEMENT_NAMESPACES.templates,
+  );
   const normalizedSlot = normalizeSlotKey(filterBySlot);
 
   const visibleTemplates = React.useMemo(() => {
@@ -65,7 +72,7 @@ export function TemplateSelector({
                 </span>
                 <span className="text-muted-foreground text-xs">
                   {template.origin === 'content-management'
-                    ? 'Generic'
+                    ? tTemplates('origin.generic', 'Generic')
                     : template.origin}
                 </span>
               </div>

@@ -1,6 +1,10 @@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { SelectableInput } from '@/components/ui/selectable-input';
+import {
+  CONTENT_MANAGEMENT_NAMESPACES,
+  useContentManagementTranslation,
+} from '@/modules/content-management/i18n';
 import React from 'react';
 
 interface NavigationFieldsProps {
@@ -22,32 +26,45 @@ export function NavigationFields({
   onNavigationLabelChange,
   onNavigationGroupChange,
 }: NavigationFieldsProps) {
+  const { translate: tSections } = useContentManagementTranslation(
+    CONTENT_MANAGEMENT_NAMESPACES.sections,
+  );
   const labelId = `${idPrefix}-navigation-label`;
   const groupId = `${idPrefix}-navigation-group`;
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
       <div className="space-y-1.5">
-        <Label htmlFor={labelId}>Navigation label</Label>
+        <Label htmlFor={labelId}>
+          {tSections('fields.navigationLabel', 'Navigation label')}
+        </Label>
         <Input
           id={labelId}
           value={navigationLabel}
           onChange={(event) => onNavigationLabelChange(event.target.value)}
-          placeholder="Highlights"
+          placeholder={tSections(
+            'fields.navigationLabelPlaceholder',
+            'Highlights',
+          )}
         />
       </div>
 
       <div className="space-y-1.5">
-        <Label htmlFor={groupId}>Navigation group</Label>
+        <Label htmlFor={groupId}>
+          {tSections('fields.navigationGroup', 'Navigation group')}
+        </Label>
         <SelectableInput
           id={groupId}
           value={navigationGroup}
           onChange={onNavigationGroupChange}
-          placeholder="About"
+          placeholder={tSections(
+            'fields.navigationGroupPlaceholder',
+            'About',
+          )}
           options={navigationGroups.map((group) => ({
             value: group,
           }))}
-          emptyLabel="No groups yet"
+          emptyLabel={tSections('fields.navigationGroupEmpty', 'No groups yet')}
           portalContainer={dialogContentRef}
         />
       </div>

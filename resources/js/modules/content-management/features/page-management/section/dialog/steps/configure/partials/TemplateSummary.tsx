@@ -1,4 +1,8 @@
 import { Badge } from '@/components/ui/badge';
+import {
+  CONTENT_MANAGEMENT_NAMESPACES,
+  useContentManagementTranslation,
+} from '@/modules/content-management/i18n';
 import type { TemplateDefinitionDto } from '@/modules/content-management/types';
 
 interface TemplateSummaryProps {
@@ -6,8 +10,13 @@ interface TemplateSummaryProps {
 }
 
 export function TemplateSummary({ template }: TemplateSummaryProps) {
+  const { translate: tTemplates } = useContentManagementTranslation(
+    CONTENT_MANAGEMENT_NAMESPACES.templates,
+  );
   const originLabel =
-    template.origin === 'content-management' ? 'Generic' : template.origin;
+    template.origin === 'content-management'
+      ? tTemplates('origin.generic', 'Generic')
+      : template.origin;
   const allowedSlots = template.allowed_slots ?? [];
   const description = template.description?.trim() ?? '';
 
@@ -34,7 +43,7 @@ export function TemplateSummary({ template }: TemplateSummaryProps) {
           ))
         ) : (
           <span className="text-muted-foreground/70 text-xs">
-            No slots restrictions
+            {tTemplates('noSlotsRestrictions', 'No slots restrictions')}
           </span>
         )}
       </div>

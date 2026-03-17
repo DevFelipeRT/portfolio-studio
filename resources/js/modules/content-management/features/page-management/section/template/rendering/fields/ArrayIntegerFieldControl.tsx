@@ -1,4 +1,8 @@
 import { Input } from '@/components/ui/input';
+import {
+  CONTENT_MANAGEMENT_NAMESPACES,
+  useContentManagementTranslation,
+} from '@/modules/content-management/i18n';
 import { parseCommaSeparatedIntegers } from '@/modules/content-management/utils/numbers';
 import React from 'react';
 import type { TemplateFieldControlProps } from '../../types';
@@ -12,6 +16,9 @@ export function ArrayIntegerFieldControl({
   onChange,
   field,
 }: TemplateFieldControlProps) {
+  const { translate: tTemplates } = useContentManagementTranslation(
+    CONTENT_MANAGEMENT_NAMESPACES.templates,
+  );
   const numericValue = value as number[];
   const textValue = numericValue.join(', ');
 
@@ -24,14 +31,17 @@ export function ArrayIntegerFieldControl({
     <FieldFrame
       id={field.name}
       label={field.label}
-      helperText="Comma-separated list of integer identifiers."
+      helperText={tTemplates(
+        'helpers.integerArray',
+        'Comma-separated list of integer identifiers.',
+      )}
     >
       <Input
         id={field.name}
         name={field.name}
         value={textValue}
         onChange={handleChange}
-        placeholder="1, 2, 3"
+        placeholder={tTemplates('helpers.integerArrayPlaceholder', '1, 2, 3')}
       />
     </FieldFrame>
   );

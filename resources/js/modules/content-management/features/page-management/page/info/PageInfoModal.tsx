@@ -1,5 +1,9 @@
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
+  CONTENT_MANAGEMENT_NAMESPACES,
+  useContentManagementTranslation,
+} from '@/modules/content-management/i18n';
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -26,13 +30,20 @@ interface PageInfoModalProps {
  * reusable across different page listings.
  */
 export function PageInfoModal({ open, onOpenChange, page }: PageInfoModalProps) {
+  const { translate: tPages } = useContentManagementTranslation(
+    CONTENT_MANAGEMENT_NAMESPACES.pages,
+  );
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl gap-0 p-0">
         <DialogHeader className="border-b px-6 py-4">
-          <DialogTitle>Page details</DialogTitle>
+          <DialogTitle>{tPages('info.title', 'Page details')}</DialogTitle>
           <DialogDescription>
-            Snapshot of the current page metadata as returned by the backend.
+            {tPages(
+              'info.description',
+              'Snapshot of the current page metadata as returned by the backend.',
+            )}
           </DialogDescription>
         </DialogHeader>
 

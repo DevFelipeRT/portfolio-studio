@@ -1,3 +1,8 @@
+import {
+  CONTENT_MANAGEMENT_NAMESPACES,
+  useContentManagementTranslation,
+} from '@/modules/content-management/i18n';
+
 interface SectionMetaBadgesProps {
   slot?: string | null;
   anchor?: string | null;
@@ -16,11 +21,15 @@ export function SectionMetaBadges({
   navigationLabel,
   navigationGroup,
 }: SectionMetaBadgesProps) {
+  const { translate: tSections } = useContentManagementTranslation(
+    CONTENT_MANAGEMENT_NAMESPACES.sections,
+  );
+
   return (
     <>
       {slot && (
         <span className="bg-muted text-muted-foreground rounded px-2 py-0.5 text-xs">
-          Slot: {slot}
+          {tSections('meta.slot', 'Slot: {{value}}', { value: slot })}
         </span>
       )}
 
@@ -32,13 +41,17 @@ export function SectionMetaBadges({
 
       {navigationLabel && (
         <span className="bg-muted text-muted-foreground rounded px-2 py-0.5 text-xs">
-          Nav: {navigationLabel}
+          {tSections('meta.navigation', 'Nav: {{value}}', {
+            value: navigationLabel,
+          })}
         </span>
       )}
 
       {navigationGroup && (
         <span className="bg-muted text-muted-foreground rounded px-2 py-0.5 text-xs">
-          Group: {navigationGroup}
+          {tSections('meta.group', 'Group: {{value}}', {
+            value: navigationGroup,
+          })}
         </span>
       )}
     </>

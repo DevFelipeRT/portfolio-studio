@@ -11,6 +11,10 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { Plus } from 'lucide-react';
+import {
+  CONTENT_MANAGEMENT_NAMESPACES,
+  useContentManagementTranslation,
+} from '@/modules/content-management/i18n';
 import React from 'react';
 import { SectionItem } from './partials';
 
@@ -47,6 +51,12 @@ export function SectionList({
   onRemoveSection,
   onReorder,
 }: SectionListProps) {
+  const { translate: tSections } = useContentManagementTranslation(
+    CONTENT_MANAGEMENT_NAMESPACES.sections,
+  );
+  const { translate: tActions } = useContentManagementTranslation(
+    CONTENT_MANAGEMENT_NAMESPACES.actions,
+  );
   const templateLabelByKey = React.useMemo(() => {
     const map = new Map<string, string>();
 
@@ -61,9 +71,14 @@ export function SectionList({
     <Card>
       <CardHeader className="flex flex-row items-center justify-between gap-3">
         <div>
-          <CardTitle className="text-base">Sections</CardTitle>
+          <CardTitle className="text-base">
+            {tSections('list.title', 'Sections')}
+          </CardTitle>
           <p className="text-muted-foreground mt-1 text-xs">
-            Manage the content sections that compose this page.
+            {tSections(
+              'list.description',
+              'Manage the content sections that compose this page.',
+            )}
           </p>
         </div>
 
@@ -74,15 +89,17 @@ export function SectionList({
           onClick={onCreateSection}
         >
           <Plus className="h-4 w-4" />
-          Add section
+          {tActions('addSection', 'Add section')}
         </Button>
       </CardHeader>
 
       <CardContent>
         {sections.length === 0 && (
           <p className="text-muted-foreground py-6 text-sm">
-            No sections configured yet. Use the button above to add the first
-            section.
+            {tSections(
+              'list.empty',
+              'No sections configured yet. Use the button above to add the first section.',
+            )}
           </p>
         )}
 

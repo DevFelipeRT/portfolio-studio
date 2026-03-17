@@ -1,5 +1,9 @@
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import {
+  CONTENT_MANAGEMENT_NAMESPACES,
+  useContentManagementTranslation,
+} from '@/modules/content-management/i18n';
 import type { TemplateFilterMode } from '../types';
 
 interface TemplateFiltersProps {
@@ -17,10 +21,14 @@ export function TemplateFilters({
   onFilterModeChange,
   onOriginFilterChange,
 }: TemplateFiltersProps) {
+  const { translate: tTemplates } = useContentManagementTranslation(
+    CONTENT_MANAGEMENT_NAMESPACES.templates,
+  );
+
   return (
     <div className="flex flex-wrap items-center gap-2">
       <Label className="text-muted-foreground text-xs tracking-wide uppercase">
-        Filters
+        {tTemplates('filters.label', 'Filters')}
       </Label>
       <Button
         type="button"
@@ -28,7 +36,7 @@ export function TemplateFilters({
         size="sm"
         onClick={() => onFilterModeChange('all')}
       >
-        All
+        {tTemplates('filters.all', 'All')}
       </Button>
       <Button
         type="button"
@@ -36,7 +44,7 @@ export function TemplateFilters({
         size="sm"
         onClick={() => onFilterModeChange('generic')}
       >
-        Generic
+        {tTemplates('filters.generic', 'Generic')}
       </Button>
       <Button
         type="button"
@@ -44,7 +52,7 @@ export function TemplateFilters({
         size="sm"
         onClick={() => onFilterModeChange('domain')}
       >
-        Domain
+        {tTemplates('filters.domain', 'Domain')}
       </Button>
 
       <div className="ml-auto flex items-center gap-2">
@@ -52,7 +60,7 @@ export function TemplateFilters({
           htmlFor="template-origin-filter"
           className="text-muted-foreground text-xs tracking-wide uppercase"
         >
-          Domain
+          {tTemplates('filters.domainLabel', 'Domain')}
         </Label>
         <select
           id="template-origin-filter"
@@ -61,7 +69,7 @@ export function TemplateFilters({
           onChange={(event) => onOriginFilterChange(event.target.value)}
           disabled={filterMode === 'generic'}
         >
-          <option value="">All</option>
+          <option value="">{tTemplates('filters.all', 'All')}</option>
           {domainOrigins.map((origin) => (
             <option key={origin} value={origin}>
               {origin}

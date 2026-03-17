@@ -1,4 +1,8 @@
 import { Badge } from '@/components/ui/badge';
+import {
+  CONTENT_MANAGEMENT_NAMESPACES,
+  useContentManagementTranslation,
+} from '@/modules/content-management/i18n';
 import type { PageSectionDto } from '@/modules/content-management/types';
 
 import { getSectionVisibilityStatus } from '../utils';
@@ -12,11 +16,14 @@ export function SectionVisibilityBadge({
   section: PageSectionDto;
 }) {
   const status = getSectionVisibilityStatus(section);
+  const { translate: tSections } = useContentManagementTranslation(
+    CONTENT_MANAGEMENT_NAMESPACES.sections,
+  );
 
   if (status === 'inactive') {
     return (
       <Badge variant="outline" className="border-dashed">
-        Inactive
+        {tSections('visibility.inactive', 'Inactive')}
       </Badge>
     );
   }
@@ -27,7 +34,7 @@ export function SectionVisibilityBadge({
         variant="outline"
         className="border-primary/40 bg-primary/5 text-primary-foreground border text-xs"
       >
-        Scheduled
+        {tSections('visibility.scheduled', 'Scheduled')}
       </Badge>
     );
   }
@@ -35,10 +42,10 @@ export function SectionVisibilityBadge({
   if (status === 'expired') {
     return (
       <Badge variant="destructive" className="text-xs">
-        Expired
+        {tSections('visibility.expired', 'Expired')}
       </Badge>
     );
   }
 
-  return <Badge className="text-xs">Active</Badge>;
+  return <Badge className="text-xs">{tSections('visibility.active', 'Active')}</Badge>;
 }

@@ -13,6 +13,10 @@ import {
   normalizePageListFilters,
   type PageListFilters as PageListFiltersType,
 } from '@/modules/content-management/features/page-management/page/filtering';
+import {
+  CONTENT_MANAGEMENT_NAMESPACES,
+  useContentManagementTranslation,
+} from '@/modules/content-management/i18n';
 import type { PageIndexViewModelProps } from '@/modules/content-management/types';
 import type { PageDto } from '@/modules/content-management/types';
 import { Plus } from 'lucide-react';
@@ -24,6 +28,12 @@ export default function PageIndex({
   extra,
 }: PageIndexViewModelProps) {
   const [infoPage, setInfoPage] = React.useState<PageDto | null>(null);
+  const { translate: tPages } = useContentManagementTranslation(
+    CONTENT_MANAGEMENT_NAMESPACES.pages,
+  );
+  const { translate: tActions } = useContentManagementTranslation(
+    CONTENT_MANAGEMENT_NAMESPACES.actions,
+  );
 
   const initialFilters = normalizePageListFilters({
     status: filters.status,
@@ -43,24 +53,26 @@ export default function PageIndex({
 
   return (
     <AuthenticatedLayout>
-      <PageHead title="Content pages" />
+      <PageHead title={tPages('index.headTitle', 'Content pages')} />
 
       <PageContent className="space-y-6 py-8" pageWidth="container">
         <div className="flex items-center justify-between gap-3">
           <div>
             <h1 className="text-xl font-semibold tracking-tight">
-              Content pages
+              {tPages('index.title', 'Content pages')}
             </h1>
             <p className="text-muted-foreground mt-1 text-sm">
-              Manage content-managed pages, their metadata and section
-              composition.
+              {tPages(
+                'index.description',
+                'Manage content-managed pages, their metadata and section composition.',
+              )}
             </p>
           </div>
 
           <Button asChild className="gap-2">
             <PageLink href={route('admin.content.pages.create')}>
               <Plus className="h-4 w-4" />
-              New page
+              {tActions('newPage', 'New page')}
             </PageLink>
           </Button>
         </div>
@@ -91,3 +103,5 @@ export default function PageIndex({
     </AuthenticatedLayout>
   );
 }
+
+PageIndex.i18n = ['content-management'];

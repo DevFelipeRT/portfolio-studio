@@ -1,4 +1,8 @@
 import { Label } from '@/components/ui/label';
+import {
+  CONTENT_MANAGEMENT_NAMESPACES,
+  useContentManagementTranslation,
+} from '@/modules/content-management/i18n';
 import { TemplateSelector } from '@/modules/content-management/features/page-management/section/template';
 import type { TemplateDefinitionDto } from '@/modules/content-management/types';
 
@@ -17,17 +21,23 @@ export function TemplatePicker({
   disabled = false,
   onTemplateChange,
 }: TemplatePickerProps) {
+  const { translate: tSections } = useContentManagementTranslation(
+    CONTENT_MANAGEMENT_NAMESPACES.sections,
+  );
   const id = `${idPrefix}-template`;
 
   return (
     <div className="grid gap-4">
       <div className="space-y-1.5">
-        <Label htmlFor={id}>Template</Label>
+        <Label htmlFor={id}>{tSections('fields.template', 'Template')}</Label>
         <TemplateSelector
           templates={templates}
           value={selectedTemplateKey}
           onChange={onTemplateChange}
-          placeholder="Select a template"
+          placeholder={tSections(
+            'fields.templatePlaceholder',
+            'Select a template',
+          )}
           disabled={disabled}
           className="h-14 w-full"
         />
