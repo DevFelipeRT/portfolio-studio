@@ -11,6 +11,10 @@ import {
   TextareaField,
   TextInputField,
 } from '@/common/forms';
+import {
+  INITIATIVES_NAMESPACES,
+  useInitiativesTranslation,
+} from '@/modules/initiatives/i18n';
 
 import { getErrorSummaryFields } from './errorSummaryFields';
 import { ImagesSection } from './partials/ImagesSection';
@@ -29,6 +33,7 @@ export function InitiativeForm({
   processing,
   supportedLocales,
   localeDisabled = false,
+  localeNote = null,
   onSubmit,
   onChangeField,
   onChangeLocale,
@@ -37,7 +42,13 @@ export function InitiativeForm({
   onUpdateImageAlt,
   onUpdateImageFile,
 }: InitiativeFormProps) {
-  const summaryFields = getErrorSummaryFields(errors);
+  const { translate: tSections } = useInitiativesTranslation(
+    INITIATIVES_NAMESPACES.sections,
+  );
+  const { translate: tForm } = useInitiativesTranslation(
+    INITIATIVES_NAMESPACES.form,
+  );
+  const summaryFields = getErrorSummaryFields(errors, tForm);
 
   return (
     <Form
@@ -46,10 +57,13 @@ export function InitiativeForm({
       variant="spacious"
       errorSummaryFields={summaryFields}
     >
-
       <section className="space-y-4">
         <FormHeader
-          title={<h2 className="text-lg font-medium">Basic information</h2>}
+          title={
+            <h2 className="text-lg font-medium">
+              {tSections('basicInformation')}
+            </h2>
+          }
           localeFieldProps={{
             value: data.locale,
             locales: supportedLocales,
@@ -66,13 +80,17 @@ export function InitiativeForm({
           }}
         />
 
+        {localeNote && (
+          <p className="text-muted-foreground text-xs">{localeNote}</p>
+        )}
+
         <div className="grid gap-4 md:grid-cols-4">
           <TextInputField
             name="name"
             id="name"
             value={data.name}
             errors={errors}
-            label="Name"
+            label={tForm('fields.name.label')}
             required
             onChange={(value) => onChangeField('name', value)}
             className="col-span-2"
@@ -83,9 +101,9 @@ export function InitiativeForm({
             id="start_date"
             value={data.start_date}
             errors={errors}
-            label="Start date"
+            label={tForm('fields.start_date.label')}
             required
-            placeholder="Select a date"
+            placeholder={tForm('fields.start_date.placeholder')}
             errorId="start-date-error"
             onChange={(value) => onChangeField('start_date', value)}
           />
@@ -95,8 +113,8 @@ export function InitiativeForm({
             id="end_date"
             value={data.end_date}
             errors={errors}
-            label="End date"
-            placeholder="Select a date"
+            label={tForm('fields.end_date.label')}
+            placeholder={tForm('fields.end_date.placeholder')}
             errorId="end-date-error"
             onChange={(value) => onChangeField('end_date', value)}
           />
@@ -107,7 +125,7 @@ export function InitiativeForm({
           id="summary"
           value={data.summary}
           errors={errors}
-          label="Summary"
+          label={tForm('fields.summary.label')}
           required
           rows={3}
           onChange={(value) => onChangeField('summary', value)}
@@ -118,7 +136,7 @@ export function InitiativeForm({
           id="description"
           value={data.description}
           errors={errors}
-          label="Description"
+          label={tForm('fields.description.label')}
           required
           onChange={(value) => onChangeField('description', value)}
         />
@@ -128,7 +146,7 @@ export function InitiativeForm({
           id="display"
           value={data.display}
           errors={errors}
-          label="Display on landing"
+          label={tForm('fields.display.label')}
           onChange={(value) => onChangeField('display', value)}
         />
       </section>

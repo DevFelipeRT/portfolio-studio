@@ -11,6 +11,10 @@ import type {
   InitiativeImageInput,
 } from '@/modules/initiatives/core/forms';
 import type { Initiative } from '@/modules/initiatives/core/types';
+import {
+  INITIATIVES_NAMESPACES,
+  useInitiativesTranslation,
+} from '@/modules/initiatives/i18n';
 import { InitiativeForm } from '@/modules/initiatives/ui/form/initiative';
 import { TranslationModal } from '@/modules/initiatives/ui/translation-modal/TranslationModal';
 import React from 'react';
@@ -20,6 +24,12 @@ interface EditInitiativeProps {
 }
 
 export default function Edit({ initiative }: EditInitiativeProps) {
+  const { translate: tActions } = useInitiativesTranslation(
+    INITIATIVES_NAMESPACES.actions,
+  );
+  const { translate: tForm } = useInitiativesTranslation(
+    INITIATIVES_NAMESPACES.form,
+  );
   const supportedLocales = useSupportedLocales();
 
   const { data, setData, post, processing, transform } =
@@ -147,9 +157,7 @@ export default function Edit({ initiative }: EditInitiativeProps) {
         }
       } catch {
         if (mounted) {
-          setLocalesLoadError(
-            'Unable to load translations for locale conflict checks.',
-          );
+          setLocalesLoadError(tForm('errors.translationsLoad'));
         }
       } finally {
         if (mounted) {
@@ -163,7 +171,7 @@ export default function Edit({ initiative }: EditInitiativeProps) {
     return () => {
       mounted = false;
     };
-  }, [initiative.id]);
+  }, [initiative.id, tForm]);
 
   const handleLocaleChange = (nextLocale: string): void => {
     if (nextLocale !== data.locale && translationLocales.includes(nextLocale)) {
@@ -178,12 +186,12 @@ export default function Edit({ initiative }: EditInitiativeProps) {
 
   return (
     <AuthenticatedLayout>
-      <PageHead title="Edit initiative" />
+      <PageHead title={tActions('editInitiative')} />
 
       <PageContent className="overflow-hidden py-8" pageWidth="default">
         <div className="mb-6">
           <h1 className="text-xl leading-tight font-semibold">
-            Edit initiative
+            {tActions('editInitiative')}
           </h1>
         </div>
 
@@ -192,7 +200,7 @@ export default function Edit({ initiative }: EditInitiativeProps) {
             href={route('initiatives.index')}
             className="text-muted-foreground hover:text-foreground text-sm"
           >
-            Back to initiatives
+            {tActions('backToIndex')}
           </PageLink>
 
           <Button
@@ -200,12 +208,12 @@ export default function Edit({ initiative }: EditInitiativeProps) {
             variant="secondary"
             onClick={() => setTranslationOpen(true)}
           >
-            Manage translations
+            {tActions('manageTranslations')}
           </Button>
         </div>
 
         <InitiativeForm
-          submitLabel="Save changes"
+          submitLabel={tActions('saveChanges')}
           cancelHref={route('initiatives.index')}
           initiativeId={initiative.id}
           existingImages={initiative.images ?? []}
@@ -214,6 +222,7 @@ export default function Edit({ initiative }: EditInitiativeProps) {
           processing={processing}
           supportedLocales={supportedLocales}
           localeDisabled={loadingTranslations || Boolean(localesLoadError)}
+          localeNote={localesLoadError}
           onSubmit={submit}
           onChangeField={changeField}
           onChangeLocale={handleLocaleChange}
@@ -222,12 +231,6 @@ export default function Edit({ initiative }: EditInitiativeProps) {
           onUpdateImageAlt={updateImageAlt}
           onUpdateImageFile={updateImageFile}
         />
-
-        {localesLoadError && (
-          <p className="text-muted-foreground mt-3 text-xs">
-            {localesLoadError}
-          </p>
-        )}
       </PageContent>
 
       <TranslationModal
@@ -264,3 +267,5 @@ export default function Edit({ initiative }: EditInitiativeProps) {
     </AuthenticatedLayout>
   );
 }
+
+Edit.i18n = ['initiatives'];

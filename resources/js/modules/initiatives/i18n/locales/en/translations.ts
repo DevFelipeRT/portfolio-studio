@@ -1,0 +1,36 @@
+export default {
+  title: 'Translations',
+  subtitle: 'Manage translations for',
+  manage: 'Manage translations',
+  existing: 'Existing translations',
+  empty: 'No translations added yet.',
+  add: 'Add translation',
+  addPanelTitle: 'Add translation',
+  allCovered: 'All locales are covered.',
+  loading: 'Loading translations...',
+  confirmDelete: 'Delete translation for {{locale}}?',
+  fields: {
+    locale: 'Locale',
+    name: 'Name',
+    summary: 'Summary',
+    description: 'Description',
+  },
+  placeholders: {
+    locale: 'Select locale',
+    name: 'Name',
+    summary: 'Summary',
+    description: 'Describe this initiative',
+  },
+  actions: {
+    back: 'Back',
+    save: 'Save',
+    edit: 'Edit',
+    add: 'Add',
+    close: 'Close',
+  },
+  errors: {
+    localeRequired: 'Locale is required.',
+    atLeastOne: 'Add at least one translated field.',
+    unexpected: 'Unexpected error. Please try again.',
+  },
+};

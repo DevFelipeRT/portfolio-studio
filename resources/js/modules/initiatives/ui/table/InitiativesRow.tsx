@@ -1,4 +1,8 @@
 import type { Initiative } from '@/modules/initiatives/core/types';
+import {
+  INITIATIVES_NAMESPACES,
+  useInitiativesTranslation,
+} from '@/modules/initiatives/i18n';
 
 import { Badge } from '@/components/ui/badge';
 import { TableCell, TableRow } from '@/components/ui/table';
@@ -22,7 +26,14 @@ export function InitiativesRow({
   onToggleDisplay,
   onDelete,
 }: InitiativesRowProps) {
-  const period = buildPeriodDisplay(initiative.start_date, initiative.end_date);
+  const { translate: tForm } = useInitiativesTranslation(
+    INITIATIVES_NAMESPACES.form,
+  );
+  const period = buildPeriodDisplay(
+    initiative.start_date,
+    initiative.end_date,
+    tForm('values.empty', '-'),
+  );
   const imageCount = initiative.images?.length ?? 0;
   const hasImages = imageCount > 0;
 
@@ -66,11 +77,11 @@ export function InitiativesRow({
         {period.isPeriod && (
           <div className="flex min-w-0 flex-col gap-0.5">
             <p className="whitespace-nowrap">
-              <span className="text-muted-foreground/80 mr-1">From:</span>
+              <span className="text-muted-foreground/80 mr-1">{tForm('values.from')}:</span>
               <span>{period.fromLabel}</span>
             </p>
             <p className="whitespace-nowrap">
-              <span className="text-muted-foreground/80 mr-1">To:</span>
+              <span className="text-muted-foreground/80 mr-1">{tForm('values.to')}:</span>
               <span>{period.toLabel}</span>
             </p>
           </div>
@@ -89,14 +100,16 @@ export function InitiativesRow({
           {initiative.display ? (
             <>
               <Eye className="h-3.5 w-3.5" />
-              <span className="hidden whitespace-nowrap sm:inline">
-                Visible
+                <span className="hidden whitespace-nowrap sm:inline">
+                {tForm('values.visible')}
               </span>
             </>
           ) : (
             <>
               <EyeOff className="h-3.5 w-3.5" />
-              <span className="hidden whitespace-nowrap sm:inline">Hidden</span>
+              <span className="hidden whitespace-nowrap sm:inline">
+                {tForm('values.hidden')}
+              </span>
             </>
           )}
         </Badge>
@@ -139,11 +152,12 @@ type PeriodDisplay =
 function buildPeriodDisplay(
   start: string | null,
   end: string | null,
+  emptyLabel: string,
 ): PeriodDisplay {
   if (!start) {
     return {
       isPeriod: false,
-      singleLabel: '-',
+      singleLabel: emptyLabel,
       fromLabel: null,
       toLabel: null,
     };
@@ -155,7 +169,7 @@ function buildPeriodDisplay(
   if (Number.isNaN(startDate.getTime())) {
     return {
       isPeriod: false,
-      singleLabel: '-',
+      singleLabel: emptyLabel,
       fromLabel: null,
       toLabel: null,
     };

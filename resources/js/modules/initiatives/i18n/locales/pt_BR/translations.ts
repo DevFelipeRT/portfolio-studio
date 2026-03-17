@@ -1,0 +1,36 @@
+export default {
+  title: 'Traduções',
+  subtitle: 'Gerenciar traduções de',
+  manage: 'Gerenciar traduções',
+  existing: 'Traduções existentes',
+  empty: 'Nenhuma tradução adicionada ainda.',
+  add: 'Adicionar tradução',
+  addPanelTitle: 'Adicionar tradução',
+  allCovered: 'Todos os locales já estão cobertos.',
+  loading: 'Carregando traduções...',
+  confirmDelete: 'Excluir tradução de {{locale}}?',
+  fields: {
+    locale: 'Locale',
+    name: 'Nome',
+    summary: 'Resumo',
+    description: 'Descrição',
+  },
+  placeholders: {
+    locale: 'Selecione o locale',
+    name: 'Nome',
+    summary: 'Resumo',
+    description: 'Descreva esta iniciativa',
+  },
+  actions: {
+    back: 'Voltar',
+    save: 'Salvar',
+    edit: 'Editar',
+    add: 'Adicionar',
+    close: 'Fechar',
+  },
+  errors: {
+    localeRequired: 'O locale é obrigatório.',
+    atLeastOne: 'Adicione ao menos um campo traduzido.',
+    unexpected: 'Erro inesperado. Tente novamente.',
+  },
+};

@@ -13,6 +13,7 @@ export interface InitiativeFormProps {
   processing: boolean;
   supportedLocales: readonly string[];
   localeDisabled?: boolean;
+  localeNote?: string | null;
   onSubmit(event: React.FormEvent<HTMLFormElement>): void;
   onChangeField<K extends keyof InitiativeFormData>(
     key: K,
