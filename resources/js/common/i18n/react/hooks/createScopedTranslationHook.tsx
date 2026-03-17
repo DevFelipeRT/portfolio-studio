@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import type { Namespace, PlaceholderValues } from '../../types';
 import { scopedNamespace } from '../../i18next/scopedNamespace';
 import { getI18nRuntime } from '../../i18next';
@@ -21,46 +22,58 @@ export function createScopedTranslationHook(scopeId: string) {
     namespace?: Namespace,
   ): ScopedTranslationResult {
     const locale = useGetI18nLocale();
+    const resolvedNamespace = React.useMemo(
+      () => scopedNamespace(scopeId, namespace),
+      [namespace],
+    );
 
-    const translateWithNamespace: TranslationFunction = (
-      key: string,
-      secondArgument?: PlaceholderValues | string,
-      thirdArgument?: PlaceholderValues,
-    ): string => {
-      let parameters: PlaceholderValues | undefined;
-      let fallbackText: string | undefined;
+    const translate = React.useCallback<TranslationFunction>(
+      (
+        key: string,
+        secondArgument?: PlaceholderValues | string,
+        thirdArgument?: PlaceholderValues,
+      ): string => {
+        let parameters: PlaceholderValues | undefined;
+        let fallbackText: string | undefined;
 
-      if (typeof secondArgument === 'string') {
-        fallbackText = secondArgument;
-        parameters = thirdArgument;
-      } else {
-        parameters = secondArgument;
-      }
-
-      const ns = scopedNamespace(scopeId, namespace);
-      if (!ns) {
-        return fallbackText ?? key;
-      }
-
-      return getI18nRuntime().t(key, {
-        lng: locale,
-        ns,
-        ...(fallbackText !== undefined ? { defaultValue: fallbackText } : {}),
-        ...(parameters ? { ...parameters } : {}),
-      });
-    };
-
-    return {
-      locale,
-      translate: translateWithNamespace,
-      setLocale(nextLocale: string): string {
-        const trimmed = nextLocale.trim();
-        if (!trimmed) {
-          return trimmed;
+        if (typeof secondArgument === 'string') {
+          fallbackText = secondArgument;
+          parameters = thirdArgument;
+        } else {
+          parameters = secondArgument;
         }
-        void getI18nRuntime().changeLanguage(trimmed);
-        return trimmed;
+
+        if (!resolvedNamespace) {
+          return fallbackText ?? key;
+        }
+
+        return getI18nRuntime().t(key, {
+          lng: locale,
+          ns: resolvedNamespace,
+          ...(fallbackText !== undefined ? { defaultValue: fallbackText } : {}),
+          ...(parameters ? { ...parameters } : {}),
+        });
       },
-    };
+      [locale, resolvedNamespace],
+    );
+
+    const setLocale = React.useCallback((nextLocale: string): string => {
+      const trimmed = nextLocale.trim();
+      if (!trimmed) {
+        return trimmed;
+      }
+
+      void getI18nRuntime().changeLanguage(trimmed);
+      return trimmed;
+    }, []);
+
+    return React.useMemo(
+      () => ({
+        locale,
+        translate,
+        setLocale,
+      }),
+      [locale, setLocale, translate],
+    );
   };
 }
