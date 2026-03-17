@@ -1,4 +1,11 @@
-import type { ComponentType, CSSProperties, MouseEventHandler, ReactNode } from 'react';
+import type {
+  ComponentType,
+  CSSProperties,
+  ForwardRefExoticComponent,
+  MouseEventHandler,
+  ReactNode,
+  RefAttributes,
+} from 'react';
 import type { PageHeadProps } from './document';
 import type { PageFormDataValues, PageFormHook } from './form';
 import type { PageRequestPayload, PageRouter, PageVisitOptions } from './navigation';
@@ -35,7 +42,9 @@ export type PageLinkProps = {
 
 export type PageRuntimeAdapter = {
   Head: ComponentType<PageHeadProps>;
-  Link: ComponentType<PageLinkProps>;
+  Link:
+    | ComponentType<PageLinkProps>
+    | ForwardRefExoticComponent<PageLinkProps & RefAttributes<HTMLElement>>;
   router: PageRouter;
   useCurrentPage(): RuntimePage;
   usePageProps<TPageProps extends RuntimePageProps>(): TPageProps;
