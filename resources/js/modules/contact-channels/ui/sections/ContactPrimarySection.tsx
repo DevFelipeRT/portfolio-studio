@@ -17,6 +17,7 @@ import { SectionHeader, useFieldValueResolver } from '@/modules/content-manageme
 import { usePageForm } from '@/common/page-runtime';
 import { Github, Linkedin, Link2, Mail, MessageCircle, PhoneCall } from 'lucide-react';
 import type { ComponentType, FormEvent, JSX, SVGProps } from 'react';
+import type { PlaceholderValues } from '@/common/i18n';
 
 /**
  * Renders the primary contact section driven by ContentManagement template data.
@@ -268,6 +269,11 @@ export function ContactPrimarySection(): JSX.Element | null {
 
 type IconComponent = ComponentType<SVGProps<SVGSVGElement>>;
 
+type ContactChannelsTranslationFunction = {
+  (key: string, params?: PlaceholderValues): string;
+  (key: string, fallback: string, params?: PlaceholderValues): string;
+};
+
 type ContactChannelArrayItem =
   | SectionDataPrimitive
   | SectionDataCollectionItem
@@ -288,7 +294,7 @@ function isContactChannelItem(
 
 function mapContactChannelItem(
   item: ContactChannelData,
-  tContactChannels: (key: string, fallback?: string) => string,
+  tContactChannels: ContactChannelsTranslationFunction,
 ): SocialLinkItem | null {
   const channelType =
     typeof item.channel_type === 'string' ? item.channel_type : undefined;
@@ -343,7 +349,7 @@ function channelTypeTranslationKey(channelType?: string): string | undefined {
 
 function channelTypeLabel(
   channelType: string | undefined,
-  tContactChannels: (key: string, fallback?: string) => string,
+  tContactChannels: ContactChannelsTranslationFunction,
 ): string {
   if (!channelType) {
     return tContactChannels('socials.unknown.label');
