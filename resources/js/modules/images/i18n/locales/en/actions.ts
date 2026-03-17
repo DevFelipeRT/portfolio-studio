@@ -1,0 +1,16 @@
+export default {
+  backToIndex: 'Back to images',
+  uploadImage: 'Upload image',
+  newImage: 'New image',
+  editImage: 'Edit image',
+  saveImage: 'Save image',
+  updateMetadata: 'Update image metadata',
+  viewDetails: 'View details',
+  editMetadata: 'Edit metadata',
+  deleteImage: 'Delete image',
+  openMenu: 'Open image actions menu',
+  resetFilters: 'Reset filters',
+  applyFilters: 'Apply filters',
+  previous: 'Previous',
+  next: 'Next',
+};

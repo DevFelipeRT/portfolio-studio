@@ -7,6 +7,10 @@ import { useState } from 'react';
 
 import type { Image } from '@/modules/images/core/types';
 import {
+  IMAGES_NAMESPACES,
+  useImagesTranslation,
+} from '@/modules/images/i18n';
+import {
   ImageFilters,
   type ImageFiltersValues,
 } from '@/modules/images/ui/ImageFilters';
@@ -42,6 +46,7 @@ interface ImagesIndexProps {
  * Global images index page, integrating filters, list, actions and preview modal.
  */
 export default function Index({ images, filters }: ImagesIndexProps) {
+  const { translate: tImages } = useImagesTranslation(IMAGES_NAMESPACES.images);
   const [selectedImage, setSelectedImage] = useState<Image | null>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
 
@@ -68,7 +73,7 @@ export default function Index({ images, filters }: ImagesIndexProps) {
 
   const handleDeleteFromActions = (image: Image) => {
     const confirmed = window.confirm(
-      'Are you sure you want to delete this image? This action cannot be undone.',
+      tImages('confirm.delete'),
     );
 
     if (!confirmed) {
@@ -142,7 +147,7 @@ export default function Index({ images, filters }: ImagesIndexProps) {
 
   return (
     <AuthenticatedLayout>
-      <PageHead title="Images" />
+      <PageHead title={tImages('page.title')} />
 
       <PageContent
         className="space-y-4 overflow-hidden py-6"
@@ -180,6 +185,8 @@ export default function Index({ images, filters }: ImagesIndexProps) {
     </AuthenticatedLayout>
   );
 }
+
+Index.i18n = ['images'];
 
 function normalizePagination(images: ImagesIndexPagination<Image>): {
   currentPage: number;

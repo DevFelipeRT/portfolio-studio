@@ -1,0 +1,16 @@
+export default {
+  backToIndex: 'Voltar para imagens',
+  uploadImage: 'Enviar imagem',
+  newImage: 'Nova imagem',
+  editImage: 'Editar imagem',
+  saveImage: 'Salvar imagem',
+  updateMetadata: 'Atualizar metadados da imagem',
+  viewDetails: 'Ver detalhes',
+  editMetadata: 'Editar metadados',
+  deleteImage: 'Excluir imagem',
+  openMenu: 'Abrir menu de acoes da imagem',
+  resetFilters: 'Limpar filtros',
+  applyFilters: 'Aplicar filtros',
+  previous: 'Anterior',
+  next: 'Proxima',
+};

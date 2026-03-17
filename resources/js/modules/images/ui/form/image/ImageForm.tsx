@@ -2,6 +2,7 @@ import {
   Form,
   FormActions,
 } from '@/common/forms';
+import { IMAGES_NAMESPACES, useImagesTranslation } from '@/modules/images/i18n';
 
 import { getErrorSummaryFields } from './errorSummaryFields';
 import { CurrentImageSection } from './partials/CurrentImageSection';
@@ -25,7 +26,8 @@ export function ImageForm({
   onSubmit,
   onChange,
 }: ImageFormProps) {
-  const summaryFields = getErrorSummaryFields(errors);
+  const { translate: tForm } = useImagesTranslation(IMAGES_NAMESPACES.form);
+  const summaryFields = getErrorSummaryFields(errors, tForm);
 
   return (
     <Form
