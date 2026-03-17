@@ -15,11 +15,13 @@ export default {
     back: 'Back',
     save: 'Save translation',
     saveChanges: 'Save changes',
+    saving: 'Saving...',
     delete: 'Delete',
   },
   errors: {
     localeAndLabelRequired: 'Select a locale and provide a label.',
     labelRequired: 'Translation label cannot be empty.',
+    unexpected: 'Unexpected error. Please try again.',
   },
   confirmDelete: 'Delete translation for {{locale}}?',
 };

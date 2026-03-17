@@ -7,6 +7,7 @@ export interface ContactChannelFormProps {
   data: ContactChannelFormData;
   errors: FormErrors<keyof ContactChannelFormData>;
   channelTypes: ContactChannelTypeOption[];
+  title?: React.ReactNode;
   processing: boolean;
   onChange(
     field: keyof ContactChannelFormData,

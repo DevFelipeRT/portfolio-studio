@@ -3,6 +3,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { SocialLinksBar, type SocialLinkItem } from '@/modules/contact-channels/ui/SocialLinksBar';
+import {
+  CONTACT_CHANNELS_NAMESPACES,
+  useContactChannelsTranslation,
+} from '@/modules/contact-channels/i18n';
 import type {
   SectionDataCollectionItem,
   SectionDataPrimitive,
@@ -23,47 +27,62 @@ import type { ComponentType, FormEvent, JSX, SVGProps } from 'react';
  */
 export function ContactPrimarySection(): JSX.Element | null {
   const fieldResolver = useFieldValueResolver();
+  const { translate: tContactChannels } = useContactChannelsTranslation(
+    CONTACT_CHANNELS_NAMESPACES.contactChannels,
+  );
 
   const sectionLabel =
     fieldResolver.getFieldValue<string>('section_label') ??
-    'Contact and collaboration';
+    tContactChannels('sectionDefaults.sectionLabel');
 
-  const eyebrow = fieldResolver.getFieldValue<string>('eyebrow') ?? 'Contact';
+  const eyebrow =
+    fieldResolver.getFieldValue<string>('eyebrow') ??
+    tContactChannels('sectionDefaults.eyebrow');
 
   const title =
     fieldResolver.getFieldValue<string>('title') ??
-    'Let us talk about opportunities, projects, or collaboration.';
+    tContactChannels('sectionDefaults.title');
 
   const description =
     fieldResolver.getFieldValue<string>('description') ??
     fieldResolver.getFieldValue<string>('subtitle') ??
-    'If you are looking for a developer to strengthen your team, support a specific project, or start a technical collaboration, use the form or the channels below to get in touch.';
+    tContactChannels('sectionDefaults.description');
 
   const formTitle =
-    fieldResolver.getFieldValue<string>('form_title') ?? 'Send a message';
+    fieldResolver.getFieldValue<string>('form_title') ??
+    tContactChannels('sectionDefaults.formTitle');
 
   const formDescription =
     fieldResolver.getFieldValue<string>('form_description') ??
-    'Share what you have in mind and how I can help.';
+    tContactChannels('sectionDefaults.formDescription');
 
-  const nameLabel = fieldResolver.getFieldValue<string>('name_label') ?? 'Name';
+  const nameLabel =
+    fieldResolver.getFieldValue<string>('name_label') ??
+    tContactChannels('sectionDefaults.nameLabel');
   const namePlaceholder =
-    fieldResolver.getFieldValue<string>('name_placeholder') ?? 'Your name';
+    fieldResolver.getFieldValue<string>('name_placeholder') ??
+    tContactChannels('sectionDefaults.namePlaceholder');
 
-  const emailLabel = fieldResolver.getFieldValue<string>('email_label') ?? 'Email';
+  const emailLabel =
+    fieldResolver.getFieldValue<string>('email_label') ??
+    tContactChannels('sectionDefaults.emailLabel');
   const emailPlaceholder =
-    fieldResolver.getFieldValue<string>('email_placeholder') ?? 'you@example.com';
+    fieldResolver.getFieldValue<string>('email_placeholder') ??
+    tContactChannels('sectionDefaults.emailPlaceholder');
 
   const messageLabel =
-    fieldResolver.getFieldValue<string>('message_label') ?? 'Message';
+    fieldResolver.getFieldValue<string>('message_label') ??
+    tContactChannels('sectionDefaults.messageLabel');
   const messagePlaceholder =
     fieldResolver.getFieldValue<string>('message_placeholder') ??
-    'Write your message here.';
+    tContactChannels('sectionDefaults.messagePlaceholder');
 
   const submitLabel =
-    fieldResolver.getFieldValue<string>('submit_label') ?? 'Send message';
+    fieldResolver.getFieldValue<string>('submit_label') ??
+    tContactChannels('sectionDefaults.submitLabel');
   const submitProcessingLabel =
-    fieldResolver.getFieldValue<string>('submit_processing_label') ?? 'Sending…';
+    fieldResolver.getFieldValue<string>('submit_processing_label') ??
+    tContactChannels('sectionDefaults.submitProcessingLabel');
 
   const rawContactChannels =
     fieldResolver.getFieldValue<SectionDataValue>('contact_channels') ??
@@ -72,7 +91,7 @@ export function ContactPrimarySection(): JSX.Element | null {
   const channelItems: SocialLinkItem[] = Array.isArray(rawContactChannels)
     ? (rawContactChannels as ContactChannelArrayItem[])
         .filter(isContactChannelItem)
-        .map(mapContactChannelItem)
+        .map((item) => mapContactChannelItem(item, tContactChannels))
         .filter((item): item is SocialLinkItem => item !== null)
     : [];
 
@@ -81,10 +100,10 @@ export function ContactPrimarySection(): JSX.Element | null {
 
   const socialsHeading =
     fieldResolver.getFieldValue<string>('sidebar_heading') ??
-    'Other contact channels';
+    tContactChannels('sectionDefaults.socialsHeading');
   const socialsDescription =
     fieldResolver.getFieldValue<string>('sidebar_description') ??
-    'You can also contact me through your preferred channel using the links below to access my profiles and learn more about my work.';
+    tContactChannels('sectionDefaults.socialsDescription');
 
   const {
     data: formData,
@@ -267,7 +286,10 @@ function isContactChannelItem(
   return item !== null && typeof item === 'object' && !Array.isArray(item);
 }
 
-function mapContactChannelItem(item: ContactChannelData): SocialLinkItem | null {
+function mapContactChannelItem(
+  item: ContactChannelData,
+  tContactChannels: (key: string, fallback?: string) => string,
+): SocialLinkItem | null {
   const channelType =
     typeof item.channel_type === 'string' ? item.channel_type : undefined;
   const href =
@@ -284,7 +306,7 @@ function mapContactChannelItem(item: ContactChannelData): SocialLinkItem | null 
   const label =
     typeof item.label === 'string' && item.label.trim() !== ''
       ? item.label
-      : channelTypeLabel(channelType);
+      : channelTypeLabel(channelType, tContactChannels);
 
   return {
     label,
@@ -319,19 +341,16 @@ function channelTypeTranslationKey(channelType?: string): string | undefined {
   return `socials.${channelType}.label`;
 }
 
-function channelTypeLabel(channelType?: string): string {
+function channelTypeLabel(
+  channelType: string | undefined,
+  tContactChannels: (key: string, fallback?: string) => string,
+): string {
   if (!channelType) {
-    return 'Contact';
+    return tContactChannels('socials.unknown.label');
   }
 
-  return (
-    {
-      email: 'Email',
-      github: 'GitHub',
-      linkedin: 'LinkedIn',
-      whatsapp: 'WhatsApp',
-      phone: 'Phone',
-      custom: 'Contact',
-    } as Record<string, string>
-  )[channelType] ?? 'Contact';
+  return tContactChannels(
+    `socials.${channelType}.label`,
+    tContactChannels('socials.unknown.label'),
+  );
 }

@@ -16,6 +16,7 @@ export function ContactChannelForm({
   data,
   errors,
   channelTypes,
+  title,
   processing,
   onChange,
   onSubmit,
@@ -39,7 +40,11 @@ export function ContactChannelForm({
 
       <FormHeader
         className="min-h-6"
-        title={<h2 className="sr-only">{tForm('sections.managementTitle')}</h2>}
+        title={
+          title ?? (
+            <h2 className="sr-only">{tForm('sections.managementTitle')}</h2>
+          )
+        }
         localeFieldProps={{
           value: data.locale,
           locales: supportedLocales,

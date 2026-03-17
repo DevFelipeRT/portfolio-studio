@@ -35,11 +35,11 @@ type TranslationModalProps = {
 
 type EditableTranslation = TranslationItem & { draftLabel?: string };
 
-function normalizeError(error: unknown): string {
+function normalizeError(error: unknown, fallback: string): string {
     if (typeof error === 'string') return error;
     const message = (error as { response?: { data?: { message?: string } } })
         ?.response?.data?.message;
-    return message ?? 'Unexpected error. Please try again.';
+    return message ?? fallback;
 }
 
 export function TranslationModal({
@@ -81,11 +81,11 @@ export function TranslationModal({
                 draftLabel: item.label ?? '',
             })));
         } catch (err) {
-            setError(normalizeError(err));
+            setError(normalizeError(err, t('errors.unexpected')));
         } finally {
             setLoading(false);
         }
-    }, [open, contactChannelId]);
+    }, [open, contactChannelId, t]);
 
     React.useEffect(() => {
         void loadData();
@@ -137,7 +137,7 @@ export function TranslationModal({
             setNewLocale('');
             setNewLabel('');
         } catch (err) {
-            setError(normalizeError(err));
+            setError(normalizeError(err, t('errors.unexpected')));
         } finally {
             setSaving(false);
         }
@@ -182,7 +182,7 @@ export function TranslationModal({
                 ),
             );
         } catch (err) {
-            setError(normalizeError(err));
+            setError(normalizeError(err, t('errors.unexpected')));
         } finally {
             setSaving(false);
         }
@@ -203,7 +203,7 @@ export function TranslationModal({
                 current.filter((entry) => entry.locale !== item.locale),
             );
         } catch (err) {
-            setError(normalizeError(err));
+            setError(normalizeError(err, t('errors.unexpected')));
         } finally {
             setSaving(false);
         }
@@ -347,7 +347,7 @@ export function TranslationModal({
                                                 onClick={handleCreate}
                                                 disabled={saving}
                                             >
-                                                {saving ? 'Saving…' : t('actions.save')}
+                                                {saving ? t('actions.saving') : t('actions.save')}
                                             </Button>
                                         </div>
                                     </div>
@@ -405,7 +405,7 @@ export function TranslationModal({
                                         onClick={() => handleUpdate(activeTranslation)}
                                         disabled={saving}
                                     >
-                                        {saving ? 'Saving…' : t('actions.saveChanges')}
+                                        {saving ? t('actions.saving') : t('actions.saveChanges')}
                                     </Button>
                                 </div>
                             </div>
