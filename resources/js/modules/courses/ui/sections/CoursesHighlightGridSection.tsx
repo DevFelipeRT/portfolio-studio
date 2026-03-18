@@ -1,4 +1,5 @@
 import { useGetLocale } from '@/common/locale';
+import { RichTextRenderer } from '@/common/rich-text/RichTextRenderer';
 import { Badge } from '@/components/ui/badge';
 import { DateDisplay } from '@/components/ui/date-display';
 import { ExpandableCard } from '@/components/ui/expandable-card';
@@ -188,9 +189,10 @@ export function CoursesHighlightGridSection(): JSX.Element | null {
                 tags={categoryLabel ? [categoryLabel] : []}
               >
                 {hasLongDescription && (
-                  <p className="text-muted-foreground text-xs leading-relaxed sm:text-sm">
-                    {course.description}
-                  </p>
+                  <RichTextRenderer
+                    value={course.description!}
+                    className="text-xs leading-relaxed sm:text-sm"
+                  />
                 )}
 
                 {course.display === false && (
