@@ -216,7 +216,7 @@ export function ExpandableCard({
                     </div>
 
                     {description && (
-                        <CardDescription className="text-muted-foreground mt-2 text-xs leading-relaxed sm:text-sm">
+                        <CardDescription className="text-muted-foreground/90 mt-2 text-sm leading-6">
                             {description}
                         </CardDescription>
                     )}
@@ -243,7 +243,7 @@ export function ExpandableCard({
                         )}
 
                         {hasExpandableContent && (
-                            <CollapsibleContent className="data-[state=open]:animate-collapsible-down data-[state=closed]:animate-collapsible-up text-muted-foreground mt-1 overflow-hidden text-xs leading-relaxed sm:text-sm">
+                            <CollapsibleContent className="data-[state=open]:animate-collapsible-down data-[state=closed]:animate-collapsible-up text-muted-foreground mt-2 overflow-hidden text-sm leading-6">
                                 {children}
                             </CollapsibleContent>
                         )}

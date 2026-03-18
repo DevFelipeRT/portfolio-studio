@@ -27,7 +27,6 @@ export default {
     },
     period: {
       label: 'Período',
-      present: 'Atual',
     },
     updated_at: {
       label: 'Atualizado em',

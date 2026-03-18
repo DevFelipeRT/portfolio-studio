@@ -1,5 +1,8 @@
 import { useGetLocale } from '@/common/locale';
-import { RichTextRenderer } from '@/common/rich-text/RichTextRenderer';
+import {
+  RichTextRenderer,
+  compactRichTextTheme,
+} from '@/common/rich-text';
 import { DateDisplay } from '@/components/ui/date-display';
 import {
   EXPERIENCES_NAMESPACES,
@@ -80,8 +83,8 @@ function ExperiencePeriodDisplay({
 export function ExperienceTimelineSection(): JSX.Element | null {
   const fieldResolver = useFieldValueResolver();
   const locale = useGetLocale();
-  const { translate: tForm } = useExperiencesTranslation(
-    EXPERIENCES_NAMESPACES.form,
+  const { translate: tShared } = useExperiencesTranslation(
+    EXPERIENCES_NAMESPACES.shared,
   );
   const { translate: tSections } = useExperiencesTranslation(
     EXPERIENCES_NAMESPACES.sections,
@@ -133,7 +136,7 @@ export function ExperienceTimelineSection(): JSX.Element | null {
 
   const presentLabel =
     fieldResolver.getFieldValue<string>('present_label') ??
-    tForm('fields.period.present');
+    tShared('period.present');
 
   if (!hasExperiences && !title && !description && !eyebrow) {
     return null;
@@ -173,7 +176,12 @@ export function ExperienceTimelineSection(): JSX.Element | null {
               isLast={index === visibleExperiences.length - 1}
             >
               {experience.description && (
-                <RichTextRenderer value={experience.description} />
+                <RichTextRenderer
+                  value={experience.description}
+                  theme={compactRichTextTheme}
+                  className="text-sm leading-6"
+                  fallbackClassName="text-sm leading-6 whitespace-pre-line"
+                />
               )}
             </TimelineItem>
           ))}

@@ -1,5 +1,8 @@
 import { useGetLocale } from '@/common/locale';
-import { RichTextRenderer } from '@/common/rich-text/RichTextRenderer';
+import {
+  RichTextRenderer,
+  compactRichTextTheme,
+} from '@/common/rich-text';
 import { Badge } from '@/components/ui/badge';
 import { DateDisplay } from '@/components/ui/date-display';
 import { ExpandableCard } from '@/components/ui/expandable-card';
@@ -84,6 +87,9 @@ export function CoursesHighlightGridSection(): JSX.Element | null {
   const fieldResolver = useFieldValueResolver();
   const locale = useGetLocale();
   const { translate: tForm } = useCoursesTranslation(COURSES_NAMESPACES.form);
+  const { translate: tShared } = useCoursesTranslation(
+    COURSES_NAMESPACES.shared,
+  );
   const { translate: tSections } = useCoursesTranslation(
     COURSES_NAMESPACES.sections,
   );
@@ -159,9 +165,16 @@ export function CoursesHighlightGridSection(): JSX.Element | null {
         <div className="grid gap-6 md:grid-cols-2">
           {visibleCourses.map((course) => {
             const rawCategory = course.category ?? undefined;
-            const categoryLabel =
+            const normalizedCategory =
               rawCategory && rawCategory.trim().length > 0
-                ? rawCategory
+                ? rawCategory.trim()
+                : undefined;
+            const categoryLabel =
+              normalizedCategory
+                ? tShared(
+                    `categories.${normalizedCategory}`,
+                    normalizedCategory,
+                  )
                 : undefined;
 
             const hasLongDescription =
@@ -187,22 +200,28 @@ export function CoursesHighlightGridSection(): JSX.Element | null {
                   />
                 }
                 tags={categoryLabel ? [categoryLabel] : []}
+                disabled={!hasLongDescription}
+                contentClassName={hasLongDescription ? 'space-y-0' : 'pb-0'}
               >
-                {hasLongDescription && (
-                  <RichTextRenderer
-                    value={course.description!}
-                    className="text-xs leading-relaxed sm:text-sm"
-                  />
-                )}
+                {(hasLongDescription || course.display === false) && (
+                  <div className="space-y-3 pt-2">
+                    {hasLongDescription && (
+                      <RichTextRenderer
+                        value={course.description!}
+                        theme={compactRichTextTheme}
+                        className="text-sm leading-6"
+                        fallbackClassName="text-sm leading-6 whitespace-pre-line"
+                      />
+                    )}
 
-                {course.display === false && (
-                  <div className="mt-3">
-                    <Badge
-                      variant="outline"
-                      className="text-[0.7rem] font-normal"
-                    >
-                      {notHighlightedLabel}
-                    </Badge>
+                    {course.display === false && (
+                      <Badge
+                        variant="outline"
+                        className="text-[0.7rem] font-normal"
+                      >
+                        {notHighlightedLabel}
+                      </Badge>
+                    )}
                   </div>
                 )}
               </ExpandableCard>

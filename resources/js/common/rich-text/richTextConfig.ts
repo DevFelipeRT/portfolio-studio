@@ -50,6 +50,29 @@ export const defaultRichTextTheme = {
   code: 'block rounded-md bg-muted px-4 py-3 font-mono text-sm whitespace-pre overflow-x-auto',
 };
 
+export const compactRichTextTheme = {
+  ...defaultRichTextTheme,
+  paragraph: 'mb-2 last:mb-0',
+  quote: 'border-l-4 border-muted pl-4 italic text-muted-foreground text-sm leading-6',
+  heading: {
+    h1: 'text-base font-semibold tracking-tight',
+    h2: 'text-base font-semibold tracking-tight',
+    h3: 'text-sm font-semibold tracking-tight',
+    h4: 'text-sm font-semibold tracking-tight',
+  },
+  list: {
+    ...defaultRichTextTheme.list,
+    ol: 'ml-5 list-decimal space-y-1',
+    ul: 'ml-5 list-disc space-y-1',
+    listitem: 'leading-6',
+  },
+  text: {
+    ...defaultRichTextTheme.text,
+    code: 'rounded bg-muted px-1.5 py-0.5 font-mono text-xs',
+  },
+  code: 'block rounded-md bg-muted px-3 py-2 font-mono text-xs whitespace-pre overflow-x-auto',
+};
+
 export const defaultRichTextAutoLinkMatchers = [
   createLinkMatcherWithRegExp(/https?:\/\/[^\s]+/g, (text) => text),
   createLinkMatcherWithRegExp(

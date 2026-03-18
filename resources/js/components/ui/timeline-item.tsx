@@ -39,8 +39,8 @@ export function TimelineItem({
     children,
 }: TimelineItemProps) {
     const hasDescription =
-        !!children ||
-        (typeof description === 'string' && description.trim() !== '');
+        typeof description === 'string' && description.trim() !== '';
+    const hasExpandableContent = !!children && hasDescription;
 
     return (
         <div className="relative pb-2 pl-8 sm:pl-10">
@@ -63,10 +63,9 @@ export function TimelineItem({
                 icon={icon}
                 meta={period}
                 tags={tags}
-                disabled={!hasDescription}
+                disabled={!hasExpandableContent}
             >
                 {children}
-                {!children && description && <p className="mt-1">{description}</p>}
             </ExpandableCard>
         </div>
     );
