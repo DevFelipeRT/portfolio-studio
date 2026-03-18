@@ -27,6 +27,10 @@ in `docs/frontend/common/i18n/README.md`.
 - Verify the page scope first.
 - Verify the registry id and the corresponding `definition.ts` / `environment.ts`
   pair.
+- Scoped translation hooks subscribe to their resolved namespace, and the
+  runtime now binds React updates to i18next store events (`added` / `removed`),
+  so asynchronously loaded bundles should rerender consumers instead of leaving
+  fallback text or raw keys stuck on screen.
 - Only then verify the key inside the loaded namespace.
 
 ## 2) Scope ids are stringly-typed

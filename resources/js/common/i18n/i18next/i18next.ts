@@ -49,6 +49,11 @@ export function ensureI18nextInitialized(
     },
     react: {
       useSuspense: false,
+      // CMS/public scopes can be preloaded after first paint via addResourceBundle(...).
+      // React consumers must subscribe to i18next/store updates so late-added
+      // bundles rerender mounted sections instead of staying on fallback text.
+      bindI18n: 'languageChanged loaded',
+      bindI18nStore: 'added removed',
     },
     saveMissing: false,
     missingKeyHandler(lngs, namespace, key) {

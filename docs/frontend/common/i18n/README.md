@@ -158,6 +158,14 @@ Expected behavior for page-level i18n is:
 - system/admin pages may wait on declared module scopes because their UI labels and controls depend on client-side translations
 - scope declaration remains the contract: if a system page needs module i18n, it must declare that through `Page.i18n` or `Page.getI18nScope`
 
+For public pages, module-scoped UI text may still arrive after the first paint
+because scope preloading happens asynchronously. Hooks created through
+`createScopedTranslationHook(...)` now subscribe to their resolved
+`<scopeId>.<namespace>` via `react-i18next`, and the shared runtime binds React
+updates to i18next store events such as `added` / `removed`. Together, that
+lets sections rerender when late-loaded bundles are installed instead of
+staying stuck on fallback text or raw keys.
+
 Related design choices:
 
 - the system favors incremental migration over a fully blocking global bootstrap, so it does not stop every page until every possible scoped bundle is loaded
@@ -190,6 +198,7 @@ Primary contract:
 - reads the current locale from context
 - resolves keys within `common.<namespace>`
 - accepts an optional per-call fallback
+- subscribes to the resolved namespace so late-loaded bundles can trigger rerenders
 - returns memoized handlers whose identities change only when the effective
   locale or namespace changes
 
