@@ -3,7 +3,7 @@
 import React from 'react';
 import type { Namespace, PlaceholderValues } from '../../types';
 import { scopedNamespace } from '../../i18next/scopedNamespace';
-import { getI18nRuntime } from '../../i18next';
+import { getI18nRuntime, useI18nextTranslation } from '../../i18next';
 import { useGetI18nLocale } from './useGetI18nLocale';
 
 type TranslationFunction = {
@@ -22,6 +22,9 @@ export type ScopedTranslationResult = {
  *
  * The returned API is memoized so `translate` and `setLocale` keep stable
  * identities across renders unless the effective locale or namespace changes.
+ * The hook also subscribes to the resolved namespace through `react-i18next`
+ * so components rerender when late-loaded bundles are installed after the
+ * initial paint.
  */
 export function createScopedTranslationHook(scopeId: string) {
   return function useScopedTranslation(
@@ -31,6 +34,9 @@ export function createScopedTranslationHook(scopeId: string) {
     const resolvedNamespace = React.useMemo(
       () => scopedNamespace(scopeId, namespace),
       [namespace],
+    );
+    const { t } = useI18nextTranslation(
+      resolvedNamespace ? [resolvedNamespace] : undefined,
     );
 
     const translate = React.useCallback<TranslationFunction>(
@@ -53,14 +59,14 @@ export function createScopedTranslationHook(scopeId: string) {
           return fallbackText ?? key;
         }
 
-        return getI18nRuntime().t(key, {
+        return t(key, {
           lng: locale,
           ns: resolvedNamespace,
           ...(fallbackText !== undefined ? { defaultValue: fallbackText } : {}),
           ...(parameters ? { ...parameters } : {}),
         });
       },
-      [locale, resolvedNamespace],
+      [locale, resolvedNamespace, t],
     );
 
     const setLocale = React.useCallback((nextLocale: string): string => {

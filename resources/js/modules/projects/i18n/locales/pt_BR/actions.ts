@@ -14,6 +14,8 @@ export default {
   deleteImage: 'Excluir imagem',
   repository: 'Repositório',
   liveSite: 'Site no ar',
+  previousProject: 'Projeto anterior',
+  nextProject: 'Próximo projeto',
   showDetails: 'Mostrar detalhes',
   hideDetails: 'Ocultar detalhes',
 };
