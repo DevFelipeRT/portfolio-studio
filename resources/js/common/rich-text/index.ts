@@ -1,4 +1,5 @@
 export {
+  compactRichTextTheme,
   defaultRichTextAutoLinkMatchers,
   defaultRichTextNodes,
   defaultRichTextTheme,

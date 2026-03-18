@@ -22,6 +22,7 @@ interface RichTextRendererProps {
   className?: string;
   fallbackClassName?: string;
   namespace?: string;
+  theme?: typeof defaultRichTextTheme;
 }
 
 export function RichTextRenderer({
@@ -29,6 +30,7 @@ export function RichTextRenderer({
   className,
   fallbackClassName,
   namespace = 'CommonRichTextReadOnly',
+  theme = defaultRichTextTheme,
 }: RichTextRendererProps): JSX.Element | null {
   const parsed = useMemo(() => parseRichTextValue(value), [value]);
 
@@ -52,7 +54,7 @@ export function RichTextRenderer({
   const initialConfig = {
     namespace,
     nodes: defaultRichTextNodes,
-    theme: defaultRichTextTheme,
+    theme,
     editable: false,
     editorState: (editor: LexicalEditor) => {
       editor.setEditorState(editor.parseEditorState(parsed));
