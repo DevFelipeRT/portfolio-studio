@@ -44,7 +44,7 @@ const templateSectionLayouts: Record<string, SectionLayoutOptions> = {
     surface: 'default',
   },
   rich_text: {
-    contentWidth: 'reading',
+    contentWidth: 'default',
     spacing: 'lg',
     surface: 'default',
   },
