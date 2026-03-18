@@ -14,6 +14,8 @@ export default {
   deleteImage: 'Delete image',
   repository: 'Repository',
   liveSite: 'Live site',
+  previousProject: 'Previous project',
+  nextProject: 'Next project',
   showDetails: 'Show details',
   hideDetails: 'Hide details',
 };
