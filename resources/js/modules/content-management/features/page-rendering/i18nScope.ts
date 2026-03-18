@@ -16,10 +16,33 @@ type SectionRegistryProviderWithI18n = {
 export function deriveI18nScopeFromSections(
   sections: readonly PageSectionDto[],
 ): string[] {
-  const templateKeys = new Set(
-    sections
-      .map((section) => section.template_key)
-      .filter((key): key is string => typeof key === 'string' && key.trim() !== ''),
+  const templateKeys = sections
+    .map((section) => section.template_key)
+    .filter((key): key is string => typeof key === 'string' && key.trim() !== '');
+
+  return deriveI18nScopeFromTemplateKeys(templateKeys);
+}
+
+/**
+ * Derives i18n registry ids required to safely render a single CMS section
+ * template.
+ */
+export function deriveI18nScopeForTemplateKey(templateKey: string): string[] {
+  if (typeof templateKey !== 'string' || templateKey.trim() === '') {
+    return [];
+  }
+
+  return deriveI18nScopeFromTemplateKeys([templateKey]);
+}
+
+function deriveI18nScopeFromTemplateKeys(
+  templateKeys: readonly string[],
+): string[] {
+  const normalizedTemplateKeys = new Set(
+    templateKeys
+      .filter((key): key is string => typeof key === 'string')
+      .map((key) => key.trim())
+      .filter((key) => key !== ''),
   );
 
   const ids = new Set<string>();
@@ -28,7 +51,9 @@ export function deriveI18nScopeFromSections(
     const typed = provider as unknown as SectionRegistryProviderWithI18n;
     const registry = typed.getSectionRegistry();
 
-    const ownsAnyKey = Object.keys(registry).some((key) => templateKeys.has(key));
+    const ownsAnyKey = Object.keys(registry).some((key) =>
+      normalizedTemplateKeys.has(key),
+    );
     if (!ownsAnyKey) {
       return;
     }
@@ -42,4 +67,3 @@ export function deriveI18nScopeFromSections(
 
   return Array.from(ids);
 }
-

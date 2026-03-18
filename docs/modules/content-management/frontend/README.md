@@ -57,6 +57,7 @@ At render-time, `SectionRenderer` chooses between:
 
 - a template-specific React component (registered by template key), or
 - a generic fallback renderer that prints non-empty field values (`resources/js/modules/content-management/features/page-rendering/rendering/section-renderer/SectionRenderer.tsx`, `resources/js/modules/content-management/features/page-rendering/rendering/section-renderer/RenderGenericTemplateSection.tsx`).
+- when the owning section provider declares frontend `i18n` scope ids, the section shell still renders immediately, and the inner section content passes through a local preload boundary that keeps the real content mounted but invisible until scoped bundles are ready; an absolute skeleton overlay is shown on top so the section preserves its height and anchor position while loading (`resources/js/modules/content-management/features/page-rendering/rendering/section-renderer/SectionRenderer.tsx`, `resources/js/modules/content-management/features/page-rendering/i18nScope.ts`).
 
 ### Template component registry (ContentManagement origin)
 
@@ -75,4 +76,3 @@ Each component reads fields through a shared `FieldValueResolver`, which merges 
 ## SEO metadata (client-side Head)
 
 `RenderedPage` uses Inertia `<Head>` to set title and basic OpenGraph tags using page fields (`meta_title`, `meta_description`, `meta_image_url`) (`resources/js/app/pages/content-management/public/rendered-page/page.tsx`).
-
