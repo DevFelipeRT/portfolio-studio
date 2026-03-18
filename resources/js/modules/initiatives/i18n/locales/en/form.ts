@@ -41,6 +41,9 @@ export default {
     from: 'From',
     to: 'To',
   },
+  carousel: {
+    progress: '{{current}} of {{total}}',
+  },
   overlay: {
     createdOn: 'Created on {{date}} at {{time}}',
     summary: 'Summary',
@@ -51,6 +54,10 @@ export default {
   },
   card: {
     highlightEyebrow: 'Featured initiatives',
+    untitled: 'Untitled initiative',
+    noSummary: 'No summary available.',
+    noImages: 'No images available.',
+    noPeriod: 'No period available.',
   },
   errors: {
     translationsLoad:

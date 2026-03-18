@@ -10,4 +10,8 @@ export default {
   openMenu: 'Open menu',
   showOnLanding: 'Show on landing',
   hideFromLanding: 'Hide from landing',
+  showDetails: 'Show details',
+  hideDetails: 'Hide details',
+  previousInitiative: 'Previous initiative',
+  nextInitiative: 'Next initiative',
 };

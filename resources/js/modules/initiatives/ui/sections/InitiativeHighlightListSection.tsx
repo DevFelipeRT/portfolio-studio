@@ -7,6 +7,8 @@ import {
     INITIATIVES_NAMESPACES,
     useInitiativesTranslation,
 } from '@/modules/initiatives/i18n';
+import { InitiativeCarousel } from '@/modules/initiatives/ui/InitiativeCarousel';
+import type { InitiativeCarouselImage } from '@/modules/initiatives/ui/InitiativeImageCarousel';
 import { JSX } from 'react';
 
 type CapabilityInitiative = {
@@ -17,6 +19,7 @@ type CapabilityInitiative = {
     display?: boolean;
     start_date?: string | null;
     end_date?: string | null;
+    images?: InitiativeCarouselImage[] | null;
 };
 
 /**
@@ -80,12 +83,16 @@ export function InitiativeHighlightListSection(): JSX.Element | null {
             ? allInitiatives.slice(0, maxItems)
             : allInitiatives;
 
-    if (!eyebrow && !title && !description && limitedInitiatives.length === 0) {
+    const hasInitiatives = limitedInitiatives.length > 0;
+
+    if (!eyebrow && !title && !description && !hasInitiatives) {
         return null;
     }
 
+    const ariaLabel = title || description || undefined;
+
     return (
-        <div className="space-y-8">
+        <div className="flex flex-col gap-8" aria-label={ariaLabel}>
             <SectionHeader
                 eyebrow={eyebrow}
                 title={title}
@@ -94,47 +101,18 @@ export function InitiativeHighlightListSection(): JSX.Element | null {
                 level={2}
             />
 
-            {limitedInitiatives.length > 0 ? (
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {limitedInitiatives.map((initiative) => {
-                        const name = initiative.name;
-                        const shortDescription =
-                            initiative.summary ??
-                            initiative.description ??
-                            null;
-                        const startDate = initiative.start_date ?? null;
-                        const endDate = initiative.end_date ?? null;
-
-                        return (
-                            <article
-                                key={initiative.id}
-                                className="bg-card text-card-foreground flex h-full flex-col rounded-2xl border p-6 shadow-sm"
-                            >
-                                <div className="space-y-2">
-                                    <h3 className="text-base leading-tight font-semibold tracking-tight">
-                                        {name}
-                                    </h3>
-
-                                    {shortDescription && (
-                                        <p className="text-muted-foreground text-sm leading-relaxed">
-                                            {shortDescription}
-                                        </p>
-                                    )}
-
-                                    {(startDate || endDate) && (
-                                        <p className="text-muted-foreground text-xs">
-                                            {startDate && endDate
-                                                ? `${startDate} – ${endDate}`
-                                                : startDate
-                                                  ? startDate
-                                                  : endDate}
-                                        </p>
-                                    )}
-                                </div>
-                            </article>
-                        );
-                    })}
-                </div>
+            {hasInitiatives ? (
+                <InitiativeCarousel
+                    initiatives={limitedInitiatives.map((initiative) => ({
+                        id: initiative.id,
+                        name: initiative.name,
+                        summary: initiative.summary ?? null,
+                        description: initiative.description ?? null,
+                        start_date: initiative.start_date ?? null,
+                        end_date: initiative.end_date ?? null,
+                        images: initiative.images,
+                    }))}
+                />
             ) : (
                 <p className="text-muted-foreground text-sm">
                     {tForm('emptyState.publicSection')}

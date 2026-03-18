@@ -10,4 +10,8 @@ export default {
   openMenu: 'Abrir menu',
   showOnLanding: 'Mostrar na página inicial',
   hideFromLanding: 'Ocultar da página inicial',
+  showDetails: 'Mostrar detalhes',
+  hideDetails: 'Ocultar detalhes',
+  previousInitiative: 'Iniciativa anterior',
+  nextInitiative: 'Próxima iniciativa',
 };

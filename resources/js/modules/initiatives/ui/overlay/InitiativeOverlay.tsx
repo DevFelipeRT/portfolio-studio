@@ -13,6 +13,7 @@ import {
     INITIATIVES_NAMESPACES,
     useInitiativesTranslation,
 } from '@/modules/initiatives/i18n';
+import { formatInitiativePeriod } from '../initiativePeriod';
 
 interface InitiativeOverlayProps {
     open: boolean;
@@ -172,32 +173,5 @@ function formatPeriod(
     end: string | null,
     t: (key: string, params?: Record<string, string>) => string,
 ): string | null {
-    if (!start) {
-        return null;
-    }
-
-    const startDate = new Date(start);
-    const endDate = end ? new Date(end) : null;
-
-    if (Number.isNaN(startDate.getTime())) {
-        return null;
-    }
-
-    const startLabel = startDate.toLocaleDateString(undefined, {
-        year: 'numeric',
-        month: 'short',
-        day: '2-digit',
-    });
-
-    if (!endDate || Number.isNaN(endDate.getTime()) || end === start) {
-        return t('overlay.happenedOn', { date: startLabel });
-    }
-
-    const endLabel = endDate.toLocaleDateString(undefined, {
-        year: 'numeric',
-        month: 'short',
-        day: '2-digit',
-    });
-
-    return t('overlay.fromTo', { start: startLabel, end: endLabel });
+    return formatInitiativePeriod(start, end, t);
 }
