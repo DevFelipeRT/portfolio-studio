@@ -63,6 +63,10 @@ export class SectionSlotLayoutManager {
       grouped.set(slot, bucket);
     });
 
+    const lastRenderedSlot = [...SLOT_DEFINITIONS]
+      .reverse()
+      .find(({ slot }) => (grouped.get(slot) ?? []).length > 0)?.slot;
+
     return (
       <>
         {SLOT_DEFINITIONS.map(({ slot, tag }) => {
@@ -78,6 +82,7 @@ export class SectionSlotLayoutManager {
                 key={slot}
                 sections={items}
                 templates={templates}
+                omitBorderOnLastSection={slot === lastRenderedSlot}
               />
             );
           }
@@ -89,7 +94,11 @@ export class SectionSlotLayoutManager {
               key={slot}
               className={`content-slot content-slot-${slot}`}
             >
-              <SectionRenderer sections={items} templates={templates} />
+              <SectionRenderer
+                sections={items}
+                templates={templates}
+                omitBorderOnLastSection={slot === lastRenderedSlot}
+              />
             </Container>
           );
         })}

@@ -38,6 +38,11 @@ export interface SectionRendererProps {
    * Components can merge this value with their own internal classes.
    */
   sectionClassName?: string;
+  /**
+   * Controls whether the last rendered section should drop its bottom border.
+   * Defaults to true so single-slot renders keep the current behavior.
+   */
+  omitBorderOnLastSection?: boolean;
 }
 
 type SectionContentI18nBoundaryProps = {
@@ -177,6 +182,7 @@ export function SectionRenderer({
   sections,
   templates,
   sectionClassName,
+  omitBorderOnLastSection = true,
 }: SectionRendererProps): JSX.Element | null {
   if (!sections.length) {
     return null;
@@ -259,7 +265,10 @@ export function SectionRenderer({
     <>
       {renderableSections.map((section, index) => {
         const isLastSection = index === renderableSections.length - 1;
-        const baseSectionClassName = isLastSection ? 'm-0' : 'm-0 border-b';
+        const shouldOmitBorder = omitBorderOnLastSection && isLastSection;
+        const baseSectionClassName = shouldOmitBorder
+          ? 'm-0'
+          : 'm-0 border-b';
         const resolvedSectionClassName =
           [baseSectionClassName, sectionClassName]
             .filter(Boolean)
