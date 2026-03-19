@@ -9,8 +9,12 @@ A modular Laravel + Inertia studio for a content-managed public site and an admi
 
 ## Index
 
-- [Quickstart With Docker](#quickstart-with-docker)
-- [Quickstart Without Docker](#quickstart-without-docker)
+- [Development Modes](#development-modes)
+- [Mode Comparison](#mode-comparison)
+- [WSL-first (Default Docker Workflow)](#wsl-first-default-docker-workflow)
+- [Devcontainer-first](#devcontainer-first)
+- [Host-native](#host-native)
+- [Switching Modes](#switching-modes)
 - [Key runtime notes (evidence-based)](#key-runtime-notes-evidence-based)
 - [What’s included (high level)](#whats-included-high-level)
 - [Feature highlights (evidence-based)](#feature-highlights-evidence-based)
@@ -23,102 +27,136 @@ A modular Laravel + Inertia studio for a content-managed public site and an admi
 - [AI Collaboration](#ai-collaboration)
 - [Copyright / License](#copyright--license)
 
-## Quickstart With Docker
+## Development Modes
 
 This repository includes a local Docker development stack driven by:
 
 - `docker-compose.yml`
+- `docker-compose.devcontainer.yml`
+- `.devcontainer/devcontainer.json`
 - `.env.docker`
 - `docker/laravel/Dockerfile`
+- `docker/devcontainer/Dockerfile`
 - `docker/nginx/default.conf.template`
 
-### Prerequisites
+The project supports three explicit local workflows:
 
-- Docker Engine with Docker Compose
+- `wsl-first`: Docker runtime with the editor running from WSL. This is the default Docker workflow.
+- `devcontainer-first`: Docker runtime plus a dedicated VS Code Dev Container workspace service.
+- `host-native`: PHP, Composer, Node.js, and the database run directly on the host.
 
-### Setup
+Use `wsl-first` unless you specifically want the editor inside a Dev Container.
 
-Create the Docker environment file if it does not exist:
+The full operational guide lives in [`docs/development/workspace-modes.md`](docs/development/workspace-modes.md).
+
+## Mode Comparison
+
+| Mode | Runtime | Editor location | `node_modules` strategy | Startup command | Best use case |
+| --- | --- | --- | --- | --- | --- |
+| `wsl-first` | Docker Compose | VS Code / Codex in WSL | bind-mounted `./node_modules` in the project workspace | `docker compose up -d` | default Docker workflow from WSL without a Dev Container |
+| `devcontainer-first` | Docker Compose + Dev Container | VS Code attached to `workspace` | Docker named volume shared by `workspace`, `php`, and `vite` | `Dev Containers: Reopen in Container` | editor-inside-container workflow with fully container-scoped tooling |
+| `host-native` | Host OS | VS Code / Codex on host or WSL | host-managed `node_modules` | `composer setup` then `composer dev` | no-Docker local development |
+
+## WSL-first (Default Docker Workflow)
+
+This mode keeps Docker as the runtime, but the editor stays in WSL. The base
+[`docker-compose.yml`](docker-compose.yml) is now aligned to this workflow.
+
+What it means:
+
+- runtime services still run in Docker: `db`, `php`, `vite`, `nginx`, `init-backend`
+- no `workspace` service is involved
+- `node_modules` lives in the project workspace as `./node_modules`, then gets bind-mounted into the containers
+- the short Docker command flow stays centered on `docker compose up -d`
+
+One-time setup:
+
+```sh
+cp .env.docker.example .env.docker
+echo 'export COMPOSE_ENV_FILES=.env.docker' >> ~/.bashrc
+source ~/.bashrc
+```
+
+Daily commands:
+
+```sh
+docker compose up -d
+docker compose logs -f init-backend
+docker compose exec php php artisan test
+docker compose exec php composer install
+docker compose exec php npm run lint
+```
+
+Access URLs:
+
+- Public site: `http://localhost`
+- Admin login: `http://localhost/login`
+
+Use the explicit `--env-file .env.docker` form if your shell does not export
+`COMPOSE_ENV_FILES=.env.docker`.
+
+## Devcontainer-first
+
+This mode keeps Docker as the runtime and moves the editor into the dedicated
+`workspace` service declared in [`docker-compose.devcontainer.yml`](docker-compose.devcontainer.yml).
+
+What it means:
+
+- VS Code attaches to `workspace` through [`.devcontainer/devcontainer.json`](.devcontainer/devcontainer.json)
+- `workspace`, `php`, and `vite` share a Docker-managed named volume for `node_modules`
+- the runtime stack is still the same Laravel + Vite + MySQL + Nginx stack
+- this is an explicit opt-in workflow layered on top of the base Compose file
+
+First-time setup:
 
 ```sh
 cp .env.docker.example .env.docker
 ```
 
-Start the stack:
+Then:
+
+1. Open the repository root in VS Code.
+2. Install the Dev Containers extension if prompted.
+3. Run `Dev Containers: Reopen in Container`.
+4. Wait for the `workspace`, `db`, `php`, `vite`, and `nginx` services to finish starting.
+
+Day-to-day commands run inside the `workspace` terminal:
 
 ```sh
-docker compose --env-file .env.docker up -d
+php artisan test
+composer install
+npm run lint
+npm run build
 ```
 
-Open the app once the services are healthy:
+Choose this mode when you want the editor, language servers, and CLI tools to
+share the same container-scoped dependency tree.
 
-- Public site: `http://localhost`
-- Admin login: `http://localhost/login`
+## Host-native
 
-The Docker workflow brings up:
+This mode remains supported and is not deprecated by the Docker refactor.
 
-- MySQL with a Docker-managed named volume
-- PHP-FPM
-- Nginx
-- Vite
-- a one-shot backend bootstrap service that runs migrations and, when enabled, seeds the local database
+Prerequisites:
+
+- PHP 8.2+ and Composer
+- Node.js + npm
+- a configured database (MySQL by default)
+
+Setup and run:
+
+```sh
+composer setup
+composer dev
+```
 
 Useful commands:
 
 ```sh
-docker compose --env-file .env.docker logs -f init-backend
-docker compose --env-file .env.docker exec php php artisan test
-docker compose --env-file .env.docker exec php composer install
-docker compose --env-file .env.docker exec php npm run lint
-```
-
-Reset the local database volume:
-
-```sh
-docker compose --env-file .env.docker down -v
-docker compose --env-file .env.docker up -d
-```
-
-Default admin credentials after seeding: `admin@example.com` / `password` (`database/seeders/DatabaseSeeder.php`).
-
-See also: [`docs/backend/seeding.md`](docs/backend/seeding.md).
-
-## Quickstart Without Docker
-
-Use this workflow when running PHP, Composer, Node.js, and the database directly on the host.
-
-### Prerequisites
-
-- PHP 8.2+ and Composer (`composer.json`)
-- Node.js + npm (for Vite + TypeScript) (`package.json`)
-- A configured database (defaults to MySQL) (`.env.example`, `config/database.php`)
-
-### Setup
-
-Installs dependencies, creates `.env` from `.env.example` if missing, generates an app key, runs migrations, installs JS deps, and builds assets (`composer.json`):
-
-```sh
-composer setup
-```
-
-### Seed demo content
-
-Seeds deterministic demo data for local development (admin user, modules, CMS pages, and seed images):
-
-```sh
 php artisan db:seed
-```
-
-Default admin credentials: `admin@example.com` / `password` (`database/seeders/DatabaseSeeder.php`).
-
-See also: [`docs/backend/seeding.md`](docs/backend/seeding.md).
-
-### Run the development stack
-
-Runs the PHP server, queue listener, Laravel Pail log tailing, and Vite in parallel (`composer.json`):
-
-```sh
-composer dev
+composer test
+npm run lint
+npm run build
+./vendor/bin/pint
 ```
 
 Default local URLs:
@@ -126,21 +164,44 @@ Default local URLs:
 - App: `http://127.0.0.1:8000`
 - Vite: `http://127.0.0.1:5173`
 
-### Tests and linting
+Default admin credentials after seeding: `admin@example.com` / `password`
+(`database/seeders/DatabaseSeeder.php`).
+
+See also: [`docs/backend/seeding.md`](docs/backend/seeding.md).
+
+## Switching Modes
+
+Switching between `wsl-first` and `devcontainer-first` changes where the live
+dependency tree lives:
+
+- `wsl-first` uses the project directory `./node_modules`
+- `devcontainer-first` uses a Docker named volume for `node_modules`
+
+Do not assume those states are interchangeable. Before switching, stop the
+stack and clean the dependency tree that belongs to the previous mode.
+
+Typical reset flow when switching:
 
 ```sh
-composer test
-npm run lint
-./vendor/bin/pint
+docker compose down
+rm -rf node_modules
+docker compose -f docker-compose.yml -f docker-compose.devcontainer.yml down -v
 ```
 
-### Frontend build and Vite configuration
+Then start the target mode again:
 
-- Production frontend build runs `npm run build`, which executes `tsc && cross-env ASSET_URL='' vite build` (`package.json`)
-- Vite entrypoints are `resources/css/app.css` and `resources/js/app.tsx` (`vite.config.js`)
-- Dev server settings come from `VITE_PORT` and `VITE_BIND`; defaults are `5173` and `0.0.0.0` (`.env.example`, `vite.config.js`)
-- The Vite server uses `strictPort`, enables CORS, and serves HMR on `/vite-hmr` (`vite.config.js`)
-- Build output keeps locale catalogs split by locale and groups core React/Inertia dependencies into dedicated chunks (`vite.config.js`)
+- `wsl-first`: `docker compose up -d`
+- `devcontainer-first`: `Dev Containers: Reopen in Container`
+
+If you also need a full database reset, use:
+
+```sh
+docker compose down -v
+docker compose up -d
+```
+
+The detailed switching guide, caveats, and copy-pasteable walkthroughs for all
+modes are documented in [`docs/development/workspace-modes.md`](docs/development/workspace-modes.md).
 
 ## Key runtime notes (evidence-based)
 

@@ -5,20 +5,19 @@
 
 services:
   # ---------------------------------------------------------------------------
-  # One-time volume bootstrap: ensures writable app/tooling volumes exist.
+  # One-time workspace bootstrap: prepares host-mounted workspace directories.
   # ---------------------------------------------------------------------------
   init-volumes:
     image: alpine:3.21
     user: "0:0"
     volumes:
       - ./:/mnt/app
-      - node_modules:/mnt/node_modules
       - npm_cache:/mnt/npm_cache
     command: >
       sh -lc "
         set -eux;
-        mkdir -p /mnt/app /mnt/node_modules /mnt/npm_cache
-        chown -R ${UID}:${GID} /mnt/node_modules || true
+        mkdir -p /mnt/app /mnt/app/node_modules /mnt/npm_cache
+        chown -R ${UID}:${GID} /mnt/app/node_modules || true
         chown -R ${UID}:${GID} /mnt/npm_cache || true
       "
     restart: "no"
@@ -50,7 +49,7 @@ services:
       NPM_CONFIG_CACHE: /var/www/html/.npm
     volumes:
       - ./:/var/www/html
-      - node_modules:/var/www/html/node_modules
+      - ./node_modules:/var/www/html/node_modules
     working_dir: "/var/www/html"
     command: >
       sh -lc '
@@ -113,7 +112,7 @@ services:
       NPM_CONFIG_CACHE: /var/www/html/.npm
     volumes:
       - ./:/var/www/html
-      - node_modules:/var/www/html/node_modules
+      - ./node_modules:/var/www/html/node_modules
     security_opt:
       # Configurable per environment (.env.docker): use seccomp:unconfined when
       # tools inside the container need unprivileged user namespaces (e.g. bwrap).
@@ -228,7 +227,7 @@ services:
       start_period: 20s
     volumes:
       - ./:/var/www/html
-      - node_modules:/var/www/html/node_modules
+      - ./node_modules:/var/www/html/node_modules
       - npm_cache:/npm-cache
     depends_on:
       init-volumes:
@@ -271,5 +270,4 @@ networks:
 
 volumes:
   db_data:
-  node_modules:
   npm_cache:

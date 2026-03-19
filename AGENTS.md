@@ -6,17 +6,20 @@
 - The Git repository is at this root.
 
 ## Project Map
-- `docker-compose.yml`: local development orchestration for PHP-FPM, Nginx, Vite, MySQL, and bootstrap volumes.
+- `docker-compose.yml`: default local Docker runtime for the `wsl-first` workflow.
+- `docker-compose.devcontainer.yml`: Dev Container override that adds `workspace` and restores Docker-managed `node_modules`.
+- `docs/development/workspace-modes.md`: operational guide for `wsl-first`, `devcontainer-first`, and `host-native`.
 - `.env.docker`: Docker Compose and local container settings for this workspace.
 - `.env`: Laravel application environment.
 - `docker/laravel/Dockerfile`: PHP-FPM development image with Composer, Node, npm, and Laravel-ready extensions.
+- `docker/devcontainer/Dockerfile`: editor-facing Dev Container image for the `workspace` service.
 - `docker/nginx/default.conf.template`: Nginx template with Laravel public root and Vite proxy rules.
 - MySQL data is stored in the Docker named volume `db_data`, not in a source-controlled project directory.
 
 ## Working Assumptions
 - Prefer making application changes from this root.
 - Prefer running framework, Composer, npm, and test commands from this root.
-- Prefer using the Docker Compose stack for local execution unless the task explicitly requires host-native commands.
+- Prefer using the default `wsl-first` Docker workflow unless the task explicitly targets the Dev Container or host-native mode.
 - Treat database storage as Docker runtime state, not as editable project files.
 
 ## Read Before Editing
@@ -24,6 +27,7 @@
 - Read only the docs relevant to the task, usually from:
   - `docs/backend/README.md`
   - `docs/frontend/README.md`
+  - `docs/development/workspace-modes.md` for environment/runtime changes
   - `docs/modules/*`
 - For module-specific work, inspect the matching module documentation before changing code.
 
@@ -35,8 +39,12 @@
 
 ## Preferred Command Context
 - Workspace-level Docker commands run from this root.
-- If the containers are expected to be the runtime, prefer:
-  - `docker compose --env-file .env.docker up -d`
+- If your local shell exports `COMPOSE_ENV_FILES=.env.docker`, `docker compose ...`
+  will automatically use `.env.docker` without needing an explicit `--env-file`.
+- If the containers are expected to be the runtime, prefer the mode-specific command flow:
+  - `wsl-first` default: `docker compose up -d`
+  - fallback explicit form: `docker compose --env-file .env.docker up -d`
+  - `devcontainer-first`: open VS Code via `.devcontainer/devcontainer.json`
   - `docker compose --env-file .env.docker logs -f init-backend`
   - `docker compose --env-file .env.docker logs -f php`
   - `docker compose --env-file .env.docker exec php php artisan ...`
@@ -45,8 +53,11 @@
 - The project also supports native `composer` / `npm` workflows when Docker is not required.
 
 ## Common Commands
-- Start stack: `docker compose --env-file .env.docker up -d`
+- Start default Docker stack: `docker compose up -d`
+- Start default Docker stack without shell export: `docker compose --env-file .env.docker up -d`
+- Start Dev Container workflow: `Dev Containers: Reopen in Container`
 - Stop stack: `docker compose --env-file .env.docker down`
+- Stop Dev Container stack explicitly: `docker compose -f docker-compose.yml -f docker-compose.devcontainer.yml down -v`
 - Rebuild PHP image: `docker compose --env-file .env.docker build php`
 - Re-run backend bootstrap manually: `docker compose --env-file .env.docker run --rm init-backend`
 - Laravel Artisan in container: `docker compose --env-file .env.docker exec php php artisan <command>`
@@ -79,6 +90,8 @@
 
 ## Data and Environment Safety
 - Be careful with `.env.docker` and `.env`; they serve different purposes.
+- Remember that `wsl-first` uses bind-mounted `./node_modules`, while `devcontainer-first` uses a Docker named volume for `node_modules`.
+- When switching between Docker workflows, clean the previous mode's dependency state before assuming the next one is healthy.
 - Treat generated or cache directories as non-source unless the task specifically targets them:
   - `vendor`
   - `node_modules`

@@ -1,0 +1,35 @@
+{
+  "name": "Portfolio Workspace",
+  "dockerComposeFile": [
+    "../docker-compose.yml",
+    "../docker-compose.devcontainer.yml"
+  ],
+  "service": "workspace",
+  "runServices": [
+    "db",
+    "workspace",
+    "php",
+    "vite",
+    "nginx"
+  ],
+  "workspaceFolder": "/var/www/html",
+  "shutdownAction": "stopCompose",
+  "overrideCommand": false,
+  "remoteUser": "devuser",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "bmewburn.vscode-intelephense-client",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss",
+        "xdebug.php-debug",
+        "ms-azuretools.vscode-docker",
+        "laravel.vscode-laravel"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash"
+      }
+    }
+  }
+}
