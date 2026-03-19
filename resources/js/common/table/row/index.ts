@@ -1,0 +1,1 @@
+export { InteractiveTableRow } from './InteractiveTableRow';
