@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\ContentManagement\Application\Dtos;
 
-use Carbon\CarbonInterface;
-
 /**
  * Data transfer object representing a content-managed page.
  */
@@ -21,11 +19,12 @@ final class PageDto
         public readonly ?string $metaImageUrl,
         public readonly ?string $layoutKey,
         public readonly string $locale,
+        public readonly string $status,
         public readonly bool $isPublished,
-        public readonly ?CarbonInterface $publishedAt,
+        public readonly ?string $publishedAt,
         public readonly bool $isIndexable,
-        public readonly ?CarbonInterface $createdAt,
-        public readonly ?CarbonInterface $updatedAt,
+        public readonly ?string $createdAt,
+        public readonly ?string $updatedAt,
     ) {
     }
 }

@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Modules\ContentManagement\Application\Mappers;
 
 use App\Modules\ContentManagement\Application\Dtos\PageDto;
+use App\Modules\ContentManagement\Domain\Enums\PageStatus;
 use App\Modules\ContentManagement\Domain\Models\Page;
+use App\Modules\ContentManagement\Domain\Services\PageStatusResolver;
 
 /**
  * Maps Page domain models to PageDto instances and array payloads.
@@ -33,11 +35,12 @@ final class PageMapper
             metaImageUrl: $metaImageUrl,
             layoutKey: $page->layout_key,
             locale: (string) $page->locale,
+            status: self::resolveStatus($page)->value,
             isPublished: (bool) $page->is_published,
-            publishedAt: $page->published_at,
+            publishedAt: $page->published_at?->toJSON(),
             isIndexable: (bool) $page->is_indexable,
-            createdAt: $page->created_at,
-            updatedAt: $page->updated_at,
+            createdAt: $page->created_at?->toJSON(),
+            updatedAt: $page->updated_at?->toJSON(),
         );
     }
 
@@ -60,9 +63,17 @@ final class PageMapper
             'meta_image_url' => $dto->metaImageUrl,
             'layout_key' => $dto->layoutKey,
             'locale' => $dto->locale,
+            'status' => $dto->status,
             'is_published' => $dto->isPublished,
             'published_at' => $dto->publishedAt,
             'is_indexable' => $dto->isIndexable,
+            'created_at' => $dto->createdAt,
+            'updated_at' => $dto->updatedAt,
         ];
+    }
+
+    private static function resolveStatus(Page $page): PageStatus
+    {
+        return (new PageStatusResolver())->resolveForPage($page);
     }
 }

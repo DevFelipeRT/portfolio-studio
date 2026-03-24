@@ -27,7 +27,14 @@ interface IPageRepository
     /**
      * Returns a paginated listing of pages filtered by status when provided.
      */
-    public function paginateByStatus(?PageStatus $status, int $perPage = 15): LengthAwarePaginator;
+    public function paginateByStatus(
+        ?PageStatus $status,
+        ?string $locale = null,
+        ?string $search = null,
+        int $perPage = 15,
+        ?string $sort = null,
+        ?string $direction = null,
+    ): LengthAwarePaginator;
 
     /**
      * Returns all pages.
@@ -42,6 +49,18 @@ interface IPageRepository
      * @return array<int,string>
      */
     public function listLocales(): array;
+
+    /**
+     * Returns which sortable page-list columns currently have distinct values
+     * within the filtered result set.
+     *
+     * @return array<string,bool>
+     */
+    public function getSortableAvailability(
+        ?PageStatus $status,
+        ?string $locale = null,
+        ?string $search = null,
+    ): array;
 
     /**
      * Persists the given page instance.

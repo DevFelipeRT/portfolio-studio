@@ -35,9 +35,23 @@ final class PageService
      *
      * @return LengthAwarePaginator<PageDto>
      */
-    public function paginate(?PageStatus $status, int $perPage = 15): LengthAwarePaginator
+    public function paginate(
+        ?PageStatus $status,
+        ?string $locale = null,
+        ?string $search = null,
+        int $perPage = 15,
+        ?string $sort = null,
+        ?string $direction = null,
+    ): LengthAwarePaginator
     {
-        $paginator = $this->pages->paginateByStatus($status, $perPage);
+        $paginator = $this->pages->paginateByStatus(
+            status: $status,
+            locale: $locale,
+            search: $search,
+            perPage: $perPage,
+            sort: $sort,
+            direction: $direction,
+        );
 
         /** @var LengthAwarePaginator<PageDto> $mapped */
         $mapped = $paginator->through(
@@ -96,6 +110,20 @@ final class PageService
     public function listLocales(): array
     {
         return $this->pages->listLocales();
+    }
+
+    /**
+     * Returns which page-list columns currently have meaningful sort variation.
+     *
+     * @return array<string,bool>
+     */
+    public function getSortableAvailability(
+        ?PageStatus $status,
+        ?string $locale = null,
+        ?string $search = null,
+    ): array
+    {
+        return $this->pages->getSortableAvailability($status, $locale, $search);
     }
 
     /**
