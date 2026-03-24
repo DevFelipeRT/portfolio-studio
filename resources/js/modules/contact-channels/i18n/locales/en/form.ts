@@ -5,6 +5,18 @@ export default {
   help: {
     managementSubtitle: 'Manage the contact channels displayed on your website.',
   },
+  filters: {
+    searchLabel: 'Search',
+    searchPlaceholder: 'Search by label or value',
+    searchSubmit: 'Search channels',
+    typeLabel: 'Type',
+    typePlaceholder: 'All types',
+    activeLabel: 'Status',
+    activePlaceholder: 'All statuses',
+    activeOnly: 'Active only',
+    inactiveOnly: 'Inactive only',
+    reset: 'Clear',
+  },
   emptyState: {
     index: 'No contact channels configured yet.',
   },
@@ -39,5 +51,8 @@ export default {
       label: 'Active',
     },
   },
+  values: {
+    active: 'Active',
+    inactive: 'Inactive',
+  },
 };
-

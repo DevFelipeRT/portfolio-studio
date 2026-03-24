@@ -6,10 +6,11 @@ export default {
   saveChanges: 'Save changes',
   delete: 'Delete',
   edit: 'Edit',
+  viewDetails: 'View details',
+  openMenu: 'Open menu',
   activate: 'Activate',
   deactivate: 'Deactivate',
   yes: 'Yes',
   no: 'No',
   manageTranslations: 'Manage translations',
 };
-
