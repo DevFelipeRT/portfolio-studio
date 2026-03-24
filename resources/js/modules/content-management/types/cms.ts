@@ -1,3 +1,7 @@
+import type {
+    TablePaginated,
+    TablePaginationLink,
+} from '@/common/table';
 import type { SectionData } from '@/modules/content-management/types/sections';
 import type { TemplateDefinitionDto } from '@/modules/content-management/types/templates';
 
@@ -23,6 +27,7 @@ export interface PageDto extends HasTimestamps {
     layout_key: string | null;
     locale: string;
 
+    status: 'draft' | 'published' | 'archived';
     is_published: boolean;
     published_at: string | null;
 
@@ -55,34 +60,40 @@ export interface PageSectionDto extends HasTimestamps {
 /**
  * Represents a pagination navigation link element.
  */
-export interface PaginatorLink {
-    url: string | null;
-    label: string;
-    active: boolean;
-}
+export type PaginatorLink = TablePaginationLink;
 
 /**
  * Represents a Laravel length-aware paginator payload for a given item type.
  */
-export interface Paginated<TItem> {
-    data: TItem[];
-    current_page: number;
-    per_page: number;
-    last_page: number;
-    from: number | null;
-    to: number | null;
-    total: number;
-    path: string;
-    links: PaginatorLink[];
-}
+export type Paginated<TItem> = TablePaginated<TItem>;
 
 /**
  * Props contract for the administrative page index screen.
  */
 export interface PageIndexViewModelProps {
     pages: Paginated<PageDto>;
-    filters: Record<string, unknown>;
-    extra: Record<string, unknown>;
+    filters: {
+        per_page?: unknown;
+        status?: unknown;
+        locale?: unknown;
+        search?: unknown;
+        sort?: unknown;
+        direction?: unknown;
+        [key: string]: unknown;
+    };
+    extra: {
+        homeSlug?: string;
+        locales?: string[];
+        sorting?: {
+            sortable_columns?: Partial<
+                Record<
+                    'name' | 'title' | 'slug' | 'locale' | 'status' | 'updated_at',
+                    boolean
+                >
+            >;
+        };
+        [key: string]: unknown;
+    };
 }
 
 /**

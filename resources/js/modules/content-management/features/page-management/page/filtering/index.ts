@@ -9,7 +9,11 @@
  * UI-specific constants (labels/options) live in `./constants` and are not
  * re-exported from here.
  */
-export type { PageListFilters, PageStatusFilter } from './types';
+export type {
+    PageListFilters,
+    PageListSortKey,
+    PageStatusFilter,
+} from './types';
 
 export {
     DEFAULT_PAGE_LIST_FILTERS,

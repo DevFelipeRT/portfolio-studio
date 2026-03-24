@@ -13,6 +13,17 @@ export const PAGE_STATUS_FILTER_VALUES = [
     'archived',
 ] as const;
 
+export const PAGE_LOCALE_FILTER_ALL = 'all';
+
+export const PAGE_SORTABLE_COLUMNS = [
+    'name',
+    'title',
+    'slug',
+    'locale',
+    'status',
+    'updated_at',
+] as const;
+
 /**
  * Select-ready options for the status filter control.
  */

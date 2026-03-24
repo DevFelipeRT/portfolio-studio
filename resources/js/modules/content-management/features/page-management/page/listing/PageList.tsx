@@ -1,31 +1,48 @@
 import { useGetLocale } from '@/common/locale';
-import { Button } from '@/components/ui/button';
-import { DateDisplay } from '@/components/ui/date-display';
 import {
-  Table,
+  formatTableDate,
+  InteractiveTableRow,
+  SystemTable,
+  TableActionCell,
+  TableCard,
+  TableEmptyState,
+  TableHeaderRow,
+  TableMetaCell,
+  TablePagination,
+  TableSortHeader,
+  TableTitleCell,
+  type TableSortState,
+  tablePresets,
+} from '@/common/table';
+import {
   TableBody,
-  TableCell,
   TableHead,
   TableHeader,
-  TableRow,
 } from '@/components/ui/table';
+import { cn } from '@/lib/utils';
+import {
+  CONTENT_MANAGEMENT_NAMESPACES,
+  useContentManagementTranslation,
+} from '@/modules/content-management/i18n';
+import type { PageListSortKey } from '@/modules/content-management/features/page-management/page/filtering';
 import type { PageDto, Paginated } from '@/modules/content-management/types';
-import { ChevronRight, ExternalLink } from 'lucide-react';
+import type { ReactNode } from 'react';
 
 import { canSetAsHome, isHomePage, publicPageUrl } from './rules';
 import { PageActions } from './partials/PageActions';
 import { PageSlug } from './partials/PageSlug';
 import { StatusBadge } from './partials/StatusBadge';
-import { PageTitle } from './partials/PageTitle';
-import { EmptyState } from './partials/EmptyState';
-import {
-  CONTENT_MANAGEMENT_NAMESPACES,
-  useContentManagementTranslation,
-} from '@/modules/content-management/i18n';
 
 interface PageListProps {
   pages: Paginated<PageDto>;
+  sort: TableSortState;
+  sortableColumns?: Partial<Record<PageListSortKey, boolean>>;
+  header?: ReactNode;
   homeSlug?: string;
+  onPageChange?: (page: number) => void;
+  onPerPageChange?: (perPage: number) => void;
+  perPageOptions?: readonly number[];
+  onSortChange?: (column: string) => void;
   /**
    * Called when a row is activated (click, Enter, Space). The parent should
    * typically open an info modal for the selected page.
@@ -41,43 +58,126 @@ interface PageListProps {
  * - Inline actions stop propagation so they do not trigger the row handler.
  * - Mobile keeps secondary actions inside the dropdown menu.
  */
-export function PageList({ pages, homeSlug, onShowInfo }: PageListProps) {
+export function PageList({
+  pages,
+  sort,
+  sortableColumns = {},
+  header,
+  homeSlug,
+  onPageChange,
+  onPerPageChange,
+  perPageOptions,
+  onSortChange,
+  onShowInfo,
+}: PageListProps) {
   const hasItems = pages.data.length > 0;
   const locale = useGetLocale();
   const { translate: tPages } = useContentManagementTranslation(
     CONTENT_MANAGEMENT_NAMESPACES.pages,
   );
-  const columnCount = 6;
+  const columnCount = 7;
+  const baseClass = tablePresets.headerCell;
 
   return (
-    <div className="bg-card overflow-hidden rounded-lg border shadow-sm">
-      <Table>
+    <TableCard header={header}>
+      <SystemTable layout="fixed">
         <TableHeader>
-          <TableRow className="bg-muted/50">
-            <TableHead className="w-[30%]">
-              {tPages('listing.columns.title', 'Title')}
+          <TableHeaderRow>
+            <TableHead
+              className={cn(baseClass, 'w-[22%]')}
+              aria-sort={resolveAriaSort(sort, 'name', sortableColumns)}
+            >
+              <TableSortHeader
+                column="name"
+                label={tPages('listing.columns.name', 'Name')}
+                srLabel={tPages('listing.columns.name', 'Name')}
+                sort={sort}
+                disabled={!isColumnSortable('name', sortableColumns)}
+                onToggleSort={onSortChange}
+              />
             </TableHead>
-            <TableHead>{tPages('listing.columns.slug', 'Slug')}</TableHead>
-            <TableHead className="hidden md:table-cell">
-              {tPages('listing.columns.locale', 'Locale')}
+            <TableHead
+              className={cn(baseClass, 'w-[24%]')}
+              aria-sort={resolveAriaSort(sort, 'title', sortableColumns)}
+            >
+              <TableSortHeader
+                column="title"
+                label={tPages('listing.columns.title', 'Title')}
+                srLabel={tPages('listing.columns.title', 'Title')}
+                sort={sort}
+                disabled={!isColumnSortable('title', sortableColumns)}
+                onToggleSort={onSortChange}
+              />
             </TableHead>
-            <TableHead className="hidden md:table-cell">
-              {tPages('listing.columns.status', 'Status')}
+            <TableHead
+              className={baseClass}
+              aria-sort={resolveAriaSort(sort, 'slug', sortableColumns)}
+            >
+              <TableSortHeader
+                column="slug"
+                label={tPages('listing.columns.slug', 'Slug')}
+                srLabel={tPages('listing.columns.slug', 'Slug')}
+                sort={sort}
+                disabled={!isColumnSortable('slug', sortableColumns)}
+                onToggleSort={onSortChange}
+              />
             </TableHead>
-            <TableHead className="hidden lg:table-cell">
-              {tPages('listing.columns.lastUpdated', 'Last updated')}
+            <TableHead
+              className={cn(baseClass, 'hidden md:table-cell')}
+              aria-sort={resolveAriaSort(sort, 'locale', sortableColumns)}
+            >
+              <TableSortHeader
+                column="locale"
+                label={tPages('listing.columns.locale', 'Locale')}
+                srLabel={tPages('listing.columns.locale', 'Locale')}
+                sort={sort}
+                disabled={!isColumnSortable('locale', sortableColumns)}
+                onToggleSort={onSortChange}
+              />
             </TableHead>
-            <TableHead className="text-right">
+            <TableHead
+              className={cn(
+                baseClass,
+                'hidden w-[7.5rem] whitespace-nowrap md:table-cell',
+              )}
+              aria-sort={resolveAriaSort(sort, 'status', sortableColumns)}
+            >
+              <TableSortHeader
+                column="status"
+                label={tPages('listing.columns.status', 'Status')}
+                srLabel={tPages('listing.columns.status', 'Status')}
+                sort={sort}
+                disabled={!isColumnSortable('status', sortableColumns)}
+                onToggleSort={onSortChange}
+              />
+            </TableHead>
+            <TableHead
+              className={cn(
+                baseClass,
+                'hidden w-[9.5rem] whitespace-nowrap lg:table-cell',
+              )}
+              aria-sort={resolveAriaSort(sort, 'updated_at', sortableColumns)}
+            >
+              <TableSortHeader
+                column="updated_at"
+                label={tPages('listing.columns.lastUpdated', 'Last updated')}
+                srLabel={tPages('listing.columns.lastUpdated', 'Last updated')}
+                sort={sort}
+                disabled={!isColumnSortable('updated_at', sortableColumns)}
+                onToggleSort={onSortChange}
+              />
+            </TableHead>
+            <TableHead className={cn(baseClass, 'text-right')}>
               <span className="sr-only">
                 {tPages('listing.columns.rowActions', 'Row actions')}
               </span>
             </TableHead>
-          </TableRow>
+          </TableHeaderRow>
         </TableHeader>
 
         <TableBody>
           {!hasItems && (
-            <EmptyState
+            <TableEmptyState
               colSpan={columnCount}
               message={tPages(
                 'listing.empty',
@@ -90,81 +190,89 @@ export function PageList({ pages, homeSlug, onShowInfo }: PageListProps) {
             const isHome = isHomePage(homeSlug, page.slug);
             const publicUrl = publicPageUrl(isHome, page.slug);
             const showSetHome = canSetAsHome(homeSlug, page.slug);
+            const updatedLabel = formatTableDate(page.updated_at, {
+              locale,
+              fallback: '\u2014',
+            });
 
             return (
-              <TableRow
+              <InteractiveTableRow
                 key={page.id}
-                className="group hover:bg-muted/50 focus-visible:ring-ring cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-                tabIndex={0}
-                onClick={() => onShowInfo?.(page)}
-                onKeyDown={(event) => {
-                  if (event.key === 'Enter' || event.key === ' ') {
-                    event.preventDefault();
-                    onShowInfo?.(page);
-                  }
-                }}
+                interactive={typeof onShowInfo === 'function'}
+                onActivate={() => onShowInfo?.(page)}
               >
-                <TableCell className="font-medium">
-                  <PageTitle title={page.title} internalName={page.internal_name} />
-                </TableCell>
+                <TableTitleCell
+                  className="w-[22%]"
+                  title={
+                    <span className="font-mono text-xs">{page.internal_name}</span>
+                  }
+                />
 
-                <TableCell>
+                <TableTitleCell className="w-[24%]" title={page.title} />
+
+                <TableMetaCell>
                   <PageSlug slug={page.slug} isHome={isHome} />
-                </TableCell>
+                </TableMetaCell>
 
-                <TableCell className="text-muted-foreground hidden text-xs tracking-wide uppercase md:table-cell">
+                <TableMetaCell className="hidden uppercase md:table-cell">
                   {page.locale}
-                </TableCell>
+                </TableMetaCell>
 
-                <TableCell className="hidden md:table-cell">
+                <TableMetaCell className="hidden md:table-cell">
                   <StatusBadge page={page} />
-                </TableCell>
+                </TableMetaCell>
 
-                <TableCell className="text-muted-foreground hidden text-sm lg:table-cell">
-                  <DateDisplay
-                    value={page.updated_at}
-                    fallback={'—'}
-                    locale={locale}
-                    format="PP"
+                <TableMetaCell className="hidden whitespace-nowrap lg:table-cell">
+                  <span>{updatedLabel}</span>
+                </TableMetaCell>
+
+                <TableActionCell
+                  className={cn(tablePresets.actionCell, 'content-center')}
+                  showChevron
+                >
+                  <PageActions
+                    pageId={page.id}
+                    pageTitle={page.title}
+                    publicUrl={publicUrl}
+                    showSetHome={showSetHome}
                   />
-                </TableCell>
-
-                <TableCell className="w-0">
-                  <div className="flex items-center justify-end gap-1">
-                    <Button
-                      type="button"
-                      size="icon"
-                      variant="ghost"
-                      className="text-muted-foreground hover:bg-primary hover:text-primary-foreground hidden h-8 w-8 sm:inline-flex"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        window.open(publicUrl, '_blank', 'noopener,noreferrer');
-                      }}
-                    >
-                      <ExternalLink className="h-4 w-4" />
-                      <span className="sr-only">
-                        {tPages(
-                          'listing.openNewTab',
-                          'Open page in a new tab',
-                        )}
-                      </span>
-                    </Button>
-
-                    <PageActions
-                      pageId={page.id}
-                      pageTitle={page.title}
-                      publicUrl={publicUrl}
-                      showSetHome={showSetHome}
-                    />
-
-                    <ChevronRight className="text-muted-foreground group-hover:text-foreground h-4 w-4 opacity-60 transition group-hover:translate-x-0.5 group-hover:opacity-100" />
-                  </div>
-                </TableCell>
-              </TableRow>
+                </TableActionCell>
+              </InteractiveTableRow>
             );
           })}
         </TableBody>
-      </Table>
-    </div>
+      </SystemTable>
+
+      <TablePagination
+        pagination={pages}
+        onPageChange={onPageChange}
+        onPerPageChange={onPerPageChange}
+        perPageOptions={perPageOptions}
+        showPageLinks
+      />
+    </TableCard>
   );
+}
+
+function resolveAriaSort(
+  sort: TableSortState,
+  column: string,
+  sortableColumns: Partial<Record<PageListSortKey, boolean>>,
+): 'ascending' | 'descending' | 'none' {
+  if (!isColumnSortable(column as PageListSortKey, sortableColumns)) {
+    return 'none';
+  }
+
+  if (sort.column !== column) {
+    return 'none';
+  }
+
+  return sort.direction === 'desc' ? 'descending' : 'ascending';
+}
+
+function isColumnSortable(
+  column: PageListSortKey,
+  sortableColumns: Partial<Record<PageListSortKey, boolean>>,
+): boolean {
+  return sortableColumns[column] !== false;
 }
