@@ -6,4 +6,4 @@ This directory documents shared frontend surfaces that do not belong to a specif
 
 - [`i18n/`](./i18n/README.md): shared internationalization runtime, bundle preloading, scope registry, and Inertia integration.
 - [`page-runtime/`](./page-runtime/README.md): shared page runtime facade for `Link`, `Head`, navigation, page props, and forms, with the concrete Inertia adapter hidden behind a stable shared API.
-- `table/`: shared admin-table foundation under `resources/js/common/table`, including a compositional `SystemTable`, card/shell helpers, interactive row behavior, empty-state/action helpers, and lightweight class presets for future adoption.
+- [`table/`](./table/README.md): shared admin-table foundation under `resources/js/common/table`, including the current primitives, helper components, and public shared surface.

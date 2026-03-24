@@ -61,6 +61,7 @@ For content-managed public pages, `resources/js/modules/content-management/featu
 - App frontend docs index: [`docs/frontend/app/README.md`](./app/README.md)
 - Shared frontend docs index: [`docs/frontend/common/README.md`](./common/README.md)
 - Shared i18n runtime: [`docs/frontend/common/i18n/README.md`](./common/i18n/README.md)
+- Shared table foundation: [`docs/frontend/common/table/README.md`](./common/table/README.md)
 
 ## Routing on the client (Ziggy)
 
