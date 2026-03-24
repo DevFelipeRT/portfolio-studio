@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import type { TableCardProps } from '../types';
 
 export function TableCard({
+  header,
   title,
   description,
   actions,
@@ -12,21 +13,45 @@ export function TableCard({
   contentClassName,
   children,
 }: TableCardProps) {
-  const hasHeader = title || description || actions;
+  const hasInfo = Boolean(title || description);
+  const hasHeader = Boolean(header) || hasInfo || actions;
 
   return (
     <Card className={cn('overflow-hidden border shadow-sm', className)}>
       {hasHeader ? (
         <>
-          <CardHeader className="flex flex-row items-start justify-between gap-4">
-            <div className="min-w-0 space-y-1">
-              {title ? <CardTitle className="text-base">{title}</CardTitle> : null}
-              {description ? (
-                <p className="text-muted-foreground text-xs">{description}</p>
-              ) : null}
-            </div>
+          <CardHeader
+            className={cn(
+              header
+                ? 'p-4'
+                : [
+                    'flex gap-4',
+                    hasInfo
+                      ? 'flex-row items-start justify-between'
+                      : 'flex-row items-center justify-end',
+                  ],
+            )}
+          >
+            {header ? (
+              header
+            ) : (
+              <>
+                {hasInfo ? (
+                  <div className="min-w-0 space-y-1">
+                    {title ? (
+                      <CardTitle className="text-base">{title}</CardTitle>
+                    ) : null}
+                    {description ? (
+                      <p className="text-muted-foreground text-xs">
+                        {description}
+                      </p>
+                    ) : null}
+                  </div>
+                ) : null}
 
-            {actions ? <div className="shrink-0">{actions}</div> : null}
+                {actions ? <div className="shrink-0">{actions}</div> : null}
+              </>
+            )}
           </CardHeader>
 
           <Separator />

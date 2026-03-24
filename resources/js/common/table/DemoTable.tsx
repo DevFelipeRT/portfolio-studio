@@ -1,25 +1,28 @@
 import { useState } from 'react';
 
-import { Button } from '@/components/ui/button';
 import {
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
 } from '@/components/ui/table';
-import { Pencil, Plus, Trash2 } from 'lucide-react';
+import { Pencil, Trash2 } from 'lucide-react';
 
 import { tablePresets } from './presets';
 import {
+  NewButton,
   TableActionCell,
   TableActionsMenu,
   TableActionsMenuItem,
   TableCard,
   TableBadge,
   TableBadgeButton,
+  TableDateText,
   TableDetailDialog,
   TableEmptyState,
   TableHeaderRow,
+  TableMetaCell,
+  TableTitleCell,
 } from './partials';
 import { InteractiveTableRow } from './row';
 import { SystemTable } from './Table';
@@ -67,12 +70,7 @@ export function DemoTable() {
       <TableCard
         title="Common Table Demo"
         description="Exemplo de composicao usando a nova API compartilhada sem depender de um modulo de dominio."
-        actions={
-          <Button type="button" size="sm" className="gap-2">
-            <Plus className="h-4 w-4" />
-            New item
-          </Button>
-        }
+        actions={<NewButton href="#" label="New item" />}
       >
         <SystemTable layout="fixed">
           <TableHeader>
@@ -108,22 +106,18 @@ export function DemoTable() {
                     setIsDialogOpen(true);
                   }}
                 >
-                  <TableCell className={tablePresets.summaryCell}>
-                    <div className="flex min-w-0 flex-col gap-0.5">
-                      <p className="truncate font-medium">{item.name}</p>
-                      <p className="text-muted-foreground line-clamp-1 text-xs">
-                        {item.summary}
-                      </p>
-                    </div>
-                  </TableCell>
+                  <TableTitleCell
+                    title={item.name}
+                    subtitle={item.summary}
+                  />
 
                 <TableCell className={tablePresets.statusCell}>
                   <StatusBadge status={item.status} />
                 </TableCell>
 
-                  <TableCell className={tablePresets.metaCell}>
-                    <span>{item.updatedAt}</span>
-                  </TableCell>
+                  <TableMetaCell>
+                    <TableDateText>{item.updatedAt}</TableDateText>
+                  </TableMetaCell>
 
                   <TableActionCell showChevron>
                     <TableActionsMenu triggerLabel={`Open actions for ${item.name}`}>

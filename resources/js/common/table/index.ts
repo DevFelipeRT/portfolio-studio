@@ -1,31 +1,69 @@
 export { SystemTable } from './Table';
+export { formatTableDate, formatTableDateRange } from './formatters';
+export { normalizeTablePagination } from './pagination';
 export { tablePresets } from './presets';
 export {
+  resetTablePageInQueryParams,
+  serializeTableQueryParams,
+  setTablePageInQueryParams,
+  setTablePerPageInQueryParams,
+  setTableSortInQueryParams,
+  toggleTableSortState,
+} from './query';
+export {
+  NewButton,
   TableActionsMenu,
   TableActionsMenuItem,
   TableActionCell,
   TableBadge,
+  TableBooleanBadge,
   TableBadgeButton,
   TableCard,
+  TableDateText,
   TableDetailDialog,
   TableEmptyState,
   TableHeaderRow,
+  TableMetaCell,
+  TablePagination,
+  TableSearchField,
+  TableSortHeader,
+  TableStatusStack,
+  TableToolbar,
+  TableTitleCell,
 } from './partials';
-export { InteractiveTableRow } from './row';
+export { InteractiveTableRow, TableSurfaceRow } from './row';
 
 export type {
   InteractiveTableRowProps,
   SystemTableProps,
+  TableSurfaceRowProps,
   TableActionCellProps,
   TableActionsMenuItemProps,
   TableActionsMenuProps,
   TableBadgeButtonProps,
   TableBadgeProps,
+  TableBooleanBadgeProps,
   TableCardProps,
+  TableDateTextProps,
   TableDensity,
   TableDetailDialogProps,
   TableEmptyStateProps,
   TableHeaderRowProps,
   TableLayout,
+  TableMetaCellProps,
+  NewButtonProps,
+  TablePaginated,
+  TablePaginationLink,
+  TablePaginationProps,
+  TablePaginationState,
+  TableQueryParamValue,
+  TableQueryParamsInput,
   TableRowVariant,
+  TableSearchFieldProps,
+  TableSortDirection,
+  TableSortHeaderProps,
+  TableSortState,
+  TableStatusStackProps,
+  TableToolbarProps,
+  TableTitleCellProps,
 } from './types';

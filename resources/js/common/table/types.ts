@@ -4,6 +4,7 @@ import type {
   MouseEvent,
   ReactNode,
 } from 'react';
+import type { LucideIcon } from 'lucide-react';
 
 import { DialogContent } from '@/components/ui/dialog';
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
@@ -21,12 +22,93 @@ export type SystemTableProps = {
 } & ComponentPropsWithoutRef<typeof Table>;
 
 export type TableCardProps = {
+  header?: ReactNode;
   title?: ReactNode;
   description?: ReactNode;
   actions?: ReactNode;
   className?: string;
   contentClassName?: string;
   children: ReactNode;
+};
+
+export type TableToolbarProps = ComponentPropsWithoutRef<'div'> & {
+  asChild?: boolean;
+};
+
+export type NewButtonProps = {
+  href: string;
+  label: ReactNode;
+  icon?: LucideIcon;
+  className?: string;
+};
+
+export type TableSearchFieldProps = Omit<
+  ComponentPropsWithoutRef<'input'>,
+  'size'
+> & {
+  buttonLabel?: ReactNode;
+  buttonClassName?: string;
+};
+
+export type TablePaginationLink = {
+  url: string | null;
+  label: string;
+  active: boolean;
+  page?: number | null;
+};
+
+export type TablePaginated<TItem> = {
+  data: TItem[];
+  current_page: number;
+  per_page: number;
+  last_page: number;
+  from: number | null;
+  to: number | null;
+  total: number;
+  path?: string;
+  links?: TablePaginationLink[];
+};
+
+export type TablePaginationState = {
+  currentPage: number;
+  lastPage: number;
+  perPage: number;
+  total: number;
+  from: number | null;
+  to: number | null;
+  hasPreviousPage: boolean;
+  hasNextPage: boolean;
+  links: TablePaginationLink[];
+};
+
+export type TablePaginationProps = ComponentPropsWithoutRef<'div'> & {
+  pagination: TablePaginated<unknown> | TablePaginationState;
+  onPageChange?: (page: number) => void;
+  perPageOptions?: readonly number[];
+  onPerPageChange?: (perPage: number) => void;
+  showPageLinks?: boolean;
+};
+
+export type TableQueryParamValue = string | number | null | undefined;
+
+export type TableQueryParamsInput = Record<string, TableQueryParamValue>;
+
+export type TableSortDirection = 'asc' | 'desc';
+
+export type TableSortState = {
+  column: string | null;
+  direction: TableSortDirection | null;
+};
+
+export type TableSortHeaderProps = Omit<
+  ComponentPropsWithoutRef<'button'>,
+  'children' | 'onClick'
+> & {
+  column: string;
+  label: ReactNode;
+  sort: TableSortState;
+  onToggleSort?: (column: string) => void;
+  srLabel?: string;
 };
 
 export type TableHeaderRowProps = ComponentPropsWithoutRef<typeof TableRow>;
@@ -44,6 +126,22 @@ export type TableActionCellProps = ComponentPropsWithoutRef<typeof TableCell> & 
   chevronClassName?: string;
 };
 
+export type TableTitleCellProps = Omit<
+  ComponentPropsWithoutRef<typeof TableCell>,
+  'title'
+> & {
+  title: ReactNode;
+  subtitle?: ReactNode;
+  titleClassName?: string;
+  subtitleClassName?: string;
+};
+
+export type TableMetaCellProps = ComponentPropsWithoutRef<typeof TableCell>;
+
+export type TableStatusStackProps = ComponentPropsWithoutRef<'div'>;
+
+export type TableDateTextProps = ComponentPropsWithoutRef<'span'>;
+
 export type TableDetailDialogProps = {
   open: boolean;
   onOpenChange(open: boolean): void;
@@ -53,7 +151,7 @@ export type TableDetailDialogProps = {
   children: ReactNode;
 } & Omit<
   ComponentPropsWithoutRef<typeof DialogContent>,
-  'open' | 'onOpenChange' | 'children'
+  'open' | 'onOpenChange' | 'children' | 'title'
 >;
 
 export type TableActionsMenuProps = {
@@ -71,6 +169,17 @@ export type TableBadgeProps = ComponentPropsWithoutRef<'div'> & {
   tone?: 'default' | 'secondary' | 'destructive' | 'outline';
 };
 
+export type TableBooleanBadgeProps = {
+  active: boolean;
+  activeLabel: ReactNode;
+  inactiveLabel: ReactNode;
+  className?: string;
+  activeIcon?: ComponentPropsWithoutRef<'svg'> extends never
+    ? never
+    : React.ComponentType<{ className?: string }>;
+  inactiveIcon?: React.ComponentType<{ className?: string }>;
+};
+
 export type TableBadgeButtonProps = Omit<
   ComponentPropsWithoutRef<'button'>,
   'children'
@@ -82,6 +191,11 @@ export type TableBadgeButtonProps = Omit<
 export type InteractiveTableRowProps = ComponentPropsWithoutRef<typeof TableRow> & {
   interactive?: boolean;
   onActivate?: () => void;
+  variant?: TableRowVariant;
+  active?: boolean;
+};
+
+export type TableSurfaceRowProps = ComponentPropsWithoutRef<typeof TableRow> & {
   variant?: TableRowVariant;
   active?: boolean;
 };

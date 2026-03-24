@@ -4,6 +4,7 @@ import { TableRow } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
 
 import type { InteractiveTableRowKeyboardEvent, InteractiveTableRowMouseEvent, InteractiveTableRowProps } from '../types';
+import { surfaceVariantClassName } from './TableSurfaceRow';
 
 export const InteractiveTableRow = forwardRef<
   HTMLTableRowElement,
@@ -55,7 +56,7 @@ export const InteractiveTableRow = forwardRef<
     <TableRow
       ref={ref}
       className={cn(
-        variantClassName(variant, active),
+        surfaceVariantClassName(variant, active),
         isInteractive &&
           'group cursor-pointer focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
         className,
@@ -102,34 +103,4 @@ function isRowActivationEvent(
   const activeElement = document.activeElement;
 
   return activeElement === null || activeElement === currentElement;
-}
-
-function variantClassName(
-  variant: InteractiveTableRowProps['variant'],
-  active: boolean,
-): string {
-  switch (variant) {
-    case 'muted':
-      return cn(
-        '[&>td:first-child]:border-l bg-muted/40 hover:bg-muted/60 dark:bg-muted/40 dark:hover:bg-muted/70',
-        active
-          ? '[&>td:first-child]:border-l-primary/70'
-          : '[&>td:first-child]:border-l-transparent',
-      );
-    case 'emphasized':
-      return cn(
-        '[&>td:first-child]:border-l bg-background hover:bg-muted/60 dark:bg-background dark:hover:bg-muted/40',
-        active
-          ? '[&>td:first-child]:border-l-4 [&>td:first-child]:border-l-primary/70'
-          : '[&>td:first-child]:border-l-transparent',
-      );
-    case 'default':
-    default:
-      return cn(
-        '[&>td:first-child]:border-l bg-background hover:bg-muted/60 dark:bg-background dark:hover:bg-muted/40',
-        active
-          ? '[&>td:first-child]:border-l-primary/70'
-          : '[&>td:first-child]:border-l-transparent',
-      );
-  }
 }

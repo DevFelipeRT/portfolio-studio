@@ -1,6 +1,11 @@
 import { cn } from '@/lib/utils';
+import { Check, Minus } from 'lucide-react';
 
-import type { TableBadgeProps, TableBadgeButtonProps } from '../types';
+import type {
+  TableBadgeProps,
+  TableBadgeButtonProps,
+  TableBooleanBadgeProps,
+} from '../types';
 
 export function TableBadge({
   className,
@@ -58,5 +63,33 @@ export function TableBadgeButton({
         {children}
       </div>
     </button>
+  );
+}
+
+export function TableBooleanBadge({
+  active,
+  activeLabel,
+  inactiveLabel,
+  className,
+  activeIcon,
+  inactiveIcon,
+}: TableBooleanBadgeProps) {
+  const Icon = active ? (activeIcon ?? Check) : (inactiveIcon ?? Minus);
+
+  return (
+    <TableBadge
+      className={cn(
+        'flex w-fit items-center gap-1 border-none px-2 py-0.5 font-medium whitespace-nowrap',
+        active
+          ? 'bg-primary text-primary-foreground'
+          : 'bg-muted text-muted-foreground',
+        className,
+      )}
+    >
+      <Icon className="h-3.5 w-3.5" />
+      <span className="hidden whitespace-nowrap sm:inline">
+        {active ? activeLabel : inactiveLabel}
+      </span>
+    </TableBadge>
   );
 }

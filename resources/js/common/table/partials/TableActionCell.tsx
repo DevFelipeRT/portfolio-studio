@@ -22,6 +22,7 @@ export function TableActionCell({
             <ChevronRight
               className={cn(
                 'text-muted-foreground h-4 w-4 shrink-0 opacity-60 transition group-hover:translate-x-0.5 group-hover:opacity-100',
+                'group-hover:text-primary',
                 chevronClassName,
               )}
             />
