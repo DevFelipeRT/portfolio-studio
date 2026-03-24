@@ -22,11 +22,23 @@ use App\Modules\ContactChannels\Http\Requests\ContactChannel\UpdateContactChanne
 use App\Modules\ContactChannels\Presentation\Mappers\ContactChannelMapper;
 use App\Modules\Shared\Abstractions\Http\Controller;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Inertia\Inertia;
 use Inertia\Response;
 
 final class ContactChannelController extends Controller
 {
+    private const DEFAULT_PER_PAGE = 15;
+
+    private const SORTABLE_COLUMNS = [
+        'channel_type',
+        'label',
+        'value',
+        'is_active',
+        'sort_order',
+    ];
+
     public function __construct(
         private readonly ListContactChannels $listContactChannels,
         private readonly CreateContactChannel $createContactChannel,
@@ -38,12 +50,34 @@ final class ContactChannelController extends Controller
     ) {
     }
 
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        $channels = $this->listContactChannels->handle();
+        $perPage = $this->resolvePerPage($request);
+        $search = $this->resolveSearch($request->query('search'));
+        $type = $this->resolveType($request->query('type'));
+        $isActive = $this->resolveActiveFilter($request->query('active'));
+        $sort = $this->resolveTableSort($request->query('sort'), self::SORTABLE_COLUMNS);
+        $direction = $this->resolveTableDirection($request->query('direction'), $sort, 'asc');
+        $channels = $this->listContactChannels->handle(
+            $perPage,
+            $search,
+            $type,
+            $isActive,
+            $sort,
+            $direction,
+        );
 
         return Inertia::render('contact-channels/admin/Index', [
-            'channels' => ContactChannelMapper::collection($channels),
+            'channels' => $this->paginatedChannelsPayload($channels),
+            'channelTypes' => $this->channelTypesPayload(),
+            'filters' => [
+                'per_page' => $perPage,
+                'search' => $search,
+                'type' => $type,
+                'active' => $this->activeFilterValue($isActive),
+                'sort' => $sort,
+                'direction' => $direction,
+            ],
         ]);
     }
 
@@ -93,7 +127,7 @@ final class ContactChannelController extends Controller
         $this->deleteContactChannel->handle($contactChannel);
 
         return redirect()
-            ->route('contact-channels.index')
+            ->back()
             ->with('status', 'Contact channel deleted.');
     }
 
@@ -145,5 +179,102 @@ final class ContactChannelController extends Controller
             ContactChannelType::GitHub => 'GitHub',
             ContactChannelType::Custom => 'Custom',
         };
+    }
+
+    private function resolveSearch(mixed $rawSearch): ?string
+    {
+        if (!is_string($rawSearch)) {
+            return null;
+        }
+
+        $search = trim($rawSearch);
+
+        return $search === '' ? null : $search;
+    }
+
+    private function resolvePerPage(Request $request): int
+    {
+        $perPage = $request->integer('per_page', self::DEFAULT_PER_PAGE);
+
+        if ($perPage < 1) {
+            return self::DEFAULT_PER_PAGE;
+        }
+
+        return min($perPage, 100);
+    }
+
+    private function resolveType(mixed $rawType): ?string
+    {
+        if (!is_string($rawType)) {
+            return null;
+        }
+
+        $type = trim($rawType);
+
+        return ContactChannelType::tryFrom($type)?->value;
+    }
+
+    private function resolveActiveFilter(mixed $rawActive): ?bool
+    {
+        if (!is_string($rawActive)) {
+            return null;
+        }
+
+        return match (trim($rawActive)) {
+            'active' => true,
+            'inactive' => false,
+            default => null,
+        };
+    }
+
+    private function activeFilterValue(?bool $isActive): ?string
+    {
+        return match ($isActive) {
+            true => 'active',
+            false => 'inactive',
+            default => null,
+        };
+    }
+
+    /**
+     * @return array{
+     *     data: array<int,array<string,mixed>>,
+     *     current_page: int,
+     *     last_page: int,
+     *     per_page: int,
+     *     from: int|null,
+     *     to: int|null,
+     *     total: int,
+     *     path: string,
+     *     links: array<int,array{url:string|null,label:string,active:bool}>
+     * }
+     */
+    private function paginatedChannelsPayload(LengthAwarePaginator $paginator): array
+    {
+        $items = collect($paginator->items())
+            ->map(fn(ContactChannel $channel): array => ContactChannelMapper::map(
+                ContactChannelDto::fromModel($channel, $this->hrefBuilder),
+            ))
+            ->values()
+            ->all();
+
+        return [
+            'data' => $items,
+            'current_page' => $paginator->currentPage(),
+            'last_page' => $paginator->lastPage(),
+            'per_page' => $paginator->perPage(),
+            'from' => $paginator->firstItem(),
+            'to' => $paginator->lastItem(),
+            'total' => $paginator->total(),
+            'path' => $paginator->path(),
+            'links' => $paginator->linkCollection()
+                ->map(static fn(array $link): array => [
+                    'url' => $link['url'],
+                    'label' => (string) $link['label'],
+                    'active' => (bool) $link['active'],
+                ])
+                ->values()
+                ->all(),
+        ];
     }
 }

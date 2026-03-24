@@ -5,10 +5,20 @@ declare(strict_types=1);
 namespace App\Modules\ContactChannels\Domain\Repositories;
 
 use App\Modules\ContactChannels\Domain\Models\ContactChannel;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 
 interface IContactChannelRepository
 {
+    public function paginateOrdered(
+        int $perPage,
+        ?string $search = null,
+        ?string $type = null,
+        ?bool $isActive = null,
+        ?string $sort = null,
+        ?string $direction = null,
+    ): LengthAwarePaginator;
+
     /**
      * @return EloquentCollection<int,ContactChannel>
      */
