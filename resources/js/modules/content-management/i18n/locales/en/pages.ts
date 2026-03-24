@@ -53,15 +53,19 @@ const pages: TranslationTree = {
   },
   filters: {
     search: 'Search',
+    submitSearch: 'Search pages',
     status: 'Status',
-    searchPlaceholder: 'Filter by title or slug',
+    locale: 'Locale',
+    searchPlaceholder: 'Filter by title, internal name, or slug',
     allStatuses: 'All statuses',
+    allLocales: 'All locales',
     draft: 'Draft',
     published: 'Published',
     archived: 'Archived',
   },
   listing: {
     columns: {
+      name: 'Name',
       title: 'Title',
       slug: 'Slug',
       locale: 'Locale',
@@ -74,6 +78,7 @@ const pages: TranslationTree = {
     home: 'Home',
     draft: 'Draft',
     published: 'Published',
+    archived: 'Archived',
     deleteConfirm: 'Delete "{{title}}"? This cannot be undone.',
   },
   info: {
@@ -83,6 +88,7 @@ const pages: TranslationTree = {
     badges: {
       published: 'Published',
       draft: 'Draft',
+      archived: 'Archived',
       indexable: 'Indexable',
       noindex: 'Noindex',
     },
