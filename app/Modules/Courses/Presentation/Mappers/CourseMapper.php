@@ -21,7 +21,7 @@ final class CourseMapper extends Mapper
             'name' => $course->name,
             'institution' => $course->institution,
             'category' => $course->category->value,
-            'status' => $course->status->value,
+            'status' => $course->status->value()->value,
             'summary' => $course->summary,
             'description' => $course->description,
             'started_at' => self::formatDate($course->started_at),

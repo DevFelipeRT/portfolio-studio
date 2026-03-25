@@ -13,8 +13,10 @@ use App\Modules\Courses\Application\UseCases\ListCourses\ListCourses;
 use App\Modules\Courses\Application\UseCases\UpdateCourse\UpdateCourse;
 use App\Modules\Courses\Http\Requests\Course\StoreCourseRequest;
 use App\Modules\Courses\Http\Requests\Course\UpdateCourseRequest;
+use App\Modules\Courses\Http\Mappers\CreateCourseInputMapper;
 use App\Modules\Courses\Http\Mappers\CourseFormMapper;
-use App\Modules\Courses\Http\Mappers\CourseInputMapper;
+use App\Modules\Courses\Http\Mappers\ListCoursesInputMapper;
+use App\Modules\Courses\Http\Mappers\UpdateCourseInputMapper;
 use App\Modules\Courses\Presentation\Mappers\CourseMapper;
 
 use Illuminate\Auth\Access\AuthorizationException;
@@ -39,6 +41,9 @@ class CourseController extends Controller
         private readonly CreateCourse $createCourse,
         private readonly UpdateCourse $updateCourse,
         private readonly DeleteCourse $deleteCourse,
+        private readonly ListCoursesInputMapper $listCoursesInputMapper,
+        private readonly CreateCourseInputMapper $createCourseInputMapper,
+        private readonly UpdateCourseInputMapper $updateCourseInputMapper,
     ) {
     }
 
@@ -47,15 +52,22 @@ class CourseController extends Controller
      */
     public function index(Request $request): Response
     {
-        $perPage = (int) $request->query(key: 'per_page', default: '15');
-
-        $paginatedCourses = $this->listCourses->handle($perPage);
+        $input = $this->listCoursesInputMapper->fromRequest($request);
+        $paginatedCourses = $this->listCourses->handle($input);
 
         $mapped = $this->mapPaginatedResource($paginatedCourses, CourseMapper::class);
 
         return Inertia::render('courses/admin/Index', [
             'courses' => $mapped,
-            'filters' => ['per_page' => $perPage],
+            'filters' => [
+                'per_page' => $input->perPage,
+                'search' => $input->search,
+                'institution' => $input->institution,
+                'status' => $input->status?->value()->value,
+                'visibility' => $input->visibility,
+                'sort' => $input->sort,
+                'direction' => $input->direction,
+            ],
         ]);
     }
 
@@ -75,7 +87,7 @@ class CourseController extends Controller
     public function store(StoreCourseRequest $request): RedirectResponse
     {
         try {
-            $input = CourseInputMapper::fromStoreRequest($request);
+            $input = $this->createCourseInputMapper->fromRequest($request);
             $course = $this->createCourse->handle($input);
 
             // 303 See Other is recommended for Inertia POST requests to ensure a GET follow-up
@@ -118,7 +130,7 @@ class CourseController extends Controller
     public function update(UpdateCourseRequest $request, Course $course): RedirectResponse
     {
         try {
-            $input = CourseInputMapper::fromUpdateRequest($request, $course);
+            $input = $this->updateCourseInputMapper->fromRequest($request, $course);
             $this->updateCourse->handle($course, $input);
 
             // 303 See Other is strictly recommended for Inertia PUT/PATCH requests
@@ -162,4 +174,5 @@ class CourseController extends Controller
             return back()->with('error', 'An error occurred while trying to delete the course.');
         }
     }
+
 }
