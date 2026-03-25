@@ -9,5 +9,6 @@ export default {
   edit: 'Edit',
   delete: 'Delete',
   deleteCourse: 'Delete course',
+  viewCourse: 'View course',
   openMenu: 'Open menu',
 };

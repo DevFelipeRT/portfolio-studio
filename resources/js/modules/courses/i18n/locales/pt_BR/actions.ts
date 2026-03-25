@@ -9,5 +9,6 @@ export default {
   edit: 'Editar',
   delete: 'Excluir',
   deleteCourse: 'Excluir curso',
+  viewCourse: 'Ver curso',
   openMenu: 'Abrir menu',
 };

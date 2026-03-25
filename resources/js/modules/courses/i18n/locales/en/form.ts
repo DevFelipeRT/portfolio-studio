@@ -11,7 +11,7 @@ export default {
       error: 'Course title is required',
     },
     institution: {
-      label: 'Provider / Institution',
+      label: 'Institution',
       placeholder: 'e.g., Udemy, Coursera, Harvard',
       error: 'Institution is required',
     },
@@ -54,6 +54,20 @@ export default {
   help: {
     managementSubtitle: 'Manage the courses displayed on your portfolio.',
   },
+  filters: {
+    searchLabel: 'Search',
+    searchPlaceholder: 'Search by course, institution, or summary',
+    searchSubmit: 'Search courses',
+    institutionLabel: 'Institution',
+    institutionPlaceholder: 'Filter by institution',
+    statusLabel: 'Status',
+    statusPlaceholder: 'All statuses',
+    visibilityLabel: 'Visibility',
+    visibilityPlaceholder: 'All visibility states',
+    publicOnly: 'Public only',
+    privateOnly: 'Private only',
+    reset: 'Clear',
+  },
   emptyState: {
     index: 'No courses have been created yet.',
   },
@@ -61,9 +75,9 @@ export default {
     title: 'All courses',
     description: 'A list of all courses and certificates registered.',
     columns: {
-      course: 'Course',
-      started_at: 'Start date',
-      completed_at: 'End date',
+      name: 'Name',
+      started_at: 'Start',
+      completed_at: 'End',
     },
   },
   status: {

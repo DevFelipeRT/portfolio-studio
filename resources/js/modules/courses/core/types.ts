@@ -3,18 +3,19 @@ export interface HasTimestamps {
     updated_at: string | null;
 }
 
-export interface Course extends HasTimestamps {
+export interface Course {
     id: number;
     locale: string;
     name: string;
-    institution: string;
+    institution: string | null;
     category: string;
     status: string;
-    summary: string;
-    description: string;
-    started_at: string;
+    summary: string | null;
+    description: string | null;
+    started_at: string | null;
     completed_at: string | null;
     display: boolean;
+    updated_at: string | null;
 }
 
 export interface CourseTranslationItem extends HasTimestamps {
