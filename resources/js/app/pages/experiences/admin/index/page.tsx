@@ -1,42 +1,176 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import { PageContent } from '@/app/layouts/primitives';
-import { PageHead, PageLink } from '@/common/page-runtime';
+import { PageHead, pageRouter } from '@/common/page-runtime';
+import {
+  NewButton,
+  serializeTableQueryParams,
+  setTablePageInQueryParams,
+  setTablePerPageInQueryParams,
+  setTableSortInQueryParams,
+  TableSearchField,
+  TableToolbar,
+  toggleTableSortState,
+  type TablePaginated,
+  type TableSortState,
+} from '@/common/table';
+import { Button } from '@/components/ui/button';
 import type { Experience } from '@/modules/experiences/core/types';
 import {
   EXPERIENCES_NAMESPACES,
   useExperiencesTranslation,
 } from '@/modules/experiences/i18n';
+import { ExperienceOverlay } from '@/modules/experiences/ui/ExperienceOverlay';
+import { ExperiencesTable } from '@/modules/experiences/ui/table/ExperiencesTable';
+import { useState } from 'react';
 
 interface ExperiencesIndexProps {
-  experiences: Experience[];
+  experiences: TablePaginated<Experience>;
+  filters: {
+    per_page?: number | null;
+    search?: string | null;
+    visibility?: string | null;
+    sort?: string | null;
+    direction?: string | null;
+  };
 }
 
-export default function Index({ experiences }: ExperiencesIndexProps) {
+const EXPERIENCE_PER_PAGE_OPTIONS = [15, 30, 50] as const;
+const EXPERIENCE_DEFAULT_SORT_DIRECTION = 'desc' as const;
+const EXPERIENCE_SORTABLE_COLUMNS = {
+  position: true,
+  company: true,
+  start_date: true,
+  display: true,
+} as const;
+
+export default function Index({ experiences, filters }: ExperiencesIndexProps) {
+  const [selectedExperience, setSelectedExperience] =
+    useState<Experience | null>(null);
   const { translate: tActions } = useExperiencesTranslation(
     EXPERIENCES_NAMESPACES.actions,
-  );
-  const { translate: tForm } = useExperiencesTranslation(
-    EXPERIENCES_NAMESPACES.form,
   );
   const { translate: tSections } = useExperiencesTranslation(
     EXPERIENCES_NAMESPACES.sections,
   );
-  const hasExperiences = experiences.length > 0;
+  const { translate: tForm } = useExperiencesTranslation(
+    EXPERIENCES_NAMESPACES.form,
+  );
+  const currentSearch =
+    typeof filters.search === 'string' ? filters.search : '';
+  const currentVisibility =
+    typeof filters.visibility === 'string' ? filters.visibility : '';
+  const currentSortColumn =
+    typeof filters.sort === 'string' ? filters.sort : null;
+  const sortState: TableSortState = {
+    column: currentSortColumn,
+    direction:
+      filters.direction === 'asc' || filters.direction === 'desc'
+        ? filters.direction
+        : currentSortColumn !== null
+          ? EXPERIENCE_DEFAULT_SORT_DIRECTION
+          : null,
+  };
+  const currentPerPage =
+    typeof filters.per_page === 'number' && filters.per_page > 0
+      ? filters.per_page
+      : experiences.per_page;
+  const [search, setSearch] = useState(currentSearch);
+  const [visibility, setVisibility] = useState(currentVisibility);
 
-  const truncate = (text: string, maxLength: number): string => {
-    if (text.length <= maxLength) {
-      return text;
-    }
-
-    return `${text.slice(0, maxLength - 1)}…`;
+  const handlePageChange = (page: number): void => {
+    pageRouter.get(
+      route('experiences.index'),
+      setTablePageInQueryParams(
+        buildExperiencesIndexQueryParams({
+          search: currentSearch,
+          visibility: currentVisibility,
+          perPage: currentPerPage,
+          sort: sortState,
+        }),
+        page,
+      ),
+      {
+        preserveScroll: true,
+        preserveState: true,
+      },
+    );
   };
 
-  const formatPeriod = (experience: Experience): string => {
-    if (!experience.end_date) {
-      return `${experience.start_date} – ${tForm('fields.period.present')}`;
-    }
+  const handlePerPageChange = (perPage: number): void => {
+    pageRouter.get(
+      route('experiences.index'),
+      setTablePerPageInQueryParams(
+        buildExperiencesIndexQueryParams({
+          search: currentSearch,
+          visibility: currentVisibility,
+          sort: sortState,
+        }),
+        perPage,
+      ),
+      {
+        preserveScroll: true,
+        preserveState: true,
+        replace: true,
+      },
+    );
+  };
 
-    return `${experience.start_date} – ${experience.end_date}`;
+  const handleSortChange = (column: string): void => {
+    pageRouter.get(
+      route('experiences.index'),
+      setTableSortInQueryParams(
+        serializeTableQueryParams({
+          per_page: currentPerPage,
+          search: currentSearch,
+          visibility: currentVisibility,
+        }),
+        toggleTableSortState(sortState, column),
+      ),
+      {
+        preserveScroll: true,
+        preserveState: true,
+        replace: true,
+      },
+    );
+  };
+
+  const handleSearchSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
+    event.preventDefault();
+
+    pageRouter.get(
+      route('experiences.index'),
+      buildExperiencesIndexQueryParams({
+        search,
+        visibility,
+        perPage: currentPerPage,
+        sort: sortState,
+      }),
+      {
+        preserveScroll: true,
+        preserveState: true,
+        replace: true,
+      },
+    );
+  };
+
+  const handleResetFilters = (): void => {
+    setSearch('');
+    setVisibility('');
+
+    pageRouter.get(
+      route('experiences.index'),
+      buildExperiencesIndexQueryParams({
+        search: '',
+        visibility: '',
+        perPage: currentPerPage,
+        sort: sortState,
+      }),
+      {
+        preserveScroll: true,
+        preserveState: true,
+        replace: true,
+      },
+    );
   };
 
   return (
@@ -44,117 +178,107 @@ export default function Index({ experiences }: ExperiencesIndexProps) {
       <PageHead title={tSections('managementTitle')} />
 
       <PageContent className="overflow-hidden py-8" pageWidth="container">
-        <div className="mb-6 space-y-6">
+        <div className="mb-6">
           <div>
             <h1 className="text-xl leading-tight font-semibold">
               {tSections('managementTitle')}
             </h1>
-          </div>
-
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-muted-foreground mt-1 text-sm">
-                {tForm('help.managementSubtitle')}
-              </p>
-            </div>
-
-            <PageLink
-              href={route('experiences.create')}
-              className="bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-ring inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium shadow-sm transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
-            >
-              {tActions('newExperience')}
-            </PageLink>
+            <p className="text-muted-foreground mt-1 text-sm">
+              {tForm('help.managementSubtitle')}
+            </p>
           </div>
         </div>
 
-        {!hasExperiences && (
-          <p className="text-muted-foreground text-sm">
-            {tForm('emptyState.index')}
-          </p>
-        )}
+        <ExperiencesTable
+          experiences={experiences}
+          onRowClick={(experience) => setSelectedExperience(experience)}
+          header={
+            <TableToolbar className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <form
+                className="flex w-full flex-col gap-3 md:flex-row md:items-center"
+                onSubmit={handleSearchSubmit}
+              >
+                <TableSearchField
+                  className="w-full md:max-w-md"
+                  aria-label={tForm('filters.searchLabel')}
+                  value={search}
+                  onChange={(event) => setSearch(event.currentTarget.value)}
+                  placeholder={tForm('filters.searchPlaceholder')}
+                  buttonLabel={tForm('filters.searchSubmit')}
+                />
 
-        {hasExperiences && (
-          <div className="bg-card overflow-hidden rounded-lg border">
-            <table className="min-w-full divide-y text-sm">
-              <thead className="bg-muted/60">
-                <tr>
-                  <th className="text-muted-foreground px-4 py-3 text-left text-sm font-medium">
-                    {tForm('fields.position.label')}
-                  </th>
-                  <th className="text-muted-foreground px-4 py-3 text-left text-sm font-medium">
-                    {tForm('fields.company.label')}
-                  </th>
-                  <th className="text-muted-foreground px-4 py-3 text-left text-sm font-medium">
-                    {tForm('fields.period.label')}
-                  </th>
-                  <th className="text-muted-foreground px-4 py-3 text-left text-sm font-medium">
-                    {tForm('fields.display.label')}
-                  </th>
-                  <th className="text-muted-foreground px-4 py-3 text-left text-sm font-medium">
-                    {tForm('fields.updated_at.label')}
-                  </th>
-                  <th className="text-muted-foreground px-4 py-3 text-right text-sm font-medium">
-                    {tForm('fields.actions.label')}
-                  </th>
-                </tr>
-              </thead>
+                <select
+                  aria-label={tForm('filters.visibilityLabel')}
+                  className="border-input bg-background ring-offset-background focus-visible:ring-ring placeholder:text-muted-foreground flex h-9 w-full rounded-md border px-3 py-1 text-sm shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:max-w-xs"
+                  value={visibility}
+                  onChange={(event) => setVisibility(event.currentTarget.value)}
+                >
+                  <option value="">{tForm('filters.visibilityPlaceholder')}</option>
+                  <option value="public">{tForm('filters.publicOnly')}</option>
+                  <option value="private">{tForm('filters.privateOnly')}</option>
+                </select>
+              </form>
 
-              <tbody className="divide-y">
-                {experiences.map((experience) => (
-                  <tr key={experience.id}>
-                    <td className="px-4 py-3 align-top">
-                      <div className="font-medium">{experience.position}</div>
-                      <div className="text-muted-foreground mt-0.5 text-xs">
-                        {truncate(experience.summary ?? '', 80)}
-                      </div>
-                    </td>
+              <div className="flex items-center gap-2 self-end sm:self-auto">
+                {currentSearch !== '' || currentVisibility !== '' ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleResetFilters}
+                  >
+                    {tForm('filters.reset')}
+                  </Button>
+                ) : null}
 
-                    <td className="text-muted-foreground px-4 py-3 align-top text-sm">
-                      {experience.company ?? tForm('values.empty')}
-                    </td>
+                <NewButton
+                  href={route('experiences.create')}
+                  label={tActions('newExperience')}
+                />
+              </div>
+            </TableToolbar>
+          }
+          onPageChange={handlePageChange}
+          onPerPageChange={handlePerPageChange}
+          onSortChange={handleSortChange}
+          perPageOptions={EXPERIENCE_PER_PAGE_OPTIONS}
+          sort={sortState}
+          sortableColumns={EXPERIENCE_SORTABLE_COLUMNS}
+        />
 
-                    <td className="text-muted-foreground px-4 py-3 align-top text-xs whitespace-nowrap">
-                      {formatPeriod(experience)}
-                    </td>
-
-                    <td className="text-muted-foreground px-4 py-3 align-top text-xs">
-                      {experience.display
-                        ? tActions('yes')
-                        : tActions('no')}
-                    </td>
-
-                    <td className="text-muted-foreground px-4 py-3 align-top text-xs whitespace-nowrap">
-                      {experience.updated_at ?? tForm('values.empty')}
-                    </td>
-
-                    <td className="px-4 py-3 align-top">
-                      <div className="flex justify-end gap-3 text-xs">
-                        <PageLink
-                          href={route('experiences.edit', experience.id)}
-                          className="text-primary font-medium hover:underline"
-                        >
-                          {tActions('edit')}
-                        </PageLink>
-
-                        <PageLink
-                          href={route('experiences.destroy', experience.id)}
-                          method="delete"
-                          as="button"
-                          className="text-destructive font-medium hover:underline"
-                        >
-                          {tActions('delete')}
-                        </PageLink>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+        <ExperienceOverlay
+          open={selectedExperience !== null}
+          experience={selectedExperience}
+          onOpenChange={(open) => {
+            if (!open) {
+              setSelectedExperience(null);
+            }
+          }}
+        />
       </PageContent>
     </AuthenticatedLayout>
   );
 }
 
 Index.i18n = ['experiences'];
+
+function buildExperiencesIndexQueryParams({
+  search,
+  visibility,
+  perPage,
+  sort,
+}: {
+  search: string;
+  visibility: string;
+  perPage?: number;
+  sort: TableSortState;
+}): Record<string, string> {
+  return setTableSortInQueryParams(
+    serializeTableQueryParams({
+      search,
+      visibility,
+      per_page: perPage,
+    }),
+    sort,
+  );
+}
