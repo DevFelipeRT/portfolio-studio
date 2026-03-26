@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Experiences\Application\UseCases\ListExperiences;
 
 use App\Modules\Experiences\Domain\Repositories\IExperienceRepository;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 final class ListExperiences
 {
@@ -13,14 +13,20 @@ final class ListExperiences
     {
     }
 
-    /**
-     * @return Collection<int,\App\Modules\Experiences\Domain\Models\Experience>
-     */
-    public function handle(): Collection
+    public function handle(
+        int $perPage = 15,
+        ?string $search = null,
+        ?string $visibility = null,
+        ?string $sort = null,
+        ?string $direction = null,
+    ): LengthAwarePaginator
     {
-        $locale = app()->getLocale();
-        $fallbackLocale = app()->getFallbackLocale();
-
-        return $this->experiences->allWithTranslations($locale, $fallbackLocale);
+        return $this->experiences->paginate(
+            $perPage,
+            $search,
+            $visibility,
+            $sort,
+            $direction,
+        );
     }
 }

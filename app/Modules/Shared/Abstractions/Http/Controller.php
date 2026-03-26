@@ -9,14 +9,21 @@ use App\Modules\Shared\Abstractions\Mapping\Mapper;
 abstract class Controller
 {
     /**
-     * Transform a paginated collection using a mapper.
+     * Transform a length-aware paginated collection using a mapper.
      *
      * @template T of object
-     * @param \Illuminate\Contracts\Pagination\Paginator|\Illuminate\Pagination\LengthAwarePaginator $paginator
+     * @param \Illuminate\Pagination\LengthAwarePaginator $paginator
      * @param class-string<Mapper> $mapper
      * @return array{
      *     data: array<int, array<string,mixed>>,
-     *     pagination: array{current_page:int,last_page:int,per_page:int,total:int}
+     *     current_page: int,
+     *     last_page: int,
+     *     per_page: int,
+     *     from: int|null,
+     *     to: int|null,
+     *     total: int,
+     *     path: string,
+     *     links: array<int, array{url:string|null,label:string,active:bool}>
      * }
      */
     protected function mapPaginatedResource($paginator, string $mapper): array
@@ -25,12 +32,61 @@ abstract class Controller
 
         return [
             'data' => $mapper::collection($items),
-            'pagination' => [
-                'current_page' => $paginator->currentPage(),
-                'last_page' => $paginator->lastPage(),
-                'per_page' => $paginator->perPage(),
-                'total' => $paginator->total(),
-            ],
+            'current_page' => $paginator->currentPage(),
+            'last_page' => $paginator->lastPage(),
+            'per_page' => $paginator->perPage(),
+            'from' => $paginator->firstItem(),
+            'to' => $paginator->lastItem(),
+            'total' => $paginator->total(),
+            'path' => $paginator->path(),
+            'links' => $paginator->linkCollection()
+                ->map(static fn(array $link): array => [
+                    'url' => $link['url'],
+                    'label' => (string) $link['label'],
+                    'active' => (bool) $link['active'],
+                ])
+                ->values()
+                ->all(),
         ];
+    }
+
+    /**
+     * Resolve a sortable column against a controller-provided whitelist.
+     *
+     * @param array<int,string> $sortableColumns
+     */
+    protected function resolveTableSort(
+        mixed $rawSort,
+        array $sortableColumns,
+    ): ?string {
+        if (!is_string($rawSort)) {
+            return null;
+        }
+
+        $sort = trim($rawSort);
+
+        return in_array($sort, $sortableColumns, true) ? $sort : null;
+    }
+
+    /**
+     * Resolve sort direction for an active sortable column while preserving
+     * each controller's existing default direction fallback.
+     */
+    protected function resolveTableDirection(
+        mixed $rawDirection,
+        ?string $sort,
+        string $defaultDirection = 'desc',
+    ): ?string {
+        if ($sort === null) {
+            return null;
+        }
+
+        if (!is_string($rawDirection)) {
+            return $defaultDirection;
+        }
+
+        return $rawDirection === 'asc'
+            ? 'asc'
+            : ($rawDirection === 'desc' ? 'desc' : $defaultDirection);
     }
 }

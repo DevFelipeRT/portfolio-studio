@@ -10,10 +10,12 @@ use Illuminate\Database\Eloquent\Collection;
 
 interface IExperienceRepository
 {
-    public function paginateWithTranslations(
+    public function paginate(
         int $perPage,
-        ?string $locale,
-        ?string $fallbackLocale = null,
+        ?string $search = null,
+        ?string $visibility = null,
+        ?string $sort = null,
+        ?string $direction = null,
     ): LengthAwarePaginator;
 
     /**
