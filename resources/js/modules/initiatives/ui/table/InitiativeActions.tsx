@@ -1,31 +1,29 @@
-import type { Initiative } from '@/modules/initiatives/core/types';
+import type { InitiativeListItem } from '@/modules/initiatives/core/types';
 import {
     INITIATIVES_NAMESPACES,
     useInitiativesTranslation,
 } from '@/modules/initiatives/i18n';
 
-import { Button } from '@/components/ui/button';
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { PageLink } from '@/common/page-runtime';
+    TableActionsMenu,
+    TableActionsMenuItem,
+} from '@/common/table';
 import {
-    ChevronRight,
+    PageLink,
+} from '@/common/page-runtime';
+import {
     Eye,
     EyeOff,
-    MoreVertical,
     Pencil,
     Trash2,
 } from 'lucide-react';
 import React from 'react';
 
 interface InitiativeActionsProps {
-    initiative: Initiative;
-    onToggleDisplay(initiative: Initiative, event?: React.MouseEvent): void;
-    onDelete(initiative: Initiative, event?: React.MouseEvent): void;
+    initiative: InitiativeListItem;
+    onOpenDetails(): void;
+    onToggleDisplay(initiative: InitiativeListItem, event?: React.MouseEvent): void;
+    onDelete(initiative: InitiativeListItem, event?: React.MouseEvent): void;
 }
 
 /**
@@ -33,6 +31,7 @@ interface InitiativeActionsProps {
  */
 export function InitiativeActions({
     initiative,
+    onOpenDetails,
     onToggleDisplay,
     onDelete,
 }: InitiativeActionsProps) {
@@ -40,61 +39,41 @@ export function InitiativeActions({
         INITIATIVES_NAMESPACES.actions,
     );
     return (
-        <div className="flex items-center justify-end gap-1">
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button
-                        type="button"
-                        size="icon"
-                        variant="ghost"
-                        className="text-muted-foreground hover:bg-primary hover:text-primary-foreground hover:outline-muted-foreground/50 h-8 w-8"
-                        onClick={(event) => event.stopPropagation()}
-                    >
-                        <MoreVertical className="h-4 w-4" />
-                        <span className="sr-only">{tActions('openMenu')}</span>
-                    </Button>
-                </DropdownMenuTrigger>
+        <TableActionsMenu triggerLabel={tActions('openMenu')}>
+            <TableActionsMenuItem onClick={onOpenDetails}>
+                <Eye className="mr-2 h-4 w-4" />
+                <span>{tActions('showDetails')}</span>
+            </TableActionsMenuItem>
 
-                <DropdownMenuContent
-                    align="end"
-                    className="min-w-40"
-                    onClick={(event) => event.stopPropagation()}
-                >
-                    <DropdownMenuItem asChild>
-                        <PageLink href={route('initiatives.edit', initiative.id)}>
-                            <Pencil className="mr-2 h-4 w-4" />
-                            <span>{tActions('edit')}</span>
-                        </PageLink>
-                    </DropdownMenuItem>
+            <TableActionsMenuItem asChild>
+                <PageLink href={route('initiatives.edit', initiative.id)}>
+                    <Pencil className="mr-2 h-4 w-4" />
+                    <span>{tActions('edit')}</span>
+                </PageLink>
+            </TableActionsMenuItem>
 
-                    <DropdownMenuItem
-                        onClick={(event) => onToggleDisplay(initiative, event)}
-                    >
-                        {initiative.display ? (
-                            <EyeOff className="mr-2 h-4 w-4" />
-                        ) : (
-                            <Eye className="mr-2 h-4 w-4" />
-                        )}
-                        <span>
-                            {initiative.display
-                                ? tActions('hideFromLanding')
-                                : tActions('showOnLanding')}
-                        </span>
-                    </DropdownMenuItem>
+            <TableActionsMenuItem
+                onClick={(event) => onToggleDisplay(initiative, event)}
+            >
+                {initiative.display ? (
+                    <EyeOff className="mr-2 h-4 w-4" />
+                ) : (
+                    <Eye className="mr-2 h-4 w-4" />
+                )}
+                <span>
+                    {initiative.display
+                        ? tActions('hideFromLanding')
+                        : tActions('showOnLanding')}
+                </span>
+            </TableActionsMenuItem>
 
-                    <DropdownMenuItem
-                        onClick={(event) => onDelete(initiative, event)}
-                        className="text-destructive focus:text-destructive"
-                    >
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        <span>{tActions('delete')}</span>
-                    </DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
-
-            <div className="flex h-8 w-8 items-center justify-center">
-                <ChevronRight className="text-muted-foreground hover:shadow-primary group-hover:text-primary group-hover:drop-shadow-primary h-4 w-4 shrink-0 transition-transform group-hover:translate-x-0.5 group-hover:drop-shadow-sm" />
-            </div>
-        </div>
+            <TableActionsMenuItem
+                onClick={(event) => onDelete(initiative, event)}
+                className="text-destructive focus:text-destructive"
+            >
+                <Trash2 className="mr-2 h-4 w-4" />
+                <span>{tActions('delete')}</span>
+            </TableActionsMenuItem>
+        </TableActionsMenu>
     );
 }

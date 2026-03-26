@@ -1,4 +1,4 @@
-import type { Initiative } from '@/modules/initiatives/core/types';
+import type { InitiativeListItem } from '@/modules/initiatives/core/types';
 import { useTranslation } from '@/common/i18n';
 import {
   INITIATIVES_NAMESPACES,
@@ -20,10 +20,10 @@ import React from 'react';
 import { InitiativeActions } from './InitiativeActions';
 
 interface InitiativesRowProps {
-  initiative: Initiative;
-  onRowClick(initiative: Initiative): void;
-  onToggleDisplay(initiative: Initiative, event?: React.MouseEvent): void;
-  onDelete(initiative: Initiative, event?: React.MouseEvent): void;
+  initiative: InitiativeListItem;
+  onRowClick(initiative: InitiativeListItem): void;
+  onToggleDisplay(initiative: InitiativeListItem, event?: React.MouseEvent): void;
+  onDelete(initiative: InitiativeListItem, event?: React.MouseEvent): void;
 }
 
 /**
@@ -39,7 +39,6 @@ export function InitiativesRow({
   const { translate: tForm } = useInitiativesTranslation(
     INITIATIVES_NAMESPACES.form,
   );
-  const imageCount = initiative.images?.length ?? 0;
 
   return (
     <InteractiveTableRow
@@ -49,22 +48,33 @@ export function InitiativesRow({
       onActivate={() => onRowClick(initiative)}
     >
       <TableTitleCell
-        className="sm:w-64"
+        className="w-full max-w-0 min-w-0"
         title={initiative.name}
         subtitle={initiative.summary ?? ''}
       />
 
-      <TableMetaCell className="sm:w-44">
-        <TableDateText
-          value={initiative.start_date}
-          endValue={initiative.end_date}
-          locale={locale}
-          fallback={tForm('values.empty', '-')}
-        />
+      <TableMetaCell className="hidden w-px whitespace-nowrap xs:table-cell">
+        {initiative.end_date ? (
+          <TableDateText
+            value={initiative.start_date}
+            endValue={initiative.end_date}
+            locale={locale}
+            rangeLayout="stacked"
+            startLabel={tForm('values.from')}
+            endLabel={tForm('values.to')}
+            fallback={tForm('values.empty')}
+          />
+        ) : (
+          <TableDateText
+            value={initiative.start_date}
+            locale={locale}
+            fallback={tForm('values.empty')}
+          />
+        )}
       </TableMetaCell>
 
       <TableMetaCell
-        className={cn(tablePresets.statusCell, 'content-center pr-2 sm:w-32')}
+        className={cn(tablePresets.statusCell, 'w-px content-center whitespace-nowrap')}
       >
         <TableBooleanBadge
           active={initiative.display}
@@ -75,17 +85,17 @@ export function InitiativesRow({
         />
       </TableMetaCell>
 
-      <TableMetaCell className="sm:w-24">
-        <div className="flex items-center gap-1">
+      <TableMetaCell className="hidden w-px whitespace-nowrap text-center md:table-cell">
+        <div className="flex items-center justify-center gap-1">
           <ImageIcon className="h-3.5 w-3.5" />
           <span className="text-xs whitespace-nowrap">
-            {imageCount}
+            {initiative.image_count}
           </span>
         </div>
       </TableMetaCell>
 
       <TableActionCell
-        className={cn(tablePresets.actionCell, 'content-center sm:w-24')}
+        className={cn(tablePresets.actionCell, 'w-px content-center')}
       >
         <InitiativeActions
           initiative={initiative}

@@ -29,6 +29,29 @@ export interface Initiative extends HasTimestamps {
     images?: InitiativeImage[];
 }
 
+export interface InitiativeListItem {
+    id: number;
+    locale: string;
+    name: string;
+    summary: string | null;
+    display: boolean;
+    start_date: string | null;
+    end_date: string | null;
+    image_count: number;
+}
+
+export interface InitiativeDetail extends HasTimestamps {
+    id: number;
+    locale: string;
+    name: string;
+    summary: string | null;
+    description: string | null;
+    display: boolean;
+    start_date: string | null;
+    end_date: string | null;
+    images: InitiativeImage[];
+}
+
 export interface InitiativeTranslationItem extends HasTimestamps {
     id: number;
     initiative_id: number;

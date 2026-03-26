@@ -1,23 +1,22 @@
+import { fetchInitiativeDetail } from '@/modules/initiatives/core/api/details';
 import { Badge } from '@/components/ui/badge';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/ui/dialog';
+import { TableDetailDialog } from '@/common/table';
 import { Separator } from '@/components/ui/separator';
-import type { Initiative } from '@/modules/initiatives/core/types';
+import type {
+  InitiativeDetail,
+  InitiativeListItem,
+} from '@/modules/initiatives/core/types';
 import { RichTextRenderer } from '@/common/rich-text/RichTextRenderer';
 import {
     INITIATIVES_NAMESPACES,
     useInitiativesTranslation,
 } from '@/modules/initiatives/i18n';
+import React from 'react';
 import { formatInitiativePeriod } from '../initiativePeriod';
 
 interface InitiativeOverlayProps {
     open: boolean;
-    initiative: Initiative | null;
+    initiative: InitiativeListItem | null;
     onOpenChange(open: boolean): void;
 }
 
@@ -30,100 +29,164 @@ export function InitiativeOverlay({
     onOpenChange,
 }: InitiativeOverlayProps) {
     const { translate: tForm } = useInitiativesTranslation(INITIATIVES_NAMESPACES.form);
+    const [detail, setDetail] = React.useState<InitiativeDetail | null>(null);
+    const [loading, setLoading] = React.useState(false);
+    const [hasLoadError, setHasLoadError] = React.useState(false);
+    const initiativeId = initiative?.id ?? null;
+
+    React.useEffect(() => {
+        let active = true;
+
+        if (!open || initiativeId === null) {
+            setDetail(null);
+            setLoading(false);
+            setHasLoadError(false);
+            return () => {
+                active = false;
+            };
+        }
+
+        setDetail(null);
+        setLoading(true);
+        setHasLoadError(false);
+
+        void fetchInitiativeDetail(initiativeId)
+            .then((nextDetail) => {
+                if (!active) {
+                    return;
+                }
+
+                setDetail(nextDetail);
+            })
+            .catch(() => {
+                if (!active) {
+                    return;
+                }
+
+                setDetail(null);
+                setHasLoadError(true);
+            })
+            .finally(() => {
+                if (!active) {
+                    return;
+                }
+
+                setLoading(false);
+            });
+
+        return () => {
+            active = false;
+        };
+    }, [initiativeId, open]);
+
     if (!initiative) {
         return null;
     }
 
-    const { periodLabel, dateLabel, timeLabel } = buildDateMetadata(
-        initiative,
-        tForm,
-    );
-
-    const images = initiative.images ?? [];
+    const titleSource = detail ?? initiative;
+    const images = detail?.images ?? [];
+    const metadata = detail ? buildDateMetadata(detail, tForm) : null;
 
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-2xl">
-                <DialogHeader>
-                    <DialogTitle className="flex flex-wrap items-center gap-2 text-base">
-                        <span className="font-semibold">{initiative.name}</span>
+        <TableDetailDialog
+            open={open}
+            onOpenChange={onOpenChange}
+            title={
+                <div className="flex flex-wrap items-center gap-2 text-base">
+                    <span className="font-semibold">{titleSource.name}</span>
 
-                        <Badge variant="outline" className="text-xs">
-                            {initiative.display
-                                ? tForm('values.visible')
-                                : tForm('values.hidden')}
-                        </Badge>
-                    </DialogTitle>
+                    <Badge variant="outline" className="text-xs">
+                        {titleSource.display
+                            ? tForm('values.public')
+                            : tForm('values.private')}
+                    </Badge>
+                </div>
+            }
+            className="max-w-2xl"
+        >
+            {loading && !detail ? (
+                <p className="text-muted-foreground text-sm">
+                    {tForm('overlay.loading')}
+                </p>
+            ) : null}
 
-                    <DialogDescription className="text-muted-foreground mt-2 space-y-1 text-xs">
-                        {periodLabel && <p>{periodLabel}</p>}
+            {!loading && hasLoadError ? (
+                <p className="text-destructive text-sm">
+                    {tForm('overlay.loadError')}
+                </p>
+            ) : null}
 
-                        {dateLabel && timeLabel && (
+            {detail ? (
+                <>
+                    <div className="text-muted-foreground space-y-1 text-xs">
+                        {metadata?.periodLabel && <p>{metadata.periodLabel}</p>}
+
+                        {metadata?.dateLabel && metadata.timeLabel && (
                             <p>
                                 {tForm('overlay.createdOn', {
-                                    date: dateLabel,
-                                    time: timeLabel,
+                                    date: metadata.dateLabel,
+                                    time: metadata.timeLabel,
                                 })}
                             </p>
                         )}
-                    </DialogDescription>
-                </DialogHeader>
+                    </div>
 
-                <Separator className="my-4" />
+                    <Separator className="my-4" />
 
-                <div className="space-y-6">
-                    <section>
-                        <p className="text-muted-foreground mb-2 text-xs font-medium tracking-wide uppercase">
-                            {tForm('overlay.summary')}
-                        </p>
-                        <p className="text-foreground text-sm">
-                            {initiative.summary ?? ''}
-                        </p>
-                    </section>
-
-                    <section>
-                        <p className="text-muted-foreground mb-2 text-xs font-medium tracking-wide uppercase">
-                            {tForm('overlay.details')}
-                        </p>
-                        <RichTextRenderer value={initiative.description ?? ''} />
-                    </section>
-
-                    {images.length > 0 && (
+                    <div className="space-y-6">
                         <section>
                             <p className="text-muted-foreground mb-2 text-xs font-medium tracking-wide uppercase">
-                                {tForm('overlay.images')}
+                                {tForm('overlay.summary')}
                             </p>
-
-                            <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
-                                {images.map((image) => (
-                                    <figure
-                                        key={image.id}
-                                        className="bg-muted/40 overflow-hidden rounded-md border"
-                                    >
-                                        <img
-                                            src={image.url ?? image.src ?? ''}
-                                            alt={
-                                                image.alt_text ??
-                                                image.alt ??
-                                                image.image_title ??
-                                                image.title ??
-                                                ''
-                                            }
-                                            className="h-32 w-full object-cover sm:h-36 md:h-40"
-                                        />
-                                    </figure>
-                                ))}
-                            </div>
+                            <p className="text-foreground text-sm">
+                                {detail.summary ?? ''}
+                            </p>
                         </section>
-                    )}
-                </div>
-            </DialogContent>
-        </Dialog>
+
+                        <section>
+                            <p className="text-muted-foreground mb-2 text-xs font-medium tracking-wide uppercase">
+                                {tForm('overlay.details')}
+                            </p>
+                            <RichTextRenderer value={detail.description ?? ''} />
+                        </section>
+
+                        {images.length > 0 && (
+                            <section>
+                                <p className="text-muted-foreground mb-2 text-xs font-medium tracking-wide uppercase">
+                                    {tForm('overlay.images')}
+                                </p>
+
+                                <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
+                                    {images.map((image) => (
+                                        <figure
+                                            key={image.id}
+                                            className="bg-muted/40 overflow-hidden rounded-md border"
+                                        >
+                                            <img
+                                                src={image.url ?? image.src ?? ''}
+                                                alt={
+                                                    image.alt_text ??
+                                                    image.alt ??
+                                                    image.image_title ??
+                                                    image.title ??
+                                                    ''
+                                                }
+                                                className="h-32 w-full object-cover sm:h-36 md:h-40"
+                                            />
+                                        </figure>
+                                    ))}
+                                </div>
+                            </section>
+                        )}
+                    </div>
+                </>
+            ) : null}
+        </TableDetailDialog>
     );
 }
 
 function buildDateMetadata(
-    initiative: Initiative,
+    initiative: InitiativeDetail,
     t: (key: string, params?: Record<string, string>) => string,
 ): {
     periodLabel: string | null;
