@@ -39,4 +39,9 @@ Route::prefix('admin')
             'initiatives/{initiative}/toggle-display',
             [InitiativeController::class, 'toggleDisplay']
         )->name('initiatives.toggle-display');
+
+        Route::get(
+            'initiatives/{initiative}/details',
+            [InitiativeController::class, 'details']
+        )->name('initiatives.details');
     });
