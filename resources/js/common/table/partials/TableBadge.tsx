@@ -16,7 +16,7 @@ export function TableBadge({
     tone === 'default'
       ? 'bg-primary text-primary-foreground'
       : tone === 'secondary'
-        ? 'bg-secondary text-secondary-foreground'
+        ? 'bg-accent text-accent-foreground'
         : tone === 'destructive'
           ? 'bg-destructive text-destructive-foreground'
           : 'border-border bg-background text-foreground';
@@ -56,7 +56,7 @@ export function TableBadgeButton({
           'inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold',
           'cursor-pointer whitespace-nowrap border-transparent shadow-none transition-colors',
           'hover:bg-primary hover:text-primary-foreground',
-          'bg-secondary text-secondary-foreground',
+          'bg-accent text-accent-foreground',
           badgeClassName,
         )}
       >
@@ -71,6 +71,7 @@ export function TableBooleanBadge({
   activeLabel,
   inactiveLabel,
   className,
+  labelClassName,
   activeIcon,
   inactiveIcon,
 }: TableBooleanBadgeProps) {
@@ -87,7 +88,7 @@ export function TableBooleanBadge({
       )}
     >
       <Icon className="h-3.5 w-3.5" />
-      <span className="hidden whitespace-nowrap sm:inline">
+      <span className={cn('whitespace-nowrap', labelClassName ?? 'hidden sm:inline')}>
         {active ? activeLabel : inactiveLabel}
       </span>
     </TableBadge>

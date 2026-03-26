@@ -5,6 +5,7 @@ type FormatTableDateOptions = {
   fallback?: string;
   isMobile?: boolean;
   todayAsTime?: boolean;
+  format?: 'compact' | 'medium' | 'full';
 };
 
 type FormatTableDateRangeOptions = {
@@ -12,6 +13,7 @@ type FormatTableDateRangeOptions = {
   fallback?: string;
   isMobile?: boolean;
   presentLabel?: string;
+  format?: 'compact' | 'medium' | 'full';
 };
 
 export function formatTableDate(
@@ -21,6 +23,7 @@ export function formatTableDate(
     fallback = '\u2014',
     isMobile = false,
     todayAsTime = false,
+    format,
   }: FormatTableDateOptions = {},
 ): string {
   if (!value) {
@@ -42,10 +45,12 @@ export function formatTableDate(
     });
   }
 
+  const resolvedFormat = resolveDateFormat(format, isMobile);
+
   return date.toLocaleDateString(normalizedLocale, {
     day: '2-digit',
-    month: isMobile ? '2-digit' : 'short',
-    ...(isMobile ? {} : { year: 'numeric' }),
+    month: resolvedFormat === 'compact' ? '2-digit' : 'short',
+    ...(resolvedFormat === 'full' ? { year: 'numeric' } : {}),
   });
 }
 
@@ -57,12 +62,14 @@ export function formatTableDateRange(
     fallback = '\u2014',
     isMobile = false,
     presentLabel,
+    format,
   }: FormatTableDateRangeOptions = {},
 ): string {
   const startLabel = formatTableDate(start, {
     locale,
     fallback,
     isMobile,
+    format,
   });
 
   if (!start || startLabel === fallback) {
@@ -77,6 +84,7 @@ export function formatTableDateRange(
     locale,
     fallback,
     isMobile,
+    format,
   });
 
   if (endLabel === fallback || start === end) {
@@ -84,6 +92,17 @@ export function formatTableDateRange(
   }
 
   return `${startLabel} - ${endLabel}`;
+}
+
+function resolveDateFormat(
+  format: 'compact' | 'medium' | 'full' | undefined,
+  isMobile: boolean,
+): 'compact' | 'medium' | 'full' {
+  if (format) {
+    return format;
+  }
+
+  return isMobile ? 'compact' : 'full';
 }
 
 function isSameDay(left: Date, right: Date): boolean {

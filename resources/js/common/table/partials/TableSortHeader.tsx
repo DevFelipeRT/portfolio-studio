@@ -12,6 +12,8 @@ export function TableSortHeader({
   onToggleSort,
   srLabel,
   className,
+  labelClassName,
+  truncateLabel = true,
   type = 'button',
   disabled = false,
   ...props
@@ -42,7 +44,9 @@ export function TableSortHeader({
           className,
         )}
       >
-        <span className="truncate">{label}</span>
+        <span className={cn(truncateLabel && 'truncate', labelClassName)}>
+          {label}
+        </span>
         <span className="sr-only">
           {accessibleColumnLabel}. {statusText}.
         </span>
@@ -63,7 +67,9 @@ export function TableSortHeader({
       onClick={() => onToggleSort?.(column)}
       {...props}
     >
-      <span className="truncate">{label}</span>
+      <span className={cn(truncateLabel && 'truncate', labelClassName)}>
+        {label}
+      </span>
       <span aria-hidden="true" className="shrink-0">
         {disabled ? (
           <ArrowUpDown className="h-3.5 w-3.5 opacity-25" />

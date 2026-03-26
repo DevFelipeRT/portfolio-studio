@@ -118,8 +118,6 @@ export function CoursesRow({ course, onRowClick }: CoursesRowProps) {
 
       <TableActionCell
         className={cn(tablePresets.actionCell, 'content-center')}
-        showChevron
-        chevronClassName="group-hover:text-primary"
       >
         <CoursesRowActions course={course} onOpenDetails={() => onRowClick(course)} />
       </TableActionCell>

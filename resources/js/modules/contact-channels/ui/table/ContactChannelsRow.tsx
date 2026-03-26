@@ -71,7 +71,7 @@ export function ContactChannelsRow({ channel, onRowClick }: ContactChannelsRowPr
         <span className="block whitespace-nowrap">{channel.sort_order}</span>
       </TableMetaCell>
 
-      <TableActionCell className="content-center" showChevron>
+      <TableActionCell className="content-center">
         <TableActionsMenu triggerLabel={tActions('openMenu')}>
           <TableActionsMenuItem onClick={() => onRowClick(channel)}>
             <Eye className="mr-2 h-4 w-4" />
