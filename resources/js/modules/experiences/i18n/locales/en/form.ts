@@ -25,8 +25,14 @@ export default {
     display: {
       label: 'Display on portfolio',
     },
+    visibility: {
+      label: 'Visibility',
+    },
     period: {
       label: 'Period',
+    },
+    created_at: {
+      label: 'Created at',
     },
     updated_at: {
       label: 'Updated at',
@@ -39,11 +45,25 @@ export default {
     managementSubtitle:
       'Manage the experiences displayed on your portfolio and resume sections.',
   },
+  filters: {
+    searchLabel: 'Search',
+    searchPlaceholder: 'Search by position, company, or summary',
+    searchSubmit: 'Search experiences',
+    visibilityLabel: 'Visibility',
+    visibilityPlaceholder: 'All visibility states',
+    publicOnly: 'Public only',
+    privateOnly: 'Private only',
+    reset: 'Clear',
+  },
   emptyState: {
     index: 'No experiences have been created yet.',
   },
   values: {
     empty: '\u2014',
+  },
+  visibility: {
+    public: 'Public',
+    private: 'Private',
   },
   status: {
     editing: 'Editing: {{position}} at {{company}}',

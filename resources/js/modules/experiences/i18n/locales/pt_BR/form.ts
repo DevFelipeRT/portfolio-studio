@@ -25,8 +25,14 @@ export default {
     display: {
       label: 'Exibir no portfólio',
     },
+    visibility: {
+      label: 'Visibilidade',
+    },
     period: {
       label: 'Período',
+    },
+    created_at: {
+      label: 'Criado em',
     },
     updated_at: {
       label: 'Atualizado em',
@@ -39,11 +45,25 @@ export default {
     managementSubtitle:
       'Gerencie as experiências exibidas no seu portfólio e nas seções do currículo.',
   },
+  filters: {
+    searchLabel: 'Buscar',
+    searchPlaceholder: 'Buscar por cargo, empresa ou resumo',
+    searchSubmit: 'Buscar experiências',
+    visibilityLabel: 'Visibilidade',
+    visibilityPlaceholder: 'Todos os estados de visibilidade',
+    publicOnly: 'Somente públicas',
+    privateOnly: 'Somente privadas',
+    reset: 'Limpar',
+  },
   emptyState: {
     index: 'Nenhuma experiência foi criada ainda.',
   },
   values: {
     empty: '\u2014',
+  },
+  visibility: {
+    public: 'Público',
+    private: 'Privado',
   },
   status: {
     editing: 'Editando: {{position}} em {{company}}',

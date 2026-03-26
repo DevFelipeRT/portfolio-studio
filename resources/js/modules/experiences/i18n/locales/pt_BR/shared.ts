@@ -1,5 +1,7 @@
 export default {
   period: {
-    present: 'Atual',
+    from: 'De',
+    until: 'Até',
+    present: 'Presente',
   },
 };
