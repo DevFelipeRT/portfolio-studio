@@ -31,7 +31,12 @@ export function ProjectsRow({ project, onRowClick, onDelete }: ProjectsRowProps)
   );
 
   return (
-    <InteractiveTableRow interactive onActivate={() => onRowClick(project)}>
+    <InteractiveTableRow
+      active={project.display}
+      interactive
+      variant={project.display ? 'emphasized' : 'muted'}
+      onActivate={() => onRowClick(project)}
+    >
       <TableTitleCell
         className="w-full max-w-0 min-w-0"
         title={project.name}
