@@ -6,6 +6,10 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import type { ProjectImage } from '@/modules/projects/core/types';
+import {
+    PROJECTS_NAMESPACES,
+    useProjectsTranslation,
+} from '@/modules/projects/i18n';
 import { ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react';
 import { useState } from 'react';
 
@@ -22,13 +26,14 @@ export function ProjectImageCarousel({
     images,
     title,
 }: ProjectImageCarouselProps) {
+    const { translate: tForm } = useProjectsTranslation(PROJECTS_NAMESPACES.form);
     const [index, setIndex] = useState(0);
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
     if (!images || images.length === 0) {
         return (
             <div className="bg-muted text-muted-foreground flex h-44 w-full items-center justify-center border-b text-xs sm:h-56 md:h-64">
-                No images available.
+                {tForm('card.noImages')}
             </div>
         );
     }
@@ -48,7 +53,7 @@ export function ProjectImageCarousel({
     if (!current || !current.url) {
         return (
             <div className="bg-muted text-muted-foreground flex h-44 w-full items-center justify-center border-b text-xs sm:h-56 md:h-64">
-                No images available.
+                {tForm('card.noImages')}
             </div>
         );
     }
@@ -125,7 +130,9 @@ export function ProjectImageCarousel({
                                     <button
                                         key={`${image.id}-${dotIndex}`}
                                         type="button"
-                                        aria-label={`Show image ${dotIndex + 1}`}
+                                        aria-label={tForm('carousel.showImage', {
+                                            index: dotIndex + 1,
+                                        })}
                                         onClick={() => setIndex(dotIndex)}
                                         className={[
                                             'h-2 rounded-full backdrop-blur transition-all',

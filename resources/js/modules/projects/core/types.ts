@@ -1,3 +1,4 @@
+import type { ProjectStatusValue } from '@/modules/projects/core/status';
 import type { Image } from '@/modules/images/core/types';
 import type { Skill } from '@/modules/skills/core/types';
 
@@ -13,6 +14,14 @@ export interface ProjectImage extends Image {
     position: number;
     is_cover: boolean;
     caption: string | null;
+    alt?: string | null;
+    title?: string | null;
+    src?: string | null;
+}
+
+export interface ProjectSkillItem {
+    id: number;
+    name: string;
 }
 
 export interface Project extends HasTimestamps {
@@ -21,11 +30,35 @@ export interface Project extends HasTimestamps {
     name: string;
     summary: string;
     description: string;
-    status: string;
+    status: ProjectStatusValue;
     repository_url: string | null;
     live_url: string | null;
     images: ProjectImage[] | null;
     skills: Skill[];
+    display: boolean;
+}
+
+export interface ProjectListItem {
+    id: number;
+    locale: string;
+    name: string;
+    summary: string | null;
+    status: ProjectStatusValue | null;
+    display: boolean;
+    image_count: number;
+}
+
+export interface ProjectDetail extends HasTimestamps {
+    id: number;
+    locale: string;
+    name: string;
+    summary: string | null;
+    description: string | null;
+    status: ProjectStatusValue | null;
+    repository_url: string | null;
+    live_url: string | null;
+    images: ProjectImage[];
+    skills: ProjectSkillItem[];
     display: boolean;
 }
 
@@ -36,7 +69,7 @@ export interface ProjectTranslationItem extends HasTimestamps {
     name: string | null;
     summary: string | null;
     description: string | null;
-    status: string | null;
+    status: ProjectStatusValue | null;
     repository_url: string | null;
     live_url: string | null;
 }

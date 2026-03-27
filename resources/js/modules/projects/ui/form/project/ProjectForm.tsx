@@ -7,9 +7,14 @@ import {
 import {
   CheckboxField,
   RichTextField,
+  SelectField,
   TextareaField,
   TextInputField,
 } from '@/common/forms';
+import {
+  isProjectStatusValue,
+  useProjectStatusOptions,
+} from '@/modules/projects/core/status';
 import { useProjectsTranslation, PROJECTS_NAMESPACES } from '@/modules/projects/i18n';
 
 import { getErrorSummaryFields } from './errorSummaryFields';
@@ -45,6 +50,7 @@ export function ProjectForm({
     PROJECTS_NAMESPACES.sections,
   );
   const { translate: tForm } = useProjectsTranslation(PROJECTS_NAMESPACES.form);
+  const statusOptions = useProjectStatusOptions();
   const summaryFields = getErrorSummaryFields(errors, tForm);
 
   return (
@@ -92,7 +98,7 @@ export function ProjectForm({
             onChange={(value) => onChangeField('name', value)}
           />
 
-          <TextInputField
+          <SelectField
             name="status"
             id="status"
             value={data.status}
@@ -100,7 +106,13 @@ export function ProjectForm({
             label={tForm('fields.status.label')}
             required
             placeholder={tForm('fields.status.placeholder')}
-            onChange={(value) => onChangeField('status', value)}
+            options={statusOptions}
+            onChange={(value) =>
+              onChangeField(
+                'status',
+                isProjectStatusValue(value) ? value : '',
+              )
+            }
           />
         </div>
 

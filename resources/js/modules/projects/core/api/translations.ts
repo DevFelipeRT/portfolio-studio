@@ -1,3 +1,4 @@
+import type { ProjectStatusValue } from '@/modules/projects/core/status';
 import type { ProjectTranslationItem } from '@/modules/projects/core/types';
 
 type TranslationPayload = {
@@ -5,7 +6,7 @@ type TranslationPayload = {
   name?: string | null;
   summary?: string | null;
   description?: string | null;
-  status?: string | null;
+  status?: ProjectStatusValue | null;
   repository_url?: string | null;
   live_url?: string | null;
 };

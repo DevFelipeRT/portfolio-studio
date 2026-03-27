@@ -27,18 +27,34 @@ function ComboboxTrigger({
   return (
     <ComboboxPrimitive.Trigger
       data-slot="combobox-trigger"
-      className={cn("[&_svg:not([class*='size-'])]:size-4", className)}
+      className={cn(
+        "group/combobox-trigger text-muted-foreground transition-colors group-hover/input-group:text-foreground group-focus-within/input-group:text-foreground focus-visible:text-foreground data-[popup-open]:text-primary [&_svg:not([class*='size-'])]:size-4",
+        className
+      )}
       {...props}
     >
       {children}
-      <ChevronDownIcon className="text-muted-foreground size-4 pointer-events-none" />
+      <ChevronDownIcon className="size-4 pointer-events-none text-current transition-transform duration-200 group-data-[popup-open]/combobox-trigger:rotate-180" />
     </ComboboxPrimitive.Trigger>
   )
 }
 
 function ComboboxClear({ className, ...props }: ComboboxPrimitive.Clear.Props) {
   return (
-    <ComboboxPrimitive.Clear data-slot="combobox-clear" className={cn(className)} {...props} render={<InputGroupButton variant="ghost" size="icon-xs"><XIcon className="pointer-events-none" /></InputGroupButton>} />
+    <ComboboxPrimitive.Clear
+      data-slot="combobox-clear"
+      className={cn(className)}
+      {...props}
+      render={
+        <InputGroupButton
+          variant="ghost"
+          size="icon-xs"
+          className="text-muted-foreground hover:bg-transparent hover:text-foreground focus-visible:bg-transparent focus-visible:text-foreground focus-visible:ring-0 group-hover/input-group:text-foreground group-focus-within/input-group:text-foreground"
+        >
+          <XIcon className="pointer-events-none text-current" />
+        </InputGroupButton>
+      }
+    />
   )
 }
 
@@ -56,7 +72,12 @@ function ComboboxInput({
   return (
     <InputGroup className={cn("w-auto", className)}>
       <ComboboxPrimitive.Input
-        render={<InputGroupInput disabled={disabled} />}
+        render={
+          <InputGroupInput
+            disabled={disabled}
+            className="text-muted-foreground transition-colors placeholder:text-muted-foreground placeholder:transition-colors group-hover/input-group:text-foreground group-hover/input-group:placeholder:text-foreground group-focus-within/input-group:text-foreground group-focus-within/input-group:placeholder:text-foreground"
+          />
+        }
         {...props}
       />
       <InputGroupAddon align="inline-end">
@@ -66,7 +87,7 @@ function ComboboxInput({
             variant="ghost"
             render={<ComboboxTrigger />}
             data-slot="input-group-button"
-            className="group-has-data-[slot=combobox-clear]/input-group:hidden data-pressed:bg-transparent"
+            className="text-muted-foreground group-has-data-[slot=combobox-clear]/input-group:hidden data-pressed:bg-transparent hover:bg-transparent hover:text-foreground focus-visible:bg-transparent focus-visible:text-foreground focus-visible:ring-0 group-hover/input-group:text-foreground group-focus-within/input-group:text-foreground"
             disabled={disabled}
           />
         )}

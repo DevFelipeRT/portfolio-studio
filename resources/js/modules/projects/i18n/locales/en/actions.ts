@@ -7,6 +7,8 @@ export default {
   saveChanges: 'Save changes',
   edit: 'Edit',
   delete: 'Delete',
+  confirmDelete: 'Are you sure you want to delete this project?',
+  openMenu: 'Open menu',
   yes: 'Yes',
   no: 'No',
   addImage: 'Add image',
