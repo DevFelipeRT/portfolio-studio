@@ -8,15 +8,21 @@ use App\Modules\Shared\Abstractions\Http\Controller;
 use App\Modules\Projects\Domain\Models\Project;
 use App\Modules\Projects\Application\UseCases\CreateProject\CreateProject;
 use App\Modules\Projects\Application\UseCases\DeleteProject\DeleteProject;
+use App\Modules\Projects\Application\UseCases\DeleteProject\DeleteProjectInput;
+use App\Modules\Projects\Application\UseCases\GetProjectDetails\GetProjectDetails;
+use App\Modules\Projects\Application\UseCases\GetProjectDetails\GetProjectDetailsInput;
 use App\Modules\Projects\Application\UseCases\ListProjects\ListProjects;
 use App\Modules\Projects\Application\UseCases\UpdateProject\UpdateProject;
 use App\Modules\Projects\Application\Capabilities\CapabilitiesGateway;
 use App\Modules\Projects\Http\Requests\Project\StoreProjectRequest;
 use App\Modules\Projects\Http\Requests\Project\UpdateProjectRequest;
 use App\Modules\Projects\Http\Mappers\ProjectFormMapper;
-use App\Modules\Projects\Http\Mappers\ProjectInputMapper;
+use App\Modules\Projects\Http\Mappers\CreateProjectInputMapper;
+use App\Modules\Projects\Http\Mappers\ListProjectsInputMapper;
+use App\Modules\Projects\Http\Mappers\UpdateProjectInputMapper;
 use App\Modules\Projects\Presentation\Mappers\ProjectMapper;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -29,22 +35,61 @@ class ProjectController extends Controller
 {
     public function __construct(
         private readonly ListProjects $listProjects,
+        private readonly GetProjectDetails $getProjectDetails,
         private readonly CreateProject $createProject,
         private readonly UpdateProject $updateProject,
         private readonly DeleteProject $deleteProject,
         private readonly CapabilitiesGateway $capabilitiesGateway,
+        private readonly ListProjectsInputMapper $listProjectsInputMapper,
+        private readonly CreateProjectInputMapper $createProjectInputMapper,
+        private readonly UpdateProjectInputMapper $updateProjectInputMapper,
     ) {
     }
 
     /**
      * Display a listing of projects for the admin area.
      */
-    public function index(): Response
+    public function index(Request $request): Response|RedirectResponse
     {
-        $projects = $this->listProjects->handle();
+        $input = $this->listProjectsInputMapper->fromRequest($request);
+        $projects = $this->listProjects->handle($input);
+
+        if ($projects->shouldClampPage()) {
+            return redirect()->route(
+                'projects.index',
+                $this->buildIndexQueryParams(
+                    $input->perPage,
+                    $input->search,
+                    $input->status,
+                    $input->visibility,
+                    $input->sort,
+                    $input->direction,
+                    $projects->lastPage,
+                ),
+            );
+        }
 
         return Inertia::render('projects/admin/Index', [
-            'projects' => ProjectMapper::collection($projects),
+            'projects' => $projects->toArray(),
+            'filters' => [
+                'per_page' => $input->perPage,
+                'search' => $input->search,
+                'status' => $input->status?->toScalar(),
+                'visibility' => $input->visibility,
+                'sort' => $input->sort,
+                'direction' => $input->direction,
+            ],
+        ]);
+    }
+
+    public function details(Project $project): JsonResponse
+    {
+        return response()->json([
+            'data' => $this->getProjectDetails->handle(
+                new GetProjectDetailsInput(
+                    projectId: $project->id,
+                ),
+            )->toArray(),
         ]);
     }
 
@@ -65,11 +110,11 @@ class ProjectController extends Controller
      */
     public function store(StoreProjectRequest $request): RedirectResponse
     {
-        $input = ProjectInputMapper::fromStoreRequest($request);
-        $project = $this->createProject->handle($input);
+        $input = $this->createProjectInputMapper->fromRequest($request);
+        $this->createProject->handle($input);
 
         return redirect()
-            ->route('projects.index', $project)
+            ->route('projects.index', [], 303)
             ->with('status', 'Project successfully created.');
     }
 
@@ -95,23 +140,73 @@ class ProjectController extends Controller
      */
     public function update(UpdateProjectRequest $request, Project $project): RedirectResponse
     {
-        $input = ProjectInputMapper::fromUpdateRequest($request, $project);
-        $this->updateProject->handle($project, $input);
+        $input = $this->updateProjectInputMapper->fromRequest($request, $project);
+        $this->updateProject->handle($input);
 
         return redirect()
-            ->route('projects.index', $project)
+            ->route('projects.index', [], 303)
             ->with('status', 'Project successfully updated.');
     }
 
     /**
      * Remove the specified project from storage.
      */
-    public function destroy(Project $project): RedirectResponse
+    public function destroy(Request $request, Project $project): RedirectResponse
     {
-        $this->deleteProject->handle($project);
+        $this->deleteProject->handle(
+            new DeleteProjectInput(
+                projectId: $project->id,
+            ),
+        );
 
-        return redirect()
-            ->route('projects.index')
-            ->with('status', 'Project successfully deleted.');
+        $redirect = $request->headers->has('referer')
+            ? redirect()->back()
+            : redirect()->route('projects.index');
+
+        return $redirect->with('status', 'Project successfully deleted.');
     }
+    
+    /**
+     * @return array<string,int|string>
+     */
+    private function buildIndexQueryParams(
+        int $perPage,
+        ?string $search,
+        ?string $status,
+        ?string $visibility,
+        ?string $sort,
+        ?string $direction,
+        int $page,
+    ): array {
+        $query = [
+            'per_page' => $perPage,
+        ];
+
+        if ($search !== null) {
+            $query['search'] = $search;
+        }
+
+        if ($status !== null) {
+            $query['status'] = $status;
+        }
+
+        if ($visibility !== null) {
+            $query['visibility'] = $visibility;
+        }
+
+        if ($sort !== null) {
+            $query['sort'] = $sort;
+
+            if ($direction !== null) {
+                $query['direction'] = $direction;
+            }
+        }
+
+        if ($page > 1) {
+            $query['page'] = $page;
+        }
+
+        return $query;
+    }
+
 }

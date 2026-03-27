@@ -6,6 +6,7 @@ namespace App\Modules\Projects\Application\Services;
 
 use App\Modules\Projects\Domain\Models\Project;
 use App\Modules\Projects\Domain\Models\ProjectTranslation;
+use App\Modules\Projects\Domain\ValueObjects\ProjectStatus;
 
 final class ProjectTranslationResolver
 {
@@ -63,6 +64,24 @@ final class ProjectTranslationResolver
         );
     }
 
+    public function resolveStatus(
+        Project $project,
+        string $locale,
+        ?string $fallbackLocale = null,
+    ): ?string {
+        if ($locale === $project->locale) {
+            return $this->normalizeResolvedFieldValue($project->status);
+        }
+
+        return $this->resolveField(
+            $project->translations,
+            'status',
+            $locale,
+            $fallbackLocale,
+            $this->normalizeResolvedFieldValue($project->status),
+        );
+    }
+
     public function resolveRepositoryUrl(
         Project $project,
         string $locale,
@@ -116,8 +135,7 @@ final class ProjectTranslationResolver
                 continue;
             }
 
-            $value = $translation->{$field} ?? null;
-            $value = is_string($value) ? trim($value) : null;
+            $value = $this->normalizeResolvedFieldValue($translation->{$field} ?? null);
 
             if ($translation->locale === $locale) {
                 if ($value !== null && $value !== '') {
@@ -138,5 +156,20 @@ final class ProjectTranslationResolver
         }
 
         return $default;
+    }
+
+    private function normalizeResolvedFieldValue(mixed $value): ?string
+    {
+        if ($value instanceof ProjectStatus) {
+            return $value->toScalar();
+        }
+
+        if (!is_string($value)) {
+            return null;
+        }
+
+        $trimmed = trim($value);
+
+        return $trimmed === '' ? null : $trimmed;
     }
 }

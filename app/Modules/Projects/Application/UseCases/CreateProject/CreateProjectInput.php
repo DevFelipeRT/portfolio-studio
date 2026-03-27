@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\Projects\Application\UseCases\CreateProject;
 
-final class CreateProjectInput
+use App\Modules\Projects\Domain\ValueObjects\ProjectStatus;
+
+final readonly class CreateProjectInput
 {
     /**
      * @param array<int,int> $skillIds
@@ -15,7 +17,7 @@ final class CreateProjectInput
         public readonly string $name,
         public readonly string $summary,
         public readonly string $description,
-        public readonly string $status,
+        public readonly ProjectStatus $status,
         public readonly ?string $repositoryUrl,
         public readonly ?string $liveUrl,
         public readonly bool $display,

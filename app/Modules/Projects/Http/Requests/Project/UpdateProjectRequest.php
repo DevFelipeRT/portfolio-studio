@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Projects\Http\Requests\Project;
 
+use App\Modules\Projects\Domain\ValueObjects\ProjectStatus;
 use App\Modules\Projects\Application\Services\SupportedLocalesResolver;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -36,7 +37,7 @@ class UpdateProjectRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'summary' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string'],
-            'status' => ['required', 'string', 'max:50'],
+            'status' => ['required', 'string', Rule::in(ProjectStatus::scalarValues())],
             'repository_url' => ['nullable', 'string', 'max:2048', 'url'],
             'live_url' => ['nullable', 'string', 'max:2048', 'url'],
 

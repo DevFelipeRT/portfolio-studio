@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Projects\Application\UseCases\UpdateProjectTranslation;
 
-use App\Modules\Projects\Application\Dtos\ProjectTranslationDto;
+use App\Modules\Projects\Application\Mappers\ProjectTranslationOutputMapper;
 use App\Modules\Projects\Application\Services\SupportedLocalesResolver;
 use App\Modules\Projects\Domain\Repositories\IProjectRepository;
 use App\Modules\Projects\Domain\Repositories\IProjectTranslationRepository;
@@ -19,11 +19,12 @@ final class UpdateProjectTranslation
         private readonly IProjectRepository $projects,
         private readonly IProjectTranslationRepository $translations,
         private readonly SupportedLocalesResolver $supportedLocales,
+        private readonly ProjectTranslationOutputMapper $projectTranslationOutputMapper,
         private readonly IRichTextService $richText,
     ) {
     }
 
-    public function handle(UpdateProjectTranslationInput $input): ProjectTranslationDto
+    public function handle(UpdateProjectTranslationInput $input): UpdateProjectTranslationOutput
     {
         $supported = $this->supportedLocales->resolve();
         if (!in_array($input->locale, $supported, true)) {
@@ -48,7 +49,7 @@ final class UpdateProjectTranslation
 
         $updated = $this->translations->update($existing, $payload);
 
-        return ProjectTranslationDto::fromModel($updated);
+        return $this->projectTranslationOutputMapper->toUpdateOutput($updated);
     }
 
     /**
@@ -85,7 +86,7 @@ final class UpdateProjectTranslation
             'name' => $this->normalizeText($input->name),
             'summary' => $this->normalizeText($input->summary),
             'description' => $descriptionRaw,
-            'status' => $this->normalizeText($input->status),
+            'status' => $input->status?->toScalar(),
             'repository_url' => $this->normalizeText($input->repositoryUrl),
             'live_url' => $this->normalizeText($input->liveUrl),
         ];

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Projects\Http\Requests\ProjectTranslation;
 
 use App\Modules\Projects\Application\Services\SupportedLocalesResolver;
+use App\Modules\Projects\Domain\ValueObjects\ProjectStatus;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -52,7 +53,7 @@ final class StoreProjectTranslationRequest extends FormRequest
             'status' => [
                 'nullable',
                 'string',
-                'max:50',
+                Rule::in(ProjectStatus::scalarValues()),
                 'required_without_all:name,summary,description,repository_url,live_url',
             ],
             'repository_url' => [

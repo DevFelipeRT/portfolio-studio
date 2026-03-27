@@ -4,25 +4,28 @@ declare(strict_types=1);
 
 namespace App\Modules\Projects\Application\UseCases\ListProjectTranslations;
 
-use App\Modules\Projects\Application\Dtos\ProjectTranslationDto;
-use App\Modules\Projects\Domain\Models\Project;
+use App\Modules\Projects\Application\Mappers\ProjectTranslationOutputMapper;
+use App\Modules\Projects\Domain\Repositories\IProjectRepository;
 use App\Modules\Projects\Domain\Repositories\IProjectTranslationRepository;
 
 final class ListProjectTranslations
 {
     public function __construct(
+        private readonly IProjectRepository $projects,
         private readonly IProjectTranslationRepository $translations,
+        private readonly ProjectTranslationOutputMapper $projectTranslationOutputMapper,
     ) {
     }
 
-    /**
-     * @return array<int,ProjectTranslationDto>
-     */
-    public function handle(Project $project): array
+    public function handle(ListProjectTranslationsInput $input): ListProjectTranslationsOutput
     {
-        return $this->translations
-            ->listByProject($project)
-            ->map(static fn($translation): ProjectTranslationDto => ProjectTranslationDto::fromModel($translation))
-            ->all();
+        $project = $this->projects->findById($input->projectId);
+
+        return new ListProjectTranslationsOutput(
+            items: $this->translations
+                ->listByProject($project)
+                ->map(fn($translation): ListProjectTranslationItem => $this->projectTranslationOutputMapper->toListItem($translation))
+                ->all(),
+        );
     }
 }

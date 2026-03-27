@@ -7,10 +7,13 @@ namespace App\Modules\Projects\Http\Controllers;
 use App\Modules\Shared\Abstractions\Http\Controller;
 use App\Modules\Projects\Application\UseCases\CreateProjectTranslation\CreateProjectTranslation;
 use App\Modules\Projects\Application\UseCases\CreateProjectTranslation\CreateProjectTranslationInput;
+use App\Modules\Projects\Application\UseCases\DeleteProjectTranslation\DeleteProjectTranslationInput;
 use App\Modules\Projects\Application\UseCases\DeleteProjectTranslation\DeleteProjectTranslation;
 use App\Modules\Projects\Application\UseCases\ListProjectTranslations\ListProjectTranslations;
+use App\Modules\Projects\Application\UseCases\ListProjectTranslations\ListProjectTranslationsInput;
 use App\Modules\Projects\Application\UseCases\UpdateProjectTranslation\UpdateProjectTranslation;
 use App\Modules\Projects\Application\UseCases\UpdateProjectTranslation\UpdateProjectTranslationInput;
+use App\Modules\Projects\Domain\ValueObjects\ProjectStatus;
 use App\Modules\Projects\Domain\Models\Project;
 use App\Modules\Projects\Http\Requests\ProjectTranslation\StoreProjectTranslationRequest;
 use App\Modules\Projects\Http\Requests\ProjectTranslation\UpdateProjectTranslationRequest;
@@ -28,10 +31,14 @@ final class ProjectTranslationController extends Controller
 
     public function index(Project $project): JsonResponse
     {
-        $items = $this->listProjectTranslations->handle($project);
+        $items = $this->listProjectTranslations->handle(
+            new ListProjectTranslationsInput(
+                projectId: $project->id,
+            ),
+        );
 
         return response()->json([
-            'data' => array_map(static fn($dto): array => $dto->toArray(), $items),
+            'data' => $items->toArray(),
         ]);
     }
 
@@ -48,7 +55,7 @@ final class ProjectTranslationController extends Controller
                 name: $data['name'] ?? null,
                 summary: $data['summary'] ?? null,
                 description: $data['description'] ?? null,
-                status: $data['status'] ?? null,
+                status: ProjectStatus::tryFromScalar($data['status'] ?? null),
                 repositoryUrl: $data['repository_url'] ?? null,
                 liveUrl: $data['live_url'] ?? null,
             ),
@@ -69,11 +76,11 @@ final class ProjectTranslationController extends Controller
         $dto = $this->updateProjectTranslation->handle(
             new UpdateProjectTranslationInput(
                 projectId: $project->id,
-                locale: $data['locale'],
+                locale: $locale,
                 name: $data['name'] ?? null,
                 summary: $data['summary'] ?? null,
                 description: $data['description'] ?? null,
-                status: $data['status'] ?? null,
+                status: ProjectStatus::tryFromScalar($data['status'] ?? null),
                 repositoryUrl: $data['repository_url'] ?? null,
                 liveUrl: $data['live_url'] ?? null,
             ),
@@ -86,7 +93,12 @@ final class ProjectTranslationController extends Controller
 
     public function destroy(Project $project, string $locale): JsonResponse
     {
-        $this->deleteProjectTranslation->handle($project->id, $locale);
+        $this->deleteProjectTranslation->handle(
+            new DeleteProjectTranslationInput(
+                projectId: $project->id,
+                locale: $locale,
+            ),
+        );
 
         return response()->json(null, 204);
     }
