@@ -98,3 +98,7 @@ This capability is used by Content Management templates as a data source: `proje
 ## Admin skills integration
 
 The project create/edit payload includes a “skills catalog” resolved via `skills.list.v1` using the module’s `CapabilitiesGateway` (`app/Modules/Projects/Http/Controllers/ProjectController.php`, `app/Modules/Projects/Application/Capabilities/CapabilitiesGateway.php`).
+
+That capability now returns a form-oriented skill catalog shape rather than the full admin skills payload: each item includes the skill id, display name, optional category summary, and `skill_category_id`, which is enough for project form selection without coupling Projects to the Skills admin table contract (`app/Modules/Skills/Application/Capabilities/Providers/SkillList.php`, `app/Modules/Skills/Application/UseCases/ListSkills/ListSkills.php`).
+
+This stays intentionally separate from the project detail payload used when editing an existing project, where attached skills are serialized as part of the project output instead of reusing the capability response verbatim (`app/Modules/Projects/Application/Mappers/ProjectAdminOutputMapper.php`, `resources/js/modules/projects/core/types.ts`).

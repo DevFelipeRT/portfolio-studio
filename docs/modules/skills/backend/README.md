@@ -22,7 +22,12 @@ Routes are registered under `web + auth + verified` by `SkillsServiceProvider` (
 Declared as resource routes in `app/Modules/Skills/Routes/admin.php`:
 
 - Skills CRUD (no `show` route): `Route::resource('skills', SkillController::class)->except(['show'])->names('skills')` (`app/Modules/Skills/Routes/admin.php`)
-- Skill categories CRUD (no `index` / no `show` routes): `Route::resource('skill-categories', SkillCategoryController::class)->except(['index','show'])...` (`app/Modules/Skills/Routes/admin.php`)
+- Skill categories CRUD (no `show` route): `Route::resource('skill-categories', SkillCategoryController::class)->except(['show'])...` (`app/Modules/Skills/Routes/admin.php`)
+
+The admin index pages now expose page-owned table query contracts:
+
+- `skills.index` accepts `per_page`, `page`, `search`, `category`, `sort`, and `direction`, normalized by `ListSkillsInputMapper`, transported through `ListSkillsInput`, and returned as a dedicated `ListSkillsOutput` contract with clamp-aware pagination metadata; the repository delegates the actual admin list query composition to `SkillAdminListQuery` (`app/Modules/Skills/Http/Mappers/ListSkillsInputMapper.php`, `app/Modules/Skills/Application/UseCases/ListSkills/ListSkillsInput.php`, `app/Modules/Skills/Application/UseCases/ListSkills/ListSkillsOutput.php`, `app/Modules/Skills/Application/UseCases/ListSkills/ListSkills.php`, `app/Modules/Skills/Infrastructure/Queries/SkillAdminListQuery.php`, `app/Modules/Skills/Infrastructure/Repositories/SkillRepository.php`)
+- `skill-categories.index` accepts `per_page`, `page`, `search`, `sort`, and `direction`, normalized by `ListSkillCategoriesInputMapper`, transported through `ListSkillCategoriesInput`, and returned as a dedicated `ListSkillCategoriesOutput` contract; the repository delegates the admin list query composition to `SkillCategoryAdminListQuery` (`app/Modules/Skills/Http/Mappers/ListSkillCategoriesInputMapper.php`, `app/Modules/Skills/Application/UseCases/ListSkillCategories/ListSkillCategoriesInput.php`, `app/Modules/Skills/Application/UseCases/ListSkillCategories/ListSkillCategoriesOutput.php`, `app/Modules/Skills/Application/UseCases/ListSkillCategories/ListSkillCategories.php`, `app/Modules/Skills/Infrastructure/Queries/SkillCategoryAdminListQuery.php`, `app/Modules/Skills/Infrastructure/Repositories/SkillCategoryRepository.php`)
 
 ### Translation JSON endpoints
 
@@ -59,6 +64,28 @@ Base records also store a `locale` column (`database/migrations/2026_02_06_09000
 
 - Admin validation restricts `locale` to “supported locales” resolved via the capability key `website.locales.supported.v1` (`app/Modules/Skills/Application/Services/SupportedLocalesResolver.php`, `app/Modules/Skills/Http/Requests/Skill/UpdateSkillRequest.php`, `app/Modules/Skills/Http/Requests/SkillCategory/UpdateSkillCategoryRequest.php`).
 - When changing a skill/category base `locale` to a locale that already exists in translations, updates support a “swap” behavior controlled by `confirm_swap` (swaps base content with the translation and persists the previous base into translations) (`app/Modules/Skills/Application/UseCases/UpdateSkill/UpdateSkill.php`, `app/Modules/Skills/Application/Services/SkillLocaleSwapService.php`, `app/Modules/Skills/Application/UseCases/UpdateSkillCategory/UpdateSkillCategory.php`, `app/Modules/Skills/Application/Services/SkillCategoryLocaleSwapService.php`).
+
+## Application contracts
+
+The module now follows the same application-contract pattern used in `projects`:
+
+- each mutation/listing use case owns its own `Input` and `Output` DTOs under its own directory (`app/Modules/Skills/Application/UseCases/*`)
+- admin and translation model-to-output mapping lives in `Application` mappers instead of shared cross-use-case DTOs (`app/Modules/Skills/Application/Mappers/SkillAdminOutputMapper.php`, `app/Modules/Skills/Application/Mappers/SkillTranslationOutputMapper.php`)
+- update/delete/list use cases receive scalar identifiers or dedicated input contracts instead of receiving Eloquent models directly (`app/Modules/Skills/Application/UseCases/UpdateSkill/UpdateSkillInput.php`, `app/Modules/Skills/Application/UseCases/DeleteSkill/DeleteSkillInput.php`, `app/Modules/Skills/Application/UseCases/ListSkillTranslations/ListSkillTranslationsInput.php`)
+
+## Presentation contracts
+
+Administrative page payloads now flow through a dedicated presentation layer:
+
+- page-specific presenters build the final Inertia props for skills and skill categories (`app/Modules/Skills/Presentation/Presenters/SkillPagePresenter.php`, `app/Modules/Skills/Presentation/Presenters/SkillCategoryPagePresenter.php`)
+- translation JSON payloads are serialized by a dedicated presenter instead of returning application DTO arrays directly (`app/Modules/Skills/Presentation/Presenters/SkillTranslationJsonPresenter.php`)
+- screen-oriented view models define the UI-facing shape for table items, form state, and page props (`app/Modules/Skills/Presentation/ViewModels/Admin/*`)
+
+This keeps responsibilities separated:
+
+- `Http` parses requests, validates input, and selects the response type
+- `Application` executes use cases and exposes business-oriented outputs
+- `Presentation` adapts those outputs and bound models into Inertia/JSON payloads consumed by the frontend
 
 ## Capabilities (public data exposure)
 

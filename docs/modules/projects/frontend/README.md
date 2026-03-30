@@ -34,6 +34,8 @@ Pages are registered under keys like `projects/admin/Index` and rendered from th
 
 The form allows associating skills to a project via `skill_ids` (`resources/js/modules/projects/ui/form/project/ProjectForm.tsx`, `app/Modules/Projects/Http/Requests/Project/UpdateProjectRequest.php`).
 
+Create and edit screens now consume a lightweight `SkillCatalogItem[]` catalog for the multi-select options, while the loaded project record keeps its own attached-skills shape for display and initial selection state (`resources/js/app/pages/projects/admin/create/page.tsx`, `resources/js/app/pages/projects/admin/edit/page.tsx`, `resources/js/modules/skills/core/types.ts`, `resources/js/modules/projects/core/types.ts`).
+
 ### Images on projects
 
 - Existing images (from the backend payload) can be deleted via `projects.images.destroy` (`resources/js/modules/projects/ui/form/project/ProjectForm.tsx`, `app/Modules/Projects/Routes/admin.php`).
