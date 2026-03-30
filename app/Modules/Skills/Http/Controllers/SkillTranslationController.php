@@ -8,12 +8,15 @@ use App\Modules\Shared\Abstractions\Http\Controller;
 use App\Modules\Skills\Application\UseCases\CreateSkillTranslation\CreateSkillTranslation;
 use App\Modules\Skills\Application\UseCases\CreateSkillTranslation\CreateSkillTranslationInput;
 use App\Modules\Skills\Application\UseCases\DeleteSkillTranslation\DeleteSkillTranslation;
+use App\Modules\Skills\Application\UseCases\DeleteSkillTranslation\DeleteSkillTranslationInput;
 use App\Modules\Skills\Application\UseCases\ListSkillTranslations\ListSkillTranslations;
+use App\Modules\Skills\Application\UseCases\ListSkillTranslations\ListSkillTranslationsInput;
 use App\Modules\Skills\Application\UseCases\UpdateSkillTranslation\UpdateSkillTranslation;
 use App\Modules\Skills\Application\UseCases\UpdateSkillTranslation\UpdateSkillTranslationInput;
 use App\Modules\Skills\Domain\Models\Skill;
 use App\Modules\Skills\Http\Requests\SkillTranslation\StoreSkillTranslationRequest;
 use App\Modules\Skills\Http\Requests\SkillTranslation\UpdateSkillTranslationRequest;
+use App\Modules\Skills\Presentation\Presenters\SkillTranslationJsonPresenter;
 use Illuminate\Http\JsonResponse;
 
 final class SkillTranslationController extends Controller
@@ -23,16 +26,19 @@ final class SkillTranslationController extends Controller
         private readonly CreateSkillTranslation $createSkillTranslation,
         private readonly UpdateSkillTranslation $updateSkillTranslation,
         private readonly DeleteSkillTranslation $deleteSkillTranslation,
+        private readonly SkillTranslationJsonPresenter $skillTranslationJsonPresenter,
     ) {
     }
 
     public function index(Skill $skill): JsonResponse
     {
-        $items = $this->listSkillTranslations->handle($skill);
+        $items = $this->listSkillTranslations->handle(new ListSkillTranslationsInput(
+            skillId: $skill->id,
+        ));
 
-        return response()->json([
-            'data' => array_map(static fn($dto): array => $dto->toArray(), $items),
-        ]);
+        return response()->json(
+            $this->skillTranslationJsonPresenter->presentSkillList($items),
+        );
     }
 
     public function store(
@@ -49,9 +55,12 @@ final class SkillTranslationController extends Controller
             ),
         );
 
-        return response()->json([
-            'data' => $dto->toArray(),
-        ], 201);
+        return response()->json(
+            $this->skillTranslationJsonPresenter->presentCreatedSkillTranslation(
+                $dto,
+            ),
+            201,
+        );
     }
 
     public function update(
@@ -69,14 +78,19 @@ final class SkillTranslationController extends Controller
             ),
         );
 
-        return response()->json([
-            'data' => $dto->toArray(),
-        ]);
+        return response()->json(
+            $this->skillTranslationJsonPresenter->presentUpdatedSkillTranslation(
+                $dto,
+            ),
+        );
     }
 
     public function destroy(Skill $skill, string $locale): JsonResponse
     {
-        $this->deleteSkillTranslation->handle($skill->id, $locale);
+        $this->deleteSkillTranslation->handle(new DeleteSkillTranslationInput(
+            skillId: $skill->id,
+            locale: $locale,
+        ));
 
         return response()->json(null, 204);
     }

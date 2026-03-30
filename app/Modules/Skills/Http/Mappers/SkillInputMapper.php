@@ -30,6 +30,7 @@ final class SkillInputMapper
         $data = $request->validated();
 
         return new UpdateSkillInput(
+            skillId: $skill->id,
             name: $data['name'],
             locale: $data['locale'],
             confirmSwap: (bool) ($data['confirm_swap'] ?? false),

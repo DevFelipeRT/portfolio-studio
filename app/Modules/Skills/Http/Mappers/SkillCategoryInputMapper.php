@@ -31,6 +31,7 @@ final class SkillCategoryInputMapper
         $data = $request->validated();
 
         return new UpdateSkillCategoryInput(
+            skillCategoryId: $category->id,
             name: $data['name'],
             slug: $data['slug'] ?? null,
             locale: $data['locale'],
