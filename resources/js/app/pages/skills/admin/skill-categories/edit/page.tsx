@@ -6,17 +6,18 @@ import { PageHead, PageLink, usePageForm, usePageProps } from '@/common/page-run
 import { Button } from '@/components/ui/button';
 import { listSkillCategoryTranslations } from '@/modules/skills/core/api/translations';
 import type { SkillCategoryFormData } from '@/modules/skills/core/forms';
-import type { SkillCategory } from '@/modules/skills/core/types';
+import type { AdminSkillCategoryRecord } from '@/modules/skills/core/types';
 import { SKILLS_NAMESPACES, useSkillsTranslation } from '@/modules/skills/i18n';
 import { SkillCategoryForm } from '@/modules/skills/ui/form/skill-category';
 import { TranslationModal } from '@/modules/skills/ui/TranslationModal';
 import React from 'react';
 
 interface EditSkillCategoryProps {
-  category: SkillCategory;
+  category: AdminSkillCategoryRecord;
+  initial: SkillCategoryFormData;
 }
 
-export default function Edit({ category }: EditSkillCategoryProps) {
+export default function Edit({ category, initial }: EditSkillCategoryProps) {
   const { translate: tActions } = useSkillsTranslation(SKILLS_NAMESPACES.actions);
   const { translate: tSections } = useSkillsTranslation(
     SKILLS_NAMESPACES.sections,
@@ -27,12 +28,9 @@ export default function Edit({ category }: EditSkillCategoryProps) {
   const [translationLocales, setTranslationLocales] = React.useState<string[]>(
     [],
   );
-  const { data, setData, put, processing } = usePageForm<SkillCategoryFormData>({
-    name: category.name,
-    slug: category.slug ?? '',
-    locale: category.locale,
-    confirm_swap: false,
-  });
+  const { data, setData, put, processing } = usePageForm<SkillCategoryFormData>(
+    initial,
+  );
   const { errors: formErrors } = usePageProps<{
     errors: FormErrors<keyof SkillCategoryFormData>;
   }>();
@@ -98,10 +96,10 @@ export default function Edit({ category }: EditSkillCategoryProps) {
 
           <div className="mb-4">
             <PageLink
-              href={route('skills.index')}
+              href={route('skill-categories.index')}
               className="text-muted-foreground hover:text-foreground text-sm"
             >
-              {tActions('backToIndex')}
+              {tActions('backToCategories')}
             </PageLink>
           </div>
 
@@ -111,7 +109,7 @@ export default function Edit({ category }: EditSkillCategoryProps) {
             processing={processing}
             onChange={handleChange}
             onSubmit={handleSubmit}
-            cancelHref={route('skills.index')}
+            cancelHref={route('skill-categories.index')}
             submitLabel={tActions('saveChanges')}
             deleteHref={route('skill-categories.destroy', category.id)}
             deleteLabel={tActions('delete')}

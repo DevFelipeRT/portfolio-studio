@@ -8,7 +8,8 @@ export default {
       uncategorized: 'Uncategorized',
     },
     slug: { label: 'Slug', placeholder: 'Leave blank to auto-generate' },
-    updated_at: { label: 'Updated' },
+    created_at: { label: 'Created at' },
+    updated_at: { label: 'Updated at' },
     actions: { label: 'Actions' },
   },
   help: {
@@ -16,10 +17,26 @@ export default {
       'Manage the reusable skills referenced by your portfolio projects.',
     categoriesDescription:
       'Organize skills by category for grouping and filtering.',
+    categoriesSummary: 'Registered categories',
+    categoriesStandaloneHint:
+      'Open the dedicated categories page to browse, paginate, and manage this catalog.',
+  },
+  filters: {
+    searchLabel: 'Search',
+    searchPlaceholder: 'Search by skill name or category',
+    searchSubmit: 'Search skills',
+    categoryLabel: 'Category',
+    categoryPlaceholder: 'All categories',
+    categoriesSearchLabel: 'Search',
+    categoriesSearchPlaceholder: 'Search by category name or slug',
+    categoriesSearchSubmit: 'Search categories',
+    reset: 'Clear',
   },
   emptyState: {
     skills: 'No skills have been created yet.',
+    filteredSkills: 'No skills match the current filters.',
     categories: 'No categories have been created yet.',
+    filteredCategories: 'No categories match the current filters.',
   },
   table: {
     title: 'Skills',

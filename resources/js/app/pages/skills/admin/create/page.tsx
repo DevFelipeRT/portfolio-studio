@@ -5,29 +5,24 @@ import { PageContent } from '@/app/layouts/primitives';
 import { useFormSubmit, type FormErrors } from '@/common/forms';
 import { PageHead, PageLink, usePageForm, usePageProps } from '@/common/page-runtime';
 import type { SkillFormData } from '@/modules/skills/core/forms';
-import type { SkillCategory } from '@/modules/skills/core/types';
+import type { AdminSkillCategoryRecord } from '@/modules/skills/core/types';
 import { SKILLS_NAMESPACES, useSkillsTranslation } from '@/modules/skills/i18n';
 import { SkillForm } from '@/modules/skills/ui/form/skill';
 import React from 'react';
 
 interface CreateSkillProps {
-  categories: SkillCategory[];
+  categories: AdminSkillCategoryRecord[];
+  initial: SkillFormData;
 }
 
-const defaultSkillFormData: SkillFormData = {
-  name: '',
-  locale: '',
-  skill_category_id: '',
-};
-
-export default function Create({ categories }: CreateSkillProps) {
+export default function Create({ categories, initial }: CreateSkillProps) {
   const { translate: tActions } = useSkillsTranslation(SKILLS_NAMESPACES.actions);
   const { translate: tSections } = useSkillsTranslation(
     SKILLS_NAMESPACES.sections,
   );
   const { data, setData, post, processing } = usePageForm<SkillFormData>(
     'skills.create',
-    defaultSkillFormData,
+    initial,
   );
   const submitForm = useFormSubmit();
   const { errors: formErrors } = usePageProps<{

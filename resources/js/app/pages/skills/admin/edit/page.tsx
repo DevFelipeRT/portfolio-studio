@@ -8,18 +8,22 @@ import { PageHead, PageLink, usePageForm, usePageProps } from '@/common/page-run
 import { Button } from '@/components/ui/button';
 import { listSkillTranslations } from '@/modules/skills/core/api/translations';
 import type { SkillFormData } from '@/modules/skills/core/forms';
-import type { Skill, SkillCategory } from '@/modules/skills/core/types';
+import type {
+  AdminSkillCategoryRecord,
+  AdminSkillListItem,
+} from '@/modules/skills/core/types';
 import { SKILLS_NAMESPACES, useSkillsTranslation } from '@/modules/skills/i18n';
 import { SkillForm } from '@/modules/skills/ui/form/skill';
 import { TranslationModal } from '@/modules/skills/ui/TranslationModal';
 import React from 'react';
 
 interface EditSkillProps {
-  skill: Skill;
-  categories: SkillCategory[];
+  skill: AdminSkillListItem;
+  categories: AdminSkillCategoryRecord[];
+  initial: SkillFormData;
 }
 
-export default function Edit({ skill, categories }: EditSkillProps) {
+export default function Edit({ skill, categories, initial }: EditSkillProps) {
   const { translate: tActions } = useSkillsTranslation(SKILLS_NAMESPACES.actions);
   const { translate: tSections } = useSkillsTranslation(
     SKILLS_NAMESPACES.sections,
@@ -30,12 +34,7 @@ export default function Edit({ skill, categories }: EditSkillProps) {
   const [translationLocales, setTranslationLocales] = React.useState<string[]>(
     [],
   );
-  const { data, setData, put, processing } = usePageForm<SkillFormData>({
-    name: skill.name,
-    locale: skill.locale,
-    confirm_swap: false,
-    skill_category_id: skill.skill_category_id ?? '',
-  });
+  const { data, setData, put, processing } = usePageForm<SkillFormData>(initial);
   const { errors: formErrors } = usePageProps<{
     errors: FormErrors<keyof SkillFormData>;
   }>();

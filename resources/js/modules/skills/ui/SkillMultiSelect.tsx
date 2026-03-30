@@ -1,12 +1,12 @@
 import type { MultiSelectOption } from '@/components/ui/multi-select';
 import { MultiSelect } from '@/components/ui/multi-select';
-import type { Skill } from '@/modules/skills/core/types';
+import type { SkillCatalogItem } from '@/modules/skills/core/types';
 import * as React from 'react';
 
 type SkillMultiSelectProps = {
     id?: string;
     className?: string;
-    skills: Skill[];
+    skills: SkillCatalogItem[];
     selectedIds: number[];
     onChangeSelectedIds: (ids: number[]) => void;
     disabled?: boolean;

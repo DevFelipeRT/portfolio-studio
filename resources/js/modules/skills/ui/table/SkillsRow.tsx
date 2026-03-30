@@ -1,7 +1,7 @@
 // resources/js/Pages/Skills/Partials/SkillsRow.tsx
 
 import { useTranslation } from '@/common/i18n';
-import type { Skill } from '@/modules/skills/core/types';
+import type { AdminSkillListItem } from '@/modules/skills/core/types';
 import { SKILLS_NAMESPACES, useSkillsTranslation } from '@/modules/skills/i18n';
 
 import {
@@ -18,10 +18,10 @@ import { Eye, Pencil, Tag, Trash2 } from 'lucide-react';
 import React, { JSX } from 'react';
 
 interface SkillsRowProps {
-    skill: Skill;
-    onRowClick(skill: Skill): void;
-    onEdit(skill: Skill, event?: React.MouseEvent): void;
-    onDelete(skill: Skill, event?: React.MouseEvent): void;
+    skill: AdminSkillListItem;
+    onRowClick(skill: AdminSkillListItem): void;
+    onEdit(skill: AdminSkillListItem, event?: React.MouseEvent): void;
+    onDelete(skill: AdminSkillListItem, event?: React.MouseEvent): void;
 }
 
 /**
@@ -65,15 +65,18 @@ export function SkillsRow({
             variant="default"
             onActivate={() => onRowClick(skill)}
         >
-            <TableTitleCell className="sm:w-48" title={skill.name} />
+            <TableTitleCell
+                className="w-full max-w-0 min-w-0"
+                title={skill.name}
+            />
 
             <TableMetaCell
-                className="content-center pr-2 align-top text-xs sm:w-40"
+                className="w-px content-center pr-2 align-top text-xs whitespace-nowrap"
             >
                 {renderCategory()}
             </TableMetaCell>
 
-            <TableMetaCell className="text-center sm:w-32">
+            <TableMetaCell className="hidden w-px text-center whitespace-nowrap sm:table-cell">
                 <TableDateText
                     value={skill.created_at}
                     locale={locale}
@@ -82,7 +85,7 @@ export function SkillsRow({
                 />
             </TableMetaCell>
 
-            <TableMetaCell className="text-center sm:w-32">
+            <TableMetaCell className="hidden w-px text-center whitespace-nowrap sm:table-cell">
                 <TableDateText
                     value={skill.updated_at}
                     locale={locale}
@@ -91,7 +94,7 @@ export function SkillsRow({
                 />
             </TableMetaCell>
 
-            <TableActionCell className="content-center sm:w-12">
+            <TableActionCell className="content-center">
                 <TableActionsMenu triggerLabel={tActions('openMenu')}>
                     <TableActionsMenuItem onClick={() => onRowClick(skill)}>
                         <Eye className="mr-2 h-4 w-4" />
