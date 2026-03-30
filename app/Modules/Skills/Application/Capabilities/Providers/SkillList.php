@@ -28,7 +28,7 @@ final class SkillList implements ICapabilityProvider
 
         $this->definition = $this->capabilitiesFactory->createPublicDefinition(
             'skills.list.v1',
-            'Returns skills for admin consumption.',
+            'Returns skill catalog items for admin form consumption.',
             [
                 'locale' => [
                     'required' => false,
@@ -36,7 +36,7 @@ final class SkillList implements ICapabilityProvider
                     'default' => null,
                 ],
             ],
-            'array<SkillDto>',
+            'array<SkillCatalogItem>',
         );
 
         return $this->definition;
@@ -44,7 +44,14 @@ final class SkillList implements ICapabilityProvider
 
     /**
      * @param array<string, mixed> $parameters
-     * @return array<int, array<string,mixed>>
+     * @return array<int, array{
+     *     id:int,
+     *     name:string,
+     *     skill_category_id:?int,
+     *     category:?array{id:int,name:string},
+     *     created_at:?string,
+     *     updated_at:?string
+     * }>
      */
     public function execute(
         array $parameters,
@@ -54,10 +61,20 @@ final class SkillList implements ICapabilityProvider
         $fallbackLocale = app()->getFallbackLocale();
 
         $skills = $locale === null
-            ? $this->listSkills->handle()
-            : $this->listSkills->handle($locale, $fallbackLocale, true);
+            ? $this->listSkills->all()
+            : $this->listSkills->all($locale, $fallbackLocale, true);
 
-        return array_map(static fn($dto): array => $dto->toArray(), $skills);
+        return array_map(
+            static fn($item): array => [
+                'id' => $item->id,
+                'name' => $item->name,
+                'skill_category_id' => $item->skillCategoryId,
+                'category' => $item->category,
+                'created_at' => $item->createdAt,
+                'updated_at' => $item->updatedAt,
+            ],
+            $skills,
+        );
     }
 
     /**

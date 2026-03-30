@@ -6,6 +6,7 @@ namespace App\Modules\Skills\Domain\Repositories;
 
 use App\Modules\Skills\Domain\Models\SkillCategory;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 interface ISkillCategoryRepository
 {
@@ -21,6 +22,14 @@ interface ISkillCategoryRepository
         ?string $locale,
         ?string $fallbackLocale = null,
     ): EloquentCollection;
+
+    public function paginateOrdered(
+        int $perPage,
+        int $page = 1,
+        ?string $search = null,
+        ?string $sort = null,
+        ?string $direction = null,
+    ): LengthAwarePaginator;
 
     public function findById(int $id): SkillCategory;
 

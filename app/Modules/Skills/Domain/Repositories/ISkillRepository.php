@@ -5,10 +5,20 @@ declare(strict_types=1);
 namespace App\Modules\Skills\Domain\Repositories;
 
 use App\Modules\Skills\Domain\Models\Skill;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 
 interface ISkillRepository
 {
+    public function paginateWithCategory(
+        int $perPage,
+        int $page = 1,
+        ?string $search = null,
+        ?int $categoryId = null,
+        ?string $sort = null,
+        ?string $direction = null,
+    ): LengthAwarePaginator;
+
     /**
      * @return EloquentCollection<int,Skill>
      */
