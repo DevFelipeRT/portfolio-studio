@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\Skills\Application\UseCases\UpdateSkill;
 
-use App\Modules\Skills\Application\Dtos\SkillCategoryDto;
-use App\Modules\Skills\Application\Dtos\SkillDto;
 use App\Modules\Skills\Application\Services\SkillLocaleSwapService;
 use App\Modules\Skills\Domain\Models\Skill;
 use App\Modules\Skills\Domain\Repositories\ISkillRepository;
@@ -21,9 +19,10 @@ final class UpdateSkill
     ) {
     }
 
-    public function handle(Skill $skill, UpdateSkillInput $input): SkillDto
+    public function handle(UpdateSkillInput $input): UpdateSkillOutput
     {
-        $updated = DB::transaction(function () use ($skill, $input): Skill {
+        $updated = DB::transaction(function () use ($input): Skill {
+            $skill = $this->repository->findById($input->skillId);
             $localeChanged = $input->locale !== $skill->locale;
             $shouldSwap = false;
 
@@ -49,11 +48,8 @@ final class UpdateSkill
             ]);
         });
 
-        $categoryDto = null;
-        if ($updated->category !== null) {
-            $categoryDto = SkillCategoryDto::fromModel($updated->category);
-        }
-
-        return SkillDto::fromModel($updated, null, $categoryDto);
+        return new UpdateSkillOutput(
+            skillId: $updated->id,
+        );
     }
 }

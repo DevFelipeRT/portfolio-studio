@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\Skills\Application\UseCases\UpdateSkillCategory;
 
-use App\Modules\Skills\Application\Dtos\SkillCategoryDto;
 use App\Modules\Skills\Application\Services\SkillCategoryLocaleSwapService;
 use App\Modules\Skills\Application\Services\SkillCategorySlugNormalizer;
 use App\Modules\Skills\Domain\Models\SkillCategory;
@@ -23,10 +22,10 @@ final class UpdateSkillCategory
     }
 
     public function handle(
-        SkillCategory $category,
         UpdateSkillCategoryInput $input,
-    ): SkillCategoryDto {
-        $updated = DB::transaction(function () use ($category, $input): SkillCategory {
+    ): UpdateSkillCategoryOutput {
+        $updated = DB::transaction(function () use ($input): SkillCategory {
+            $category = $this->repository->findById($input->skillCategoryId);
             $localeChanged = $input->locale !== $category->locale;
             $shouldSwap = false;
 
@@ -52,6 +51,8 @@ final class UpdateSkillCategory
             ]);
         });
 
-        return SkillCategoryDto::fromModel($updated);
+        return new UpdateSkillCategoryOutput(
+            skillCategoryId: $updated->id,
+        );
     }
 }

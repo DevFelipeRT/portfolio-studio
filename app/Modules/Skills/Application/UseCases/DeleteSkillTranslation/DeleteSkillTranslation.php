@@ -16,15 +16,20 @@ final class DeleteSkillTranslation
     ) {
     }
 
-    public function handle(int $skillId, string $locale): void
+    public function handle(DeleteSkillTranslationInput $input): DeleteSkillTranslationOutput
     {
-        $skill = $this->skills->findById($skillId);
+        $skill = $this->skills->findById($input->skillId);
 
-        $existing = $this->translations->findBySkillAndLocale($skill, $locale);
+        $existing = $this->translations->findBySkillAndLocale($skill, $input->locale);
         if ($existing === null) {
             throw new InvalidArgumentException('Skill translation not found for this locale.');
         }
 
         $this->translations->delete($existing);
+
+        return new DeleteSkillTranslationOutput(
+            skillId: $skill->id,
+            locale: $input->locale,
+        );
     }
 }
