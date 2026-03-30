@@ -10,11 +10,11 @@ import type {
 import { useProjectsTranslation } from '@/modules/projects/i18n';
 import { PROJECTS_NAMESPACES } from '@/modules/projects/i18n';
 import { ProjectForm } from '@/modules/projects/ui/form/project';
-import type { Skill } from '@/modules/skills/core/types';
+import type { SkillCatalogItem } from '@/modules/skills/core/types';
 import React from 'react';
 
 interface CreateProjectProps {
-  skills: Skill[];
+  skills: SkillCatalogItem[];
 }
 
 const defaultProjectFormData: ProjectFormData = {
@@ -144,7 +144,7 @@ function CreateProjectHeader() {
 }
 
 type CreateProjectContentProps = {
-  skills: Skill[];
+  skills: SkillCatalogItem[];
   supportedLocales: readonly string[];
   data: ProjectFormData;
   formErrors: FormErrors<keyof ProjectFormData>;

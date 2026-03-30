@@ -1,11 +1,11 @@
 import type { FormErrors } from '@/common/forms';
 import type { ProjectFormData } from '@/modules/projects/core/forms';
 import type { ProjectImage } from '@/modules/projects/core/types';
-import type { Skill } from '@/modules/skills/core/types';
+import type { SkillCatalogItem } from '@/modules/skills/core/types';
 import type React from 'react';
 
 export interface ProjectFormProps {
-  skills: Skill[];
+  skills: SkillCatalogItem[];
   existingImages: ProjectImage[];
   data: ProjectFormData;
   errors: FormErrors<keyof ProjectFormData>;

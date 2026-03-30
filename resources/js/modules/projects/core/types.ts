@@ -1,6 +1,5 @@
 import type { ProjectStatusValue } from '@/modules/projects/core/status';
 import type { Image } from '@/modules/images/core/types';
-import type { Skill } from '@/modules/skills/core/types';
 
 export interface HasTimestamps {
     created_at: string | null;
@@ -24,6 +23,13 @@ export interface ProjectSkillItem {
     name: string;
 }
 
+export interface ProjectAttachedSkill {
+    id: number;
+    name: string;
+    category?: unknown;
+    skill_category_id?: number | null;
+}
+
 export interface Project extends HasTimestamps {
     id: number;
     locale: string;
@@ -34,7 +40,7 @@ export interface Project extends HasTimestamps {
     repository_url: string | null;
     live_url: string | null;
     images: ProjectImage[] | null;
-    skills: Skill[];
+    skills: ProjectAttachedSkill[];
     display: boolean;
 }
 

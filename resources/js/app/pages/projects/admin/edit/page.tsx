@@ -15,12 +15,12 @@ import { useProjectsTranslation } from '@/modules/projects/i18n';
 import { PROJECTS_NAMESPACES } from '@/modules/projects/i18n';
 import { ProjectForm } from '@/modules/projects/ui/form/project';
 import { TranslationModal } from '@/modules/projects/ui/TranslationModal';
-import type { Skill } from '@/modules/skills/core/types';
+import type { SkillCatalogItem } from '@/modules/skills/core/types';
 import React from 'react';
 
 interface EditProjectProps {
   project: Project;
-  skills: Skill[];
+  skills: SkillCatalogItem[];
 }
 
 /**
@@ -33,9 +33,7 @@ export default function Edit({ project, skills }: EditProjectProps) {
   const supportedLocales = useSupportedLocales();
   const existingImages: ProjectImage[] = project.images ?? [];
 
-  const initialSkillIds: number[] = project.skills.map(
-    (skill: Skill) => skill.id,
-  );
+  const initialSkillIds: number[] = project.skills.map((skill) => skill.id);
 
   const { data, setData, post, processing, transform } =
     usePageForm<ProjectFormData>({
@@ -245,7 +243,7 @@ Edit.layout = (page: React.ReactNode) => (
 
 type EditProjectContentProps = {
   project: Project;
-  skills: Skill[];
+  skills: SkillCatalogItem[];
   existingImages: ProjectImage[];
   supportedLocales: readonly string[];
   data: ProjectFormData;
