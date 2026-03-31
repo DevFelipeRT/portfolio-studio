@@ -27,7 +27,7 @@ Route::prefix('admin')
 
         // Skill categories CRUD (admin.skill-categories.pages.*)
         Route::resource('skill-categories', SkillCategoryController::class)
-            ->except(['index', 'show'])
+            ->except(['show'])
             ->names('skill-categories')
             ->parameters(['skill-categories' => 'skillCategory']);
 

@@ -5,20 +5,18 @@ declare(strict_types=1);
 namespace App\Modules\Skills\Http\Controllers;
 
 use App\Modules\Shared\Abstractions\Http\Controller;
-use App\Modules\Skills\Application\Dtos\SkillCategoryDto;
-use App\Modules\Skills\Application\Dtos\SkillDto;
 use App\Modules\Skills\Application\UseCases\CreateSkill\CreateSkill;
+use App\Modules\Skills\Application\UseCases\DeleteSkill\DeleteSkillInput;
 use App\Modules\Skills\Application\UseCases\DeleteSkill\DeleteSkill;
 use App\Modules\Skills\Application\UseCases\ListSkillCategories\ListSkillCategories;
 use App\Modules\Skills\Application\UseCases\ListSkills\ListSkills;
 use App\Modules\Skills\Application\UseCases\UpdateSkill\UpdateSkill;
 use App\Modules\Skills\Domain\Models\Skill;
-use App\Modules\Skills\Http\Mappers\SkillFormMapper;
+use App\Modules\Skills\Http\Mappers\ListSkillsInputMapper;
 use App\Modules\Skills\Http\Mappers\SkillInputMapper;
 use App\Modules\Skills\Http\Requests\Skill\StoreSkillRequest;
 use App\Modules\Skills\Http\Requests\Skill\UpdateSkillRequest;
-use App\Modules\Skills\Presentation\Mappers\SkillCategoryMapper;
-use App\Modules\Skills\Presentation\Mappers\SkillMapper;
+use App\Modules\Skills\Presentation\Presenters\SkillPagePresenter;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -36,20 +34,46 @@ class SkillController extends Controller
         private readonly CreateSkill $createSkill,
         private readonly UpdateSkill $updateSkill,
         private readonly DeleteSkill $deleteSkill,
+        private readonly ListSkillsInputMapper $listSkillsInputMapper,
+        private readonly SkillPagePresenter $skillPagePresenter,
     ) {}
 
     /**
      * Display a listing of skills.
      */
-    public function index(): Response
+    public function index(Request $request): Response|RedirectResponse
     {
-        $skills = $this->listSkills->handle();
-        $categories = $this->listSkillCategories->handle();
+        $input = $this->listSkillsInputMapper->fromRequest($request);
+        $skills = $this->listSkills->handle($input);
 
-        return Inertia::render('skills/admin/Index', [
-            'skills' => SkillMapper::collection($skills),
-            'categories' => SkillCategoryMapper::collection($categories),
-        ]);
+        if ($skills->shouldClampPage()) {
+            return redirect()->route(
+                'skills.index',
+                $this->buildIndexQueryParams(
+                    perPage: $input->perPage,
+                    search: $input->search,
+                    categoryId: $input->categoryId,
+                    sort: $input->sort,
+                    direction: $input->direction,
+                    page: $skills->lastPage,
+                ),
+            );
+        }
+
+        $categories = $this->listSkillCategories->all();
+        $viewModel = $this->skillPagePresenter->buildIndexViewModel(
+            skills: $skills,
+            categories: $categories,
+            filters: [
+                'per_page' => $input->perPage,
+                'search' => $input->search,
+                'category' => $input->categoryId,
+                'sort' => $input->sort,
+                'direction' => $input->direction,
+            ],
+        );
+
+        return Inertia::render('skills/admin/Index', $viewModel->toProps());
     }
 
     /**
@@ -57,11 +81,10 @@ class SkillController extends Controller
      */
     public function create(): Response
     {
-        $categories = $this->listSkillCategories->handle();
+        $categories = $this->listSkillCategories->all();
+        $viewModel = $this->skillPagePresenter->buildCreateViewModel($categories);
 
-        return Inertia::render('skills/admin/Create', [
-            'categories' => SkillCategoryMapper::collection($categories),
-        ]);
+        return Inertia::render('skills/admin/Create', $viewModel->toProps());
     }
 
     /**
@@ -81,24 +104,16 @@ class SkillController extends Controller
     /**
      * Show the form for editing the specified skill.
      */
-    public function edit(Request $request, Skill $skill): Response
+    public function edit(Skill $skill): Response
     {
         $skill->loadMissing('category');
-        $categories = $this->listSkillCategories->handle();
+        $categories = $this->listSkillCategories->all();
+        $viewModel = $this->skillPagePresenter->buildEditViewModel(
+            skill: $skill,
+            categories: $categories,
+        );
 
-        $categoryDto = null;
-        if ($skill->category !== null) {
-            $categoryDto = SkillCategoryDto::fromModel($skill->category);
-        }
-
-        $skillDto = SkillDto::fromModel($skill, null, $categoryDto);
-        $skillData = SkillMapper::map($skillDto);
-
-        return Inertia::render('skills/admin/Edit', [
-            'skill' => $skillData,
-            'categories' => SkillCategoryMapper::collection($categories),
-            'initial' => SkillFormMapper::fromEdit($skillData, []),
-        ]);
+        return Inertia::render('skills/admin/Edit', $viewModel->toProps());
     }
 
     /**
@@ -110,22 +125,83 @@ class SkillController extends Controller
     ): RedirectResponse {
         $input = SkillInputMapper::fromUpdateRequest($request, $skill);
 
-        $this->updateSkill->handle($skill, $input);
+        $this->updateSkill->handle($input);
 
         return redirect()
-            ->route('skills.index', $skill)
+            ->route('skills.index')
             ->with('status', 'Skill successfully updated.');
     }
 
     /**
      * Remove the specified skill from storage.
      */
-    public function destroy(Skill $skill): RedirectResponse
+    public function destroy(Request $request, Skill $skill): RedirectResponse
     {
-        $this->deleteSkill->handle($skill);
+        $this->deleteSkill->handle(new DeleteSkillInput(
+            skillId: $skill->id,
+        ));
 
         return redirect()
-            ->route('skills.index')
+            ->route(
+                'skills.index',
+                $this->buildIndexQueryParamsFromRequest($request),
+            )
             ->with('status', 'Skill successfully deleted.');
     }
+
+    /**
+     * @return array<string,int|string>
+     */
+    private function buildIndexQueryParams(
+        int $perPage,
+        ?string $search,
+        ?int $categoryId,
+        ?string $sort,
+        ?string $direction,
+        int $page,
+    ): array {
+        $query = [
+            'per_page' => $perPage,
+        ];
+
+        if ($search !== null) {
+            $query['search'] = $search;
+        }
+
+        if ($categoryId !== null) {
+            $query['category'] = $categoryId;
+        }
+
+        if ($sort !== null) {
+            $query['sort'] = $sort;
+
+            if ($direction !== null) {
+                $query['direction'] = $direction;
+            }
+        }
+
+        if ($page > 1) {
+            $query['page'] = $page;
+        }
+
+        return $query;
+    }
+
+    /**
+     * @return array<string,int|string>
+     */
+    private function buildIndexQueryParamsFromRequest(Request $request): array
+    {
+        $input = $this->listSkillsInputMapper->fromRequest($request);
+
+        return $this->buildIndexQueryParams(
+            perPage: $input->perPage,
+            search: $input->search,
+            categoryId: $input->categoryId,
+            sort: $input->sort,
+            direction: $input->direction,
+            page: $input->page,
+        );
+    }
+
 }

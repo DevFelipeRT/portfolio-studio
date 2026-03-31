@@ -21,9 +21,9 @@ final class CreateProject
     ) {
     }
 
-    public function handle(CreateProjectInput $input): Project
+    public function handle(CreateProjectInput $input): CreateProjectOutput
     {
-        return DB::transaction(function () use ($input): Project {
+        return DB::transaction(function () use ($input): CreateProjectOutput {
             $preparedDescription = $this->richText->prepareForPersistence($input->description, 'description');
             try {
                 $projectDescription = ProjectDescription::fromRawAndPlainText(
@@ -43,7 +43,7 @@ final class CreateProject
                 'name' => $input->name,
                 'summary' => $input->summary,
                 'description' => $projectDescription->raw(),
-                'status' => $input->status,
+                'status' => $input->status->toScalar(),
                 'repository_url' => $input->repositoryUrl,
                 'live_url' => $input->liveUrl,
                 'display' => $input->display,
@@ -57,7 +57,9 @@ final class CreateProject
                 $this->projectImageService->replace($project, $input->images);
             }
 
-            return $project->load(['images', 'skills.category']);
+            return new CreateProjectOutput(
+                projectId: $project->id,
+            );
         });
     }
 }

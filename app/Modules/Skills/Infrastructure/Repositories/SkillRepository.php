@@ -6,16 +6,42 @@ namespace App\Modules\Skills\Infrastructure\Repositories;
 
 use App\Modules\Skills\Domain\Models\Skill;
 use App\Modules\Skills\Domain\Repositories\ISkillRepository;
+use App\Modules\Skills\Infrastructure\Queries\SkillAdminListQuery;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 
 final class SkillRepository implements ISkillRepository
 {
+    public function __construct(
+        private readonly SkillAdminListQuery $skillAdminListQuery,
+    ) {
+    }
+
+    public function paginateWithCategory(
+        int $perPage,
+        int $page = 1,
+        ?string $search = null,
+        ?int $categoryId = null,
+        ?string $sort = null,
+        ?string $direction = null,
+    ): LengthAwarePaginator
+    {
+        return $this->skillAdminListQuery->paginate(
+            perPage: $perPage,
+            page: $page,
+            search: $search,
+            categoryId: $categoryId,
+            sort: $sort,
+            direction: $direction,
+        );
+    }
+
     public function allWithCategory(): EloquentCollection
     {
-        return Skill::query()
-            ->with('category')
-            ->orderBy('skill_category_id')
-            ->orderBy('name')
+        return $this->applyDefaultSort(
+            Skill::query()->with('category'),
+        )
             ->get();
     }
 
@@ -35,10 +61,7 @@ final class SkillRepository implements ISkillRepository
             ]);
         }
 
-        return $query
-            ->orderBy('skill_category_id')
-            ->orderBy('name')
-            ->get();
+        return $this->applyDefaultSort($query)->get();
     }
 
     public function findById(int $id): Skill
@@ -74,5 +97,16 @@ final class SkillRepository implements ISkillRepository
         ]);
 
         return array_values(array_unique($values));
+    }
+
+    private function applyDefaultSort(Builder $query): Builder
+    {
+        return $query
+            ->leftJoin('skill_categories', 'skill_categories.id', '=', 'skills.skill_category_id')
+            ->select('skills.*')
+            ->orderByRaw('CASE WHEN skill_categories.name IS NULL THEN 1 ELSE 0 END')
+            ->orderBy('skill_categories.name')
+            ->orderBy('skills.name')
+            ->orderBy('skills.id');
     }
 }

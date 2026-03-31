@@ -16,15 +16,20 @@ final class DeleteProjectTranslation
     ) {
     }
 
-    public function handle(int $projectId, string $locale): void
+    public function handle(DeleteProjectTranslationInput $input): DeleteProjectTranslationOutput
     {
-        $project = $this->projects->findById($projectId);
+        $project = $this->projects->findById($input->projectId);
 
-        $existing = $this->translations->findByProjectAndLocale($project, $locale);
+        $existing = $this->translations->findByProjectAndLocale($project, $input->locale);
         if ($existing === null) {
             throw new InvalidArgumentException('Project translation not found for this locale.');
         }
 
         $this->translations->delete($existing);
+
+        return new DeleteProjectTranslationOutput(
+            projectId: $project->id,
+            locale: $input->locale,
+        );
     }
 }

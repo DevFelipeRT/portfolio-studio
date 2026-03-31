@@ -34,4 +34,9 @@ Route::prefix('admin')
             ->name('projects.translations.update');
         Route::delete('projects/{project}/translations/{locale}', [ProjectTranslationController::class, 'destroy'])
             ->name('projects.translations.destroy');
+
+        Route::get(
+            'projects/{project}/details',
+            [ProjectController::class, 'details']
+        )->name('projects.details');
     });

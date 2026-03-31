@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\Projects\Application\UseCases\DeleteProject;
 
-use App\Modules\Projects\Domain\Models\Project;
 use App\Modules\Projects\Domain\Repositories\IProjectRepository;
 use App\Modules\Projects\Application\Services\ProjectImageService;
 use App\Modules\Images\Domain\Models\Image;
@@ -19,9 +18,11 @@ final class DeleteProject
     ) {
     }
 
-    public function handle(Project $project): void
+    public function handle(DeleteProjectInput $input): DeleteProjectOutput
     {
-        DB::transaction(function () use ($project): void {
+        return DB::transaction(function () use ($input): DeleteProjectOutput {
+            $project = $this->projects->findById($input->projectId);
+
             /** @var Collection<int,Image> $images */
             $images = $project->images()->get();
 
@@ -30,6 +31,10 @@ final class DeleteProject
             }
 
             $this->projects->delete($project);
+
+            return new DeleteProjectOutput(
+                projectId: $project->id,
+            );
         });
     }
 }

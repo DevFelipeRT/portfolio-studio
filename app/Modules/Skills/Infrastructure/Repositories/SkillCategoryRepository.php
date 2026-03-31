@@ -6,10 +6,17 @@ namespace App\Modules\Skills\Infrastructure\Repositories;
 
 use App\Modules\Skills\Domain\Models\SkillCategory;
 use App\Modules\Skills\Domain\Repositories\ISkillCategoryRepository;
+use App\Modules\Skills\Infrastructure\Queries\SkillCategoryAdminListQuery;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 
 final class SkillCategoryRepository implements ISkillCategoryRepository
 {
+    public function __construct(
+        private readonly SkillCategoryAdminListQuery $skillCategoryAdminListQuery,
+    ) {
+    }
+
     public function allOrdered(): EloquentCollection
     {
         return SkillCategory::query()
@@ -34,6 +41,23 @@ final class SkillCategoryRepository implements ISkillCategoryRepository
         return $query
             ->orderBy('name')
             ->get();
+    }
+
+    public function paginateOrdered(
+        int $perPage,
+        int $page = 1,
+        ?string $search = null,
+        ?string $sort = null,
+        ?string $direction = null,
+    ): LengthAwarePaginator
+    {
+        return $this->skillCategoryAdminListQuery->paginate(
+            perPage: $perPage,
+            page: $page,
+            search: $search,
+            sort: $sort,
+            direction: $direction,
+        );
     }
 
     public function findById(int $id): SkillCategory
@@ -70,4 +94,5 @@ final class SkillCategoryRepository implements ISkillCategoryRepository
 
         return array_values(array_unique($values));
     }
+
 }

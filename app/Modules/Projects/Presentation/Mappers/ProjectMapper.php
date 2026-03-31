@@ -6,6 +6,7 @@ namespace App\Modules\Projects\Presentation\Mappers;
 
 use App\Modules\Shared\Abstractions\Mapping\Mapper;
 use App\Modules\Projects\Domain\Models\Project;
+use App\Modules\Projects\Domain\ValueObjects\ProjectStatus;
 use App\Modules\Images\Domain\Models\Image;
 use App\Modules\Skills\Domain\Models\Skill;
 
@@ -36,7 +37,7 @@ final class ProjectMapper extends Mapper
             'name' => $project->name,
             'summary' => $project->summary,
             'description' => $project->description,
-            'status' => $project->status,
+            'status' => self::statusToScalar($project->status),
             'repository_url' => $project->repository_url,
             'live_url' => $project->live_url,
             'display' => $project->display,
@@ -73,5 +74,12 @@ final class ProjectMapper extends Mapper
                 ->values()
                 ->all(),
         ];
+    }
+
+    private static function statusToScalar(mixed $value): ?string
+    {
+        return $value instanceof ProjectStatus
+            ? $value->toScalar()
+            : (is_string($value) ? $value : null);
     }
 }

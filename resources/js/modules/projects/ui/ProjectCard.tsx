@@ -24,6 +24,7 @@ import type { Project } from '@/modules/projects/core/types';
 import { ProjectImageCarousel } from './ProjectImageCarousel';
 import { RichTextRenderer } from '@/common/rich-text/RichTextRenderer';
 import { cn } from '@/lib/utils';
+import { useProjectStatusLabel } from './ProjectStatusBadge';
 
 export interface ProjectCardProps {
     name: Project['name'];
@@ -57,6 +58,7 @@ export function ProjectCard({
 }: ProjectCardProps) {
     const { translate: tActions } = useProjectsTranslation(PROJECTS_NAMESPACES.actions);
     const { translate: tForm } = useProjectsTranslation(PROJECTS_NAMESPACES.form);
+    const statusLabel = useProjectStatusLabel(status);
     const collapsedContentRef = useRef<HTMLDivElement | null>(null);
     const hasImages = Array.isArray(images) && images.length > 0;
     const hasTech = Array.isArray(skills) && skills.length > 0;
@@ -131,9 +133,9 @@ export function ProjectCard({
                                         {displayName}
                                     </CardTitle>
 
-                                    {status && status.trim().length > 0 && (
+                                    {status && (
                                         <p className="text-muted-foreground text-[0.7rem] font-medium tracking-wide uppercase">
-                                            {status}
+                                            {statusLabel}
                                         </p>
                                     )}
                                 </div>

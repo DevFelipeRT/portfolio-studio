@@ -1,7 +1,8 @@
 export default {
-  managementTitle: 'Catálogo de skills',
-  createSkillTitle: 'Nova skill',
-  editSkillTitle: 'Editar skill',
-  createCategoryTitle: 'Nova categoria de skill',
-  editCategoryTitle: 'Editar categoria de skill',
+  managementTitle: 'Catálogo de habilidades',
+  categoriesManagementTitle: 'Categorias de habilidade',
+  createSkillTitle: 'Nova habilidade',
+  editSkillTitle: 'Editar habilidade',
+  createCategoryTitle: 'Nova categoria de habilidade',
+  editCategoryTitle: 'Editar categoria de habilidade',
 };

@@ -1,11 +1,11 @@
 import { FieldError, resolveFieldErrorMessage, type FormErrors } from '@/common/forms';
 import type { ProjectFormData } from '@/modules/projects/core/forms';
 import { useProjectsTranslation, PROJECTS_NAMESPACES } from '@/modules/projects/i18n';
-import type { Skill } from '@/modules/skills/core/types';
+import type { SkillCatalogItem } from '@/modules/skills/core/types';
 import { SkillMultiSelect } from '@/modules/skills/ui/SkillMultiSelect';
 
 interface SkillsSectionProps {
-  skills: Skill[];
+  skills: SkillCatalogItem[];
   selectedIds: number[];
   errors: FormErrors<keyof ProjectFormData>;
   onChangeSkillIds(ids: number[]): void;

@@ -16,6 +16,11 @@ import {
   listProjectTranslations,
   updateProjectTranslation,
 } from '@/modules/projects/core/api/translations';
+import {
+  isProjectStatusValue,
+  type ProjectStatusValue,
+  useProjectStatusOptions,
+} from '@/modules/projects/core/status';
 import type { ProjectTranslationItem } from '@/modules/projects/core/types';
 import { useProjectsTranslation, PROJECTS_NAMESPACES } from '@/modules/projects/i18n';
 import { Loader2, Plus, Trash2 } from 'lucide-react';
@@ -44,12 +49,18 @@ type EditableTranslation = ProjectTranslationItem & {
   draftName?: string;
   draftSummary?: string;
   draftDescription?: string;
-  draftStatus?: string;
+  draftStatus?: ProjectStatusValue | '';
 };
+
+type DraftProjectStatus = ProjectStatusValue | '';
 
 function normalizeText(value: string): string | null {
   const trimmed = value.trim();
   return trimmed === '' ? null : trimmed;
+}
+
+function normalizeStatus(value: DraftProjectStatus): ProjectStatusValue | null {
+  return value === '' ? null : value;
 }
 
 export function TranslationModal({
@@ -62,6 +73,8 @@ export function TranslationModal({
   const { translate: t } = useProjectsTranslation(
     PROJECTS_NAMESPACES.translations,
   );
+  const { translate: tForm } = useProjectsTranslation(PROJECTS_NAMESPACES.form);
+  const statusOptions = useProjectStatusOptions(true);
   const [supportedLocales, setSupportedLocales] = React.useState<string[]>([]);
   const [translations, setTranslations] = React.useState<EditableTranslation[]>(
     [],
@@ -70,7 +83,7 @@ export function TranslationModal({
   const [newName, setNewName] = React.useState<string>('');
   const [newSummary, setNewSummary] = React.useState<string>('');
   const [newDescription, setNewDescription] = React.useState<string>('');
-  const [newStatus, setNewStatus] = React.useState<string>('');
+  const [newStatus, setNewStatus] = React.useState<DraftProjectStatus>('');
   const [loading, setLoading] = React.useState(false);
   const [saving, setSaving] = React.useState(false);
   const [error, setError] = React.useState<TranslationModalError | null>(null);
@@ -176,7 +189,7 @@ export function TranslationModal({
       newName.trim() !== '' ||
       newSummary.trim() !== '' ||
       newDescription.trim() !== '' ||
-      newStatus.trim() !== ''
+      newStatus !== ''
     );
   };
 
@@ -200,7 +213,7 @@ export function TranslationModal({
         name: normalizeText(newName),
         summary: normalizeText(newSummary),
         description: normalizeText(newDescription),
-        status: normalizeText(newStatus),
+        status: normalizeStatus(newStatus),
       };
 
       const created = await createProjectTranslation(projectId, payload);
@@ -227,13 +240,13 @@ export function TranslationModal({
     const name = item.draftName ?? '';
     const summary = item.draftSummary ?? '';
     const description = item.draftDescription ?? '';
-    const status = item.draftStatus ?? '';
+    const status: DraftProjectStatus = item.draftStatus ?? '';
 
     if (
       name.trim() === '' &&
       summary.trim() === '' &&
       description.trim() === '' &&
-      status.trim() === ''
+      status === ''
     ) {
       setError(createTranslationModalError('errors.atLeastOne'));
       return;
@@ -248,7 +261,7 @@ export function TranslationModal({
         name: normalizeText(name),
         summary: normalizeText(summary),
         description: normalizeText(description),
-        status: normalizeText(status),
+        status: normalizeStatus(status),
       };
 
       const updated = await updateProjectTranslation(
@@ -442,11 +455,27 @@ export function TranslationModal({
               </div>
 
               <div className="space-y-1.5">
-                  <Input
-                    value={newStatus}
-                    onChange={(event) => setNewStatus(event.target.value)}
-                    placeholder={t('placeholders.status')}
-                  />
+                <Select
+                  value={newStatus === '' ? '__empty__' : newStatus}
+                  onValueChange={(value) =>
+                    setNewStatus(
+                      value === '__empty__'
+                        ? ''
+                        : (isProjectStatusValue(value) ? value : ''),
+                    )
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={tForm('fields.status.placeholder')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {statusOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
                 <RichTextEditor
@@ -521,18 +550,37 @@ export function TranslationModal({
 
               <div className="space-y-1.5">
                 <Label>{t('fields.status')}</Label>
-                <Input
-                  value={activeTranslation.draftStatus ?? ''}
-                  onChange={(event) =>
+                <Select
+                  value={(activeTranslation.draftStatus ?? '') === '' ? '__empty__' : (activeTranslation.draftStatus ?? '')}
+                  onValueChange={(value) =>
                     setTranslations((current) =>
                       current.map((entry) =>
                         entry.locale === activeTranslation.locale
-                          ? { ...entry, draftStatus: event.target.value }
+                          ? {
+                              ...entry,
+                              draftStatus:
+                                value === '__empty__'
+                                  ? ''
+                                  : (isProjectStatusValue(value)
+                                      ? value
+                                      : ''),
+                            }
                           : entry,
                       ),
                     )
                   }
-                />
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={tForm('fields.status.placeholder')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {statusOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="space-y-1.5">

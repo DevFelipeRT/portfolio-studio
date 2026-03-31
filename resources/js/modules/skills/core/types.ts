@@ -9,25 +9,29 @@ export interface TranslationItem extends HasTimestamps {
   name: string;
 }
 
-export interface SkillCategory extends HasTimestamps {
+export interface SkillCategorySummary {
+  id: number;
+  name: string;
+}
+
+export interface AdminSkillListItem extends HasTimestamps {
+  id: number;
+  name: string;
+  locale: string;
+  skill_category_id: number | null;
+  category: SkillCategorySummary | null;
+}
+
+export interface AdminSkillCategoryRecord extends HasTimestamps {
   id: number;
   name: string;
   slug: string;
   locale: string;
-  translations?: TranslationItem[];
 }
 
-export interface Skill extends HasTimestamps {
+export interface SkillCatalogItem extends HasTimestamps {
   id: number;
   name: string;
-  locale: string;
-  category?: SkillCategory | null;
-  skill_category_id?: number | null;
-  translations?: TranslationItem[];
-}
-
-export interface SkillGroup {
-  id: string;
-  title: string;
-  skills: Skill[];
+  skill_category_id: number | null;
+  category: SkillCategorySummary | null;
 }

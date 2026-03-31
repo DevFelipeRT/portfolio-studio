@@ -2,7 +2,7 @@ export default {
   managementTitle: 'Gerenciamento de projetos',
   basicInformation: 'Informações básicas',
   links: 'Links',
-  skills: 'Skills',
+  skills: 'Habilidades',
   images: 'Imagens',
   public: {
     highlightEyebrow: 'Projetos em destaque',

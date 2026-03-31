@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\Projects\Application\UseCases\UpdateProject;
 
-use App\Modules\Projects\Domain\Models\Project;
 use App\Modules\Projects\Domain\Repositories\IProjectRepository;
 use App\Modules\Projects\Domain\Repositories\IProjectTranslationRepository;
 use App\Modules\Projects\Application\Services\ProjectImageService;
@@ -25,9 +24,10 @@ final class UpdateProject
     ) {
     }
 
-    public function handle(Project $project, UpdateProjectInput $input): Project
+    public function handle(UpdateProjectInput $input): UpdateProjectOutput
     {
-        return DB::transaction(function () use ($project, $input): Project {
+        return DB::transaction(function () use ($input): UpdateProjectOutput {
+            $project = $this->projects->findById($input->projectId);
             $localeChanged = $input->locale !== $project->locale;
             $shouldSwap = false;
 
@@ -61,7 +61,7 @@ final class UpdateProject
                     'name' => $input->name,
                     'summary' => $input->summary,
                     'description' => $projectDescription->raw(),
-                    'status' => $input->status,
+                    'status' => $input->status->toScalar(),
                     'repository_url' => $input->repositoryUrl,
                     'live_url' => $input->liveUrl,
                 ]);
@@ -77,7 +77,9 @@ final class UpdateProject
                 $this->projectImageService->replace($project, $input->images);
             }
 
-            return $project->load(['images', 'skills.category']);
+            return new UpdateProjectOutput(
+                projectId: $project->id,
+            );
         });
     }
 }

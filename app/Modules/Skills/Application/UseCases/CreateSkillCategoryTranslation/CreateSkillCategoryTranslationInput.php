@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Skills\Application\UseCases\CreateSkillCategoryTranslation;
 
-final class CreateSkillCategoryTranslationInput
+final readonly class CreateSkillCategoryTranslationInput
 {
     public function __construct(
         public readonly int $skillCategoryId,

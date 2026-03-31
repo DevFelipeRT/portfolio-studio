@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Skills\Application\UseCases\UpdateSkillCategoryTranslation;
 
-use App\Modules\Skills\Application\Dtos\SkillCategoryTranslationDto;
+use App\Modules\Skills\Application\Mappers\SkillTranslationOutputMapper;
 use App\Modules\Skills\Application\Services\SupportedLocalesResolver;
 use App\Modules\Skills\Domain\Repositories\ISkillCategoryRepository;
 use App\Modules\Skills\Domain\Repositories\ISkillCategoryTranslationRepository;
@@ -16,10 +16,11 @@ final class UpdateSkillCategoryTranslation
         private readonly ISkillCategoryRepository $categories,
         private readonly ISkillCategoryTranslationRepository $translations,
         private readonly SupportedLocalesResolver $supportedLocales,
+        private readonly SkillTranslationOutputMapper $skillTranslationOutputMapper,
     ) {
     }
 
-    public function handle(UpdateSkillCategoryTranslationInput $input): SkillCategoryTranslationDto
+    public function handle(UpdateSkillCategoryTranslationInput $input): UpdateSkillCategoryTranslationOutput
     {
         $supported = $this->supportedLocales->resolve();
         if (!in_array($input->locale, $supported, true)) {
@@ -39,6 +40,6 @@ final class UpdateSkillCategoryTranslation
 
         $updated = $this->translations->update($existing, $input->name);
 
-        return SkillCategoryTranslationDto::fromModel($updated);
+        return $this->skillTranslationOutputMapper->toUpdateSkillCategoryTranslationOutput($updated);
     }
 }

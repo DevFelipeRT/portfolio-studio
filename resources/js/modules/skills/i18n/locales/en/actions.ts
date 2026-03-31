@@ -1,12 +1,17 @@
 export default {
   backToIndex: 'Back to skills',
+  backToCategories: 'Back to categories',
   newSkill: 'New skill',
   newCategory: 'New category',
+  manageCategories: 'Manage categories',
   editSkill: 'Edit skill',
   editSkillCategory: 'Edit skill category',
+  viewDetails: 'View details',
   save: 'Save',
   saveChanges: 'Save changes',
   delete: 'Delete',
+  confirmDeleteSkill: 'Are you sure you want to delete this skill?',
+  confirmDeleteCategory: 'Are you sure you want to delete this skill category?',
   manageTranslations: 'Manage translations',
   openMenu: 'Open menu',
 };

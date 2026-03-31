@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\Skills\Application\UseCases\CreateSkillCategory;
 
-use App\Modules\Skills\Application\Dtos\SkillCategoryDto;
 use App\Modules\Skills\Application\Services\SkillCategorySlugNormalizer;
 use App\Modules\Skills\Domain\Repositories\ISkillCategoryRepository;
 
@@ -16,7 +15,7 @@ final class CreateSkillCategory
     ) {
     }
 
-    public function handle(CreateSkillCategoryInput $input): SkillCategoryDto
+    public function handle(CreateSkillCategoryInput $input): CreateSkillCategoryOutput
     {
         $category = $this->repository->create([
             'name' => $input->name,
@@ -24,6 +23,8 @@ final class CreateSkillCategory
             'locale' => $input->locale,
         ]);
 
-        return SkillCategoryDto::fromModel($category);
+        return new CreateSkillCategoryOutput(
+            skillCategoryId: $category->id,
+        );
     }
 }

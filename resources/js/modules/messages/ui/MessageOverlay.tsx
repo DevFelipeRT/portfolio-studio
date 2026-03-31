@@ -1,14 +1,8 @@
 // resources/js/Pages/Messages/Partials/MessageOverlay.tsx
 
 import { Badge } from '@/components/ui/badge';
+import { TableDetailDialog } from '@/common/table';
 import { normalizeIntlLocale } from '@/common/i18n/normalizeIntlLocale';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 import {
     MESSAGES_NAMESPACES,
@@ -52,65 +46,66 @@ export function MessageOverlay({
     });
 
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-xl">
-                <DialogHeader>
-                    <DialogTitle className="flex flex-wrap items-center gap-2 text-base">
-                        <span className="font-semibold">
-                            {tMessages('overlay.title')}
-                        </span>
+        <TableDetailDialog
+            open={open}
+            onOpenChange={onOpenChange}
+            title={
+                <div className="flex flex-wrap items-center gap-2 text-base">
+                    <span className="font-semibold">
+                        {tMessages('overlay.title')}
+                    </span>
 
-                        <Badge variant="outline" className="text-xs lowercase">
-                            {message.email}
-                        </Badge>
-                    </DialogTitle>
-
-                    <DialogDescription className="text-muted-foreground mt-2 space-y-1 text-xs">
-                        <p>
-                            {tMessages('overlay.from', { name: message.name })}
-                        </p>
-
-                        <p>
-                            {tMessages('overlay.receivedOn', {
-                                date: createdAtDate,
-                                time: createdAtTime,
-                            })}
-                        </p>
-
-                        <div className="flex flex-wrap gap-2 pt-1">
-                            <Badge
-                                variant={message.seen ? 'default' : 'outline'}
-                            >
-                                {message.seen
-                                    ? tMessages('status.seen')
-                                    : tMessages('status.unseen')}
-                            </Badge>
-
-                            <Badge
-                                variant={
-                                    message.important ? 'default' : 'outline'
-                                }
-                            >
-                                {message.important
-                                    ? tMessages('status.important')
-                                    : tMessages('status.regular')}
-                            </Badge>
-                        </div>
-                    </DialogDescription>
-                </DialogHeader>
-
-                <Separator className="my-4" />
-
-                <div className="max-h-80 overflow-y-auto text-sm leading-relaxed">
-                    <p className="text-muted-foreground mb-2 text-xs font-medium tracking-wide uppercase">
-                        {tMessages('overlay.messageLabel')}
-                    </p>
-
-                    <p className="text-foreground whitespace-pre-line">
-                        {message.message}
-                    </p>
+                    <Badge variant="outline" className="text-xs lowercase">
+                        {message.email}
+                    </Badge>
                 </div>
-            </DialogContent>
-        </Dialog>
+            }
+            className="max-w-xl"
+        >
+            <div className="text-muted-foreground space-y-1 text-xs">
+                <p>
+                    {tMessages('overlay.from', { name: message.name })}
+                </p>
+
+                <p>
+                    {tMessages('overlay.receivedOn', {
+                        date: createdAtDate,
+                        time: createdAtTime,
+                    })}
+                </p>
+
+                <div className="flex flex-wrap gap-2 pt-1">
+                    <Badge
+                        variant={message.seen ? 'default' : 'outline'}
+                    >
+                        {message.seen
+                            ? tMessages('status.seen')
+                            : tMessages('status.unseen')}
+                    </Badge>
+
+                    <Badge
+                        variant={
+                            message.important ? 'default' : 'outline'
+                        }
+                    >
+                        {message.important
+                            ? tMessages('status.important')
+                            : tMessages('status.regular')}
+                    </Badge>
+                </div>
+            </div>
+
+            <Separator className="my-4" />
+
+            <div className="max-h-80 overflow-y-auto text-sm leading-relaxed">
+                <p className="text-muted-foreground mb-2 text-xs font-medium tracking-wide uppercase">
+                    {tMessages('overlay.messageLabel')}
+                </p>
+
+                <p className="text-foreground whitespace-pre-line">
+                    {message.message}
+                </p>
+            </div>
+        </TableDetailDialog>
     );
 }

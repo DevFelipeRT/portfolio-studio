@@ -7,6 +7,8 @@ export default {
   saveChanges: 'Salvar alterações',
   edit: 'Editar',
   delete: 'Excluir',
+  confirmDelete: 'Tem certeza de que deseja excluir este projeto?',
+  openMenu: 'Abrir menu',
   yes: 'Sim',
   no: 'Não',
   addImage: 'Adicionar imagem',

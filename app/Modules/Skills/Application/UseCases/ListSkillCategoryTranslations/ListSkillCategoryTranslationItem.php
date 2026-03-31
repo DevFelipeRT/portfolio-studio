@@ -1,0 +1,40 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Modules\Skills\Application\UseCases\ListSkillCategoryTranslations;
+
+final readonly class ListSkillCategoryTranslationItem
+{
+    public function __construct(
+        public int $id,
+        public int $skillCategoryId,
+        public string $locale,
+        public string $name,
+        public ?string $createdAt,
+        public ?string $updatedAt,
+    ) {
+    }
+
+    /**
+     * @return array{
+     *     id:int,
+     *     skill_category_id:int,
+     *     locale:string,
+     *     name:string,
+     *     created_at:?string,
+     *     updated_at:?string
+     * }
+     */
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'skill_category_id' => $this->skillCategoryId,
+            'locale' => $this->locale,
+            'name' => $this->name,
+            'created_at' => $this->createdAt,
+            'updated_at' => $this->updatedAt,
+        ];
+    }
+}

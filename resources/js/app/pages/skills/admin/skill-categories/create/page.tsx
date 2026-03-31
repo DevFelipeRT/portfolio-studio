@@ -7,16 +7,18 @@ import { SKILLS_NAMESPACES, useSkillsTranslation } from '@/modules/skills/i18n';
 import { SkillCategoryForm } from '@/modules/skills/ui/form/skill-category';
 import React from 'react';
 
-export default function Create() {
+interface CreateSkillCategoryProps {
+  initial: SkillCategoryFormData;
+}
+
+export default function Create({ initial }: CreateSkillCategoryProps) {
   const { translate: tActions } = useSkillsTranslation(SKILLS_NAMESPACES.actions);
   const { translate: tSections } = useSkillsTranslation(
     SKILLS_NAMESPACES.sections,
   );
-  const { data, setData, post, processing } = usePageForm<SkillCategoryFormData>({
-    name: '',
-    slug: '',
-    locale: '',
-  });
+  const { data, setData, post, processing } = usePageForm<SkillCategoryFormData>(
+    initial,
+  );
   const { errors: formErrors } = usePageProps<{
     errors: FormErrors<keyof SkillCategoryFormData>;
   }>();
@@ -49,10 +51,10 @@ export default function Create() {
 
         <div className="mb-4">
           <PageLink
-            href={route('skills.index')}
+            href={route('skill-categories.index')}
             className="text-muted-foreground hover:text-foreground text-sm"
           >
-            {tActions('backToIndex')}
+            {tActions('backToCategories')}
           </PageLink>
         </div>
 
@@ -62,7 +64,7 @@ export default function Create() {
           processing={processing}
           onChange={handleChange}
           onSubmit={handleSubmit}
-          cancelHref={route('skills.index')}
+          cancelHref={route('skill-categories.index')}
           submitLabel={tActions('save')}
         />
       </PageContent>

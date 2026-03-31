@@ -229,7 +229,7 @@ Portfolio data modules documented under [`docs/modules/`](docs/modules/) include
 - Admin CRUD for portfolio entities such as skills, experiences, courses, projects, and initiatives (module routes + UI under `app/Modules/*` and `resources/js/app/pages/*`; module docs in [`docs/modules/`](docs/modules/))
 - Multi-locale content model with per-entity translations and an optional “locale swap” flow when changing a base record’s locale (`app/Modules/*/Application/Services/*LocaleSwapService.php`, `app/Modules/*/Http/Mappers/*InputMapper.php`, [`docs/backend/README.md`](docs/backend/README.md))
 - Image uploads and attachments implemented as a shared morph pivot (`image_attachments`) reused across modules (`database/migrations/2025_12_16_191418_create_image_attachments_table.php`, `app/Modules/Images/**`)
-- Contact form submission endpoint with optional host notification email when `MAIL_TO_ADDRESS` is configured (`routes/web.php`, `app/Modules/Mail/Application/Services/MessageService.php`, `.env.example`)
+- Contact form submission endpoint with optional host notification email when `MAIL_TO_ADDRESS` is configured, queued after persistence (`routes/web.php`, `app/Modules/Mail/Application/UseCases/CreateMessage/CreateMessage.php`, `app/Modules/Mail/Application/Jobs/SendHostNotificationForMessage.php`, `app/Modules/Mail/Application/Services/MessageService.php`, `.env.example`)
 - CMS-style public pages composed from section templates and capability-enriched section payloads (`resources/templates/**`, `app/Modules/ContentManagement/**`, `resources/js/modules/content-management/**`)
 
 ## Tech stack

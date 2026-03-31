@@ -6,25 +6,41 @@ namespace App\Modules\Projects\Infrastructure\Repositories;
 
 use App\Modules\Projects\Domain\Models\Project;
 use App\Modules\Projects\Domain\Repositories\IProjectRepository;
+use App\Modules\Projects\Domain\ValueObjects\ProjectStatus;
+use App\Modules\Projects\Infrastructure\Queries\ProjectAdminListQuery;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
 final class ProjectRepository implements IProjectRepository
 {
-    public function paginateWithTranslations(
+    public function __construct(
+        private readonly ProjectAdminListQuery $projectAdminListQuery,
+    ) {
+    }
+
+    public function paginateAdminList(
         int $perPage,
-        ?string $locale,
+        ?string $search = null,
+        ?ProjectStatus $status = null,
+        ?string $visibility = null,
+        ?string $sort = null,
+        ?string $direction = null,
+        ?string $locale = null,
         ?string $fallbackLocale = null,
+        int $page = 1,
     ): LengthAwarePaginator {
-        return $this->withTranslations(
-            $this->baseQuery(),
-            $locale,
-            $fallbackLocale,
-        )
-            ->orderByDesc('created_at')
-            ->orderBy('name')
-            ->paginate($perPage);
+        return $this->projectAdminListQuery->paginate(
+            perPage: $perPage,
+            page: $page,
+            search: $search,
+            status: $status,
+            visibility: $visibility,
+            sort: $sort,
+            direction: $direction,
+            locale: $locale,
+            fallbackLocale: $fallbackLocale,
+        );
     }
 
     public function allWithTranslations(
@@ -104,10 +120,22 @@ final class ProjectRepository implements IProjectRepository
     private function normalizeLocales(?string $locale, ?string $fallbackLocale): array
     {
         $values = array_filter([
-            $locale !== null ? trim($locale) : null,
-            $fallbackLocale !== null ? trim($fallbackLocale) : null,
+            $this->normalizeLocale($locale),
+            $this->normalizeLocale($fallbackLocale),
         ]);
 
         return array_values(array_unique($values));
     }
+
+    private function normalizeLocale(?string $locale): ?string
+    {
+        if ($locale === null) {
+            return null;
+        }
+
+        $normalized = trim($locale);
+
+        return $normalized === '' ? null : $normalized;
+    }
+
 }

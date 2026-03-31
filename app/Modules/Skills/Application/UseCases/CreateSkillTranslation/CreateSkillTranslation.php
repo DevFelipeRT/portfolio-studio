@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Skills\Application\UseCases\CreateSkillTranslation;
 
-use App\Modules\Skills\Application\Dtos\SkillTranslationDto;
+use App\Modules\Skills\Application\Mappers\SkillTranslationOutputMapper;
 use App\Modules\Skills\Application\Services\SupportedLocalesResolver;
 use App\Modules\Skills\Domain\Repositories\ISkillRepository;
 use App\Modules\Skills\Domain\Repositories\ISkillTranslationRepository;
@@ -16,10 +16,11 @@ final class CreateSkillTranslation
         private readonly ISkillRepository $skills,
         private readonly ISkillTranslationRepository $translations,
         private readonly SupportedLocalesResolver $supportedLocales,
+        private readonly SkillTranslationOutputMapper $skillTranslationOutputMapper,
     ) {
     }
 
-    public function handle(CreateSkillTranslationInput $input): SkillTranslationDto
+    public function handle(CreateSkillTranslationInput $input): CreateSkillTranslationOutput
     {
         $supported = $this->supportedLocales->resolve();
         if (!in_array($input->locale, $supported, true)) {
@@ -43,6 +44,6 @@ final class CreateSkillTranslation
             $input->name,
         );
 
-        return SkillTranslationDto::fromModel($translation);
+        return $this->skillTranslationOutputMapper->toCreateSkillTranslationOutput($translation);
     }
 }

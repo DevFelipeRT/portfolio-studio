@@ -13,15 +13,19 @@ export function TableSearchField({
   ...props
 }: TableSearchFieldProps) {
   return (
-    <div className={cn('relative', className)}>
-      <Input className="pr-11" type="search" {...props} />
+    <div className={cn('group relative', className)}>
+      <Input
+        className="pr-11 transition-colors placeholder:transition-colors group-hover:text-foreground group-hover:placeholder:text-foreground group-focus-within:text-foreground group-focus-within:placeholder:text-foreground"
+        type="search"
+        {...props}
+      />
 
       <Button
         type="submit"
         size="icon"
         variant="ghost"
         className={cn(
-          'absolute top-1/2 right-1 h-7 w-7 -translate-y-1/2',
+          'text-muted-foreground absolute top-1/2 right-1 h-7 w-7 -translate-y-1/2 hover:bg-transparent hover:text-primary focus-visible:bg-transparent focus-visible:text-primary focus-visible:ring-0 group-hover:text-foreground group-focus-within:text-foreground',
           buttonClassName,
         )}
       >
