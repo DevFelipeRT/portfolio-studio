@@ -2,6 +2,8 @@
 
 namespace App\Modules\Mail\Infrastructure\Providers;
 
+use App\Modules\Mail\Domain\Repositories\IMessageRepository;
+use App\Modules\Mail\Infrastructure\Repositories\MessageRepository;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
 
@@ -28,7 +30,7 @@ class MailServiceProvider extends ServiceProvider
      */
     private function registerBindings(): void
     {
-
+        $this->app->bind(IMessageRepository::class, MessageRepository::class);
     }
 
     /**
