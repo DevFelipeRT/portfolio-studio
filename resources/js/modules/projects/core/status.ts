@@ -1,7 +1,7 @@
 import { PROJECTS_NAMESPACES, useProjectsTranslation } from '@/modules/projects/i18n';
 
 export const PROJECT_STATUS_VALUES = [
-  'completed',
+  'delivered',
   'in_progress',
   'maintenance',
   'planned',

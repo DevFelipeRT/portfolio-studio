@@ -107,7 +107,9 @@ final readonly class ProjectStatus
     {
         return [
             'em_andamento' => ProjectStatusValue::IN_PROGRESS->value,
-            'concluido' => ProjectStatusValue::COMPLETED->value,
+            'concluido' => ProjectStatusValue::DELIVERED->value,
+            'completed' => ProjectStatusValue::DELIVERED->value,
+            'published' => ProjectStatusValue::DELIVERED->value,
             'manutencao' => ProjectStatusValue::MAINTENANCE->value,
             'planejado' => ProjectStatusValue::PLANNED->value,
         ];
