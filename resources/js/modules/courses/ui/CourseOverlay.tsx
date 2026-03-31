@@ -41,7 +41,8 @@ export function CourseOverlay({
   // Alias 'course' to 'details' to ensure TypeScript narrowing persists
   // correctly inside closures (like renderStatus) and JSX.
   const details = course;
-  const hasDescription = extractRichTextPlainText(details.description).length > 0;
+  const description = details.description ?? '';
+  const hasDescription = extractRichTextPlainText(description).length > 0;
   const dateRangeLabel = formatTableDateRange(
     details.started_at,
     details.completed_at,
@@ -101,7 +102,7 @@ export function CourseOverlay({
         <div>
           {hasDescription ? (
             <RichTextRenderer
-              value={details.description}
+              value={description}
               className="text-foreground text-sm leading-relaxed"
               fallbackClassName="text-foreground text-sm leading-relaxed whitespace-pre-line"
               theme={compactRichTextTheme}
