@@ -21,7 +21,6 @@ final class SendHostNotificationForMessage implements ShouldQueue
     use Queueable;
     use SerializesModels;
 
-    public bool $afterCommit = true;
     public int $tries = 3;
 
     /**
@@ -32,6 +31,7 @@ final class SendHostNotificationForMessage implements ShouldQueue
     public function __construct(
         public readonly int $messageId,
     ) {
+        $this->afterCommit();
     }
 
     public function handle(
