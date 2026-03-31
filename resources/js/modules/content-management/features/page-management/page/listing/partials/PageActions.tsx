@@ -1,17 +1,16 @@
-import { Button } from '@/components/ui/button';
+import {
+  TableActionsMenu,
+  TableActionsMenuItem,
+} from '@/common/table';
 import {
   CONTENT_MANAGEMENT_NAMESPACES,
   useContentManagementTranslation,
 } from '@/modules/content-management/i18n';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { PageLink, pageRouter } from '@/common/page-runtime';
-import { ExternalLink, Home, MoreVertical, Pencil, Trash2 } from 'lucide-react';
+import { ExternalLink, Home, Pencil, Trash2 } from 'lucide-react';
 
 interface PageActionsProps {
   pageId: number;
@@ -41,10 +40,6 @@ export function PageActions({
     CONTENT_MANAGEMENT_NAMESPACES.pages,
   );
 
-  const handleTriggerClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.stopPropagation();
-  };
-
   const handleDelete = (): void => {
     if (
       !window.confirm(
@@ -65,83 +60,64 @@ export function PageActions({
   };
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          type="button"
-          size="icon"
-          variant="ghost"
-          className="text-muted-foreground hover:bg-primary hover:text-primary-foreground h-8 w-8"
-          onClick={handleTriggerClick}
+    <TableActionsMenu triggerLabel={tActions('openMenu', 'Open menu')}>
+      <TableActionsMenuItem asChild>
+        <a
+          href={publicUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="cursor-pointer"
         >
-          <MoreVertical className="h-4 w-4" />
-          <span className="sr-only">{tActions('openMenu', 'Open menu')}</span>
-        </Button>
-      </DropdownMenuTrigger>
+          <ExternalLink className="mr-2 h-4 w-4" />
+          <span>{tActions('openPage', 'Open page')}</span>
+        </a>
+      </TableActionsMenuItem>
 
-      <DropdownMenuContent
-        align="end"
-        className="min-w-44"
-        onClick={(event) => event.stopPropagation()}
+      <DropdownMenuSeparator />
+
+      <TableActionsMenuItem asChild>
+        <PageLink
+          href={route('admin.content.pages.edit', pageId)}
+          className="cursor-pointer"
+        >
+          <Pencil className="mr-2 h-4 w-4" />
+          <span>{tActions('edit', 'Edit')}</span>
+        </PageLink>
+      </TableActionsMenuItem>
+
+      {showSetHome && (
+        <>
+          <DropdownMenuSeparator />
+          <TableActionsMenuItem asChild>
+            <PageLink
+              href={route('admin.content.pages.set-home', pageId)}
+              method="post"
+              as="button"
+              preserveScroll
+              className="w-full cursor-pointer"
+            >
+              <Home className="mr-2 h-4 w-4" />
+              <span>{tActions('setAsHome', 'Set as home')}</span>
+            </PageLink>
+          </TableActionsMenuItem>
+        </>
+      )}
+
+      <DropdownMenuSeparator />
+
+      <TableActionsMenuItem
+        onSelect={(event) => {
+          event.stopPropagation();
+          handleDelete();
+        }}
+        onClick={(event) => {
+          event.stopPropagation();
+        }}
+        className="text-destructive focus:text-destructive"
       >
-        <DropdownMenuItem asChild>
-          <a
-            href={publicUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="cursor-pointer"
-          >
-            <ExternalLink className="mr-2 h-4 w-4" />
-            <span>{tActions('openPage', 'Open page')}</span>
-          </a>
-        </DropdownMenuItem>
-
-        <DropdownMenuSeparator />
-
-        <DropdownMenuItem asChild>
-          <PageLink
-            href={route('admin.content.pages.edit', pageId)}
-            className="cursor-pointer"
-          >
-            <Pencil className="mr-2 h-4 w-4" />
-            <span>{tActions('edit', 'Edit')}</span>
-          </PageLink>
-        </DropdownMenuItem>
-
-        {showSetHome && (
-          <>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <PageLink
-                href={route('admin.content.pages.set-home', pageId)}
-                method="post"
-                as="button"
-                preserveScroll
-                className="w-full cursor-pointer"
-              >
-                <Home className="mr-2 h-4 w-4" />
-                <span>{tActions('setAsHome', 'Set as home')}</span>
-              </PageLink>
-            </DropdownMenuItem>
-          </>
-        )}
-
-        <DropdownMenuSeparator />
-
-        <DropdownMenuItem
-          onSelect={(event) => {
-            event.stopPropagation();
-            handleDelete();
-          }}
-          onClick={(event) => {
-            event.stopPropagation();
-          }}
-          className="text-destructive focus:text-destructive"
-        >
-          <Trash2 className="mr-2 h-4 w-4" />
-          <span>{tActions('delete', 'Delete')}</span>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+        <Trash2 className="mr-2 h-4 w-4" />
+        <span>{tActions('delete', 'Delete')}</span>
+      </TableActionsMenuItem>
+    </TableActionsMenu>
   );
 }

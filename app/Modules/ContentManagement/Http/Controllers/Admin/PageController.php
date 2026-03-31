@@ -20,6 +20,8 @@ use Inertia\Response;
  */
 final class PageController extends Controller
 {
+    private const DEFAULT_PER_PAGE = 15;
+
     public function __construct(
         private readonly PageService $pageService,
         private readonly PageAdminPresenter $pageAdminPresenter,
@@ -33,16 +35,33 @@ final class PageController extends Controller
     {
         $filters = [
             'status' => $request->query('status'),
+            'locale' => $request->query('locale'),
             'search' => $request->query('search'),
+            'sort' => $request->query('sort'),
+            'direction' => $request->query('direction'),
         ];
 
-        $viewModel = $this->pageAdminPresenter->buildIndexViewModel($filters);
+        $viewModel = $this->pageAdminPresenter->buildIndexViewModel(
+            filters: $filters,
+            perPage: $this->resolvePerPage($request),
+        );
 
         return Inertia::render('content-management/admin/PageIndex', [
             'pages' => $viewModel->pages,
             'filters' => $viewModel->filters,
             'extra' => $viewModel->extraPayload,
         ]);
+    }
+
+    private function resolvePerPage(Request $request): int
+    {
+        $perPage = $request->integer('per_page', self::DEFAULT_PER_PAGE);
+
+        if ($perPage < 1) {
+            return self::DEFAULT_PER_PAGE;
+        }
+
+        return min($perPage, 100);
     }
 
     /**

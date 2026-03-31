@@ -5,20 +5,15 @@ declare(strict_types=1);
 namespace App\Modules\ContentManagement\Presentation\Presenters;
 
 use App\Modules\ContentManagement\Application\Dtos\PageDto;
-use App\Modules\ContentManagement\Application\Mappers\TemplateDefinitionMapper;
+use App\Modules\ContentManagement\Presentation\Builders\AdminPageDataBuilder;
+use App\Modules\ContentManagement\Presentation\Builders\AdminTemplateDefinitionsBuilder;
 use App\Modules\ContentManagement\Application\Services\ContentSettingsService;
-use App\Modules\ContentManagement\Application\Services\PageSectionService;
 use App\Modules\ContentManagement\Application\Services\PageService;
-use App\Modules\ContentManagement\Application\Services\Templates\TemplateTranslationService;
-use App\Modules\ContentManagement\Domain\Enums\PageStatus;
-use App\Modules\ContentManagement\Domain\Templates\TemplateDefinition;
-use App\Modules\ContentManagement\Domain\Templates\TemplateRegistry;
+use App\Modules\ContentManagement\Presentation\Resolvers\PageIndexFiltersResolver;
 use App\Modules\ContentManagement\Presentation\ViewModels\Admin\PageEditViewModel;
 use App\Modules\ContentManagement\Presentation\ViewModels\Admin\PageIndexViewModel;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\App;
 use App\Modules\Shared\Support\Data\DataTransformer;
-use ValueError;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 /**
  * Presenter responsible for building administrative view models
@@ -28,10 +23,10 @@ final class PageAdminPresenter
 {
     public function __construct(
         private readonly PageService $pageService,
-        private readonly PageSectionService $pageSectionService,
-        private readonly TemplateRegistry $templateRegistry,
         private readonly ContentSettingsService $contentSettings,
-        private readonly TemplateTranslationService $templateTranslations,
+        private readonly PageIndexFiltersResolver $pageIndexFiltersResolver,
+        private readonly AdminPageDataBuilder $adminPageDataBuilder,
+        private readonly AdminTemplateDefinitionsBuilder $adminTemplateDefinitionsBuilder,
     ) {
     }
 
@@ -48,10 +43,19 @@ final class PageAdminPresenter
         int $perPage = 15,
         array $extraPayload = [],
     ): PageIndexViewModel {
-        $status = $this->resolveStatusFilter($filters['status'] ?? null);
+        $resolvedFilters = $this->pageIndexFiltersResolver->resolve($filters);
 
         /** @var LengthAwarePaginator<PageDto> $paginator */
-        $paginator = $this->pageService->paginate($status, $perPage);
+        $paginator = $this->pageService
+            ->paginate(
+                $resolvedFilters->status,
+                $resolvedFilters->locale,
+                $resolvedFilters->search,
+                $perPage,
+                $resolvedFilters->sort,
+                $resolvedFilters->direction,
+            )
+            ->withQueryString();
 
         $pages = $paginator->through(
             static function (PageDto $page): array {
@@ -65,13 +69,21 @@ final class PageAdminPresenter
         $effectiveExtraPayload = array_merge(
             [
                 'homeSlug' => $this->contentSettings->getHomeSlug(),
+                'locales' => $this->pageService->listLocales(),
+                'sorting' => [
+                    'sortable_columns' => $this->pageService->getSortableAvailability(
+                        $resolvedFilters->status,
+                        $resolvedFilters->locale,
+                        $resolvedFilters->search,
+                    ),
+                ],
             ],
             $extraPayload,
         );
 
         return new PageIndexViewModel(
             pages: $pages,
-            filters: $filters,
+            filters: $resolvedFilters->toArray($perPage),
             extraPayload: $effectiveExtraPayload,
         );
     }
@@ -87,13 +99,13 @@ final class PageAdminPresenter
         int $pageId,
         array $extraPayload = [],
     ): ?PageEditViewModel {
-        $data = $this->buildPageData($pageId);
+        $data = $this->adminPageDataBuilder->build($pageId);
 
         if ($data === []) {
             return null;
         }
 
-        $templates = $this->buildTemplatesData();
+        $templates = $this->adminTemplateDefinitionsBuilder->build();
 
         return new PageEditViewModel(
             page: $data['page'],
@@ -103,106 +115,4 @@ final class PageAdminPresenter
         );
     }
 
-    /**
-     * Resolves a raw status filter into a PageStatus instance.
-     */
-    private function resolveStatusFilter(?string $rawStatus): ?PageStatus
-    {
-        if ($rawStatus === null || $rawStatus === '') {
-            return null;
-        }
-
-        try {
-            return PageStatus::from($rawStatus);
-        } catch (ValueError) {
-            return null;
-        }
-    }
-
-    /**
-     * Builds page and section data arrays for the given page identifier.
-     *
-     * The returned structure contains snake_case arrays for the page and its sections.
-     *
-     * @return array{
-     *     page: array<string,mixed>,
-     *     sections: array<int,array<string,mixed>>
-     * }|array{}
-     */
-    private function buildPageData(int $pageId): array
-    {
-        $pageDto = $this->pageService->getById($pageId);
-
-        if ($pageDto === null) {
-            return [];
-        }
-
-        $sectionDtos = $this->pageSectionService->getByPageId($pageId);
-
-        $page = DataTransformer::transform($pageDto)
-            ->toArray()
-            ->toSnakeCase()
-            ->result();
-
-        $sections = $this->buildSectionsData($sectionDtos);
-
-        return [
-            'page' => $page,
-            'sections' => $sections,
-        ];
-    }
-
-    /**
-     * Transforms section DTOs into snake_case arrays suitable for the admin UI.
-     *
-     * @param array<int,mixed> $sectionDtos
-     * @return array<int,array<string,mixed>>
-     */
-    private function buildSectionsData(array $sectionDtos): array
-    {
-        $sections = [];
-
-        foreach ($sectionDtos as $sectionDto) {
-            $sections[] = DataTransformer::transform($sectionDto)
-                ->toArray()
-                ->toSnakeCase()
-                ->result();
-        }
-
-        return $sections;
-    }
-
-    /**
-     * Builds template definition metadata for the administrative editor.
-     *
-     * Template definitions are mapped to DTOs and then converted to
-     * snake_case arrays, including nested field structures and collection
-     * item fields.
-     *
-     * @return array<int,array<string,mixed>>
-     */
-    private function buildTemplatesData(): array
-    {
-        /** @var array<int,TemplateDefinition> $definitions */
-        $definitions = $this->templateRegistry->all();
-
-        $templates = [];
-
-        $locale = App::getLocale();
-
-        foreach ($definitions as $definition) {
-            $templates[] = TemplateDefinitionMapper::toDto(
-                $definition,
-                $this->templateTranslations,
-                $locale,
-            );
-        }
-
-        $data = DataTransformer::transform($templates)
-            ->toArray()
-            ->toSnakeCase()
-            ->result();
-
-        return $data;
-    }
 }

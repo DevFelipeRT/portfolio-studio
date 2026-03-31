@@ -47,15 +47,26 @@ export function PageInfo({ page }: PageInfoProps) {
   const { translate: tPages } = useContentManagementTranslation(
     CONTENT_MANAGEMENT_NAMESPACES.pages,
   );
+  const statusBadge =
+    page.status === 'published'
+      ? {
+          label: tPages('info.badges.published', 'Published'),
+          variant: 'default' as const,
+        }
+      : page.status === 'archived'
+        ? {
+            label: tPages('info.badges.archived', 'Archived'),
+            variant: 'secondary' as const,
+          }
+        : {
+            label: tPages('info.badges.draft', 'Draft'),
+            variant: 'outline' as const,
+          };
 
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-2">
-        <Badge variant={page.is_published ? 'default' : 'outline'}>
-          {page.is_published
-            ? tPages('info.badges.published', 'Published')
-            : tPages('info.badges.draft', 'Draft')}
-        </Badge>
+        <Badge variant={statusBadge.variant}>{statusBadge.label}</Badge>
         <Badge variant={page.is_indexable ? 'secondary' : 'outline'}>
           {page.is_indexable
             ? tPages('info.badges.indexable', 'Indexable')

@@ -55,20 +55,24 @@ const pages: TranslationTree = {
   },
   filters: {
     search: 'Buscar',
+    submitSearch: 'Buscar paginas',
     status: 'Status',
-    searchPlaceholder: 'Filtrar por titulo ou slug',
+    locale: 'Locale',
+    searchPlaceholder: 'Filtrar por titulo, nome interno ou slug',
     allStatuses: 'Todos os status',
+    allLocales: 'Todos os locales',
     draft: 'Rascunho',
     published: 'Publicada',
     archived: 'Arquivada',
   },
   listing: {
     columns: {
+      name: 'Nome',
       title: 'Titulo',
       slug: 'Slug',
       locale: 'Locale',
       status: 'Status',
-      lastUpdated: 'Ultima atualizacao',
+      lastUpdated: 'Atualizado em',
       rowActions: 'Acoes da linha',
     },
     empty: 'Nenhuma pagina encontrada para os filtros atuais.',
@@ -76,6 +80,7 @@ const pages: TranslationTree = {
     home: 'Inicial',
     draft: 'Rascunho',
     published: 'Publicada',
+    archived: 'Arquivada',
     deleteConfirm: 'Excluir "{{title}}"? Esta acao nao pode ser desfeita.',
   },
   info: {
@@ -85,6 +90,7 @@ const pages: TranslationTree = {
     badges: {
       published: 'Publicada',
       draft: 'Rascunho',
+      archived: 'Arquivada',
       indexable: 'Indexavel',
       noindex: 'Noindex',
     },
