@@ -6,6 +6,8 @@ export default {
   saveChanges: 'Salvar alterações',
   edit: 'Editar',
   delete: 'Excluir',
+  viewDetails: 'Ver detalhes',
+  openMenu: 'Abrir menu',
   yes: 'Sim',
   no: 'Não',
 };

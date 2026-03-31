@@ -1,11 +1,20 @@
 import type { Initiative } from '@/modules/initiatives/core/types';
+import { useTranslation } from '@/common/i18n';
 import {
   INITIATIVES_NAMESPACES,
   useInitiativesTranslation,
 } from '@/modules/initiatives/i18n';
 
-import { Badge } from '@/components/ui/badge';
-import { TableCell, TableRow } from '@/components/ui/table';
+import {
+  InteractiveTableRow,
+  TableActionCell,
+  TableBooleanBadge,
+  TableDateText,
+  TableMetaCell,
+  TableTitleCell,
+  tablePresets,
+} from '@/common/table';
+import { cn } from '@/lib/utils';
 import { Eye, EyeOff, ImageIcon } from 'lucide-react';
 import React from 'react';
 import { InitiativeActions } from './InitiativeActions';
@@ -26,195 +35,65 @@ export function InitiativesRow({
   onToggleDisplay,
   onDelete,
 }: InitiativesRowProps) {
+  const { locale } = useTranslation();
   const { translate: tForm } = useInitiativesTranslation(
     INITIATIVES_NAMESPACES.form,
   );
-  const period = buildPeriodDisplay(
-    initiative.start_date,
-    initiative.end_date,
-    tForm('values.empty', '-'),
-  );
   const imageCount = initiative.images?.length ?? 0;
-  const hasImages = imageCount > 0;
-
-  function handleRowClick(): void {
-    onRowClick(initiative);
-  }
-
-  function handleKeyDown(
-    event: React.KeyboardEvent<HTMLTableRowElement>,
-  ): void {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      onRowClick(initiative);
-    }
-  }
 
   return (
-    <TableRow
-      className={rowClassName(initiative)}
-      role="button"
-      tabIndex={0}
-      onClick={handleRowClick}
-      onKeyDown={handleKeyDown}
+    <InteractiveTableRow
+      active={initiative.display}
+      interactive
+      variant={initiative.display ? 'emphasized' : 'muted'}
+      onActivate={() => onRowClick(initiative)}
     >
-      <TableCell className="min-w-0 content-center pr-2 align-top sm:w-64">
-        <div className="flex min-w-0 flex-col gap-0.5">
-          <p className="line-clamp-1 min-w-0 truncate font-medium text-pretty hyphens-auto">
-            {initiative.name}
-          </p>
-          <p className="text-muted-foreground line-clamp-1 min-w-0 truncate text-xs text-pretty hyphens-auto">
-            {initiative.summary ?? ''}
-          </p>
-        </div>
-      </TableCell>
+      <TableTitleCell
+        className="sm:w-64"
+        title={initiative.name}
+        subtitle={initiative.summary ?? ''}
+      />
 
-      <TableCell className="text-muted-foreground content-center pr-2 align-top text-xs sm:w-44">
-        {!period.isPeriod && (
-          <span className="block whitespace-nowrap">{period.singleLabel}</span>
-        )}
+      <TableMetaCell className="sm:w-44">
+        <TableDateText
+          value={initiative.start_date}
+          endValue={initiative.end_date}
+          locale={locale}
+          fallback={tForm('values.empty', '-')}
+        />
+      </TableMetaCell>
 
-        {period.isPeriod && (
-          <div className="flex min-w-0 flex-col gap-0.5">
-            <p className="whitespace-nowrap">
-              <span className="text-muted-foreground/80 mr-1">{tForm('values.from')}:</span>
-              <span>{period.fromLabel}</span>
-            </p>
-            <p className="whitespace-nowrap">
-              <span className="text-muted-foreground/80 mr-1">{tForm('values.to')}:</span>
-              <span>{period.toLabel}</span>
-            </p>
-          </div>
-        )}
-      </TableCell>
+      <TableMetaCell
+        className={cn(tablePresets.statusCell, 'content-center pr-2 sm:w-32')}
+      >
+        <TableBooleanBadge
+          active={initiative.display}
+          activeLabel={tForm('values.public')}
+          inactiveLabel={tForm('values.private')}
+          activeIcon={Eye}
+          inactiveIcon={EyeOff}
+        />
+      </TableMetaCell>
 
-      <TableCell className="content-center pr-2 align-top text-xs sm:w-32">
-        <Badge
-          className={
-            (initiative.display
-              ? 'bg-primary text-primary-foreground'
-              : 'bg-muted text-muted-foreground') +
-            ' flex w-fit cursor-default items-center gap-1 border-none px-2 py-0.5 font-medium whitespace-nowrap'
-          }
-        >
-          {initiative.display ? (
-            <>
-              <Eye className="h-3.5 w-3.5" />
-                <span className="hidden whitespace-nowrap sm:inline">
-                {tForm('values.visible')}
-              </span>
-            </>
-          ) : (
-            <>
-              <EyeOff className="h-3.5 w-3.5" />
-              <span className="hidden whitespace-nowrap sm:inline">
-                {tForm('values.hidden')}
-              </span>
-            </>
-          )}
-        </Badge>
-      </TableCell>
-
-      <TableCell className="text-muted-foreground content-center pr-2 align-top text-xs sm:w-24">
+      <TableMetaCell className="sm:w-24">
         <div className="flex items-center gap-1">
           <ImageIcon className="h-3.5 w-3.5" />
           <span className="text-xs whitespace-nowrap">
-            {hasImages ? imageCount : 0}
+            {imageCount}
           </span>
         </div>
-      </TableCell>
+      </TableMetaCell>
 
-      <TableCell className="content-center align-top sm:w-24">
+      <TableActionCell
+        className={cn(tablePresets.actionCell, 'content-center sm:w-24')}
+      >
         <InitiativeActions
           initiative={initiative}
+          onOpenDetails={() => onRowClick(initiative)}
           onToggleDisplay={onToggleDisplay}
           onDelete={onDelete}
         />
-      </TableCell>
-    </TableRow>
+      </TableActionCell>
+    </InteractiveTableRow>
   );
-}
-
-type PeriodDisplay =
-  | {
-      isPeriod: false;
-      singleLabel: string;
-      fromLabel: null;
-      toLabel: null;
-    }
-  | {
-      isPeriod: true;
-      singleLabel: null;
-      fromLabel: string;
-      toLabel: string;
-    };
-
-function buildPeriodDisplay(
-  start: string | null,
-  end: string | null,
-  emptyLabel: string,
-): PeriodDisplay {
-  if (!start) {
-    return {
-      isPeriod: false,
-      singleLabel: emptyLabel,
-      fromLabel: null,
-      toLabel: null,
-    };
-  }
-
-  const startDate = new Date(start);
-  const endDate = end ? new Date(end) : null;
-
-  if (Number.isNaN(startDate.getTime())) {
-    return {
-      isPeriod: false,
-      singleLabel: emptyLabel,
-      fromLabel: null,
-      toLabel: null,
-    };
-  }
-
-  const startLabel = startDate.toLocaleDateString(undefined, {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  });
-
-  if (!endDate || Number.isNaN(endDate.getTime()) || end === start) {
-    return {
-      isPeriod: false,
-      singleLabel: startLabel,
-      fromLabel: null,
-      toLabel: null,
-    };
-  }
-
-  const toLabel = endDate.toLocaleDateString(undefined, {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  });
-
-  return {
-    isPeriod: true,
-    singleLabel: null,
-    fromLabel: startLabel,
-    toLabel,
-  };
-}
-
-function rowClassName(initiative: Initiative): string {
-  const base =
-    'group cursor-pointer transition-colors content-center min-w-0 duration-150';
-
-  const background = initiative.display
-    ? 'bg-background hover:bg-muted/60 dark:bg-background dark:hover:bg-muted/40'
-    : 'bg-muted/40 hover:bg-muted/60 dark:bg-muted/40 dark:hover:bg-muted/70';
-
-  const border = initiative.display
-    ? 'border-l-4 border-l-primary/70'
-    : 'border-l border-l-transparent';
-
-  return `${base} ${background} ${border}`;
 }

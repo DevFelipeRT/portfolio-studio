@@ -119,7 +119,7 @@ export function DemoTable() {
                     <TableDateText>{item.updatedAt}</TableDateText>
                   </TableMetaCell>
 
-                  <TableActionCell showChevron>
+                  <TableActionCell>
                     <TableActionsMenu triggerLabel={`Open actions for ${item.name}`}>
                       <TableActionsMenuItem
                         onClick={() => {
@@ -179,7 +179,7 @@ export function DemoTable() {
                   <p className="text-sm font-medium">Interactive badge</p>
                   <TableBadgeButton
                     onClick={() => setIsDialogOpen(true)}
-                    badgeClassName="bg-secondary text-secondary-foreground"
+                    badgeClassName="bg-accent text-accent-foreground"
                   >
                     Toggle status
                   </TableBadgeButton>
@@ -198,7 +198,7 @@ function StatusBadge({ status }: { status: DemoItem['status'] }) {
       ? 'bg-primary text-primary-foreground'
       : status === 'draft'
         ? 'bg-muted text-muted-foreground'
-        : 'bg-secondary text-secondary-foreground';
+        : 'bg-accent text-accent-foreground';
 
   return (
     <TableBadge

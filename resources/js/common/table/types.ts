@@ -109,6 +109,8 @@ export type TableSortHeaderProps = Omit<
   sort: TableSortState;
   onToggleSort?: (column: string) => void;
   srLabel?: string;
+  labelClassName?: string;
+  truncateLabel?: boolean;
 };
 
 export type TableHeaderRowProps = ComponentPropsWithoutRef<typeof TableRow>;
@@ -122,8 +124,6 @@ export type TableEmptyStateProps = {
 
 export type TableActionCellProps = ComponentPropsWithoutRef<typeof TableCell> & {
   children?: ReactNode;
-  showChevron?: boolean;
-  chevronClassName?: string;
 };
 
 export type TableTitleCellProps = Omit<
@@ -132,15 +132,35 @@ export type TableTitleCellProps = Omit<
 > & {
   title: ReactNode;
   subtitle?: ReactNode;
+  aside?: ReactNode;
   titleClassName?: string;
   subtitleClassName?: string;
+  asideClassName?: string;
 };
 
 export type TableMetaCellProps = ComponentPropsWithoutRef<typeof TableCell>;
 
 export type TableStatusStackProps = ComponentPropsWithoutRef<'div'>;
 
-export type TableDateTextProps = ComponentPropsWithoutRef<'span'>;
+export type TableDateTextProps = ComponentPropsWithoutRef<'span'> & {
+  value?: string | null;
+  endValue?: string | null;
+  locale?: string | null;
+  fallback?: ReactNode;
+  todayAsTime?: boolean;
+  presentLabel?: string;
+  rangeLayout?: 'inline' | 'stacked';
+  startLabel?: ReactNode;
+  endLabel?: ReactNode;
+  format?:
+    | string
+    | {
+        compact?: string;
+        medium?: string;
+        full?: string;
+        time?: string;
+      };
+};
 
 export type TableDetailDialogProps = {
   open: boolean;
@@ -174,6 +194,7 @@ export type TableBooleanBadgeProps = {
   activeLabel: ReactNode;
   inactiveLabel: ReactNode;
   className?: string;
+  labelClassName?: string;
   activeIcon?: ComponentPropsWithoutRef<'svg'> extends never
     ? never
     : React.ComponentType<{ className?: string }>;

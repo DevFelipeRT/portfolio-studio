@@ -228,7 +228,6 @@ export function PageList({
 
                 <TableActionCell
                   className={cn(tablePresets.actionCell, 'content-center')}
-                  showChevron
                 >
                   <PageActions
                     pageId={page.id}

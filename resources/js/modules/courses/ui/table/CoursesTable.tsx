@@ -62,10 +62,7 @@ export function CoursesTable({
 
   return (
     <TableCard header={header}>
-      <SystemTable
-        layout="auto"
-        className="[&_td]:px-2 [&_td]:py-2 [&_th]:px-2 [&_th]:py-2 xs:[&_td]:px-3 xs:[&_td]:py-2 xs:[&_th]:px-3 xs:[&_th]:py-2 lg:[&_td]:px-4 lg:[&_td]:py-3 lg:[&_th]:px-4 lg:[&_th]:py-3"
-      >
+      <SystemTable layout="auto">
         <TableHeader>
           <TableHeaderRow className="min-w-0">
             <TableHead

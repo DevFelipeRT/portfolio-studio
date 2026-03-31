@@ -2,32 +2,32 @@
 
 import type { Message } from '@/modules/messages/core/types';
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { normalizeIntlLocale } from '@/common/i18n/normalizeIntlLocale';
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { TableCell, TableRow } from '@/components/ui/table';
-import { useIsMobile } from '@/hooks/useMobile';
+  InteractiveTableRow,
+  TableActionCell,
+  TableActionsMenu,
+  TableActionsMenuItem,
+  TableBooleanBadge,
+  TableDateText,
+  TableMetaCell,
+  TableTitleCell,
+  tablePresets,
+} from '@/common/table';
+import { cn } from '@/lib/utils';
 import {
-    MESSAGES_NAMESPACES,
-    useMessagesTranslation,
+  MESSAGES_NAMESPACES,
+  useMessagesTranslation,
 } from '@/modules/messages/i18n';
 import {
-    CheckCircle2,
-    ChevronRight,
-    CircleDot,
-    Minus,
-    MoreVertical,
-    RotateCcw,
-    Star,
-    Trash2,
+  CheckCircle2,
+  CircleDot,
+  Eye,
+  Minus,
+  RotateCcw,
+  Star,
+  Trash2,
 } from 'lucide-react';
-import React, { JSX } from 'react';
+import React from 'react';
 
 interface MessagesRowProps {
     message: Message;
@@ -41,195 +41,134 @@ interface MessagesRowProps {
  * MessagesRow renders a single message row with status and actions.
  */
 export function MessagesRow({
-    message,
-    onRowClick,
-    onToggleImportant,
-    onToggleSeen,
-    onDelete,
+  message,
+  onRowClick,
+  onToggleImportant,
+  onToggleSeen,
+  onDelete,
 }: MessagesRowProps) {
-    const { locale, translate: tMessages } = useMessagesTranslation(
-        MESSAGES_NAMESPACES.messages,
-    );
-    const { translate: tActions } = useMessagesTranslation(
-        MESSAGES_NAMESPACES.actions,
-    );
-    const isMobile = useIsMobile();
-    const whenLabel = formatWhen(message.created_at, isMobile, locale);
+  const { locale, translate: tMessages } = useMessagesTranslation(
+    MESSAGES_NAMESPACES.messages,
+  );
+  const { translate: tActions } = useMessagesTranslation(
+    MESSAGES_NAMESPACES.actions,
+  );
 
-    function handleRowClick(): void {
-        onRowClick(message);
-    }
+  return (
+    <InteractiveTableRow
+      active={!message.seen}
+      interactive
+      variant={message.seen ? 'default' : 'emphasized'}
+      onActivate={() => onRowClick(message)}
+    >
+      <TableTitleCell
+        className={cn(
+          tablePresets.summaryCell,
+          'content-center pr-2 sm:w-52',
+        )}
+        title={message.name}
+        subtitle={message.email}
+      />
 
-    function handleKeyDown(
-        event: React.KeyboardEvent<HTMLTableRowElement>,
-    ): void {
-        if (event.key === 'Enter' || event.key === ' ') {
-            event.preventDefault();
-            onRowClick(message);
-        }
-    }
+      <TableMetaCell className="hidden sm:table-cell">
+        <span className="text-muted-foreground block truncate text-sm">
+          {truncate(message.message, 80)}
+        </span>
+      </TableMetaCell>
 
-    function renderStatus(): JSX.Element {
-        const isNew = !message.seen;
+      <TableMetaCell
+        className={cn(
+          tablePresets.statusCell,
+          'content-center pr-2 sm:w-32',
+        )}
+      >
+        <TableBooleanBadge
+          active={!message.seen}
+          activeLabel={tMessages('status.new')}
+          inactiveLabel={tMessages('status.seen')}
+          activeIcon={CircleDot}
+          inactiveIcon={CheckCircle2}
+        />
+      </TableMetaCell>
 
-        return (
-            <div className="xs:flex-row pointer-events-none flex w-full flex-col items-center gap-2 text-[0.7rem] sm:flex-nowrap">
-                <Badge
-                    className={
-                        (isNew
-                            ? 'bg-primary text-primary-foreground'
-                            : 'bg-muted text-muted-foreground') +
-                        ' flex w-fit cursor-default items-center gap-1 border-none px-2 py-0.5 font-medium whitespace-nowrap'
-                    }
-                >
-                    {isNew ? (
-                        <>
-                            <CircleDot className="h-3.5 w-3.5" />
-                            <span className="hidden whitespace-nowrap sm:inline">
-                                {tMessages('status.new')}
-                            </span>
-                        </>
-                    ) : (
-                        <>
-                            <CheckCircle2 className="h-3.5 w-3.5" />
-                            <span className="hidden whitespace-nowrap sm:inline">
-                                {tMessages('status.seen')}
-                            </span>
-                        </>
-                    )}
-                </Badge>
+      <TableMetaCell
+        className={cn(
+          tablePresets.statusCell,
+          'content-center pr-2 sm:w-32',
+        )}
+      >
+        <TableBooleanBadge
+          active={message.important}
+          activeLabel={tMessages('status.important')}
+          inactiveLabel={tMessages('status.regular')}
+          activeIcon={Star}
+          inactiveIcon={Minus}
+        />
+      </TableMetaCell>
 
-                <Badge
-                    className={
-                        (message.important
-                            ? 'bg-primary text-primary-foreground'
-                            : 'bg-muted text-muted-foreground') +
-                        ' flex w-fit cursor-default items-center gap-1 border-none px-2 py-0.5 font-medium whitespace-nowrap'
-                    }
-                >
-                    {message.important ? (
-                        <>
-                            <Star className="h-3.5 w-3.5" />
-                            <span className="ml-1 hidden whitespace-nowrap sm:inline">
-                                {tMessages('status.important')}
-                            </span>
-                        </>
-                    ) : (
-                        <>
-                            <Minus className="h-3.5 w-3.5 sm:hidden" />
-                            <span className="hidden whitespace-nowrap sm:inline">
-                                {tMessages('status.regular')}
-                            </span>
-                        </>
-                    )}
-                </Badge>
-            </div>
-        );
-    }
+      <TableMetaCell
+        className={cn(
+          tablePresets.metaCell,
+          'content-center pr-2 text-right sm:w-28',
+        )}
+      >
+        <TableDateText
+          value={message.created_at}
+          locale={locale}
+          todayAsTime
+        />
+      </TableMetaCell>
 
-    return (
-        <TableRow
-            className={rowClassName(message)}
-            role="button"
-            tabIndex={0}
-            onClick={handleRowClick}
-            onKeyDown={handleKeyDown}
-        >
-            <TableCell className="min-w-0 content-center pr-2 align-top sm:w-48">
-                <div className="flex min-w-0 flex-col gap-0.5">
-                    <p className="line-clamp-1 min-w-0 truncate font-medium text-pretty hyphens-auto">
-                        {message.name}
-                    </p>
-                    <p className="text-muted-foreground line-clamp-1 min-w-0 truncate text-xs text-pretty hyphens-auto">
-                        {message.email}
-                    </p>
-                </div>
-            </TableCell>
+      <TableActionCell
+        className={cn(tablePresets.actionCell, 'content-center sm:w-12')}
+      >
+        <TableActionsMenu triggerLabel={tActions('openMenu')}>
+          <TableActionsMenuItem onClick={() => onRowClick(message)}>
+            <Eye className="mr-2 h-4 w-4" />
+            <span>{tActions('viewMessage')}</span>
+          </TableActionsMenuItem>
 
-            <TableCell className="hidden content-center align-top sm:table-cell">
-                <span className="text-muted-foreground block truncate text-sm">
-                    {truncate(message.message, 80)}
-                </span>
-            </TableCell>
+          <TableActionsMenuItem
+            onClick={(event) =>
+              onToggleImportant(message, event)
+            }
+          >
+            <Star className="mr-2 h-4 w-4" />
+            <span>
+              {message.important
+                ? tActions('removeImportant')
+                : tActions('markAsImportant')}
+            </span>
+          </TableActionsMenuItem>
 
-            <TableCell className="content-center pr-2 align-top text-xs sm:w-32">
-                {renderStatus()}
-            </TableCell>
+          <TableActionsMenuItem
+            onClick={(event) =>
+              onToggleSeen(message, event)
+            }
+          >
+            {message.seen ? (
+              <RotateCcw className="mr-2 h-4 w-4" />
+            ) : (
+              <CheckCircle2 className="mr-2 h-4 w-4" />
+            )}
+            <span>
+              {message.seen
+                ? tActions('markAsNew')
+                : tActions('markAsSeen')}
+            </span>
+          </TableActionsMenuItem>
 
-            <TableCell className="text-muted-foreground content-center pr-2 text-right align-top text-xs">
-                <span className="block whitespace-nowrap">{whenLabel}</span>
-            </TableCell>
-
-            <TableCell className="content-center align-top sm:w-12">
-                <div className="flex items-center justify-end gap-1">
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button
-                                type="button"
-                                size="icon"
-                                variant="ghost"
-                                className="text-muted-foreground hover:bg-primary hover:text-primary-foreground hover:outline-muted-foreground/50 h-8 w-8"
-                                onClick={(event) => event.stopPropagation()}
-                            >
-                                <MoreVertical className="h-4 w-4" />
-                                <span className="sr-only">
-                                    {tActions('openMenu')}
-                                </span>
-                            </Button>
-                        </DropdownMenuTrigger>
-
-                        <DropdownMenuContent
-                            align="end"
-                            className="min-w-40"
-                            onClick={(event) => event.stopPropagation()}
-                        >
-                            <DropdownMenuItem
-                                onClick={(event) =>
-                                    onToggleImportant(message, event)
-                                }
-                            >
-                                <Star className="mr-2 h-4 w-4" />
-                                <span>
-                                    {message.important
-                                        ? tActions('removeImportant')
-                                        : tActions('markAsImportant')}
-                                </span>
-                            </DropdownMenuItem>
-
-                            <DropdownMenuItem
-                                onClick={(event) =>
-                                    onToggleSeen(message, event)
-                                }
-                            >
-                                {message.seen ? (
-                                    <RotateCcw className="mr-2 h-4 w-4" />
-                                ) : (
-                                    <CheckCircle2 className="mr-2 h-4 w-4" />
-                                )}
-                                <span>
-                                    {message.seen
-                                        ? tActions('markAsNew')
-                                        : tActions('markAsSeen')}
-                                </span>
-                            </DropdownMenuItem>
-
-                            <DropdownMenuItem
-                                onClick={(event) => onDelete(message, event)}
-                                className="text-destructive focus:text-destructive"
-                            >
-                                <Trash2 className="mr-2 h-4 w-4" />
-                                <span>{tActions('delete')}</span>
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-
-                    <div className="flex h-8 w-8 items-center justify-center">
-                        <ChevronRight className="text-muted-foreground hover:shadow-primary group-hover:text-primary group-hover:drop-shadow-primary h-4 w-4 shrink-0 transition-transform group-hover:translate-x-0.5 group-hover:drop-shadow-sm" />
-                    </div>
-                </div>
-            </TableCell>
-        </TableRow>
-    );
+          <TableActionsMenuItem
+            onClick={(event) => onDelete(message, event)}
+            className="text-destructive focus:text-destructive"
+          >
+            <Trash2 className="mr-2 h-4 w-4" />
+            <span>{tActions('delete')}</span>
+          </TableActionsMenuItem>
+        </TableActionsMenu>
+      </TableActionCell>
+    </InteractiveTableRow>
+  );
 }
 
 function truncate(text: string, maxLength: number): string {
@@ -240,55 +179,4 @@ function truncate(text: string, maxLength: number): string {
     }
 
     return `${trimmed.slice(0, maxLength - 1)}…`;
-}
-
-function formatWhen(value: string, isMobile: boolean, locale: string): string {
-    const date = new Date(value);
-    const normalizedLocale = normalizeIntlLocale(locale);
-
-    if (Number.isNaN(date.getTime())) {
-        return value;
-    }
-
-    const now = new Date();
-
-    const isSameDay =
-        date.getFullYear() === now.getFullYear() &&
-        date.getMonth() === now.getMonth() &&
-        date.getDate() === now.getDate();
-
-    if (isSameDay) {
-        return date.toLocaleTimeString(normalizedLocale, {
-            hour: '2-digit',
-            minute: '2-digit',
-        });
-    }
-
-    if (isMobile) {
-        return date.toLocaleDateString(normalizedLocale, {
-            day: '2-digit',
-            month: '2-digit',
-        });
-    }
-
-    return date.toLocaleDateString(normalizedLocale, {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-    });
-}
-
-function rowClassName(message: Message): string {
-    const base =
-        'group cursor-pointer transition-colors content-center min-w-0 duration-150 md:gap-10';
-
-    const background = message.seen
-        ? 'bg-background hover:bg-muted/60 dark:bg-background dark:hover:bg-muted/40'
-        : 'bg-muted/60 hover:bg-muted dark:bg-muted/50 dark:hover:bg-muted/70';
-
-    const importantBorder = message.important
-        ? 'border-l-4 border-l-primary/70'
-        : 'border-l border-l-transparent';
-
-    return `${base} ${background} ${importantBorder}`;
 }

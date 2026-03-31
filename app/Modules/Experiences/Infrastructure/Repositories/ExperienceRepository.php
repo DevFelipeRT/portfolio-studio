@@ -12,19 +12,26 @@ use Illuminate\Database\Eloquent\Collection;
 
 final class ExperienceRepository implements IExperienceRepository
 {
-    public function paginateWithTranslations(
+    public function paginate(
         int $perPage,
-        ?string $locale,
-        ?string $fallbackLocale = null,
+        ?string $search = null,
+        ?string $visibility = null,
+        ?string $sort = null,
+        ?string $direction = null,
     ): LengthAwarePaginator {
-        return $this->withTranslations(
-            Experience::query(),
-            $locale,
-            $fallbackLocale,
+        return $this->applySort(
+            $this->applyVisibilityFilter(
+                $this->applySearchFilter(
+                    Experience::query(),
+                    $search,
+                ),
+                $visibility,
+            ),
+            $sort,
+            $direction,
         )
-            ->orderByDesc('start_date')
-            ->orderByDesc('id')
-            ->paginate($perPage);
+            ->paginate($perPage)
+            ->withQueryString();
     }
 
     public function allWithTranslations(
@@ -94,6 +101,24 @@ final class ExperienceRepository implements IExperienceRepository
         return $query;
     }
 
+    private function applySearchFilter(Builder $query, ?string $search): Builder
+    {
+        $trimmed = trim((string) $search);
+
+        if ($trimmed === '') {
+            return $query;
+        }
+
+        $like = '%' . addcslashes($trimmed, '\\%_') . '%';
+
+        return $query->where(static function (Builder $nestedQuery) use ($like): void {
+            $nestedQuery
+                ->where('experiences.position', 'like', $like)
+                ->orWhere('experiences.company', 'like', $like)
+                ->orWhere('experiences.summary', 'like', $like);
+        });
+    }
+
     /**
      * @return array<int,string>
      */
@@ -105,5 +130,42 @@ final class ExperienceRepository implements IExperienceRepository
         ]);
 
         return array_values(array_unique($values));
+    }
+
+    private function applySort(
+        Builder $query,
+        ?string $sort,
+        ?string $direction,
+    ): Builder {
+        return match ($sort) {
+            'position' => $query
+                ->orderBy('experiences.position', $direction)
+                ->orderByDesc('experiences.id'),
+            'company' => $query
+                ->orderBy('experiences.company', $direction)
+                ->orderByDesc('experiences.start_date')
+                ->orderByDesc('experiences.id'),
+            'start_date' => $query
+                ->orderBy('experiences.start_date', $direction)
+                ->orderByDesc('experiences.id'),
+            'display' => $query
+                ->orderBy('experiences.display', $direction)
+                ->orderByDesc('experiences.start_date')
+                ->orderByDesc('experiences.id'),
+            default => $query
+                ->orderByDesc('experiences.start_date')
+                ->orderByDesc('experiences.id'),
+        };
+    }
+
+    private function applyVisibilityFilter(
+        Builder $query,
+        ?string $visibility,
+    ): Builder {
+        return match ($visibility) {
+            'public' => $query->where('experiences.display', true),
+            'private' => $query->where('experiences.display', false),
+            default => $query,
+        };
     }
 }

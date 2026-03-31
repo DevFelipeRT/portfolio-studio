@@ -196,7 +196,7 @@ export function ExpandableCard({
                             )}
 
                             {meta && (
-                                <span className="bg-secondary text-secondary-foreground rounded-md px-2 py-1 text-xs font-medium whitespace-nowrap">
+                                <span className="bg-accent text-accent-foreground rounded-md px-2 py-1 text-xs font-medium whitespace-nowrap">
                                     {meta}
                                 </span>
                             )}
@@ -233,7 +233,7 @@ export function ExpandableCard({
                                         <Badge
                                             key={tag}
                                             variant="secondary"
-                                            className="hover:bg-secondary/80 px-2 py-0.5 text-[0.7rem] font-normal transition-colors"
+                                            className="hover:bg-accent/80 px-2 py-0.5 text-[0.7rem] font-normal transition-colors"
                                         >
                                             {tag}
                                         </Badge>

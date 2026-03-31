@@ -26,6 +26,13 @@ use Inertia\Response;
  */
 class ExperienceController extends Controller
 {
+    private const SORTABLE_COLUMNS = [
+        'position',
+        'company',
+        'start_date',
+        'display',
+    ];
+
     public function __construct(
         private readonly ListExperiences $listExperiences,
         private readonly CreateExperience $createExperience,
@@ -37,12 +44,30 @@ class ExperienceController extends Controller
     /**
      * Display a listing of the experiences.
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        $experiences = $this->listExperiences->handle();
+        $perPage = (int) $request->query('per_page', '15');
+        $search = $this->resolveSearch($request->query('search'));
+        $visibility = $this->resolveVisibilityFilter($request->query('visibility'));
+        $sort = $this->resolveTableSort($request->query('sort'), self::SORTABLE_COLUMNS);
+        $direction = $this->resolveTableDirection($request->query('direction'), $sort);
+        $experiences = $this->listExperiences->handle(
+            $perPage,
+            $search,
+            $visibility,
+            $sort,
+            $direction,
+        );
 
         return Inertia::render('experiences/admin/Index', [
-            'experiences' => ExperienceMapper::collection($experiences),
+            'experiences' => $this->mapPaginatedResource($experiences, ExperienceMapper::class),
+            'filters' => [
+                'per_page' => $perPage,
+                'search' => $search,
+                'visibility' => $visibility,
+                'sort' => $sort,
+                'direction' => $direction,
+            ],
         ]);
     }
 
@@ -107,4 +132,28 @@ class ExperienceController extends Controller
             ->route('experiences.index')
             ->with('status', 'Experience successfully deleted.');
     }
+
+    private function resolveSearch(mixed $rawSearch): ?string
+    {
+        if (!is_string($rawSearch)) {
+            return null;
+        }
+
+        $search = trim($rawSearch);
+
+        return $search === '' ? null : $search;
+    }
+
+    private function resolveVisibilityFilter(mixed $rawVisibility): ?string
+    {
+        if (!is_string($rawVisibility)) {
+            return null;
+        }
+
+        return match (trim($rawVisibility)) {
+            'public', 'private' => trim($rawVisibility),
+            default => null,
+        };
+    }
+
 }
