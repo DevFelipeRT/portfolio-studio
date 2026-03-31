@@ -11,7 +11,7 @@ export default {
       error: 'O título do curso é obrigatório',
     },
     institution: {
-      label: 'Provedor / Instituição',
+      label: 'Instituição',
       placeholder: 'ex: Udemy, Coursera, USP',
       error: 'A instituição é obrigatória',
     },
@@ -54,6 +54,20 @@ export default {
   help: {
     managementSubtitle: 'Gerencie os cursos exibidos no seu portfólio.',
   },
+  filters: {
+    searchLabel: 'Buscar',
+    searchPlaceholder: 'Buscar por curso, instituição ou resumo',
+    searchSubmit: 'Buscar cursos',
+    institutionLabel: 'Instituição',
+    institutionPlaceholder: 'Filtrar por instituição',
+    statusLabel: 'Status',
+    statusPlaceholder: 'Todos os status',
+    visibilityLabel: 'Visibilidade',
+    visibilityPlaceholder: 'Todos os estados de visibilidade',
+    publicOnly: 'Somente públicos',
+    privateOnly: 'Somente privados',
+    reset: 'Limpar',
+  },
   emptyState: {
     index: 'Nenhum curso foi criado ainda.',
   },
@@ -61,9 +75,9 @@ export default {
     title: 'Todos os cursos',
     description: 'Uma lista de todos os cursos e certificados cadastrados.',
     columns: {
-      course: 'Curso',
-      started_at: 'Data de início',
-      completed_at: 'Data de término',
+      name: 'Nome',
+      started_at: 'Início',
+      completed_at: 'Término',
     },
   },
   status: {

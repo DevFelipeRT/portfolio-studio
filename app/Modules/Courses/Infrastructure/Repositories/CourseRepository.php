@@ -6,25 +6,40 @@ namespace App\Modules\Courses\Infrastructure\Repositories;
 
 use App\Modules\Courses\Domain\Models\Course;
 use App\Modules\Courses\Domain\Repositories\ICourseRepository;
+use App\Modules\Courses\Domain\ValueObjects\CourseStatus;
+use App\Modules\Courses\Infrastructure\Queries\CourseAdminListQuery;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
 final class CourseRepository implements ICourseRepository
 {
-    public function paginateWithTranslations(
+    public function __construct(
+        private readonly CourseAdminListQuery $courseAdminListQuery,
+    ) {}
+
+    public function paginateAdminList(
         int $perPage,
+        ?string $search,
+        ?string $institution,
+        ?CourseStatus $status,
+        ?string $visibility,
+        ?string $sort,
+        ?string $direction,
         ?string $locale,
         ?string $fallbackLocale = null,
     ): LengthAwarePaginator {
-        return $this->withTranslations(
-            Course::query(),
-            $locale,
-            $fallbackLocale,
-        )
-            ->orderByDesc('started_at')
-            ->orderBy('name')
-            ->paginate($perPage);
+        return $this->courseAdminListQuery->paginate(
+            perPage: $perPage,
+            search: $search,
+            institution: $institution,
+            status: $status,
+            visibility: $visibility,
+            sort: $sort,
+            direction: $direction,
+            locale: $locale,
+            fallbackLocale: $fallbackLocale,
+        );
     }
 
     public function visibleWithTranslations(
@@ -36,9 +51,9 @@ final class CourseRepository implements ICourseRepository
             $locale,
             $fallbackLocale,
         )
-            ->where('display', true)
             ->orderByDesc('started_at')
             ->orderByDesc('id')
+            ->where('display', true)
             ->get();
     }
 

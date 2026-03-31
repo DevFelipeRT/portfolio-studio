@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\Courses\Application\UseCases\CreateCourseTranslation;
 
-use App\Modules\Courses\Application\Dtos\CourseTranslationDto;
 use App\Modules\Courses\Application\Services\SupportedLocalesResolver;
 use App\Modules\Courses\Domain\Repositories\ICourseRepository;
 use App\Modules\Courses\Domain\Repositories\ICourseTranslationRepository;
@@ -21,7 +20,7 @@ final class CreateCourseTranslation
     ) {
     }
 
-    public function handle(CreateCourseTranslationInput $input): CourseTranslationDto
+    public function handle(CreateCourseTranslationInput $input): CreateCourseTranslationOutput
     {
         $supported = $this->supportedLocales->resolve();
         if (!in_array($input->locale, $supported, true)) {
@@ -46,7 +45,7 @@ final class CreateCourseTranslation
 
         $translation = $this->translations->create($course, $input->locale, $payload);
 
-        return CourseTranslationDto::fromModel($translation);
+        return CreateCourseTranslationOutput::fromModel($translation);
     }
 
     /**

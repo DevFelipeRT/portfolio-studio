@@ -13,11 +13,21 @@ final class ListCourses
     {
     }
 
-    public function handle(int $perPage = 15): LengthAwarePaginator
+    public function handle(ListCoursesInput $input): LengthAwarePaginator
     {
         $locale = app()->getLocale();
         $fallbackLocale = app()->getFallbackLocale();
 
-        return $this->courses->paginateWithTranslations($perPage, $locale, $fallbackLocale);
+        return $this->courses->paginateAdminList(
+            perPage: $input->perPage,
+            search: $input->search,
+            institution: $input->institution,
+            status: $input->status,
+            visibility: $input->visibility,
+            sort: $input->sort,
+            direction: $input->direction,
+            locale: $locale,
+            fallbackLocale: $fallbackLocale,
+        );
     }
 }

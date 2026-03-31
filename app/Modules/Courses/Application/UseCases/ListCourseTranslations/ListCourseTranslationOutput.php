@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Courses\Application\Dtos;
+namespace App\Modules\Courses\Application\UseCases\ListCourseTranslations;
 
 use App\Modules\Courses\Domain\Models\CourseTranslation;
 
-final class CourseTranslationDto
+final readonly class ListCourseTranslationOutput
 {
     public function __construct(
-        public readonly int $id,
-        public readonly int $courseId,
-        public readonly string $locale,
-        public readonly ?string $name,
-        public readonly ?string $institution,
-        public readonly ?string $summary,
-        public readonly ?string $description,
-        public readonly ?string $createdAt,
-        public readonly ?string $updatedAt,
+        public int $id,
+        public int $courseId,
+        public string $locale,
+        public ?string $name,
+        public ?string $institution,
+        public ?string $summary,
+        public ?string $description,
+        public ?string $createdAt,
+        public ?string $updatedAt,
     ) {
     }
 
