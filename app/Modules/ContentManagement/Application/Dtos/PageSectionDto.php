@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\ContentManagement\Application\Dtos;
 
-use Carbon\CarbonInterface;
-
 /**
  * Data transfer object representing a single page section.
  */
@@ -24,9 +22,11 @@ final class PageSectionDto
         public readonly ?string $navigationLabel,
         public readonly array $data,
         public readonly bool $isActive,
-        public readonly ?CarbonInterface $visibleFrom,
-        public readonly ?CarbonInterface $visibleUntil,
+        public readonly ?string $visibleFrom,
+        public readonly ?string $visibleUntil,
         public readonly ?string $locale,
+        public readonly ?string $createdAt,
+        public readonly ?string $updatedAt,
     ) {
     }
 }

@@ -33,9 +33,11 @@ final class PageSectionMapper
             navigationLabel: $section->navigation_label,
             data: $data,
             isActive: (bool) $section->is_active,
-            visibleFrom: $section->visible_from,
-            visibleUntil: $section->visible_until,
+            visibleFrom: $section->visible_from?->toJSON(),
+            visibleUntil: $section->visible_until?->toJSON(),
             locale: $section->locale,
+            createdAt: $section->created_at?->toJSON(),
+            updatedAt: $section->updated_at?->toJSON(),
         );
     }
 
@@ -61,6 +63,8 @@ final class PageSectionMapper
             'visible_from' => $dto->visibleFrom,
             'visible_until' => $dto->visibleUntil,
             'locale' => $dto->locale,
+            'created_at' => $dto->createdAt,
+            'updated_at' => $dto->updatedAt,
         ];
     }
 }
