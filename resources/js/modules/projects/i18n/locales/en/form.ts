@@ -82,7 +82,7 @@ export default {
     private: 'Private',
   },
   status: {
-    completed: 'Completed',
+    delivered: 'Delivered',
     in_progress: 'In Progress',
     maintenance: 'Maintenance',
     planned: 'Planned',

@@ -82,7 +82,7 @@ export default {
     private: 'Privado',
   },
   status: {
-    completed: 'Concluído',
+    delivered: 'Entregue',
     in_progress: 'Em andamento',
     maintenance: 'Em manutenção',
     planned: 'Planejado',

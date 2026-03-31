@@ -11,8 +11,10 @@ return new class extends Migration {
      * @var array<string,string>
      */
     private array $legacyToCanonicalStatusMap = [
+        'completed' => 'delivered',
+        'published' => 'delivered',
+        'concluido' => 'delivered',
         'em_andamento' => 'in_progress',
-        'concluido' => 'completed',
         'manutencao' => 'maintenance',
         'planejado' => 'planned',
     ];
