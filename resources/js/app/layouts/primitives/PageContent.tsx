@@ -15,7 +15,6 @@ export type PageContentProps = {
   contentWidth?: ContentWidth;
   pageWidth?: PageWidth;
   className?: string;
-  contentClassName?: string;
   children: ReactNode;
 };
 
@@ -31,17 +30,16 @@ const pageWidthClassName: Record<PageWidth, string> = {
 export function PageContent({
   children,
   className,
-  contentClassName,
   contentWidth = 'default',
   pageWidth = 'container',
 }: PageContentProps) {
   return (
-    <ContentContainer contentWidth={contentWidth} className={className}>
+    <ContentContainer contentWidth={contentWidth}>
       <div
         className={cn(
           'mx-auto w-full',
           pageWidthClassName[pageWidth],
-          contentClassName,
+          className,
         )}
       >
         {children}

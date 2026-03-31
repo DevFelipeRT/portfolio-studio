@@ -170,8 +170,7 @@ export default function PageEdit({
 
       <PageContent
         pageWidth="default"
-        contentClassName="flex flex-col gap-6"
-        className="pb-10"
+        className="flex flex-col gap-6 pb-10"
       >
         <div className="flex items-center justify-between gap-3">
           <div>

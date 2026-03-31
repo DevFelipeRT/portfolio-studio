@@ -3,6 +3,7 @@ import { PageContent } from '@/app/layouts/primitives';
 import { PageHead } from '@/common/page-runtime';
 import { RichTextEditor } from '@/common/rich-text/RichTextEditor';
 import { RichTextRenderer } from '@/common/rich-text/RichTextRenderer';
+import { DemoTable } from '@/common/table/DemoTable';
 import { useState } from 'react';
 
 export default function Dashboard() {
@@ -13,13 +14,15 @@ export default function Dashboard() {
       <PageHead title="Dashboard" />
 
       <PageContent className="space-y-6 py-8" pageWidth="default">
-        <div>
-          <h1 className="text-xl leading-tight font-semibold">Dashboard</h1>
-        </div>
+        <section className="space-y-2">
+          <div>
+            <h1 className="text-xl leading-tight font-semibold">Dashboard</h1>
+          </div>
+          
+          <div className="text-muted-foreground text-sm">You&apos;re logged in!</div>
+        </section>
 
-        <div className="text-muted-foreground text-sm">You&apos;re logged in!</div>
-
-        <section className="bg-muted/40 space-y-4 rounded-md border p-6">
+        <section className="flex flex-col bg-muted/40 space-y-4 rounded-md border p-6">
           <div>
             <h2 className="text-lg font-semibold">Rich Text Lab</h2>
             <p className="text-muted-foreground text-sm">
@@ -27,7 +30,7 @@ export default function Dashboard() {
             </p>
           </div>
 
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-y-6">
             <div className="space-y-2">
               <h3 className="text-muted-foreground text-sm font-semibold tracking-wide uppercase">
                 Editor
@@ -65,6 +68,17 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
+        </section>
+
+        <section className="space-y-4">
+          <div>
+            <h2 className="text-lg font-semibold">Common Table Lab</h2>
+            <p className="text-muted-foreground text-sm">
+              Showcase isolado da nova API de tabelas compartilhadas.
+            </p>
+          </div>
+
+          <DemoTable />
         </section>
       </PageContent>
     </AuthenticatedLayout>
