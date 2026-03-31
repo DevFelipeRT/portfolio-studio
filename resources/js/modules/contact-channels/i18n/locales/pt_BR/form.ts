@@ -6,6 +6,18 @@ export default {
     managementSubtitle:
       'Gerencie os canais de contato exibidos no seu site.',
   },
+  filters: {
+    searchLabel: 'Buscar',
+    searchPlaceholder: 'Buscar por label ou valor',
+    searchSubmit: 'Buscar canais',
+    typeLabel: 'Tipo',
+    typePlaceholder: 'Todos os tipos',
+    activeLabel: 'Status',
+    activePlaceholder: 'Todos os status',
+    activeOnly: 'Somente ativos',
+    inactiveOnly: 'Somente inativos',
+    reset: 'Limpar',
+  },
   emptyState: {
     index: 'Nenhum canal de contato configurado ainda.',
   },
@@ -40,5 +52,8 @@ export default {
       label: 'Ativo',
     },
   },
+  values: {
+    active: 'Ativo',
+    inactive: 'Inativo',
+  },
 };
-

@@ -4,13 +4,40 @@ declare(strict_types=1);
 
 namespace App\Modules\ContactChannels\Infrastructure\Repositories;
 
+use App\Modules\ContactChannels\Domain\Enums\ContactChannelType;
 use App\Modules\ContactChannels\Domain\Models\ContactChannel;
 use App\Modules\ContactChannels\Domain\Repositories\IContactChannelRepository;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Facades\DB;
 
 final class ContactChannelRepository implements IContactChannelRepository
 {
+    public function paginateOrdered(
+        int $perPage,
+        ?string $search = null,
+        ?string $type = null,
+        ?bool $isActive = null,
+        ?string $sort = null,
+        ?string $direction = null,
+    ): LengthAwarePaginator
+    {
+        return $this->applySort(
+            $this->applyActiveFilter(
+                $this->applyTypeFilter(
+                    $this->applySearchFilter(ContactChannel::query(), $search),
+                    $type,
+                ),
+                $isActive,
+            ),
+            $sort,
+            $direction,
+        )
+            ->paginate($perPage)
+            ->withQueryString();
+    }
+
     public function allOrdered(): EloquentCollection
     {
         return ContactChannel::query()
@@ -102,5 +129,79 @@ final class ContactChannelRepository implements IContactChannelRepository
         ]));
 
         return array_values($candidates);
+    }
+
+    private function applySearchFilter(Builder $query, ?string $search): Builder
+    {
+        $trimmed = trim((string) $search);
+
+        if ($trimmed === '') {
+            return $query;
+        }
+
+        $like = '%' . addcslashes($trimmed, '\\%_') . '%';
+
+        return $query->where(static function (Builder $nestedQuery) use ($like): void {
+            $nestedQuery
+                ->where('contact_channels.label', 'like', $like)
+                ->orWhere('contact_channels.value', 'like', $like);
+        });
+    }
+
+    private function applyTypeFilter(Builder $query, ?string $type): Builder
+    {
+        if ($type === null) {
+            return $query;
+        }
+
+        $resolvedType = ContactChannelType::tryFrom($type);
+
+        if ($resolvedType === null) {
+            return $query;
+        }
+
+        return $query->where('contact_channels.channel_type', $resolvedType->value);
+    }
+
+    private function applyActiveFilter(Builder $query, ?bool $isActive): Builder
+    {
+        if ($isActive === null) {
+            return $query;
+        }
+
+        return $query->where('contact_channels.is_active', $isActive);
+    }
+
+    private function applySort(
+        Builder $query,
+        ?string $sort,
+        ?string $direction,
+    ): Builder {
+        $resolvedDirection = $direction === 'desc' ? 'desc' : 'asc';
+
+        return match ($sort) {
+            'channel_type' => $query
+                ->orderBy('contact_channels.channel_type', $resolvedDirection)
+                ->orderBy('contact_channels.sort_order')
+                ->orderBy('contact_channels.id'),
+            'label' => $query
+                ->orderBy('contact_channels.label', $resolvedDirection)
+                ->orderBy('contact_channels.sort_order')
+                ->orderBy('contact_channels.id'),
+            'value' => $query
+                ->orderBy('contact_channels.value', $resolvedDirection)
+                ->orderBy('contact_channels.sort_order')
+                ->orderBy('contact_channels.id'),
+            'is_active' => $query
+                ->orderBy('contact_channels.is_active', $resolvedDirection)
+                ->orderBy('contact_channels.sort_order')
+                ->orderBy('contact_channels.id'),
+            'sort_order' => $query
+                ->orderBy('contact_channels.sort_order', $resolvedDirection)
+                ->orderBy('contact_channels.id'),
+            default => $query
+                ->orderBy('contact_channels.sort_order')
+                ->orderBy('contact_channels.id'),
+        };
     }
 }

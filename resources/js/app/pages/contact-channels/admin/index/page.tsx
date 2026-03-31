@@ -1,39 +1,203 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import { PageContent } from '@/app/layouts/primitives';
-import { PageHead, PageLink } from '@/common/page-runtime';
+import { PageHead, pageRouter } from '@/common/page-runtime';
+import {
+  NewButton,
+  serializeTableQueryParams,
+  setTablePageInQueryParams,
+  setTablePerPageInQueryParams,
+  setTableSortInQueryParams,
+  TableSearchField,
+  TableToolbar,
+  toggleTableSortState,
+  type TablePaginated,
+  type TableSortState,
+} from '@/common/table';
+import { Button } from '@/components/ui/button';
 import type { ContactChannel } from '@/modules/contact-channels/core/types';
+import type { ContactChannelTypeOption } from '@/modules/contact-channels/core/types';
 import { useContactChannelsTranslation } from '@/modules/contact-channels/i18n';
 import { CONTACT_CHANNELS_NAMESPACES } from '@/modules/contact-channels/i18n';
+import { ContactChannelOverlay } from '@/modules/contact-channels/ui/ContactChannelOverlay';
+import { ContactChannelsTable } from '@/modules/contact-channels/ui/table/ContactChannelsTable';
+import { type FormEvent, useEffect, useState } from 'react';
 
 interface ContactChannelsIndexProps {
-  channels: ContactChannel[];
+  channels: TablePaginated<ContactChannel>;
+  channelTypes: ContactChannelTypeOption[];
+  filters: {
+    per_page?: number | null;
+    search?: string | null;
+    type?: string | null;
+    active?: string | null;
+    sort?: string | null;
+    direction?: string | null;
+  };
 }
 
-export default function Index({ channels }: ContactChannelsIndexProps) {
-  return <ContactChannelsIndexI18nContent channels={channels} />;
+const CONTACT_CHANNEL_PER_PAGE_OPTIONS = [15, 30, 50] as const;
+const CONTACT_CHANNEL_SORTABLE_COLUMNS = {
+  channel_type: true,
+  label: true,
+  value: true,
+  is_active: true,
+  sort_order: true,
+} as const;
+
+export default function Index({
+  channels,
+  channelTypes,
+  filters,
+}: ContactChannelsIndexProps) {
+  return (
+    <ContactChannelsIndexI18nContent
+      channels={channels}
+      channelTypes={channelTypes}
+      filters={filters}
+    />
+  );
 }
 
-function ContactChannelsIndexI18nContent({ channels }: ContactChannelsIndexProps) {
-  const hasChannels = channels.length > 0;
+function ContactChannelsIndexI18nContent({
+  channels,
+  channelTypes,
+  filters,
+}: ContactChannelsIndexProps) {
+  const [selectedChannel, setSelectedChannel] =
+    useState<ContactChannel | null>(null);
   const { translate: tActions } = useContactChannelsTranslation(
     CONTACT_CHANNELS_NAMESPACES.actions,
   );
   const { translate: tForm } = useContactChannelsTranslation(
     CONTACT_CHANNELS_NAMESPACES.form,
   );
-  const { translate: tContactChannels } =
-    useContactChannelsTranslation(CONTACT_CHANNELS_NAMESPACES.contactChannels);
+  const currentSearch =
+    typeof filters.search === 'string' ? filters.search : '';
+  const currentType =
+    typeof filters.type === 'string' ? filters.type : '';
+  const currentActive =
+    typeof filters.active === 'string' ? filters.active : '';
+  const sortState: TableSortState = {
+    column: typeof filters.sort === 'string' ? filters.sort : null,
+    direction:
+      filters.direction === 'asc' || filters.direction === 'desc'
+        ? filters.direction
+        : null,
+  };
+  const currentPerPage =
+    typeof filters.per_page === 'number' && filters.per_page > 0
+      ? filters.per_page
+      : channels.per_page;
+  const [search, setSearch] = useState(currentSearch);
+  const [type, setType] = useState(currentType);
+  const [active, setActive] = useState(currentActive);
 
-  const typeLabel = (channelType: string): string => {
-    return tContactChannels(`socials.${channelType}.label`, channelType);
+  useEffect(() => {
+    setSearch(currentSearch);
+    setType(currentType);
+    setActive(currentActive);
+  }, [currentActive, currentSearch, currentType]);
+
+  const handlePageChange = (page: number): void => {
+    pageRouter.get(
+      route('contact-channels.index'),
+      setTablePageInQueryParams(
+        buildContactChannelsIndexQueryParams({
+          search: currentSearch,
+          type: currentType,
+          active: currentActive,
+          perPage: currentPerPage,
+          sort: sortState,
+        }),
+        page,
+      ),
+      {
+        preserveScroll: true,
+        preserveState: true,
+      },
+    );
   };
 
-  const labelFor = (channel: ContactChannel): string => {
-    if (channel.channel_type === 'custom' && channel.label) {
-      return channel.label;
-    }
+  const handlePerPageChange = (perPage: number): void => {
+    pageRouter.get(
+      route('contact-channels.index'),
+      setTablePerPageInQueryParams(
+        buildContactChannelsIndexQueryParams({
+          search: currentSearch,
+          type: currentType,
+          active: currentActive,
+          sort: sortState,
+        }),
+        perPage,
+      ),
+      {
+        preserveScroll: true,
+        preserveState: true,
+        replace: true,
+      },
+    );
+  };
 
-    return typeLabel(channel.channel_type);
+  const handleSearchSubmit = (event: FormEvent<HTMLFormElement>): void => {
+    event.preventDefault();
+
+    pageRouter.get(
+      route('contact-channels.index'),
+      buildContactChannelsIndexQueryParams({
+        search,
+        type,
+        active,
+        perPage: currentPerPage,
+        sort: sortState,
+      }),
+      {
+        preserveScroll: true,
+        preserveState: true,
+        replace: true,
+      },
+    );
+  };
+
+  const handleResetFilters = (): void => {
+    setSearch('');
+    setType('');
+    setActive('');
+
+    pageRouter.get(
+      route('contact-channels.index'),
+      buildContactChannelsIndexQueryParams({
+        search: '',
+        type: '',
+        active: '',
+        perPage: currentPerPage,
+        sort: sortState,
+      }),
+      {
+        preserveScroll: true,
+        preserveState: true,
+        replace: true,
+      },
+    );
+  };
+
+  const handleSortChange = (column: string): void => {
+    pageRouter.get(
+      route('contact-channels.index'),
+      setTableSortInQueryParams(
+        serializeTableQueryParams({
+          per_page: currentPerPage,
+          search: currentSearch,
+          type: currentType,
+          active: currentActive,
+        }),
+        toggleTableSortState(sortState, column),
+      ),
+      {
+        preserveScroll: true,
+        preserveState: true,
+        replace: true,
+      },
+    );
   };
 
   return (
@@ -41,122 +205,124 @@ function ContactChannelsIndexI18nContent({ channels }: ContactChannelsIndexProps
       <PageHead title={tForm('sections.managementTitle')} />
 
       <PageContent className="overflow-hidden py-8" pageWidth="container">
-        <div className="mb-6 space-y-6">
+        <div className="mb-6">
           <div>
             <h1 className="text-xl leading-tight font-semibold">
               {tForm('sections.managementTitle')}
             </h1>
-          </div>
-
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-muted-foreground mt-1 text-sm">
-                {tForm('help.managementSubtitle')}
-              </p>
-            </div>
-
-            <PageLink
-              href={route('contact-channels.create')}
-              className="bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-ring inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium shadow-sm transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
-            >
-              {tActions('newChannel')}
-            </PageLink>
+            <p className="text-muted-foreground mt-1 text-sm">
+              {tForm('help.managementSubtitle')}
+            </p>
           </div>
         </div>
 
-        {!hasChannels && (
-          <p className="text-muted-foreground text-sm">
-            {tForm('emptyState.index')}
-          </p>
-        )}
+        <ContactChannelsTable
+          channels={channels}
+          onRowClick={(channel) => setSelectedChannel(channel)}
+          header={
+            <TableToolbar className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+              <form
+                className="flex w-full flex-col gap-3 md:flex-row md:items-center"
+                onSubmit={handleSearchSubmit}
+              >
+                <TableSearchField
+                  className="w-full md:max-w-md"
+                  aria-label={tForm('filters.searchLabel')}
+                  value={search}
+                  onChange={(event) => setSearch(event.currentTarget.value)}
+                  placeholder={tForm('filters.searchPlaceholder')}
+                  buttonLabel={tForm('filters.searchSubmit')}
+                />
 
-        {hasChannels && (
-          <div className="bg-card overflow-hidden rounded-lg border">
-            <table className="min-w-full divide-y text-sm">
-              <thead className="bg-muted/60">
-                <tr>
-                  <th className="text-muted-foreground px-4 py-3 text-left font-medium">
-                    {tForm('columns.type')}
-                  </th>
-                  <th className="text-muted-foreground px-4 py-3 text-left font-medium">
-                    {tForm('columns.label')}
-                  </th>
-                  <th className="text-muted-foreground px-4 py-3 text-left font-medium">
-                    {tForm('columns.value')}
-                  </th>
-                  <th className="text-muted-foreground px-4 py-3 text-left font-medium">
-                    {tForm('columns.active')}
-                  </th>
-                  <th className="text-muted-foreground px-4 py-3 text-left font-medium">
-                    {tForm('columns.order')}
-                  </th>
-                  <th className="text-muted-foreground px-4 py-3 text-right font-medium">
-                    {tForm('columns.actions')}
-                  </th>
-                </tr>
-              </thead>
+                <select
+                  aria-label={tForm('filters.typeLabel')}
+                  className="border-input bg-background ring-offset-background focus-visible:ring-ring placeholder:text-muted-foreground flex h-9 w-full rounded-md border px-3 py-1 text-sm shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:max-w-xs"
+                  value={type}
+                  onChange={(event) => setType(event.currentTarget.value)}
+                >
+                  <option value="">{tForm('filters.typePlaceholder')}</option>
+                  {channelTypes.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
 
-              <tbody className="divide-y">
-                {channels.map((channel) => (
-                  <tr key={channel.id}>
-                    <td className="px-4 py-3 align-top">
-                      {typeLabel(channel.channel_type)}
-                    </td>
-                    <td className="px-4 py-3 align-top">{labelFor(channel)}</td>
-                    <td className="text-muted-foreground px-4 py-3 align-top text-xs">
-                      {channel.value}
-                    </td>
-                    <td className="px-4 py-3 align-top text-xs">
-                      {channel.is_active ? tActions('yes') : tActions('no')}
-                    </td>
-                    <td className="px-4 py-3 align-top text-xs">
-                      {channel.sort_order}
-                    </td>
-                    <td className="px-4 py-3 align-top">
-                      <div className="flex justify-end gap-3 text-xs">
-                        <PageLink
-                          href={route('contact-channels.edit', channel.id)}
-                          className="text-primary font-medium hover:underline"
-                        >
-                          {tActions('edit')}
-                        </PageLink>
+                <select
+                  aria-label={tForm('filters.activeLabel')}
+                  className="border-input bg-background ring-offset-background focus-visible:ring-ring placeholder:text-muted-foreground flex h-9 w-full rounded-md border px-3 py-1 text-sm shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:max-w-xs"
+                  value={active}
+                  onChange={(event) => setActive(event.currentTarget.value)}
+                >
+                  <option value="">{tForm('filters.activePlaceholder')}</option>
+                  <option value="active">{tForm('filters.activeOnly')}</option>
+                  <option value="inactive">{tForm('filters.inactiveOnly')}</option>
+                </select>
+              </form>
 
-                        <PageLink
-                          href={route(
-                            'contact-channels.toggle-active',
-                            channel.id,
-                          )}
-                          method="post"
-                          as="button"
-                          data={{
-                            is_active: !channel.is_active,
-                          }}
-                          className="text-muted-foreground font-medium hover:underline"
-                        >
-                          {channel.is_active
-                            ? tActions('deactivate')
-                            : tActions('activate')}
-                        </PageLink>
+              <div className="flex items-center gap-2 self-end lg:self-auto">
+                {currentSearch !== '' || currentType !== '' || currentActive !== '' ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleResetFilters}
+                  >
+                    {tForm('filters.reset')}
+                  </Button>
+                ) : null}
 
-                        <PageLink
-                          href={route('contact-channels.destroy', channel.id)}
-                          method="delete"
-                          as="button"
-                          className="text-destructive font-medium hover:underline"
-                        >
-                          {tActions('delete')}
-                        </PageLink>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+                <NewButton
+                  href={route('contact-channels.create')}
+                  label={tActions('newChannel')}
+                />
+              </div>
+            </TableToolbar>
+          }
+          onPageChange={handlePageChange}
+          onPerPageChange={handlePerPageChange}
+          onSortChange={handleSortChange}
+          perPageOptions={CONTACT_CHANNEL_PER_PAGE_OPTIONS}
+          sort={sortState}
+          sortableColumns={CONTACT_CHANNEL_SORTABLE_COLUMNS}
+        />
+
+        <ContactChannelOverlay
+          open={selectedChannel !== null}
+          channel={selectedChannel}
+          onOpenChange={(open) => {
+            if (!open) {
+              setSelectedChannel(null);
+            }
+          }}
+        />
       </PageContent>
     </AuthenticatedLayout>
   );
 }
 
 Index.i18n = ['contact-channels'];
+
+function buildContactChannelsIndexQueryParams({
+  search,
+  type,
+  active,
+  perPage,
+  sort,
+}: {
+  search: string;
+  type: string;
+  active: string;
+  perPage?: number;
+  sort: TableSortState;
+}): Record<string, string> {
+  return setTableSortInQueryParams(
+    serializeTableQueryParams({
+      search,
+      type,
+      active,
+      per_page: perPage,
+    }),
+    sort,
+  );
+}

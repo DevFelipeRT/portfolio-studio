@@ -43,6 +43,15 @@ Declared explicitly in `app/Modules/ContactChannels/Routes/admin.php`:
 
 Note: the reorder route has a full backend implementation (`app/Modules/ContactChannels/Infrastructure/Repositories/ContactChannelRepository.php`, `app/Modules/ContactChannels/Application/UseCases/ReorderContactChannels/ReorderContactChannels.php`), but the current admin index UI focuses on edit/toggle-active/delete actions and does not wire a reorder interaction (`resources/js/app/pages/contact-channels/admin/index/page.tsx`).
 
+The admin index route now accepts lightweight filter query params without changing the canonical editorial ordering:
+
+- `per_page`
+- `search`
+- `type`
+- `active`
+
+These are resolved in `ContactChannelController`, passed through `ListContactChannels`, and applied in `ContactChannelRepository` before the fixed `sort_order` / `id` ordering is applied (`app/Modules/ContactChannels/Http/Controllers/Admin/ContactChannelController.php`, `app/Modules/ContactChannels/Application/UseCases/ListContactChannels/ListContactChannels.php`, `app/Modules/ContactChannels/Infrastructure/Repositories/ContactChannelRepository.php`).
+
 ### Public route
 
 Declared in `app/Modules/ContactChannels/Routes/public.php` and returns JSON (`app/Modules/ContactChannels/Http/Controllers/Public/ContactChannelController.php`):
