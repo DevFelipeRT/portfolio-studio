@@ -58,45 +58,55 @@ function ComboboxClear({ className, ...props }: ComboboxPrimitive.Clear.Props) {
   )
 }
 
-function ComboboxInput({
-  className,
-  children,
-  disabled = false,
-  showTrigger = true,
-  showClear = false,
-  ...props
-}: ComboboxPrimitive.Input.Props & {
-  showTrigger?: boolean
-  showClear?: boolean
-}) {
-  return (
-    <InputGroup className={cn("w-auto", className)}>
-      <ComboboxPrimitive.Input
-        render={
-          <InputGroupInput
-            disabled={disabled}
-            className="text-muted-foreground transition-colors placeholder:text-muted-foreground placeholder:transition-colors group-hover/input-group:text-foreground group-hover/input-group:placeholder:text-foreground group-focus-within/input-group:text-foreground group-focus-within/input-group:placeholder:text-foreground"
-          />
-        }
-        {...props}
-      />
-      <InputGroupAddon align="inline-end">
-        {showTrigger && (
-          <InputGroupButton
-            size="icon-xs"
-            variant="ghost"
-            render={<ComboboxTrigger />}
-            data-slot="input-group-button"
-            className="text-muted-foreground group-has-data-[slot=combobox-clear]/input-group:hidden data-pressed:bg-transparent hover:bg-transparent hover:text-foreground focus-visible:bg-transparent focus-visible:text-foreground focus-visible:ring-0 group-hover/input-group:text-foreground group-focus-within/input-group:text-foreground"
-            disabled={disabled}
-          />
-        )}
-        {showClear && <ComboboxClear disabled={disabled} />}
-      </InputGroupAddon>
-      {children}
-    </InputGroup>
-  )
-}
+const ComboboxInput = React.forwardRef<
+  HTMLInputElement,
+  ComboboxPrimitive.Input.Props & {
+    showTrigger?: boolean
+    showClear?: boolean
+  }
+>(
+  (
+    {
+      className,
+      children,
+      disabled = false,
+      showTrigger = true,
+      showClear = false,
+      ...props
+    },
+    ref
+  ) => {
+    return (
+      <InputGroup className={cn("w-auto", className)}>
+        <ComboboxPrimitive.Input
+          ref={ref}
+          render={
+            <InputGroupInput
+              disabled={disabled}
+              className="text-muted-foreground transition-colors placeholder:text-muted-foreground placeholder:transition-colors group-hover/input-group:text-foreground group-hover/input-group:placeholder:text-foreground group-focus-within/input-group:text-foreground group-focus-within/input-group:placeholder:text-foreground"
+            />
+          }
+          {...props}
+        />
+        <InputGroupAddon align="inline-end">
+          {showTrigger && (
+            <InputGroupButton
+              size="icon-xs"
+              variant="ghost"
+              render={<ComboboxTrigger />}
+              data-slot="input-group-button"
+              className="text-muted-foreground group-has-data-[slot=combobox-clear]/input-group:hidden data-pressed:bg-transparent hover:bg-transparent hover:text-foreground focus-visible:bg-transparent focus-visible:text-foreground focus-visible:ring-0 group-hover/input-group:text-foreground group-focus-within/input-group:text-foreground"
+              disabled={disabled}
+            />
+          )}
+          {showClear && <ComboboxClear disabled={disabled} />}
+        </InputGroupAddon>
+        {children}
+      </InputGroup>
+    )
+  }
+)
+ComboboxInput.displayName = "ComboboxInput"
 
 function ComboboxContent({
   className,
