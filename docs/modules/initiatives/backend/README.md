@@ -24,11 +24,34 @@ Declared in `app/Modules/Initiatives/Routes/admin.php`:
 - Initiatives CRUD (no `show` route): `Route::resource('initiatives', InitiativeController::class)->except(['show'])->names('initiatives')`
 - Toggle display:
   - `PATCH /admin/initiatives/{initiative}/toggle-display` (`initiatives.toggle-display`) → toggles `display` (`app/Modules/Initiatives/Http/Controllers/InitiativeController.php`)
+- Admin detail payload for the read-only overlay:
+  - `GET /admin/initiatives/{initiative}/details` (`initiatives.details`) → returns the locale-aware detail contract consumed by the index overlay (`app/Modules/Initiatives/Http/Controllers/InitiativeController.php`)
 - Translations:
   - `GET /admin/initiatives/{initiative}/translations` (`initiatives.translations.index`)
   - `POST /admin/initiatives/{initiative}/translations` (`initiatives.translations.store`)
   - `PUT /admin/initiatives/{initiative}/translations/{locale}` (`initiatives.translations.update`)
   - `DELETE /admin/initiatives/{initiative}/translations/{locale}` (`initiatives.translations.destroy`)
+
+The admin index route now accepts table filter query params:
+
+- `per_page`
+- `search`
+- `display`
+- `has_images`
+- `sort`
+- `direction`
+- `page`
+
+These filters are resolved in `InitiativeController`, passed through `ListInitiatives`, and applied in `InitiativeRepository`. `sort` is validated against a controller whitelist, `direction` is only resolved for an active sortable column, and `page` is clamped back to the last valid page when the request lands out of range (for example after toggles or manual URL edits). The `visible_count` stat is computed against the currently filtered dataset, so the page header remains aligned with the active list view (`app/Modules/Initiatives/Http/Controllers/InitiativeController.php`, `app/Modules/Initiatives/Application/UseCases/ListInitiatives/ListInitiatives.php`, `app/Modules/Initiatives/Infrastructure/Repositories/InitiativeRepository.php`).
+
+The index contract is intentionally split from the detail contract:
+
+- the paginated list returns lightweight rows with resolved locale-aware `name` / `summary` plus `image_count`
+- the overlay fetches the full detail payload separately, including `description` and the complete image gallery
+
+The admin index serializes locale-aware content through `InitiativeAdminPresenter`, while the edit form continues to use the base-record `InitiativeMapper` so the editing contract stays aligned with the persisted source record (`app/Modules/Initiatives/Presentation/Presenters/InitiativeAdminPresenter.php`, `app/Modules/Initiatives/Presentation/Mappers/InitiativeMapper.php`).
+
+Search now follows the same locale resolution contract as the rendered list rows: for `name` and `summary`, the repository searches the active locale translation first, then the configured fallback translation, and only then the base initiative record. This keeps filtering aligned with what the admin user actually sees in the table (`app/Modules/Initiatives/Infrastructure/Repositories/InitiativeRepository.php`, `app/Modules/Initiatives/Presentation/Presenters/InitiativeAdminPresenter.php`).
 
 ## Data model (persistence)
 

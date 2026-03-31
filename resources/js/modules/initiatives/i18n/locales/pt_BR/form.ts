@@ -7,10 +7,10 @@ export default {
     summary: { label: 'Resumo' },
     description: { label: 'Descrição' },
     display: { label: 'Exibir na página inicial' },
+    visibility: { label: 'Visibilidade' },
     images: { label: 'Imagens', empty: 'Nenhuma imagem adicionada ainda.' },
     updated_at: { label: 'Atualizado em' },
     actions: { label: 'Ações' },
-    display_count: { label: 'Exibição' },
     period: { label: 'Data / Período' },
     image_count: { label: 'Imagens' },
   },
@@ -18,14 +18,32 @@ export default {
     managementSubtitle:
       'Atividades que você liderou, como palestras, workshops e ações comunitárias.',
   },
+  filters: {
+    searchLabel: 'Buscar',
+    searchPlaceholder: 'Buscar por nome ou resumo da iniciativa',
+    searchSubmit: 'Buscar iniciativas',
+    visibilityLabel: 'Visibilidade',
+    visibilityPlaceholder: 'Todos os estados de visibilidade',
+    imagePresenceLabel: 'Imagens',
+    imagePresencePlaceholder: 'Qualquer estado de imagem',
+    withImages: 'Com imagens',
+    withoutImages: 'Sem imagens',
+    publicOnly: 'Somente públicas',
+    privateOnly: 'Somente privadas',
+    reset: 'Limpar',
+  },
   stats: {
     total: 'Total: {{count}}',
-    visible: 'Visíveis: {{count}}',
+    public: 'Público: {{count}}',
   },
   emptyState: {
     title: 'Nenhuma iniciativa ainda',
     description:
       'Comece cadastrando uma palestra, workshop ou ação que você liderou para destacá-la no portfólio.',
+    filteredDescription:
+      'Nenhuma iniciativa corresponde aos filtros atuais.',
+    unavailableResults:
+      'Nenhuma iniciativa está disponível para a página atual.',
     publicSection: 'Nenhuma iniciativa foi retornada para esta seção.',
   },
   table: {
@@ -36,8 +54,8 @@ export default {
   },
   values: {
     empty: '-',
-    visible: 'Visível',
-    hidden: 'Oculta',
+    public: 'Público',
+    private: 'Privado',
     from: 'De',
     to: 'Até',
   },
@@ -45,6 +63,8 @@ export default {
     progress: '{{current}} de {{total}}',
   },
   overlay: {
+    loading: 'Carregando os detalhes da iniciativa...',
+    loadError: 'Não foi possível carregar os detalhes da iniciativa agora.',
     createdOn: 'Criada em {{date}} às {{time}}',
     summary: 'Resumo',
     details: 'Detalhes',

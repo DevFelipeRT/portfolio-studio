@@ -3,68 +3,105 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import { PageContent } from '@/app/layouts/primitives';
 import { PageHead, pageRouter } from '@/common/page-runtime';
-import { useMemo, useState } from 'react';
+import {
+  NewButton,
+  serializeTableQueryParams,
+  setTablePageInQueryParams,
+  setTablePerPageInQueryParams,
+  setTableSortInQueryParams,
+  TableSearchField,
+  TableToolbar,
+  toggleTableSortState,
+  type TablePaginated,
+  type TableSortState,
+} from '@/common/table';
+import { Button } from '@/components/ui/button';
+import React, { useState } from 'react';
 
-import type { Initiative } from '@/modules/initiatives/core/types';
+import type { InitiativeListItem } from '@/modules/initiatives/core/types';
 import { InitiativeHeader } from '@/modules/initiatives/ui/InitiativeHeader';
 import {
   INITIATIVES_NAMESPACES,
   useInitiativesTranslation,
 } from '@/modules/initiatives/i18n';
 import { InitiativeOverlay } from '@/modules/initiatives/ui/overlay/InitiativeOverlay';
-import { InitiativesEmptyState } from '@/modules/initiatives/ui/InitiativesEmptyState';
 import { InitiativesTable } from '@/modules/initiatives/ui/table/InitiativesTable';
 
 interface InitiativesIndexProps {
-  initiatives: Initiative[];
+  initiatives: TablePaginated<InitiativeListItem>;
+  filters: {
+    per_page?: number | null;
+    search?: string | null;
+    display?: string | null;
+    has_images?: string | null;
+    sort?: string | null;
+    direction?: string | null;
+  };
+  stats: {
+    visible_count: number;
+  };
 }
+
+const INITIATIVE_PER_PAGE_OPTIONS = [15, 30, 50] as const;
+const INITIATIVE_SORTABLE_COLUMNS = {
+  name: true,
+  start_date: true,
+  display: true,
+  image_count: true,
+} as const;
 
 /**
  * Initiatives index page for listing and managing portfolio initiatives.
  */
-export default function Index({ initiatives }: InitiativesIndexProps) {
+export default function Index({
+  initiatives,
+  filters,
+  stats,
+}: InitiativesIndexProps) {
+  const { translate: tActions } = useInitiativesTranslation(
+    INITIATIVES_NAMESPACES.actions,
+  );
   const { translate: tSections } = useInitiativesTranslation(
     INITIATIVES_NAMESPACES.sections,
   );
-  const [items, setItems] = useState<Initiative[]>(() => [...initiatives]);
-  const [selectedInitiative, setSelectedInitiative] =
-    useState<Initiative | null>(null);
-  const [overlayOpen, setOverlayOpen] = useState(false);
-
-  const hasItems = items.length > 0;
-
-  const getStartTimestamp = (value: string | null): number | null => {
-    if (!value) {
-      return null;
-    }
-
-    const timestamp = new Date(value).getTime();
-    return Number.isNaN(timestamp) ? null : timestamp;
-  };
-
-  const orderedItems = useMemo(() => {
-    return [...items].sort((a, b) => {
-      const aStart = getStartTimestamp(a.start_date);
-      const bStart = getStartTimestamp(b.start_date);
-
-      if (aStart === null || bStart === null) {
-        return b.id - a.id;
-      }
-
-      if (aStart !== bStart) {
-        return bStart - aStart;
-      }
-
-      return b.id - a.id;
-    });
-  }, [items]);
-
-  const visibleCount = useMemo(
-    () => items.filter((item) => item.display).length,
-    [items],
+  const { translate: tForm } = useInitiativesTranslation(
+    INITIATIVES_NAMESPACES.form,
   );
+  const currentSearch =
+    typeof filters.search === 'string' ? filters.search : '';
+  const currentDisplayFilter =
+    typeof filters.display === 'string' ? filters.display : '';
+  const currentHasImagesFilter =
+    typeof filters.has_images === 'string' ? filters.has_images : '';
+  const sortState: TableSortState = {
+    column: typeof filters.sort === 'string' ? filters.sort : null,
+    direction:
+      filters.direction === 'asc' || filters.direction === 'desc'
+        ? filters.direction
+        : null,
+  };
+  const [selectedInitiative, setSelectedInitiative] =
+    useState<InitiativeListItem | null>(null);
+  const [overlayOpen, setOverlayOpen] = useState(false);
+  const [search, setSearch] = useState(currentSearch);
+  const [displayFilter, setDisplayFilter] = useState(currentDisplayFilter);
+  const [hasImagesFilter, setHasImagesFilter] = useState(currentHasImagesFilter);
+  const currentPerPage =
+    typeof filters.per_page === 'number' && filters.per_page > 0
+      ? filters.per_page
+      : initiatives.per_page;
+  const hasAppliedFilters =
+    currentSearch !== '' ||
+    currentDisplayFilter !== '' ||
+    currentHasImagesFilter !== '';
+  const emptyStateMessage =
+    initiatives.total === 0
+      ? hasAppliedFilters
+        ? tForm('emptyState.filteredDescription')
+        : tForm('emptyState.description')
+      : tForm('emptyState.unavailableResults');
 
-  function handleRowClick(initiative: Initiative): void {
+  function handleRowClick(initiative: InitiativeListItem): void {
     setSelectedInitiative(initiative);
     setOverlayOpen(true);
   }
@@ -80,17 +117,13 @@ export default function Index({ initiatives }: InitiativesIndexProps) {
   }
 
   function handleToggleDisplay(
-    initiative: Initiative,
+    initiative: InitiativeListItem,
     event?: React.MouseEvent,
   ): void {
     event?.stopPropagation();
-
     const nextDisplay = !initiative.display;
-
-    setItems((current) =>
-      current.map((item) =>
-        item.id === initiative.id ? { ...item, display: nextDisplay } : item,
-      ),
+    setSelectedInitiative((current) =>
+      current?.id === initiative.id ? { ...current, display: nextDisplay } : current,
     );
 
     pageRouter.patch(
@@ -104,12 +137,12 @@ export default function Index({ initiatives }: InitiativesIndexProps) {
   }
 
   function handleDelete(
-    initiative: Initiative,
+    initiative: InitiativeListItem,
     event?: React.MouseEvent,
   ): void {
     event?.stopPropagation();
 
-    if (!window.confirm('Are you sure you want to delete this initiative?')) {
+    if (!window.confirm(tActions('confirmDelete'))) {
       return;
     }
 
@@ -117,16 +150,114 @@ export default function Index({ initiatives }: InitiativesIndexProps) {
       preserveScroll: true,
       preserveState: true,
       onSuccess: () => {
-        setItems((current) =>
-          current.filter((item) => item.id !== initiative.id),
-        );
-
         if (selectedInitiative?.id === initiative.id) {
           setSelectedInitiative(null);
           setOverlayOpen(false);
         }
       },
     });
+  }
+
+  function handlePageChange(page: number): void {
+    pageRouter.get(
+      route('initiatives.index'),
+      setTablePageInQueryParams(
+        buildInitiativesIndexQueryParams({
+          search: currentSearch,
+          display: currentDisplayFilter,
+          hasImages: currentHasImagesFilter,
+          perPage: currentPerPage,
+          sort: sortState,
+        }),
+        page,
+      ),
+      {
+        preserveScroll: true,
+        preserveState: true,
+      },
+    );
+  }
+
+  function handlePerPageChange(perPage: number): void {
+    pageRouter.get(
+      route('initiatives.index'),
+      setTablePerPageInQueryParams(
+        buildInitiativesIndexQueryParams({
+          search: currentSearch,
+          display: currentDisplayFilter,
+          hasImages: currentHasImagesFilter,
+          sort: sortState,
+        }),
+        perPage,
+      ),
+      {
+        preserveScroll: true,
+        preserveState: true,
+        replace: true,
+      },
+    );
+  }
+
+  function handleSearchSubmit(event: React.FormEvent<HTMLFormElement>): void {
+    event.preventDefault();
+
+    pageRouter.get(
+      route('initiatives.index'),
+      buildInitiativesIndexQueryParams({
+        search,
+        display: displayFilter,
+        hasImages: hasImagesFilter,
+        perPage: currentPerPage,
+        sort: sortState,
+      }),
+      {
+        preserveScroll: true,
+        preserveState: true,
+        replace: true,
+      },
+    );
+  }
+
+  function handleResetFilters(): void {
+    setSearch('');
+    setDisplayFilter('');
+    setHasImagesFilter('');
+
+    pageRouter.get(
+      route('initiatives.index'),
+      buildInitiativesIndexQueryParams({
+        search: '',
+        display: '',
+        hasImages: '',
+        perPage: currentPerPage,
+        sort: sortState,
+      }),
+      {
+        preserveScroll: true,
+        preserveState: true,
+        replace: true,
+      },
+    );
+  }
+
+  function handleSortChange(column: string): void {
+    pageRouter.get(
+      route('initiatives.index'),
+      setTableSortInQueryParams(
+        serializeTableQueryParams({
+          per_page: currentPerPage,
+          search: currentSearch,
+          display: currentDisplayFilter,
+          has_images: currentHasImagesFilter,
+        }),
+        toggleTableSortState(sortState, column),
+      ),
+      {
+        preserveScroll: true,
+        preserveState: true,
+        replace: true,
+      },
+    );
   }
 
   return (
@@ -138,23 +269,88 @@ export default function Index({ initiatives }: InitiativesIndexProps) {
         pageWidth="container"
       >
         <InitiativeHeader
-          total={items.length}
-          visibleCount={visibleCount}
-          createRoute={route('initiatives.create')}
+          total={initiatives.total}
+          visibleCount={stats.visible_count}
         />
 
-        {!hasItems && (
-          <InitiativesEmptyState createRoute={route('initiatives.create')} />
-        )}
+        <InitiativesTable
+          initiatives={initiatives}
+          onRowClick={handleRowClick}
+          onToggleDisplay={handleToggleDisplay}
+          onDelete={handleDelete}
+          header={
+            <TableToolbar className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+              <form
+                className="flex w-full flex-col gap-3 md:flex-row md:items-center"
+                onSubmit={handleSearchSubmit}
+              >
+                <TableSearchField
+                  className="w-full md:max-w-md"
+                  aria-label={tForm('filters.searchLabel')}
+                  value={search}
+                  onChange={(event) => setSearch(event.currentTarget.value)}
+                  placeholder={tForm('filters.searchPlaceholder')}
+                  buttonLabel={tForm('filters.searchSubmit')}
+                />
 
-        {hasItems && (
-          <InitiativesTable
-            items={orderedItems}
-            onRowClick={handleRowClick}
-            onToggleDisplay={handleToggleDisplay}
-            onDelete={handleDelete}
-          />
-        )}
+                <select
+                  aria-label={tForm('filters.visibilityLabel')}
+                  className="border-input bg-background ring-offset-background focus-visible:ring-ring placeholder:text-muted-foreground flex h-9 w-full rounded-md border px-3 py-1 text-sm shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:max-w-xs"
+                  value={displayFilter}
+                  onChange={(event) => setDisplayFilter(event.currentTarget.value)}
+                >
+                  <option value="">{tForm('filters.visibilityPlaceholder')}</option>
+                  <option value="visible">{tForm('filters.publicOnly')}</option>
+                  <option value="hidden">{tForm('filters.privateOnly')}</option>
+                </select>
+
+                <select
+                  aria-label={tForm('filters.imagePresenceLabel')}
+                  className="border-input bg-background ring-offset-background focus-visible:ring-ring placeholder:text-muted-foreground flex h-9 w-full rounded-md border px-3 py-1 text-sm shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:max-w-xs"
+                  value={hasImagesFilter}
+                  onChange={(event) =>
+                    setHasImagesFilter(event.currentTarget.value)
+                  }
+                >
+                  <option value="">
+                    {tForm('filters.imagePresencePlaceholder')}
+                  </option>
+                  <option value="with">{tForm('filters.withImages')}</option>
+                  <option value="without">
+                    {tForm('filters.withoutImages')}
+                  </option>
+                </select>
+              </form>
+
+              <div className="flex items-center gap-2 self-end lg:self-auto">
+                {currentSearch !== '' ||
+                currentDisplayFilter !== '' ||
+                currentHasImagesFilter !== '' ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleResetFilters}
+                  >
+                    {tForm('filters.reset')}
+                  </Button>
+                ) : null}
+
+                <NewButton
+                  href={route('initiatives.create')}
+                  label={tActions('newInitiative')}
+                />
+              </div>
+            </TableToolbar>
+          }
+          emptyStateMessage={emptyStateMessage}
+          onPageChange={handlePageChange}
+          onPerPageChange={handlePerPageChange}
+          onSortChange={handleSortChange}
+          perPageOptions={INITIATIVE_PER_PAGE_OPTIONS}
+          sort={sortState}
+          sortableColumns={INITIATIVE_SORTABLE_COLUMNS}
+        />
       </PageContent>
 
       <InitiativeOverlay
@@ -167,3 +363,27 @@ export default function Index({ initiatives }: InitiativesIndexProps) {
 }
 
 Index.i18n = ['initiatives'];
+
+function buildInitiativesIndexQueryParams({
+  search,
+  display,
+  hasImages,
+  perPage,
+  sort,
+}: {
+  search: string;
+  display: string;
+  hasImages: string;
+  perPage?: number;
+  sort: TableSortState;
+}): Record<string, string> {
+  return setTableSortInQueryParams(
+    serializeTableQueryParams({
+      search,
+      display,
+      has_images: hasImages,
+      per_page: perPage,
+    }),
+    sort,
+  );
+}

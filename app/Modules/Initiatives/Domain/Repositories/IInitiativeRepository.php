@@ -5,10 +5,23 @@ declare(strict_types=1);
 namespace App\Modules\Initiatives\Domain\Repositories;
 
 use App\Modules\Initiatives\Domain\Models\Initiative;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
 interface IInitiativeRepository
 {
+    public function paginateWithTranslations(
+        int $perPage,
+        ?string $locale,
+        ?string $fallbackLocale = null,
+        int $page = 1,
+        ?string $search = null,
+        ?string $displayFilter = null,
+        ?string $hasImages = null,
+        ?string $sort = null,
+        ?string $direction = null,
+    ): LengthAwarePaginator;
+
     /**
      * @return Collection<int,Initiative>
      */
@@ -24,6 +37,14 @@ interface IInitiativeRepository
         ?string $locale,
         ?string $fallbackLocale = null,
     ): Collection;
+
+    public function countVisible(
+        ?string $locale = null,
+        ?string $fallbackLocale = null,
+        ?string $search = null,
+        ?string $displayFilter = null,
+        ?string $hasImages = null,
+    ): int;
 
     public function findById(int $id): Initiative;
 

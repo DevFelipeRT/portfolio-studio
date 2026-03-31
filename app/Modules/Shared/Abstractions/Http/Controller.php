@@ -9,6 +9,48 @@ use App\Modules\Shared\Abstractions\Mapping\Mapper;
 abstract class Controller
 {
     /**
+     * Transform a length-aware paginated collection using a callable mapper.
+     *
+     * @template TItem of mixed
+     * @param \Illuminate\Pagination\LengthAwarePaginator $paginator
+     * @param callable(TItem): array<string,mixed> $mapper
+     * @return array{
+     *     data: array<int, array<string,mixed>>,
+     *     current_page: int,
+     *     last_page: int,
+     *     per_page: int,
+     *     from: int|null,
+     *     to: int|null,
+     *     total: int,
+     *     path: string,
+     *     links: array<int, array{url:string|null,label:string,active:bool}>
+     * }
+     */
+    protected function mapPaginatedItems($paginator, callable $mapper): array
+    {
+        $items = array_map($mapper, $paginator->items());
+
+        return [
+            'data' => $items,
+            'current_page' => $paginator->currentPage(),
+            'last_page' => $paginator->lastPage(),
+            'per_page' => $paginator->perPage(),
+            'from' => $paginator->firstItem(),
+            'to' => $paginator->lastItem(),
+            'total' => $paginator->total(),
+            'path' => $paginator->path(),
+            'links' => $paginator->linkCollection()
+                ->map(static fn(array $link): array => [
+                    'url' => $link['url'],
+                    'label' => (string) $link['label'],
+                    'active' => (bool) $link['active'],
+                ])
+                ->values()
+                ->all(),
+        ];
+    }
+
+    /**
      * Transform a length-aware paginated collection using a mapper.
      *
      * @template T of object
@@ -28,26 +70,10 @@ abstract class Controller
      */
     protected function mapPaginatedResource($paginator, string $mapper): array
     {
-        $items = $paginator->items();
-
-        return [
-            'data' => $mapper::collection($items),
-            'current_page' => $paginator->currentPage(),
-            'last_page' => $paginator->lastPage(),
-            'per_page' => $paginator->perPage(),
-            'from' => $paginator->firstItem(),
-            'to' => $paginator->lastItem(),
-            'total' => $paginator->total(),
-            'path' => $paginator->path(),
-            'links' => $paginator->linkCollection()
-                ->map(static fn(array $link): array => [
-                    'url' => $link['url'],
-                    'label' => (string) $link['label'],
-                    'active' => (bool) $link['active'],
-                ])
-                ->values()
-                ->all(),
-        ];
+        return $this->mapPaginatedItems(
+            $paginator,
+            static fn($item): array => $mapper::toArray($item),
+        );
     }
 
     /**
