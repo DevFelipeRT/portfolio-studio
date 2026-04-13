@@ -1,13 +1,13 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import { PageContent } from '@/app/layouts/primitives';
-import { PageHead, pageRouter } from '@/common/page-runtime';
+import { SearchField } from '@/common/filtering';
+import { PageHead, pageRouter, useCurrentPage } from '@/common/page-runtime';
 import {
   NewButton,
   serializeTableQueryParams,
   setTablePageInQueryParams,
   setTablePerPageInQueryParams,
   setTableSortInQueryParams,
-  TableSearchField,
   TableToolbar,
   toggleTableSortState,
   type TablePaginated,
@@ -65,6 +65,7 @@ function ContactChannelsIndexI18nContent({
 }: ContactChannelsIndexProps) {
   const [selectedChannel, setSelectedChannel] =
     useState<ContactChannel | null>(null);
+  const currentPage = useCurrentPage();
   const { translate: tActions } = useContactChannelsTranslation(
     CONTACT_CHANNELS_NAMESPACES.actions,
   );
@@ -96,7 +97,7 @@ function ContactChannelsIndexI18nContent({
     setSearch(currentSearch);
     setType(currentType);
     setActive(currentActive);
-  }, [currentActive, currentSearch, currentType]);
+  }, [currentActive, currentSearch, currentType, currentPage.url]);
 
   const handlePageChange = (page: number): void => {
     pageRouter.get(
@@ -225,7 +226,7 @@ function ContactChannelsIndexI18nContent({
                 className="flex w-full flex-col gap-3 md:flex-row md:items-center"
                 onSubmit={handleSearchSubmit}
               >
-                <TableSearchField
+                <SearchField
                   className="w-full md:max-w-md"
                   aria-label={tForm('filters.searchLabel')}
                   value={search}

@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import { useCurrentPage } from '@/common/page-runtime';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -29,6 +30,7 @@ export function ImageFilters({
     onApply,
     onReset,
 }: ImageFiltersProps) {
+    const currentPage = useCurrentPage();
     const { translate: tActions } = useImagesTranslation(IMAGES_NAMESPACES.actions);
     const { translate: tImages } = useImagesTranslation(IMAGES_NAMESPACES.images);
     const [search, setSearch] = React.useState(initialValues.search ?? '');
@@ -40,6 +42,21 @@ export function ImageFilters({
         initialValues.storage_disk ?? '',
     );
     const [perPage, setPerPage] = React.useState(initialValues.per_page ?? '');
+
+    React.useEffect(() => {
+        setSearch(initialValues.search ?? '');
+        setUsage(initialValues.usage ?? '');
+        setMimeType(initialValues.mime_type ?? '');
+        setStorageDisk(initialValues.storage_disk ?? '');
+        setPerPage(initialValues.per_page ?? '');
+    }, [
+        currentPage.url,
+        initialValues.mime_type,
+        initialValues.per_page,
+        initialValues.search,
+        initialValues.storage_disk,
+        initialValues.usage,
+    ]);
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();

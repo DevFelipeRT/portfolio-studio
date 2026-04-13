@@ -1,13 +1,13 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import { PageContent } from '@/app/layouts/primitives';
-import { PageHead, pageRouter } from '@/common/page-runtime';
+import { SearchField } from '@/common/filtering';
+import { PageHead, pageRouter, useCurrentPage } from '@/common/page-runtime';
 import {
   NewButton,
   serializeTableQueryParams,
   setTablePageInQueryParams,
   setTablePerPageInQueryParams,
   setTableSortInQueryParams,
-  TableSearchField,
   TableToolbar,
   toggleTableSortState,
   type TablePaginated,
@@ -45,6 +45,7 @@ const COURSE_SORTABLE_COLUMNS = {
 } as const;
 
 export default function Index({ courses, filters }: CoursesIndexProps) {
+  const currentPage = useCurrentPage();
   const { translate: tActions } = useCoursesTranslation(
     COURSES_NAMESPACES.actions,
   );
@@ -52,13 +53,13 @@ export default function Index({ courses, filters }: CoursesIndexProps) {
     COURSES_NAMESPACES.sections,
   );
   const { translate: tForm } = useCoursesTranslation(COURSES_NAMESPACES.form);
-  const currentSearch =
+  const appliedSearch =
     typeof filters.search === 'string' ? filters.search : '';
-  const currentInstitution =
+  const appliedInstitution =
     typeof filters.institution === 'string' ? filters.institution : '';
-  const currentStatus =
+  const appliedStatus =
     typeof filters.status === 'string' ? filters.status : '';
-  const currentVisibility =
+  const appliedVisibility =
     typeof filters.visibility === 'string' ? filters.visibility : '';
   const sortState: TableSortState = {
     column: typeof filters.sort === 'string' ? filters.sort : null,
@@ -71,10 +72,30 @@ export default function Index({ courses, filters }: CoursesIndexProps) {
     typeof filters.per_page === 'number' && filters.per_page > 0
       ? filters.per_page
       : courses.per_page;
-  const [search, setSearch] = React.useState(currentSearch);
-  const [institution, setInstitution] = React.useState(currentInstitution);
-  const [status, setStatus] = React.useState(currentStatus);
-  const [visibility, setVisibility] = React.useState(currentVisibility);
+  const [draftSearch, setDraftSearch] = React.useState(appliedSearch);
+  const [draftInstitution, setDraftInstitution] =
+    React.useState(appliedInstitution);
+  const [draftStatus, setDraftStatus] = React.useState(appliedStatus);
+  const [draftVisibility, setDraftVisibility] =
+    React.useState(appliedVisibility);
+  const hasAppliedFilters =
+    appliedSearch !== '' ||
+    appliedInstitution !== '' ||
+    appliedStatus !== '' ||
+    appliedVisibility !== '';
+
+  React.useEffect(() => {
+    setDraftSearch(appliedSearch);
+    setDraftInstitution(appliedInstitution);
+    setDraftStatus(appliedStatus);
+    setDraftVisibility(appliedVisibility);
+  }, [
+    appliedInstitution,
+    appliedSearch,
+    appliedStatus,
+    appliedVisibility,
+    currentPage.url,
+  ]);
 
   // State for the overlay
   const [selectedCourse, setSelectedCourse] = React.useState<Course | null>(
@@ -106,10 +127,10 @@ export default function Index({ courses, filters }: CoursesIndexProps) {
       route('courses.index'),
       setTablePageInQueryParams(
         buildCoursesIndexQueryParams({
-          search: currentSearch,
-          institution: currentInstitution,
-          status: currentStatus,
-          visibility: currentVisibility,
+          search: appliedSearch,
+          institution: appliedInstitution,
+          status: appliedStatus,
+          visibility: appliedVisibility,
           perPage: currentPerPage,
           sort: sortState,
         }),
@@ -127,10 +148,10 @@ export default function Index({ courses, filters }: CoursesIndexProps) {
       route('courses.index'),
       setTablePerPageInQueryParams(
         buildCoursesIndexQueryParams({
-          search: currentSearch,
-          institution: currentInstitution,
-          status: currentStatus,
-          visibility: currentVisibility,
+          search: appliedSearch,
+          institution: appliedInstitution,
+          status: appliedStatus,
+          visibility: appliedVisibility,
           sort: sortState,
         }),
         perPage,
@@ -149,10 +170,10 @@ export default function Index({ courses, filters }: CoursesIndexProps) {
       setTableSortInQueryParams(
         serializeTableQueryParams({
           per_page: currentPerPage,
-          search: currentSearch,
-          institution: currentInstitution,
-          status: currentStatus,
-          visibility: currentVisibility,
+          search: appliedSearch,
+          institution: appliedInstitution,
+          status: appliedStatus,
+          visibility: appliedVisibility,
         }),
         toggleTableSortState(sortState, column),
       ),
@@ -168,31 +189,31 @@ export default function Index({ courses, filters }: CoursesIndexProps) {
     event.preventDefault();
 
     applyFilters({
-      search,
-      institution,
-      status,
-      visibility,
+      search: draftSearch,
+      institution: draftInstitution,
+      status: draftStatus,
+      visibility: draftVisibility,
     });
   };
 
   const handleStatusChange = (nextStatus: string): void => {
-    setStatus(nextStatus);
+    setDraftStatus(nextStatus);
 
     applyFilters({
-      search,
-      institution,
+      search: draftSearch,
+      institution: draftInstitution,
       status: nextStatus,
-      visibility,
+      visibility: draftVisibility,
     });
   };
 
   const handleVisibilityChange = (nextVisibility: string): void => {
-    setVisibility(nextVisibility);
+    setDraftVisibility(nextVisibility);
 
     applyFilters({
-      search,
-      institution,
-      status,
+      search: draftSearch,
+      institution: draftInstitution,
+      status: draftStatus,
       visibility: nextVisibility,
     });
   };
@@ -227,10 +248,10 @@ export default function Index({ courses, filters }: CoursesIndexProps) {
   };
 
   const handleResetFilters = (): void => {
-    setSearch('');
-    setInstitution('');
-    setStatus('');
-    setVisibility('');
+    setDraftSearch('');
+    setDraftInstitution('');
+    setDraftStatus('');
+    setDraftVisibility('');
 
     pageRouter.get(
       route('courses.index'),
@@ -266,11 +287,13 @@ export default function Index({ courses, filters }: CoursesIndexProps) {
                 className="flex w-full flex-col gap-3 md:flex-row md:items-center"
                 onSubmit={handleSearchSubmit}
               >
-                <TableSearchField
+                <SearchField
                   className="w-full md:max-w-md"
                   aria-label={tForm('filters.searchLabel')}
-                  value={search}
-                  onChange={(event) => setSearch(event.currentTarget.value)}
+                  value={draftSearch}
+                  onChange={(event) =>
+                    setDraftSearch(event.currentTarget.value)
+                  }
                   placeholder={tForm('filters.searchPlaceholder')}
                   buttonLabel={tForm('filters.searchSubmit')}
                 />
@@ -278,15 +301,17 @@ export default function Index({ courses, filters }: CoursesIndexProps) {
                 <input
                   aria-label={tForm('filters.institutionLabel')}
                   className="border-input bg-background ring-offset-background focus-visible:ring-ring placeholder:text-muted-foreground flex h-9 w-full rounded-md border px-3 py-1 text-sm shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:max-w-xs"
-                  value={institution}
-                  onChange={(event) => setInstitution(event.currentTarget.value)}
+                  value={draftInstitution}
+                  onChange={(event) =>
+                    setDraftInstitution(event.currentTarget.value)
+                  }
                   placeholder={tForm('filters.institutionPlaceholder')}
                 />
 
                 <select
                   aria-label={tForm('filters.statusLabel')}
                   className="border-input bg-background ring-offset-background focus-visible:ring-ring placeholder:text-muted-foreground flex h-9 w-full rounded-md border px-3 py-1 text-sm shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:max-w-xs"
-                  value={status}
+                  value={draftStatus}
                   onChange={(event) => handleStatusChange(event.currentTarget.value)}
                 >
                   <option value="">{tForm('filters.statusPlaceholder')}</option>
@@ -298,7 +323,7 @@ export default function Index({ courses, filters }: CoursesIndexProps) {
                 <select
                   aria-label={tForm('filters.visibilityLabel')}
                   className="border-input bg-background ring-offset-background focus-visible:ring-ring placeholder:text-muted-foreground flex h-9 w-full rounded-md border px-3 py-1 text-sm shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:max-w-xs"
-                  value={visibility}
+                  value={draftVisibility}
                   onChange={(event) => handleVisibilityChange(event.currentTarget.value)}
                 >
                   <option value="">{tForm('filters.visibilityPlaceholder')}</option>
@@ -308,10 +333,7 @@ export default function Index({ courses, filters }: CoursesIndexProps) {
               </form>
 
               <div className="flex items-center gap-2 self-end sm:self-auto">
-                {currentSearch !== '' ||
-                currentInstitution !== '' ||
-                currentStatus !== '' ||
-                currentVisibility !== '' ? (
+                {hasAppliedFilters ? (
                   <Button
                     type="button"
                     variant="outline"

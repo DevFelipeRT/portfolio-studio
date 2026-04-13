@@ -1,4 +1,6 @@
-import { TableSearchField, TableToolbar } from '@/common/table';
+import { SearchField } from '@/common/filtering';
+import { useCurrentPage } from '@/common/page-runtime';
+import { TableToolbar } from '@/common/table';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import {
@@ -49,6 +51,7 @@ export function PageFilters({
   actions,
   onApply,
 }: PageFiltersProps) {
+  const currentPage = useCurrentPage();
   const { translate: tPages } = useContentManagementTranslation(
     CONTENT_MANAGEMENT_NAMESPACES.pages,
   );
@@ -69,7 +72,12 @@ export function PageFilters({
     setStatus(initialFilters.status);
     setLocale(initialFilters.locale);
     setSearch(initialFilters.search);
-  }, [initialFilters.locale, initialFilters.search, initialFilters.status]);
+  }, [
+    currentPage.url,
+    initialFilters.locale,
+    initialFilters.search,
+    initialFilters.status,
+  ]);
 
   const applyFilters = (next: PageListFilters): void => {
     onApply(next);
@@ -126,15 +134,12 @@ export function PageFilters({
 
   return (
     <TableToolbar asChild>
-      <form
-        onSubmit={handleSubmit}
-        className="flex flex-wrap items-end gap-3"
-      >
+      <form onSubmit={handleSubmit} className="flex flex-wrap items-end gap-3">
         <div className="w-full sm:w-auto sm:min-w-[18rem] sm:flex-1">
           <Label htmlFor="page-search">
             {tPages('filters.search', 'Search')}
           </Label>
-          <TableSearchField
+          <SearchField
             id="page-search"
             value={search}
             onChange={(event) => setSearch(event.target.value)}

@@ -2,13 +2,13 @@
 
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import { PageContent } from '@/app/layouts/primitives';
-import { PageHead, pageRouter } from '@/common/page-runtime';
+import { SearchField } from '@/common/filtering';
+import { PageHead, pageRouter, useCurrentPage } from '@/common/page-runtime';
 import {
   serializeTableQueryParams,
   setTablePageInQueryParams,
   setTablePerPageInQueryParams,
   setTableSortInQueryParams,
-  TableSearchField,
   TableToolbar,
   type TablePaginated,
   toggleTableSortState,
@@ -59,6 +59,7 @@ export default function Index({
   stats,
   filters,
 }: MessagesIndexProps) {
+  const currentPage = useCurrentPage();
   const { translate: tMessages } = useMessagesTranslation(
     MESSAGES_NAMESPACES.messages,
   );
@@ -95,15 +96,15 @@ export default function Index({
 
   useEffect(() => {
     setDraftSearch(appliedSearch);
-  }, [appliedSearch]);
+  }, [appliedSearch, currentPage.url]);
 
   useEffect(() => {
     setDraftSeenFilter(appliedSeenFilter);
-  }, [appliedSeenFilter]);
+  }, [appliedSeenFilter, currentPage.url]);
 
   useEffect(() => {
     setDraftImportantFilter(appliedImportantFilter);
-  }, [appliedImportantFilter]);
+  }, [appliedImportantFilter, currentPage.url]);
 
   const currentIndexQuery = buildMessagesIndexQueryParams({
     search: appliedSearch,
@@ -345,7 +346,7 @@ export default function Index({
                 className="flex w-full flex-col gap-3 md:flex-row md:items-center"
                 onSubmit={handleSearchSubmit}
               >
-                <TableSearchField
+                <SearchField
                   className="w-full md:max-w-md"
                   aria-label={tMessages('filters.searchLabel')}
                   value={draftSearch}
