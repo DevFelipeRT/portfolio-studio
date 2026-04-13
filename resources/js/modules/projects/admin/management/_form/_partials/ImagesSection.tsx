@@ -2,9 +2,12 @@ import { type FormErrors } from '@/common/forms';
 import { FieldError } from '@/common/forms/field/error/FieldError';
 import { resolveFieldErrorMessage } from '@/common/forms/field/error/fieldErrorMessage';
 import { Button } from '@/components/ui/button';
-import type { ProjectFormData } from '@/modules/projects/core/forms';
-import type { ProjectImage } from '@/modules/projects/core/types';
-import { useProjectsTranslation, PROJECTS_NAMESPACES } from '@/modules/projects/i18n';
+import type { ProjectFormData } from '@/modules/projects/admin/management/types';
+import {
+  PROJECTS_NAMESPACES,
+  useProjectsTranslation,
+} from '@/modules/projects/i18n';
+import type { ProjectImage } from '@/modules/projects/types';
 import type React from 'react';
 import { ExistingProjectImageCard } from './ExistingProjectImageCard';
 import { SelectImageCard } from './SelectImageCard';

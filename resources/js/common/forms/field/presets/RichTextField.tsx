@@ -55,8 +55,10 @@ export function RichTextField<FieldName extends string>({
           placeholder={placeholder}
           editable={!disabled}
           contentWrapperClassName={cn(
+            'min-h-[78px] resize-y overflow-auto',
             hasError && 'border-destructive focus-within:ring-destructive',
           )}
+          editorClassName="min-h-[60px]"
           contentEditableProps={a11yAttributes}
         />
       )}

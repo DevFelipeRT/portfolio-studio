@@ -1,5 +1,5 @@
 import { collectErroredFieldLabels, type FormErrors } from '@/common/forms';
-import type { ProjectFormData } from '@/modules/projects/core/forms';
+import type { ProjectFormData } from '@/modules/projects/admin/management/types';
 
 export function getErrorSummaryFields(
   errors: FormErrors<keyof ProjectFormData>,

@@ -2,20 +2,25 @@ export default {
   fields: {
     locale: {
       label: 'Locale base',
-      placeholder: 'Selecione um locale',
+      placeholder: 'Escolha o idioma principal do projeto',
     },
     name: {
       label: 'Nome',
+      placeholder: 'Informe o nome do projeto',
     },
     status: {
       label: 'Status',
-      placeholder: 'Selecione um status',
+      placeholder: 'Escolha o status',
     },
     summary: {
       label: 'Resumo',
+      placeholder:
+        'Explique em uma frase o objetivo e o principal resultado do projeto',
     },
     description: {
       label: 'Descrição',
+      placeholder:
+        'Descreva contexto, solução, stack, desafios e impacto do projeto',
     },
     display: {
       label: 'Exibir na página inicial',
@@ -24,10 +29,12 @@ export default {
       label: 'Visibilidade',
     },
     repository_url: {
-      label: 'URL do repositório',
+      label: 'Link do repositório do projeto',
+      placeholder: 'https://github.com/sua-org/seu-repositorio',
     },
     live_url: {
-      label: 'URL ao vivo',
+      label: 'Link da versão publicada',
+      placeholder: 'https://produto.exemplo.com',
     },
     skill_ids: {
       label: 'Habilidades',
@@ -39,7 +46,12 @@ export default {
     images: {
       label: 'Imagens',
       empty: 'Nenhuma imagem adicionada ainda.',
-      addDisabledTitle: 'Selecione um arquivo de imagem antes de adicionar outro campo.',
+      addDisabledTitle:
+        'Selecione um arquivo de imagem antes de adicionar outro campo.',
+      fileLabel: 'Arquivo da imagem',
+      filePlaceholder: 'Selecione uma imagem',
+      altLabel: 'Texto alternativo',
+      altPlaceholder: 'Descreva a imagem para acessibilidade',
     },
     updated_at: {
       label: 'Atualizado em',
@@ -54,6 +66,10 @@ export default {
   help: {
     managementSubtitle:
       'Gerencie os projetos exibidos na página inicial do seu portfólio.',
+    createSubtitle:
+      'Preencha as informações editoriais, os links públicos e as imagens do novo projeto.',
+    editSubtitle:
+      'Revise os dados principais, os links publicados e os recursos visuais deste projeto.',
   },
   filters: {
     searchLabel: 'Buscar',

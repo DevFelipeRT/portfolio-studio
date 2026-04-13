@@ -1,6 +1,13 @@
-import { FieldError, resolveFieldErrorMessage, type FormErrors } from '@/common/forms';
-import type { ProjectFormData } from '@/modules/projects/core/forms';
-import { useProjectsTranslation, PROJECTS_NAMESPACES } from '@/modules/projects/i18n';
+import {
+  FieldError,
+  resolveFieldErrorMessage,
+  type FormErrors,
+} from '@/common/forms';
+import type { ProjectFormData } from '@/modules/projects/admin/management/types';
+import {
+  PROJECTS_NAMESPACES,
+  useProjectsTranslation,
+} from '@/modules/projects/i18n';
 import type { SkillCatalogItem } from '@/modules/skills/core/types';
 import { SkillMultiSelect } from '@/modules/skills/ui/SkillMultiSelect';
 

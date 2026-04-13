@@ -2,8 +2,11 @@ import { ImageField, type FormErrors } from '@/common/forms';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import type { ProjectFormData } from '@/modules/projects/core/forms';
-import { useProjectsTranslation, PROJECTS_NAMESPACES } from '@/modules/projects/i18n';
+import type { ProjectFormData } from '@/modules/projects/admin/management/types';
+import {
+  PROJECTS_NAMESPACES,
+  useProjectsTranslation,
+} from '@/modules/projects/i18n';
 import type React from 'react';
 
 interface SelectImageCardProps {
@@ -26,6 +29,7 @@ export function SelectImageCard({
   const { translate: tActions } = useProjectsTranslation(
     PROJECTS_NAMESPACES.actions,
   );
+  const { translate: tForm } = useProjectsTranslation(PROJECTS_NAMESPACES.form);
   const hasPreview = Boolean(image.file);
 
   return (
@@ -42,6 +46,10 @@ export function SelectImageCard({
           file={image.file ?? null}
           fileId={`image-file-${index}`}
           altId={`image-alt-${index}`}
+          fileLabel={tForm('fields.images.fileLabel')}
+          altLabel={tForm('fields.images.altLabel')}
+          filePlaceholder={tForm('fields.images.filePlaceholder')}
+          altPlaceholder={tForm('fields.images.altPlaceholder')}
           altValue={image.alt ?? ''}
           required
           onFileChange={onFileChange}

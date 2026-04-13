@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { cn } from '@/lib/utils';
 import type { ReactNode } from 'react';
 
 type SelectOption = {
@@ -60,10 +61,20 @@ export function SelectField<FieldName extends string>({
       errorId={errorId}
     >
       {({ a11yAttributes, getSelectClassName }) => (
-        <Select value={value} onValueChange={onChange} disabled={disabled}>
+        <Select
+          value={value}
+          onValueChange={onChange}
+          disabled={disabled}
+        >
           <SelectTrigger
             id={id}
-            className={getSelectClassName()}
+            className={cn(
+              getSelectClassName(),
+              'transition-colors data-[state=open]:border-ring data-[state=open]:ring-1 data-[state=open]:ring-ring [&>span]:transition-colors',
+              value
+                ? '[&>span]:text-foreground'
+                : '[&>span]:text-muted-foreground',
+            )}
             {...a11yAttributes}
           >
             <SelectValue placeholder={placeholder} />
