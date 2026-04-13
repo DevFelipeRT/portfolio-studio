@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\Projects\Application\UseCases\CreateProjectTranslation;
 
-use App\Modules\Projects\Domain\ValueObjects\ProjectStatus;
-
 final readonly class CreateProjectTranslationInput
 {
     public function __construct(
@@ -14,7 +12,6 @@ final readonly class CreateProjectTranslationInput
         public readonly ?string $name,
         public readonly ?string $summary,
         public readonly ?string $description,
-        public readonly ?ProjectStatus $status,
         public readonly ?string $repositoryUrl,
         public readonly ?string $liveUrl,
     ) {

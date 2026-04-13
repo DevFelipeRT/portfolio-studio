@@ -69,17 +69,7 @@ final class ProjectTranslationResolver
         string $locale,
         ?string $fallbackLocale = null,
     ): ?string {
-        if ($locale === $project->locale) {
-            return $this->normalizeResolvedFieldValue($project->status);
-        }
-
-        return $this->resolveField(
-            $project->translations,
-            'status',
-            $locale,
-            $fallbackLocale,
-            $this->normalizeResolvedFieldValue($project->status),
-        );
+        return $this->normalizeResolvedFieldValue($project->status);
     }
 
     public function resolveRepositoryUrl(

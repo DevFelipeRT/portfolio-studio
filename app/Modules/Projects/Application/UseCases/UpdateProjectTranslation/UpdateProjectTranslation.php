@@ -57,7 +57,6 @@ final class UpdateProjectTranslation
      *   name?:string|null,
      *   summary?:string|null,
      *   description?:string|null,
-     *   status?:string|null,
      *   repository_url?:string|null,
      *   live_url?:string|null
      * }
@@ -86,7 +85,6 @@ final class UpdateProjectTranslation
             'name' => $this->normalizeText($input->name),
             'summary' => $this->normalizeText($input->summary),
             'description' => $descriptionRaw,
-            'status' => $input->status?->toScalar(),
             'repository_url' => $this->normalizeText($input->repositoryUrl),
             'live_url' => $this->normalizeText($input->liveUrl),
         ];
@@ -108,7 +106,6 @@ final class UpdateProjectTranslation
      *   name?:string|null,
      *   summary?:string|null,
      *   description?:string|null,
-     *   status?:string|null,
      *   repository_url?:string|null,
      *   live_url?:string|null
      * } $payload

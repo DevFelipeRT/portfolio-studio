@@ -75,14 +75,14 @@ final class ProjectAdminListQuery
         ): void {
             $nestedQuery
                 ->whereRaw(
-                    $this->resolvedTranslationFieldExpression('name', $locale, $fallbackLocale) . ' like ?',
+                    'LOWER(' . $this->resolvedTranslationFieldExpression('name', $locale, $fallbackLocale) . ') like ?',
                     [
                         ...$this->resolvedTranslationFieldBindings($locale, $fallbackLocale),
                         $like,
                     ],
                 )
                 ->orWhereRaw(
-                    $this->resolvedTranslationFieldExpression('summary', $locale, $fallbackLocale) . ' like ?',
+                    'LOWER(' . $this->resolvedTranslationFieldExpression('summary', $locale, $fallbackLocale) . ') like ?',
                     [
                         ...$this->resolvedTranslationFieldBindings($locale, $fallbackLocale),
                         $like,
@@ -105,12 +105,8 @@ final class ProjectAdminListQuery
         $placeholders = implode(', ', array_fill(0, count($matches), '?'));
 
         return $query->whereRaw(
-            $this->resolvedTranslationFieldExpression('status', $locale, $fallbackLocale)
-            . " in ({$placeholders})",
-            [
-                ...$this->resolvedTranslationFieldBindings($locale, $fallbackLocale),
-                ...$matches,
-            ],
+            "projects.status in ({$placeholders})",
+            $matches,
         );
     }
 
@@ -140,10 +136,7 @@ final class ProjectAdminListQuery
                 )
                 ->orderBy('projects.id'),
             'status' => $query
-                ->orderByRaw(
-                    $this->resolvedTranslationFieldExpression('status', $locale, $fallbackLocale) . ' ' . $resolvedDirection,
-                    $this->resolvedTranslationFieldBindings($locale, $fallbackLocale),
-                )
+                ->orderBy('projects.status', $resolvedDirection)
                 ->orderByDesc('projects.created_at')
                 ->orderByDesc('projects.id'),
             'display' => $query
@@ -168,7 +161,7 @@ final class ProjectAdminListQuery
         $resolvedLocale = $this->normalizeLocale($locale);
         $resolvedFallbackLocale = $this->normalizeLocale($fallbackLocale);
         $column = match ($field) {
-            'name', 'summary', 'status' => 'projects.' . $field,
+            'name', 'summary' => 'projects.' . $field,
             default => throw new \InvalidArgumentException('Unsupported translated field.'),
         };
 
@@ -273,6 +266,6 @@ final class ProjectAdminListQuery
 
     private function toLikePattern(string $value): string
     {
-        return '%' . addcslashes($value, '\\%_') . '%';
+        return '%' . addcslashes(mb_strtolower($value, 'UTF-8'), '\\%_') . '%';
     }
 }
