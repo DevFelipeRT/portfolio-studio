@@ -7,7 +7,6 @@ namespace App\Modules\Projects\Application\Services;
 use App\Modules\Projects\Domain\Models\Project;
 use App\Modules\Projects\Domain\Repositories\IProjectRepository;
 use App\Modules\Projects\Domain\Repositories\IProjectTranslationRepository;
-use App\Modules\Projects\Domain\ValueObjects\ProjectStatus;
 use Illuminate\Support\Facades\DB;
 
 final class ProjectLocaleSwapService
@@ -35,7 +34,6 @@ final class ProjectLocaleSwapService
                 'description' => $project->description,
                 'repository_url' => $project->repository_url,
                 'live_url' => $project->live_url,
-                'status' => $this->statusToScalar($project->status),
             ];
 
             $newBasePayload = [
@@ -44,7 +42,6 @@ final class ProjectLocaleSwapService
                 'description' => $translation->description,
                 'repository_url' => $translation->repository_url,
                 'live_url' => $translation->live_url,
-                'status' => $this->statusToScalar($translation->status),
             ];
 
             $this->projects->update($project, [
@@ -54,7 +51,6 @@ final class ProjectLocaleSwapService
                 'description' => $newBasePayload['description'],
                 'repository_url' => $newBasePayload['repository_url'],
                 'live_url' => $newBasePayload['live_url'],
-                'status' => $newBasePayload['status'],
             ]);
 
             $existingOldTranslation = $this->translations->findByProjectAndLocale(
@@ -72,12 +68,5 @@ final class ProjectLocaleSwapService
 
             return $project->refresh();
         });
-    }
-
-    private function statusToScalar(mixed $value): ?string
-    {
-        return $value instanceof ProjectStatus
-            ? $value->toScalar()
-            : (is_string($value) ? $value : null);
     }
 }

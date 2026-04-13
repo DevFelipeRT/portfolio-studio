@@ -13,7 +13,6 @@ use App\Modules\Projects\Application\UseCases\ListProjectTranslations\ListProjec
 use App\Modules\Projects\Application\UseCases\ListProjectTranslations\ListProjectTranslationsInput;
 use App\Modules\Projects\Application\UseCases\UpdateProjectTranslation\UpdateProjectTranslation;
 use App\Modules\Projects\Application\UseCases\UpdateProjectTranslation\UpdateProjectTranslationInput;
-use App\Modules\Projects\Domain\ValueObjects\ProjectStatus;
 use App\Modules\Projects\Domain\Models\Project;
 use App\Modules\Projects\Http\Requests\ProjectTranslation\StoreProjectTranslationRequest;
 use App\Modules\Projects\Http\Requests\ProjectTranslation\UpdateProjectTranslationRequest;
@@ -55,7 +54,6 @@ final class ProjectTranslationController extends Controller
                 name: $data['name'] ?? null,
                 summary: $data['summary'] ?? null,
                 description: $data['description'] ?? null,
-                status: ProjectStatus::tryFromScalar($data['status'] ?? null),
                 repositoryUrl: $data['repository_url'] ?? null,
                 liveUrl: $data['live_url'] ?? null,
             ),
@@ -80,7 +78,6 @@ final class ProjectTranslationController extends Controller
                 name: $data['name'] ?? null,
                 summary: $data['summary'] ?? null,
                 description: $data['description'] ?? null,
-                status: ProjectStatus::tryFromScalar($data['status'] ?? null),
                 repositoryUrl: $data['repository_url'] ?? null,
                 liveUrl: $data['live_url'] ?? null,
             ),

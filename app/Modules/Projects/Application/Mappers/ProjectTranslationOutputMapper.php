@@ -8,7 +8,6 @@ use App\Modules\Projects\Application\UseCases\CreateProjectTranslation\CreatePro
 use App\Modules\Projects\Application\UseCases\ListProjectTranslations\ListProjectTranslationItem;
 use App\Modules\Projects\Application\UseCases\UpdateProjectTranslation\UpdateProjectTranslationOutput;
 use App\Modules\Projects\Domain\Models\ProjectTranslation;
-use App\Modules\Projects\Domain\ValueObjects\ProjectStatus;
 
 final class ProjectTranslationOutputMapper
 {
@@ -21,7 +20,6 @@ final class ProjectTranslationOutputMapper
             name: $translation->name,
             summary: $translation->summary,
             description: $translation->description,
-            status: $this->statusToScalar($translation->status),
             repositoryUrl: $translation->repository_url,
             liveUrl: $translation->live_url,
             createdAt: $translation->created_at?->toJSON(),
@@ -38,7 +36,6 @@ final class ProjectTranslationOutputMapper
             name: $translation->name,
             summary: $translation->summary,
             description: $translation->description,
-            status: $this->statusToScalar($translation->status),
             repositoryUrl: $translation->repository_url,
             liveUrl: $translation->live_url,
             createdAt: $translation->created_at?->toJSON(),
@@ -55,18 +52,10 @@ final class ProjectTranslationOutputMapper
             name: $translation->name,
             summary: $translation->summary,
             description: $translation->description,
-            status: $this->statusToScalar($translation->status),
             repositoryUrl: $translation->repository_url,
             liveUrl: $translation->live_url,
             createdAt: $translation->created_at?->toJSON(),
             updatedAt: $translation->updated_at?->toJSON(),
         );
-    }
-
-    private function statusToScalar(mixed $value): ?string
-    {
-        return $value instanceof ProjectStatus
-            ? $value->toScalar()
-            : (is_string($value) ? $value : null);
     }
 }

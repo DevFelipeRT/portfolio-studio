@@ -36,7 +36,6 @@ final class ProjectTranslationRepository implements IProjectTranslationRepositor
             'name' => $data['name'] ?? null,
             'summary' => $data['summary'] ?? null,
             'description' => $data['description'] ?? null,
-            'status' => $data['status'] ?? null,
             'repository_url' => $data['repository_url'] ?? null,
             'live_url' => $data['live_url'] ?? null,
         ]);
@@ -50,7 +49,6 @@ final class ProjectTranslationRepository implements IProjectTranslationRepositor
             'name' => $data['name'] ?? null,
             'summary' => $data['summary'] ?? null,
             'description' => $data['description'] ?? null,
-            'status' => $data['status'] ?? null,
             'repository_url' => $data['repository_url'] ?? null,
             'live_url' => $data['live_url'] ?? null,
         ]);
