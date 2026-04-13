@@ -1,20 +1,14 @@
-import { TableBadge } from '@/common/table';
 import type { PlaceholderValues } from '@/common/i18n';
+import { TableBadge } from '@/common/table';
 import { cn } from '@/lib/utils';
-import type { ProjectStatusValue } from '@/modules/projects/core/status';
 import {
   PROJECTS_NAMESPACES,
   useProjectsTranslation,
 } from '@/modules/projects/i18n';
-import {
-  CheckCircle2,
-  Circle,
-  CircleDashed,
-  Wrench,
-} from 'lucide-react';
+import { CheckCircle2, Circle, CircleDashed, Wrench } from 'lucide-react';
 
 interface ProjectStatusBadgeProps {
-  status?: ProjectStatusValue | null;
+  status?: string | null;
   className?: string;
 }
 
@@ -23,13 +17,7 @@ type ProjectStatusTranslation = {
   (key: string, fallback: string, params?: PlaceholderValues): string;
 };
 
-const statusVariants: Record<
-  ProjectStatusValue,
-  {
-    icon: React.ComponentType<{ className?: string }>;
-    style: string;
-  }
-> = {
+const statusVariants = {
   delivered: {
     icon: CheckCircle2,
     style:
@@ -49,7 +37,13 @@ const statusVariants: Record<
     style:
       'bg-slate-100 text-slate-700 dark:bg-slate-800/50 dark:text-slate-300',
   },
-};
+} as const;
+
+type KnownProjectStatus = keyof typeof statusVariants;
+
+function isKnownProjectStatus(status: string): status is KnownProjectStatus {
+  return status in statusVariants;
+}
 
 /**
  * Renders a translated and semantically styled status badge for projects.
@@ -64,7 +58,13 @@ export function ProjectStatusBadge({
     return null;
   }
 
-  const variant = statusVariants[status];
+  const variant = isKnownProjectStatus(status)
+    ? statusVariants[status]
+    : {
+        icon: Circle,
+        style:
+          'bg-slate-100 text-slate-700 dark:bg-slate-800/50 dark:text-slate-300',
+      };
   const Icon = variant.icon;
 
   return (
@@ -76,12 +76,16 @@ export function ProjectStatusBadge({
       )}
     >
       <Icon className="h-3.5 w-3.5" />
-      <span className="hidden sm:inline">{formatProjectStatusLabel(tForm, status)}</span>
+      <span className="hidden sm:inline">
+        {formatProjectStatusLabel(tForm, status)}
+      </span>
     </TableBadge>
   );
 }
 
-export function useProjectStatusLabel(status?: ProjectStatusValue | null): string {
+export function useProjectStatusLabel(
+  status?: string | null,
+): string {
   const { translate: tForm } = useProjectsTranslation(PROJECTS_NAMESPACES.form);
 
   return formatProjectStatusLabel(tForm, status);
@@ -89,11 +93,11 @@ export function useProjectStatusLabel(status?: ProjectStatusValue | null): strin
 
 function formatProjectStatusLabel(
   tForm: ProjectStatusTranslation,
-  status?: ProjectStatusValue | null,
+  status?: string | null,
 ): string {
   if (status === null || status === undefined) {
     return '';
   }
 
-  return tForm(`status.${status}`);
+  return tForm(`status.${status}`, status);
 }
