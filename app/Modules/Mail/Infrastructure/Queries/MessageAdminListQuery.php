@@ -65,13 +65,13 @@ final class MessageAdminListQuery
             return $query;
         }
 
-        $like = '%' . addcslashes($trimmed, '\\%_') . '%';
+        $like = '%' . addcslashes(mb_strtolower($trimmed, 'UTF-8'), '\\%_') . '%';
 
         return $query->where(static function (Builder $nestedQuery) use ($like): void {
             $nestedQuery
-                ->where('messages.name', 'like', $like)
-                ->orWhere('messages.email', 'like', $like)
-                ->orWhere('messages.message', 'like', $like);
+                ->whereRaw('LOWER(messages.name) like ?', [$like])
+                ->orWhereRaw('LOWER(messages.email) like ?', [$like])
+                ->orWhereRaw('LOWER(messages.message) like ?', [$like]);
         });
     }
 

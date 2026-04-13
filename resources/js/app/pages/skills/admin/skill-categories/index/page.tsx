@@ -1,13 +1,18 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import { PageContent } from '@/app/layouts/primitives';
-import { PageHead, PageLink, pageRouter } from '@/common/page-runtime';
+import { SearchField } from '@/common/filtering';
+import {
+  PageHead,
+  PageLink,
+  pageRouter,
+  useCurrentPage,
+} from '@/common/page-runtime';
 import {
   NewButton,
   serializeTableQueryParams,
   setTablePageInQueryParams,
   setTablePerPageInQueryParams,
   setTableSortInQueryParams,
-  TableSearchField,
   TableToolbar,
   type TablePaginated,
   toggleTableSortState,
@@ -40,6 +45,7 @@ export default function Index({
   categories,
   filters,
 }: SkillCategoriesIndexProps) {
+  const currentPage = useCurrentPage();
   const { translate: tActions } = useSkillsTranslation(
     SKILLS_NAMESPACES.actions,
   );
@@ -69,7 +75,7 @@ export default function Index({
   // Keep the form draft aligned with the applied table query after navigation.
   useEffect(() => {
     setDraftSearch(appliedSearch);
-  }, [appliedSearch]);
+  }, [appliedSearch, currentPage.url]);
 
   const handlePageChange = (page: number): void => {
     pageRouter.get(
@@ -199,7 +205,7 @@ export default function Index({
                 className="w-full sm:max-w-md"
                 onSubmit={handleSearchSubmit}
               >
-                <TableSearchField
+                <SearchField
                   aria-label={tForm('filters.categoriesSearchLabel')}
                   value={draftSearch}
                   onChange={(event) =>

@@ -1,13 +1,13 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import { PageContent } from '@/app/layouts/primitives';
-import { PageHead, pageRouter } from '@/common/page-runtime';
+import { SearchField } from '@/common/filtering';
+import { PageHead, pageRouter, useCurrentPage } from '@/common/page-runtime';
 import {
   NewButton,
   serializeTableQueryParams,
   setTablePageInQueryParams,
   setTablePerPageInQueryParams,
   setTableSortInQueryParams,
-  TableSearchField,
   TableToolbar,
   toggleTableSortState,
   type TablePaginated,
@@ -21,7 +21,7 @@ import {
 } from '@/modules/experiences/i18n';
 import { ExperienceOverlay } from '@/modules/experiences/ui/ExperienceOverlay';
 import { ExperiencesTable } from '@/modules/experiences/ui/table/ExperiencesTable';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface ExperiencesIndexProps {
   experiences: TablePaginated<Experience>;
@@ -46,6 +46,7 @@ const EXPERIENCE_SORTABLE_COLUMNS = {
 export default function Index({ experiences, filters }: ExperiencesIndexProps) {
   const [selectedExperience, setSelectedExperience] =
     useState<Experience | null>(null);
+  const currentPage = useCurrentPage();
   const { translate: tActions } = useExperiencesTranslation(
     EXPERIENCES_NAMESPACES.actions,
   );
@@ -55,9 +56,9 @@ export default function Index({ experiences, filters }: ExperiencesIndexProps) {
   const { translate: tForm } = useExperiencesTranslation(
     EXPERIENCES_NAMESPACES.form,
   );
-  const currentSearch =
+  const appliedSearch =
     typeof filters.search === 'string' ? filters.search : '';
-  const currentVisibility =
+  const appliedVisibility =
     typeof filters.visibility === 'string' ? filters.visibility : '';
   const currentSortColumn =
     typeof filters.sort === 'string' ? filters.sort : null;
@@ -74,16 +75,22 @@ export default function Index({ experiences, filters }: ExperiencesIndexProps) {
     typeof filters.per_page === 'number' && filters.per_page > 0
       ? filters.per_page
       : experiences.per_page;
-  const [search, setSearch] = useState(currentSearch);
-  const [visibility, setVisibility] = useState(currentVisibility);
+  const [draftSearch, setDraftSearch] = useState(appliedSearch);
+  const [draftVisibility, setDraftVisibility] = useState(appliedVisibility);
+  const hasAppliedFilters = appliedSearch !== '' || appliedVisibility !== '';
+
+  useEffect(() => {
+    setDraftSearch(appliedSearch);
+    setDraftVisibility(appliedVisibility);
+  }, [appliedSearch, appliedVisibility, currentPage.url]);
 
   const handlePageChange = (page: number): void => {
     pageRouter.get(
       route('experiences.index'),
       setTablePageInQueryParams(
         buildExperiencesIndexQueryParams({
-          search: currentSearch,
-          visibility: currentVisibility,
+          search: appliedSearch,
+          visibility: appliedVisibility,
           perPage: currentPerPage,
           sort: sortState,
         }),
@@ -101,8 +108,8 @@ export default function Index({ experiences, filters }: ExperiencesIndexProps) {
       route('experiences.index'),
       setTablePerPageInQueryParams(
         buildExperiencesIndexQueryParams({
-          search: currentSearch,
-          visibility: currentVisibility,
+          search: appliedSearch,
+          visibility: appliedVisibility,
           sort: sortState,
         }),
         perPage,
@@ -121,8 +128,8 @@ export default function Index({ experiences, filters }: ExperiencesIndexProps) {
       setTableSortInQueryParams(
         serializeTableQueryParams({
           per_page: currentPerPage,
-          search: currentSearch,
-          visibility: currentVisibility,
+          search: appliedSearch,
+          visibility: appliedVisibility,
         }),
         toggleTableSortState(sortState, column),
       ),
@@ -140,8 +147,8 @@ export default function Index({ experiences, filters }: ExperiencesIndexProps) {
     pageRouter.get(
       route('experiences.index'),
       buildExperiencesIndexQueryParams({
-        search,
-        visibility,
+        search: draftSearch,
+        visibility: draftVisibility,
         perPage: currentPerPage,
         sort: sortState,
       }),
@@ -154,8 +161,8 @@ export default function Index({ experiences, filters }: ExperiencesIndexProps) {
   };
 
   const handleResetFilters = (): void => {
-    setSearch('');
-    setVisibility('');
+    setDraftSearch('');
+    setDraftVisibility('');
 
     pageRouter.get(
       route('experiences.index'),
@@ -198,11 +205,13 @@ export default function Index({ experiences, filters }: ExperiencesIndexProps) {
                 className="flex w-full flex-col gap-3 md:flex-row md:items-center"
                 onSubmit={handleSearchSubmit}
               >
-                <TableSearchField
+                <SearchField
                   className="w-full md:max-w-md"
                   aria-label={tForm('filters.searchLabel')}
-                  value={search}
-                  onChange={(event) => setSearch(event.currentTarget.value)}
+                  value={draftSearch}
+                  onChange={(event) =>
+                    setDraftSearch(event.currentTarget.value)
+                  }
                   placeholder={tForm('filters.searchPlaceholder')}
                   buttonLabel={tForm('filters.searchSubmit')}
                 />
@@ -210,8 +219,10 @@ export default function Index({ experiences, filters }: ExperiencesIndexProps) {
                 <select
                   aria-label={tForm('filters.visibilityLabel')}
                   className="border-input bg-background ring-offset-background focus-visible:ring-ring placeholder:text-muted-foreground flex h-9 w-full rounded-md border px-3 py-1 text-sm shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:max-w-xs"
-                  value={visibility}
-                  onChange={(event) => setVisibility(event.currentTarget.value)}
+                  value={draftVisibility}
+                  onChange={(event) =>
+                    setDraftVisibility(event.currentTarget.value)
+                  }
                 >
                   <option value="">{tForm('filters.visibilityPlaceholder')}</option>
                   <option value="public">{tForm('filters.publicOnly')}</option>
@@ -220,7 +231,7 @@ export default function Index({ experiences, filters }: ExperiencesIndexProps) {
               </form>
 
               <div className="flex items-center gap-2 self-end sm:self-auto">
-                {currentSearch !== '' || currentVisibility !== '' ? (
+                {hasAppliedFilters ? (
                   <Button
                     type="button"
                     variant="outline"

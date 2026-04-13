@@ -3,7 +3,6 @@ export { TableActionCell } from './TableActionCell';
 export { TableBadge, TableBadgeButton, TableBooleanBadge } from './TableBadge';
 export { NewButton } from './NewButton';
 export { TablePagination } from './TablePagination';
-export { TableSearchField } from './TableSearchField';
 export { TableSortHeader } from './TableSortHeader';
 export {
   TableDateText,

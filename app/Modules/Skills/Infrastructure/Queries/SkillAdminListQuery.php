@@ -36,13 +36,13 @@ final class SkillAdminListQuery
             return $query;
         }
 
-        $like = '%' . addcslashes($trimmed, '\\%_') . '%';
+        $like = '%' . addcslashes(mb_strtolower($trimmed, 'UTF-8'), '\\%_') . '%';
 
         return $query->where(static function (Builder $nestedQuery) use ($like): void {
             $nestedQuery
-                ->where('skills.name', 'like', $like)
+                ->whereRaw('LOWER(skills.name) like ?', [$like])
                 ->orWhereHas('category', static function (Builder $categoryQuery) use ($like): void {
-                    $categoryQuery->where('skill_categories.name', 'like', $like);
+                    $categoryQuery->whereRaw('LOWER(skill_categories.name) like ?', [$like]);
                 });
         });
     }

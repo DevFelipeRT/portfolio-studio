@@ -42,14 +42,6 @@ export type NewButtonProps = {
   className?: string;
 };
 
-export type TableSearchFieldProps = Omit<
-  ComponentPropsWithoutRef<'input'>,
-  'size'
-> & {
-  buttonLabel?: ReactNode;
-  buttonClassName?: string;
-};
-
 export type TablePaginationLink = {
   url: string | null;
   label: string;

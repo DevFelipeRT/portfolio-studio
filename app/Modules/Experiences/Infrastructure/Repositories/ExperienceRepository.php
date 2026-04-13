@@ -109,13 +109,13 @@ final class ExperienceRepository implements IExperienceRepository
             return $query;
         }
 
-        $like = '%' . addcslashes($trimmed, '\\%_') . '%';
+        $like = '%' . addcslashes(mb_strtolower($trimmed, 'UTF-8'), '\\%_') . '%';
 
         return $query->where(static function (Builder $nestedQuery) use ($like): void {
             $nestedQuery
-                ->where('experiences.position', 'like', $like)
-                ->orWhere('experiences.company', 'like', $like)
-                ->orWhere('experiences.summary', 'like', $like);
+                ->whereRaw('LOWER(experiences.position) like ?', [$like])
+                ->orWhereRaw('LOWER(experiences.company) like ?', [$like])
+                ->orWhereRaw('LOWER(experiences.summary) like ?', [$like]);
         });
     }
 

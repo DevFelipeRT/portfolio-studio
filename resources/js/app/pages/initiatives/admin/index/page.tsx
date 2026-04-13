@@ -2,21 +2,21 @@
 
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import { PageContent } from '@/app/layouts/primitives';
-import { PageHead, pageRouter } from '@/common/page-runtime';
+import { SearchField } from '@/common/filtering';
+import { PageHead, pageRouter, useCurrentPage } from '@/common/page-runtime';
 import {
   NewButton,
   serializeTableQueryParams,
   setTablePageInQueryParams,
   setTablePerPageInQueryParams,
   setTableSortInQueryParams,
-  TableSearchField,
   TableToolbar,
   toggleTableSortState,
   type TablePaginated,
   type TableSortState,
 } from '@/common/table';
 import { Button } from '@/components/ui/button';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import type { InitiativeListItem } from '@/modules/initiatives/core/types';
 import { InitiativeHeader } from '@/modules/initiatives/ui/InitiativeHeader';
@@ -58,6 +58,7 @@ export default function Index({
   filters,
   stats,
 }: InitiativesIndexProps) {
+  const currentPage = useCurrentPage();
   const { translate: tActions } = useInitiativesTranslation(
     INITIATIVES_NAMESPACES.actions,
   );
@@ -67,11 +68,11 @@ export default function Index({
   const { translate: tForm } = useInitiativesTranslation(
     INITIATIVES_NAMESPACES.form,
   );
-  const currentSearch =
+  const appliedSearch =
     typeof filters.search === 'string' ? filters.search : '';
-  const currentDisplayFilter =
+  const appliedDisplayFilter =
     typeof filters.display === 'string' ? filters.display : '';
-  const currentHasImagesFilter =
+  const appliedHasImagesFilter =
     typeof filters.has_images === 'string' ? filters.has_images : '';
   const sortState: TableSortState = {
     column: typeof filters.sort === 'string' ? filters.sort : null,
@@ -83,23 +84,36 @@ export default function Index({
   const [selectedInitiative, setSelectedInitiative] =
     useState<InitiativeListItem | null>(null);
   const [overlayOpen, setOverlayOpen] = useState(false);
-  const [search, setSearch] = useState(currentSearch);
-  const [displayFilter, setDisplayFilter] = useState(currentDisplayFilter);
-  const [hasImagesFilter, setHasImagesFilter] = useState(currentHasImagesFilter);
+  const [draftSearch, setDraftSearch] = useState(appliedSearch);
+  const [draftDisplayFilter, setDraftDisplayFilter] =
+    useState(appliedDisplayFilter);
+  const [draftHasImagesFilter, setDraftHasImagesFilter] =
+    useState(appliedHasImagesFilter);
   const currentPerPage =
     typeof filters.per_page === 'number' && filters.per_page > 0
       ? filters.per_page
       : initiatives.per_page;
   const hasAppliedFilters =
-    currentSearch !== '' ||
-    currentDisplayFilter !== '' ||
-    currentHasImagesFilter !== '';
+    appliedSearch !== '' ||
+    appliedDisplayFilter !== '' ||
+    appliedHasImagesFilter !== '';
   const emptyStateMessage =
     initiatives.total === 0
       ? hasAppliedFilters
         ? tForm('emptyState.filteredDescription')
         : tForm('emptyState.description')
       : tForm('emptyState.unavailableResults');
+
+  useEffect(() => {
+    setDraftSearch(appliedSearch);
+    setDraftDisplayFilter(appliedDisplayFilter);
+    setDraftHasImagesFilter(appliedHasImagesFilter);
+  }, [
+    appliedDisplayFilter,
+    appliedHasImagesFilter,
+    appliedSearch,
+    currentPage.url,
+  ]);
 
   function handleRowClick(initiative: InitiativeListItem): void {
     setSelectedInitiative(initiative);
@@ -163,9 +177,9 @@ export default function Index({
       route('initiatives.index'),
       setTablePageInQueryParams(
         buildInitiativesIndexQueryParams({
-          search: currentSearch,
-          display: currentDisplayFilter,
-          hasImages: currentHasImagesFilter,
+          search: appliedSearch,
+          display: appliedDisplayFilter,
+          hasImages: appliedHasImagesFilter,
           perPage: currentPerPage,
           sort: sortState,
         }),
@@ -183,9 +197,9 @@ export default function Index({
       route('initiatives.index'),
       setTablePerPageInQueryParams(
         buildInitiativesIndexQueryParams({
-          search: currentSearch,
-          display: currentDisplayFilter,
-          hasImages: currentHasImagesFilter,
+          search: appliedSearch,
+          display: appliedDisplayFilter,
+          hasImages: appliedHasImagesFilter,
           sort: sortState,
         }),
         perPage,
@@ -204,9 +218,9 @@ export default function Index({
     pageRouter.get(
       route('initiatives.index'),
       buildInitiativesIndexQueryParams({
-        search,
-        display: displayFilter,
-        hasImages: hasImagesFilter,
+        search: draftSearch,
+        display: draftDisplayFilter,
+        hasImages: draftHasImagesFilter,
         perPage: currentPerPage,
         sort: sortState,
       }),
@@ -219,9 +233,9 @@ export default function Index({
   }
 
   function handleResetFilters(): void {
-    setSearch('');
-    setDisplayFilter('');
-    setHasImagesFilter('');
+    setDraftSearch('');
+    setDraftDisplayFilter('');
+    setDraftHasImagesFilter('');
 
     pageRouter.get(
       route('initiatives.index'),
@@ -246,9 +260,9 @@ export default function Index({
       setTableSortInQueryParams(
         serializeTableQueryParams({
           per_page: currentPerPage,
-          search: currentSearch,
-          display: currentDisplayFilter,
-          has_images: currentHasImagesFilter,
+          search: appliedSearch,
+          display: appliedDisplayFilter,
+          has_images: appliedHasImagesFilter,
         }),
         toggleTableSortState(sortState, column),
       ),
@@ -284,11 +298,13 @@ export default function Index({
                 className="flex w-full flex-col gap-3 md:flex-row md:items-center"
                 onSubmit={handleSearchSubmit}
               >
-                <TableSearchField
+                <SearchField
                   className="w-full md:max-w-md"
                   aria-label={tForm('filters.searchLabel')}
-                  value={search}
-                  onChange={(event) => setSearch(event.currentTarget.value)}
+                  value={draftSearch}
+                  onChange={(event) =>
+                    setDraftSearch(event.currentTarget.value)
+                  }
                   placeholder={tForm('filters.searchPlaceholder')}
                   buttonLabel={tForm('filters.searchSubmit')}
                 />
@@ -296,8 +312,10 @@ export default function Index({
                 <select
                   aria-label={tForm('filters.visibilityLabel')}
                   className="border-input bg-background ring-offset-background focus-visible:ring-ring placeholder:text-muted-foreground flex h-9 w-full rounded-md border px-3 py-1 text-sm shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:max-w-xs"
-                  value={displayFilter}
-                  onChange={(event) => setDisplayFilter(event.currentTarget.value)}
+                  value={draftDisplayFilter}
+                  onChange={(event) =>
+                    setDraftDisplayFilter(event.currentTarget.value)
+                  }
                 >
                   <option value="">{tForm('filters.visibilityPlaceholder')}</option>
                   <option value="visible">{tForm('filters.publicOnly')}</option>
@@ -307,9 +325,9 @@ export default function Index({
                 <select
                   aria-label={tForm('filters.imagePresenceLabel')}
                   className="border-input bg-background ring-offset-background focus-visible:ring-ring placeholder:text-muted-foreground flex h-9 w-full rounded-md border px-3 py-1 text-sm shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:max-w-xs"
-                  value={hasImagesFilter}
+                  value={draftHasImagesFilter}
                   onChange={(event) =>
-                    setHasImagesFilter(event.currentTarget.value)
+                    setDraftHasImagesFilter(event.currentTarget.value)
                   }
                 >
                   <option value="">
@@ -323,9 +341,7 @@ export default function Index({
               </form>
 
               <div className="flex items-center gap-2 self-end lg:self-auto">
-                {currentSearch !== '' ||
-                currentDisplayFilter !== '' ||
-                currentHasImagesFilter !== '' ? (
+                {hasAppliedFilters ? (
                   <Button
                     type="button"
                     variant="outline"

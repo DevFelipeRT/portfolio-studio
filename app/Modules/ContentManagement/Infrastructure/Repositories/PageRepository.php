@@ -167,14 +167,14 @@ final class PageRepository implements IPageRepository
             return $query;
         }
 
-        $like = '%' . addcslashes($trimmed, '\\%_') . '%';
+        $like = '%' . addcslashes(mb_strtolower($trimmed, 'UTF-8'), '\\%_') . '%';
 
         return $query->where(
             static function (Builder $nestedQuery) use ($like): void {
                 $nestedQuery
-                    ->where('title', 'like', $like)
-                    ->orWhere('internal_name', 'like', $like)
-                    ->orWhere('slug', 'like', $like);
+                    ->whereRaw('LOWER(title) like ?', [$like])
+                    ->orWhereRaw('LOWER(internal_name) like ?', [$like])
+                    ->orWhereRaw('LOWER(slug) like ?', [$like]);
             }
         );
     }

@@ -1,6 +1,12 @@
 import AuthenticatedLayout from '@/app/layouts/AuthenticatedLayout';
 import { PageContent } from '@/app/layouts/primitives';
-import { PageHead, PageLink, pageRouter } from '@/common/page-runtime';
+import { SearchField } from '@/common/filtering';
+import {
+  PageHead,
+  PageLink,
+  pageRouter,
+  useCurrentPage,
+} from '@/common/page-runtime';
 import {
   NewButton,
   serializeTableQueryParams,
@@ -8,7 +14,6 @@ import {
   setTablePerPageInQueryParams,
   setTableSortInQueryParams,
   TableCard,
-  TableSearchField,
   TableToolbar,
   toggleTableSortState,
   type TablePaginated,
@@ -50,6 +55,7 @@ export default function Index({
   filters,
 }: SkillsIndexProps) {
   const [selectedSkill, setSelectedSkill] = useState<AdminSkillListItem | null>(null);
+  const currentPage = useCurrentPage();
   const { translate: tActions } = useSkillsTranslation(
     SKILLS_NAMESPACES.actions,
   );
@@ -86,13 +92,13 @@ export default function Index({
   // Keep the form draft aligned with the applied table query after navigation.
   useEffect(() => {
     setDraftSearch(appliedSearch);
-  }, [appliedSearch]);
+  }, [appliedSearch, currentPage.url]);
 
   useEffect(() => {
     setDraftCategory(
       appliedCategoryId === null ? '' : String(appliedCategoryId),
     );
-  }, [appliedCategoryId]);
+  }, [appliedCategoryId, currentPage.url]);
 
   const handleEdit = (skill: AdminSkillListItem): void => {
     pageRouter.get(route('skills.edit', skill.id));
@@ -248,7 +254,7 @@ export default function Index({
                 className="flex w-full flex-col gap-3 md:flex-row md:items-center"
                 onSubmit={handleSearchSubmit}
               >
-                <TableSearchField
+                <SearchField
                   className="w-full md:max-w-md"
                   aria-label={tForm('filters.searchLabel')}
                   value={draftSearch}
