@@ -1,22 +1,28 @@
-import { fetchProjectDetail } from '@/modules/projects/core/api/details';
+import { useTranslation } from '@/common/i18n';
 import {
   compactRichTextTheme,
   extractRichTextPlainText,
   RichTextRenderer,
 } from '@/common/rich-text';
-import { TableBadge, TableBooleanBadge, TableDetailDialog, formatTableDate } from '@/common/table';
+import {
+  formatTableDate,
+  TableBadge,
+  TableBooleanBadge,
+  TableDetailDialog,
+} from '@/common/table';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { useTranslation } from '@/common/i18n';
 import { useIsMobile } from '@/hooks/useMobile';
-import type { ProjectDetail, ProjectListItem } from '@/modules/projects/core/types';
+import { fetchProjectDetail } from '@/modules/projects/api/details';
 import {
   PROJECTS_NAMESPACES,
   useProjectsTranslation,
 } from '@/modules/projects/i18n';
-import { Eye, EyeOff, ExternalLink, Github } from 'lucide-react';
+import type { ProjectDetail } from '@/modules/projects/types';
+import { ExternalLink, Eye, EyeOff, Github } from 'lucide-react';
 import React from 'react';
-import { ProjectStatusBadge } from './ProjectStatusBadge';
+import { ProjectStatusBadge } from '../../../../components/ProjectStatusBadge';
+import type { ProjectListItem } from '../types';
 
 interface ProjectOverlayProps {
   open: boolean;
@@ -104,7 +110,8 @@ export function ProjectOverlay({
     fallback: tForm('values.empty'),
   });
   const hasDescription =
-    detail !== null && extractRichTextPlainText(detail.description ?? '').length > 0;
+    detail !== null &&
+    extractRichTextPlainText(detail.description ?? '').length > 0;
 
   return (
     <TableDetailDialog
@@ -154,7 +161,9 @@ export function ProjectOverlay({
       className="max-w-2xl"
     >
       {loading && !detail ? (
-        <p className="text-muted-foreground text-sm">{tForm('overlay.loading')}</p>
+        <p className="text-muted-foreground text-sm">
+          {tForm('overlay.loading')}
+        </p>
       ) : null}
 
       {!loading && hasLoadError ? (
@@ -204,7 +213,7 @@ export function ProjectOverlay({
               <InfoRow
                 label={tForm('overlay.images')}
                 value={
-                  <ScrollArea className="w-full whitespace-nowrap rounded-md">
+                  <ScrollArea className="w-full rounded-md whitespace-nowrap">
                     <div className="flex w-max gap-3 pb-3">
                       {images.map((image) => (
                         <figure
@@ -213,7 +222,13 @@ export function ProjectOverlay({
                         >
                           <img
                             src={image.url ?? ''}
-                            alt={image.alt_text ?? image.alt ?? image.image_title ?? image.title ?? ''}
+                            alt={
+                              image.alt_text ??
+                              image.alt ??
+                              image.image_title ??
+                              image.title ??
+                              ''
+                            }
                             className="h-40 w-full object-cover"
                           />
                         </figure>
@@ -233,7 +248,11 @@ export function ProjectOverlay({
                 detail.skills.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
                     {detail.skills.map((skill) => (
-                      <TableBadge key={skill.id} tone="outline" className="font-medium">
+                      <TableBadge
+                        key={skill.id}
+                        tone="outline"
+                        className="font-medium"
+                      >
                         {skill.name}
                       </TableBadge>
                     ))}
@@ -264,7 +283,7 @@ function HeaderLink({
       href={href}
       target="_blank"
       rel="noreferrer"
-      className="text-primary inline-flex h-8 items-center gap-2 rounded-md border px-3 text-xs font-medium hover:bg-muted/40"
+      className="text-primary hover:bg-muted/40 inline-flex h-8 items-center gap-2 rounded-md border px-3 text-xs font-medium"
     >
       <Icon className="h-3.5 w-3.5" />
       <span>{label}</span>
@@ -272,13 +291,7 @@ function HeaderLink({
   );
 }
 
-function InfoRow({
-  label,
-  value,
-}: {
-  label: string;
-  value: React.ReactNode;
-}) {
+function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <section className="space-y-3">
       <p className="text-foreground text-base leading-5 font-semibold">

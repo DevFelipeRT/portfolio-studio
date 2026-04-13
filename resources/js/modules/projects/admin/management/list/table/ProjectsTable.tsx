@@ -1,9 +1,9 @@
-import type { ProjectListItem } from '@/modules/projects/core/types';
-import type { ReactNode } from 'react';
 import {
   PROJECTS_NAMESPACES,
   useProjectsTranslation,
 } from '@/modules/projects/i18n';
+import type { ProjectListItem } from '../types';
+import type { ReactNode } from 'react';
 
 import {
   SystemTable,
@@ -11,10 +11,10 @@ import {
   TableEmptyState,
   TableHeaderRow,
   TablePagination,
+  tablePresets,
   TableSortHeader,
   type TablePaginated,
   type TableSortState,
-  tablePresets,
 } from '@/common/table';
 import { TableBody, TableHead, TableHeader } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
@@ -76,7 +76,7 @@ export function ProjectsTable({
             <TableHead
               className={cn(
                 baseClass,
-                'hidden w-px whitespace-nowrap text-left xs:table-cell',
+                'xs:table-cell hidden w-px text-left whitespace-nowrap',
               )}
               aria-sort={resolveAriaSort(sort, 'status', sortableColumns)}
             >
@@ -93,7 +93,7 @@ export function ProjectsTable({
             <TableHead
               className={cn(
                 baseClass,
-                'w-px whitespace-nowrap text-center sm:text-left',
+                'w-px text-center whitespace-nowrap sm:text-left',
               )}
               aria-sort={resolveAriaSort(sort, 'display', sortableColumns)}
             >
@@ -118,7 +118,7 @@ export function ProjectsTable({
             <TableHead
               className={cn(
                 baseClass,
-                'hidden w-px whitespace-nowrap text-center align-middle md:table-cell',
+                'hidden w-px text-center align-middle whitespace-nowrap md:table-cell',
               )}
               aria-sort={resolveAriaSort(sort, 'image_count', sortableColumns)}
             >
@@ -134,7 +134,7 @@ export function ProjectsTable({
               />
             </TableHead>
             <TableHead
-              className={cn(baseClass, 'w-px whitespace-nowrap text-right')}
+              className={cn(baseClass, 'w-px text-right whitespace-nowrap')}
             >
               <span className="sr-only">{tForm('fields.actions.label')}</span>
             </TableHead>

@@ -21,6 +21,7 @@ use App\Modules\Projects\Http\Mappers\CreateProjectInputMapper;
 use App\Modules\Projects\Http\Mappers\ListProjectsInputMapper;
 use App\Modules\Projects\Http\Mappers\UpdateProjectInputMapper;
 use App\Modules\Projects\Presentation\Mappers\ProjectMapper;
+use App\Modules\Projects\Domain\ValueObjects\ProjectStatus;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -71,6 +72,7 @@ class ProjectController extends Controller
 
         return Inertia::render('projects/admin/Index', [
             'projects' => $projects->toArray(),
+            'status_values' => ProjectStatus::scalarValues(),
             'filters' => [
                 'per_page' => $input->perPage,
                 'search' => $input->search,
@@ -102,6 +104,7 @@ class ProjectController extends Controller
 
         return Inertia::render('projects/admin/Create', [
             'skills' => is_array($skills) ? $skills : [],
+            'status_values' => ProjectStatus::scalarValues(),
         ]);
     }
 
@@ -131,6 +134,7 @@ class ProjectController extends Controller
         return Inertia::render('projects/admin/Edit', [
             'project' => $projectData,
             'skills' => is_array($skills) ? $skills : [],
+            'status_values' => ProjectStatus::scalarValues(),
             'initial' => ProjectFormMapper::fromEdit($projectData, []),
         ]);
     }

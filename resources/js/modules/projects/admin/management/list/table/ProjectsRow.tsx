@@ -1,4 +1,4 @@
-import type { ProjectListItem } from '@/modules/projects/core/types';
+import { PageLink } from '@/common/page-runtime';
 import {
   InteractiveTableRow,
   TableActionCell,
@@ -9,14 +9,14 @@ import {
   TableTitleCell,
   tablePresets,
 } from '@/common/table';
-import { PageLink } from '@/common/page-runtime';
 import { cn } from '@/lib/utils';
 import {
   PROJECTS_NAMESPACES,
   useProjectsTranslation,
 } from '@/modules/projects/i18n';
 import { Eye, EyeOff, ImageIcon, Pencil, Trash2 } from 'lucide-react';
-import { ProjectStatusBadge } from '../ProjectStatusBadge';
+import { ProjectStatusBadge } from '../../../../components/ProjectStatusBadge';
+import type { ProjectListItem } from '../types';
 
 interface ProjectsRowProps {
   project: ProjectListItem;
@@ -24,7 +24,11 @@ interface ProjectsRowProps {
   onDelete(project: ProjectListItem, event?: React.MouseEvent): void;
 }
 
-export function ProjectsRow({ project, onRowClick, onDelete }: ProjectsRowProps) {
+export function ProjectsRow({
+  project,
+  onRowClick,
+  onDelete,
+}: ProjectsRowProps) {
   const { translate: tForm } = useProjectsTranslation(PROJECTS_NAMESPACES.form);
   const { translate: tActions } = useProjectsTranslation(
     PROJECTS_NAMESPACES.actions,
@@ -43,12 +47,15 @@ export function ProjectsRow({ project, onRowClick, onDelete }: ProjectsRowProps)
         subtitle={project.summary ?? ''}
       />
 
-      <TableMetaCell className="hidden w-px whitespace-nowrap xs:table-cell">
+      <TableMetaCell className="xs:table-cell hidden w-px whitespace-nowrap">
         <ProjectStatusBadge status={project.status} />
       </TableMetaCell>
 
       <TableMetaCell
-        className={cn(tablePresets.statusCell, 'w-px content-center whitespace-nowrap')}
+        className={cn(
+          tablePresets.statusCell,
+          'w-px content-center whitespace-nowrap',
+        )}
       >
         <TableBooleanBadge
           active={project.display}
@@ -62,16 +69,20 @@ export function ProjectsRow({ project, onRowClick, onDelete }: ProjectsRowProps)
       <TableMetaCell
         className={cn(
           tablePresets.statusCell,
-          'hidden w-px whitespace-nowrap text-center md:table-cell',
+          'hidden w-px text-center whitespace-nowrap md:table-cell',
         )}
       >
         <div className="flex items-center justify-center gap-1">
           <ImageIcon className="h-3.5 w-3.5" />
-          <span className="text-xs whitespace-nowrap">{project.image_count}</span>
+          <span className="text-xs whitespace-nowrap">
+            {project.image_count}
+          </span>
         </div>
       </TableMetaCell>
 
-      <TableActionCell className={cn(tablePresets.actionCell, 'w-px content-center')}>
+      <TableActionCell
+        className={cn(tablePresets.actionCell, 'w-px content-center')}
+      >
         <TableActionsMenu triggerLabel={tActions('openMenu')}>
           <TableActionsMenuItem onClick={() => onRowClick(project)}>
             <Eye className="mr-2 h-4 w-4" />
@@ -89,8 +100,8 @@ export function ProjectsRow({ project, onRowClick, onDelete }: ProjectsRowProps)
             className="text-destructive focus:text-destructive"
             onClick={(event) => onDelete(project, event)}
           >
-              <Trash2 className="mr-2 h-4 w-4" />
-              <span>{tActions('delete')}</span>
+            <Trash2 className="mr-2 h-4 w-4" />
+            <span>{tActions('delete')}</span>
           </TableActionsMenuItem>
         </TableActionsMenu>
       </TableActionCell>
