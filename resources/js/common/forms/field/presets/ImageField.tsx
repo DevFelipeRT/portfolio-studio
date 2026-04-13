@@ -14,6 +14,8 @@ type ImageFieldProps = {
   altId: string;
   fileLabel?: ReactNode;
   altLabel?: ReactNode;
+  filePlaceholder?: string;
+  altPlaceholder?: string;
   altValue: string;
   required?: boolean;
   accept?: string;
@@ -29,6 +31,8 @@ export function ImageField({
   altId,
   fileLabel = 'Image file',
   altLabel = 'Alt text',
+  filePlaceholder = 'Select file',
+  altPlaceholder,
   altValue,
   required = false,
   accept = 'image/*',
@@ -58,7 +62,7 @@ export function ImageField({
           id={fileId}
           errors={errors}
           label={fileLabel}
-          placeholder="Select file"
+          placeholder={filePlaceholder}
           required={required}
           accept={accept}
           errorId={`${fileId}-error`}
@@ -72,6 +76,7 @@ export function ImageField({
         value={altValue}
         errors={errors}
         label={altLabel}
+        placeholder={altPlaceholder}
         errorId={`${altId}-error`}
         onChange={onAltChange}
       />

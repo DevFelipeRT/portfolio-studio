@@ -8,6 +8,7 @@ import type { ReactNode } from 'react';
 export type FormVariant = 'default' | 'spacious';
 
 export type FormProps<FieldName extends string = string> = {
+  id?: string;
   onSubmit(event: React.FormEvent<HTMLFormElement>): void;
   errors: FormErrors<FieldName>;
   errorSummaryFields?: ErrorSummary<FieldName>;
@@ -19,6 +20,7 @@ export type FormProps<FieldName extends string = string> = {
 };
 
 export function Form<FieldName extends string = string>({
+  id,
   onSubmit,
   errors,
   errorSummaryFields,
@@ -37,7 +39,7 @@ export function Form<FieldName extends string = string>({
   );
 
   return (
-    <form onSubmit={onSubmit} className={baseClassName}>
+    <form id={id} onSubmit={onSubmit} className={baseClassName}>
       {showErrorSummary ? (
         <FormErrorSummary fields={summaryFields} title={errorSummaryTitle} />
       ) : null}

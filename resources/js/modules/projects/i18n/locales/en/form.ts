@@ -2,20 +2,25 @@ export default {
   fields: {
     locale: {
       label: 'Base locale',
-      placeholder: 'Select a locale',
+      placeholder: 'Choose the project primary language',
     },
     name: {
       label: 'Name',
+      placeholder: 'Enter the project name',
     },
     status: {
       label: 'Status',
-      placeholder: 'Select a status',
+      placeholder: 'Choose status',
     },
     summary: {
       label: 'Summary',
+      placeholder:
+        'Explain the goal and main outcome of the project in one sentence',
     },
     description: {
       label: 'Description',
+      placeholder:
+        'Describe the context, solution, stack, challenges, and impact of the project',
     },
     display: {
       label: 'Display on landing',
@@ -24,10 +29,12 @@ export default {
       label: 'Visibility',
     },
     repository_url: {
-      label: 'Repository URL',
+      label: 'Project repository link',
+      placeholder: 'https://github.com/your-org/your-repository',
     },
     live_url: {
-      label: 'Live URL',
+      label: 'Published project link',
+      placeholder: 'https://product.example.com',
     },
     skill_ids: {
       label: 'Skills',
@@ -40,6 +47,10 @@ export default {
       label: 'Images',
       empty: 'No images added yet.',
       addDisabledTitle: 'Select an image file before adding another field.',
+      fileLabel: 'Image file',
+      filePlaceholder: 'Select an image',
+      altLabel: 'Alt text',
+      altPlaceholder: 'Describe the image for accessibility',
     },
     updated_at: {
       label: 'Updated at',
@@ -54,6 +65,10 @@ export default {
   help: {
     managementSubtitle:
       'Manage the projects displayed on your portfolio landing page.',
+    createSubtitle:
+      'Fill in the editorial details, public links, and images for the new project.',
+    editSubtitle:
+      'Review the core details, published links, and visual assets for this project.',
   },
   filters: {
     searchLabel: 'Search',

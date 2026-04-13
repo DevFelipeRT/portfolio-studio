@@ -1,0 +1,1 @@
+export { EditProjectTranslation } from './EditProjectTranslation';
