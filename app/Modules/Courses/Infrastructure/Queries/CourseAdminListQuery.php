@@ -69,9 +69,9 @@ final class CourseAdminListQuery
 
         return $query->where(function (Builder $nestedQuery) use ($like): void {
             $nestedQuery
-                ->where('courses.name', 'like', $like)
-                ->orWhere('courses.institution', 'like', $like)
-                ->orWhere('courses.summary', 'like', $like);
+                ->whereRaw('LOWER(courses.name) like ?', [$like])
+                ->orWhereRaw('LOWER(courses.institution) like ?', [$like])
+                ->orWhereRaw('LOWER(courses.summary) like ?', [$like]);
         });
     }
 
@@ -83,7 +83,10 @@ final class CourseAdminListQuery
             return $query;
         }
 
-        return $query->where('courses.institution', 'like', $this->toLikePattern($term));
+        return $query->whereRaw(
+            'LOWER(courses.institution) like ?',
+            [$this->toLikePattern($term)],
+        );
     }
 
     private function applyStatusFilter(Builder $query, ?CourseStatus $status): Builder
@@ -276,7 +279,7 @@ final class CourseAdminListQuery
 
     private function toLikePattern(string $value): string
     {
-        return '%' . addcslashes($value, '\\%_') . '%';
+        return '%' . addcslashes(mb_strtolower($value, 'UTF-8'), '\\%_') . '%';
     }
 
     private function referenceDayValue(): string

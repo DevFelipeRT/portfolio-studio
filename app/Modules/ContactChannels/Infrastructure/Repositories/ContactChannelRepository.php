@@ -139,12 +139,12 @@ final class ContactChannelRepository implements IContactChannelRepository
             return $query;
         }
 
-        $like = '%' . addcslashes($trimmed, '\\%_') . '%';
+        $like = '%' . addcslashes(mb_strtolower($trimmed, 'UTF-8'), '\\%_') . '%';
 
         return $query->where(static function (Builder $nestedQuery) use ($like): void {
             $nestedQuery
-                ->where('contact_channels.label', 'like', $like)
-                ->orWhere('contact_channels.value', 'like', $like);
+                ->whereRaw('LOWER(contact_channels.label) like ?', [$like])
+                ->orWhereRaw('LOWER(contact_channels.value) like ?', [$like]);
         });
     }
 

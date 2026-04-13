@@ -34,12 +34,12 @@ final class SkillCategoryAdminListQuery
             return $query;
         }
 
-        $like = '%' . addcslashes($trimmed, '\\%_') . '%';
+        $like = '%' . addcslashes(mb_strtolower($trimmed, 'UTF-8'), '\\%_') . '%';
 
         return $query->where(static function (Builder $nestedQuery) use ($like): void {
             $nestedQuery
-                ->where('skill_categories.name', 'like', $like)
-                ->orWhere('skill_categories.slug', 'like', $like);
+                ->whereRaw('LOWER(skill_categories.name) like ?', [$like])
+                ->orWhereRaw('LOWER(skill_categories.slug) like ?', [$like]);
         });
     }
 

@@ -37,11 +37,13 @@ final class ImageService
 
         $search = $filters['search'] ?? null;
         if (\is_string($search) && $search !== '') {
-            $query->where(function ($q) use ($search): void {
-                $q->where('original_filename', 'like', '%' . $search . '%')
-                    ->orWhere('image_title', 'like', '%' . $search . '%')
-                    ->orWhere('alt_text', 'like', '%' . $search . '%')
-                    ->orWhere('caption', 'like', '%' . $search . '%');
+            $like = '%' . addcslashes(mb_strtolower($search, 'UTF-8'), '\\%_') . '%';
+
+            $query->where(function ($q) use ($like): void {
+                $q->whereRaw('LOWER(original_filename) like ?', [$like])
+                    ->orWhereRaw('LOWER(image_title) like ?', [$like])
+                    ->orWhereRaw('LOWER(alt_text) like ?', [$like])
+                    ->orWhereRaw('LOWER(caption) like ?', [$like]);
             });
         }
 

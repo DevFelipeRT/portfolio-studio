@@ -173,7 +173,7 @@ final class InitiativeRepository implements IInitiativeRepository
             return $query;
         }
 
-        $like = '%' . addcslashes($trimmed, '\\%_') . '%';
+        $like = '%' . addcslashes(mb_strtolower($trimmed, 'UTF-8'), '\\%_') . '%';
 
         return $query->where(function (Builder $nestedQuery) use (
             $like,
@@ -182,11 +182,11 @@ final class InitiativeRepository implements IInitiativeRepository
         ): void {
             $nestedQuery
                 ->whereRaw(
-                    $this->resolvedTranslationFieldExpression(
+                    'LOWER(' . $this->resolvedTranslationFieldExpression(
                         'name',
                         $locale,
                         $fallbackLocale,
-                    ) . ' like ?',
+                    ) . ') like ?',
                     [
                         ...$this->resolvedTranslationFieldBindings(
                             $locale,
@@ -196,11 +196,11 @@ final class InitiativeRepository implements IInitiativeRepository
                     ],
                 )
                 ->orWhereRaw(
-                    $this->resolvedTranslationFieldExpression(
+                    'LOWER(' . $this->resolvedTranslationFieldExpression(
                         'summary',
                         $locale,
                         $fallbackLocale,
-                    ) . ' like ?',
+                    ) . ') like ?',
                     [
                         ...$this->resolvedTranslationFieldBindings(
                             $locale,
