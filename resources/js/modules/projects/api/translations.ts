@@ -1,14 +1,15 @@
-import type { ProjectStatusValue } from '@/modules/projects/core/status';
-import type { ProjectTranslationItem } from '@/modules/projects/core/types';
+import type { ProjectTranslationItem } from '@/modules/projects/types';
 
 type TranslationPayload = {
-  locale: string;
   name?: string | null;
   summary?: string | null;
   description?: string | null;
-  status?: ProjectStatusValue | null;
   repository_url?: string | null;
   live_url?: string | null;
+};
+
+type CreateTranslationPayload = TranslationPayload & {
+  locale: string;
 };
 
 function ensureArray(value: unknown): string[] {
@@ -33,7 +34,7 @@ export async function listProjectTranslations(
 
 export async function createProjectTranslation(
   projectId: number,
-  payload: TranslationPayload,
+  payload: CreateTranslationPayload,
 ): Promise<ProjectTranslationItem> {
   const response = await window.axios.post(
     route('projects.translations.store', projectId),
