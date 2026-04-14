@@ -6,7 +6,7 @@ namespace App\Modules\Projects\Application\UseCases\DeleteProjectTranslation;
 
 use App\Modules\Projects\Domain\Repositories\IProjectRepository;
 use App\Modules\Projects\Domain\Repositories\IProjectTranslationRepository;
-use InvalidArgumentException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 final class DeleteProjectTranslation
 {
@@ -22,7 +22,7 @@ final class DeleteProjectTranslation
 
         $existing = $this->translations->findByProjectAndLocale($project, $input->locale);
         if ($existing === null) {
-            throw new InvalidArgumentException('Project translation not found for this locale.');
+            throw new NotFoundHttpException('Project translation not found for this locale.');
         }
 
         $this->translations->delete($existing);

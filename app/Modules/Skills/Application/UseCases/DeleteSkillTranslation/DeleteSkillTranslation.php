@@ -6,7 +6,7 @@ namespace App\Modules\Skills\Application\UseCases\DeleteSkillTranslation;
 
 use App\Modules\Skills\Domain\Repositories\ISkillRepository;
 use App\Modules\Skills\Domain\Repositories\ISkillTranslationRepository;
-use InvalidArgumentException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 final class DeleteSkillTranslation
 {
@@ -22,7 +22,7 @@ final class DeleteSkillTranslation
 
         $existing = $this->translations->findBySkillAndLocale($skill, $input->locale);
         if ($existing === null) {
-            throw new InvalidArgumentException('Skill translation not found for this locale.');
+            throw new NotFoundHttpException('Skill translation not found for this locale.');
         }
 
         $this->translations->delete($existing);

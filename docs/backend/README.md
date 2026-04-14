@@ -66,6 +66,7 @@ Several “portfolio data” modules implement the same pattern:
 - Base records store a `locale` column.
 - Translations are stored in `{entity}_translations` tables keyed by `(entity_id, locale)`.
 - Admin updates accept `confirm_swap` to optionally swap base content with an existing translation when changing the base locale.
+- The standalone translation endpoints follow the backend exception convention: user-correctable failures render as Laravel validation (`422` with `errors` for JSON side-channel requests), while update/delete against a missing translation render as `404` (`docs/backend/conventions/exceptions.md`, `app/Modules/*/Application/UseCases/*Translation*`).
 
 Evidence examples:
 
@@ -93,5 +94,6 @@ Core wiring:
 
 ## Module documentation
 
+- Conventions: [`docs/backend/conventions/exceptions.md`](conventions/exceptions.md)
 - Module index: [`docs/modules/README.md`](../modules/README.md)
 - Root project overview: [`README.md`](../../README.md)

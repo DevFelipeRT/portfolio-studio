@@ -6,7 +6,7 @@ namespace App\Modules\Initiatives\Application\UseCases\DeleteInitiativeTranslati
 
 use App\Modules\Initiatives\Domain\Repositories\IInitiativeRepository;
 use App\Modules\Initiatives\Domain\Repositories\IInitiativeTranslationRepository;
-use InvalidArgumentException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 final class DeleteInitiativeTranslation
 {
@@ -22,7 +22,7 @@ final class DeleteInitiativeTranslation
 
         $existing = $this->translations->findByInitiativeAndLocale($initiative, $locale);
         if ($existing === null) {
-            throw new InvalidArgumentException('Initiative translation not found for this locale.');
+            throw new NotFoundHttpException('Initiative translation not found for this locale.');
         }
 
         $this->translations->delete($existing);

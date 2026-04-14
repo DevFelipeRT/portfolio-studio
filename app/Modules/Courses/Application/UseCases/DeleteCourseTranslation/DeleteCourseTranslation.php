@@ -6,7 +6,7 @@ namespace App\Modules\Courses\Application\UseCases\DeleteCourseTranslation;
 
 use App\Modules\Courses\Domain\Repositories\ICourseRepository;
 use App\Modules\Courses\Domain\Repositories\ICourseTranslationRepository;
-use InvalidArgumentException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 final class DeleteCourseTranslation
 {
@@ -22,7 +22,7 @@ final class DeleteCourseTranslation
 
         $existing = $this->translations->findByCourseAndLocale($course, $locale);
         if ($existing === null) {
-            throw new InvalidArgumentException('Course translation not found for this locale.');
+            throw new NotFoundHttpException('Course translation not found for this locale.');
         }
 
         $this->translations->delete($existing);
