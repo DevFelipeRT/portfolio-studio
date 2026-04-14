@@ -11,7 +11,8 @@ use App\Modules\Projects\Domain\Repositories\IProjectTranslationRepository;
 use App\Modules\Projects\Domain\Exceptions\ProjectDescriptionTooLongException;
 use App\Modules\Projects\Domain\ValueObjects\ProjectDescription;
 use App\Modules\Shared\Contracts\RichText\IRichTextService;
-use InvalidArgumentException;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 final class UpdateProjectTranslation
 {
@@ -28,23 +29,29 @@ final class UpdateProjectTranslation
     {
         $supported = $this->supportedLocales->resolve();
         if (!in_array($input->locale, $supported, true)) {
-            throw new InvalidArgumentException('Unsupported locale for project translation.');
+            throw ValidationException::withMessages([
+                'locale' => ['Unsupported locale for project translation.'],
+            ]);
         }
 
         $project = $this->projects->findById($input->projectId);
 
         if ($input->locale === $project->locale) {
-            throw new InvalidArgumentException('Project translation locale must differ from base locale.');
+            throw ValidationException::withMessages([
+                'locale' => ['Project translation locale must differ from base locale.'],
+            ]);
         }
 
         $existing = $this->translations->findByProjectAndLocale($project, $input->locale);
         if ($existing === null) {
-            throw new InvalidArgumentException('Project translation not found for this locale.');
+            throw new NotFoundHttpException('Project translation not found for this locale.');
         }
 
         $payload = $this->normalizePayload($input);
         if ($this->isPayloadEmpty($payload)) {
-            throw new InvalidArgumentException('Project translation requires at least one translated field.');
+            throw ValidationException::withMessages([
+                '_global' => ['Project translation requires at least one translated field.'],
+            ]);
         }
 
         $updated = $this->translations->update($existing, $payload);
