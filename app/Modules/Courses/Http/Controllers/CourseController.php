@@ -104,9 +104,7 @@ class CourseController extends Controller
                 'payload' => $request->validated(),
             ]);
 
-            return back()
-                ->withInput()
-                ->with('error', 'An error occurred while creating the course. Please try again.');
+            throw $e;
         }
     }
 
@@ -146,9 +144,7 @@ class CourseController extends Controller
                 'payload' => $request->validated(),
             ]);
 
-            return back()
-                ->withInput()
-                ->with('error', 'Unable to update the course details. Please try again later.');
+            throw $e;
         }
     }
 
@@ -171,7 +167,7 @@ class CourseController extends Controller
                 'error' => $e->getMessage(),
             ]);
 
-            return back()->with('error', 'An error occurred while trying to delete the course.');
+            throw $e;
         }
     }
 
