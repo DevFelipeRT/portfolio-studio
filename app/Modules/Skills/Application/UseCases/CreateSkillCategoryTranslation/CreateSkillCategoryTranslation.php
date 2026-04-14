@@ -8,7 +8,7 @@ use App\Modules\Skills\Application\Mappers\SkillTranslationOutputMapper;
 use App\Modules\Skills\Application\Services\SupportedLocalesResolver;
 use App\Modules\Skills\Domain\Repositories\ISkillCategoryRepository;
 use App\Modules\Skills\Domain\Repositories\ISkillCategoryTranslationRepository;
-use InvalidArgumentException;
+use Illuminate\Validation\ValidationException;
 
 final class CreateSkillCategoryTranslation
 {
@@ -24,18 +24,24 @@ final class CreateSkillCategoryTranslation
     {
         $supported = $this->supportedLocales->resolve();
         if (!in_array($input->locale, $supported, true)) {
-            throw new InvalidArgumentException('Unsupported locale for skill category translation.');
+            throw ValidationException::withMessages([
+                'locale' => ['Unsupported locale for skill category translation.'],
+            ]);
         }
 
         $category = $this->categories->findById($input->skillCategoryId);
 
         if ($input->locale === $category->locale) {
-            throw new InvalidArgumentException('Skill category translation locale must differ from base locale.');
+            throw ValidationException::withMessages([
+                'locale' => ['Skill category translation locale must differ from base locale.'],
+            ]);
         }
 
         $existing = $this->translations->findByCategoryAndLocale($category, $input->locale);
         if ($existing !== null) {
-            throw new InvalidArgumentException('Skill category translation already exists for this locale.');
+            throw ValidationException::withMessages([
+                'locale' => ['Skill category translation already exists for this locale.'],
+            ]);
         }
 
         $translation = $this->translations->create(
