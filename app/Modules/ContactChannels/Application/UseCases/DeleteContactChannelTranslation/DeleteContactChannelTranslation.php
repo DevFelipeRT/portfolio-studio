@@ -6,7 +6,7 @@ namespace App\Modules\ContactChannels\Application\UseCases\DeleteContactChannelT
 
 use App\Modules\ContactChannels\Domain\Repositories\IContactChannelRepository;
 use App\Modules\ContactChannels\Domain\Repositories\IContactChannelTranslationRepository;
-use InvalidArgumentException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 final class DeleteContactChannelTranslation
 {
@@ -22,7 +22,7 @@ final class DeleteContactChannelTranslation
         $existing = $this->translations->findByChannelAndLocale($channel, $locale);
 
         if ($existing === null) {
-            throw new InvalidArgumentException('Contact channel translation not found for this locale.');
+            throw new NotFoundHttpException('Contact channel translation not found for this locale.');
         }
 
         $this->translations->delete($existing);

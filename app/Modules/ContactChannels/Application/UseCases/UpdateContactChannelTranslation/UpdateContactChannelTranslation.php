@@ -8,7 +8,8 @@ use App\Modules\ContactChannels\Application\Dtos\ContactChannelTranslationDto;
 use App\Modules\ContactChannels\Application\Services\SupportedLocalesResolver;
 use App\Modules\ContactChannels\Domain\Repositories\IContactChannelRepository;
 use App\Modules\ContactChannels\Domain\Repositories\IContactChannelTranslationRepository;
-use InvalidArgumentException;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 final class UpdateContactChannelTranslation
 {
@@ -24,19 +25,23 @@ final class UpdateContactChannelTranslation
         $supported = $this->supportedLocalesResolver->resolve();
 
         if (!in_array($input->locale, $supported, true)) {
-            throw new InvalidArgumentException('Unsupported locale for contact channel translation.');
+            throw ValidationException::withMessages([
+                'locale' => ['Unsupported locale for contact channel translation.'],
+            ]);
         }
 
         $channel = $this->channels->findById($input->contactChannelId);
 
         if ($input->locale === $channel->locale) {
-            throw new InvalidArgumentException('Contact channel translation locale must differ from base locale.');
+            throw ValidationException::withMessages([
+                'locale' => ['Contact channel translation locale must differ from base locale.'],
+            ]);
         }
 
         $existing = $this->translations->findByChannelAndLocale($channel, $input->locale);
 
         if ($existing === null) {
-            throw new InvalidArgumentException('Contact channel translation not found for this locale.');
+            throw new NotFoundHttpException('Contact channel translation not found for this locale.');
         }
 
         $updated = $this->translations->update($existing, $input->label);
