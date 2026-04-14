@@ -6,7 +6,7 @@ namespace App\Modules\Experiences\Application\UseCases\DeleteExperienceTranslati
 
 use App\Modules\Experiences\Domain\Repositories\IExperienceRepository;
 use App\Modules\Experiences\Domain\Repositories\IExperienceTranslationRepository;
-use InvalidArgumentException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 final class DeleteExperienceTranslation
 {
@@ -22,7 +22,7 @@ final class DeleteExperienceTranslation
 
         $existing = $this->translations->findByExperienceAndLocale($experience, $locale);
         if ($existing === null) {
-            throw new InvalidArgumentException('Experience translation not found for this locale.');
+            throw new NotFoundHttpException('Experience translation not found for this locale.');
         }
 
         $this->translations->delete($existing);
