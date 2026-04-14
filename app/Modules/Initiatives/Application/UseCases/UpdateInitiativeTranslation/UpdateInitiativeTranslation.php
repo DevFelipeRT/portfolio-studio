@@ -9,7 +9,8 @@ use App\Modules\Initiatives\Application\Services\SupportedLocalesResolver;
 use App\Modules\Initiatives\Domain\Repositories\IInitiativeRepository;
 use App\Modules\Initiatives\Domain\Repositories\IInitiativeTranslationRepository;
 use App\Modules\Shared\Contracts\RichText\IRichTextService;
-use InvalidArgumentException;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 final class UpdateInitiativeTranslation
 {
@@ -25,23 +26,29 @@ final class UpdateInitiativeTranslation
     {
         $supported = $this->supportedLocales->resolve();
         if (!in_array($input->locale, $supported, true)) {
-            throw new InvalidArgumentException('Unsupported locale for initiative translation.');
+            throw ValidationException::withMessages([
+                'locale' => ['Unsupported locale for initiative translation.'],
+            ]);
         }
 
         $initiative = $this->initiatives->findById($input->initiativeId);
 
         if ($input->locale === $initiative->locale) {
-            throw new InvalidArgumentException('Initiative translation locale must differ from base locale.');
+            throw ValidationException::withMessages([
+                'locale' => ['Initiative translation locale must differ from base locale.'],
+            ]);
         }
 
         $existing = $this->translations->findByInitiativeAndLocale($initiative, $input->locale);
         if ($existing === null) {
-            throw new InvalidArgumentException('Initiative translation not found for this locale.');
+            throw new NotFoundHttpException('Initiative translation not found for this locale.');
         }
 
         $payload = $this->normalizePayload($input);
         if ($this->isPayloadEmpty($payload)) {
-            throw new InvalidArgumentException('Initiative translation requires at least one translated field.');
+            throw ValidationException::withMessages([
+                '_global' => ['Initiative translation requires at least one translated field.'],
+            ]);
         }
 
         $updated = $this->translations->update($existing, $payload);
