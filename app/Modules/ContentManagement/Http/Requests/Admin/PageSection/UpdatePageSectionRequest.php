@@ -10,6 +10,8 @@ use App\Modules\ContentManagement\Domain\Models\PageSection;
 use App\Modules\ContentManagement\Domain\ValueObjects\TemplateKey;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
+use InvalidArgumentException;
 
 final class UpdatePageSectionRequest extends FormRequest
 {
@@ -154,9 +156,14 @@ final class UpdatePageSectionRequest extends FormRequest
 
         $service = app(TemplateValidationService::class);
 
-        $templateKey = TemplateKey::fromString((string) $rawTemplateKey);
-
-        $dataRules = $service->buildRulesForTemplateKey($templateKey);
+        try {
+            $templateKey = TemplateKey::fromString((string) $rawTemplateKey);
+            $dataRules = $service->buildRulesForTemplateKey($templateKey);
+        } catch (InvalidArgumentException $exception) {
+            throw ValidationException::withMessages([
+                'template_key' => [$exception->getMessage()],
+            ]);
+        }
 
         return [
             'data' => ['nullable', 'array'],

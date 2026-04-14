@@ -13,7 +13,7 @@ use App\Modules\ContentManagement\Http\Requests\Admin\PageSection\UpdatePageSect
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use InvalidArgumentException;
+use Illuminate\Validation\ValidationException;
 use Throwable;
 
 /**
@@ -44,13 +44,8 @@ final class PageSectionController extends Controller
 
         try {
             $this->pageSectionService->create($page, $data);
-        } catch (InvalidArgumentException $exception) {
-            return redirect()
-                ->route('admin.content.pages.edit', $pageId)
-                ->withErrors([
-                    'page_section' => $exception->getMessage(),
-                ])
-                ->with('status', 'section.create_failed');
+        } catch (ValidationException $exception) {
+            throw $exception;
         } catch (Throwable $exception) {
             Log::error('Failed to create page section.', [
                 'page_id' => $pageId,
@@ -78,13 +73,8 @@ final class PageSectionController extends Controller
 
         try {
             $this->pageSectionService->update($section, $data);
-        } catch (InvalidArgumentException $exception) {
-            return redirect()
-                ->route('admin.content.pages.edit', $pageId)
-                ->withErrors([
-                    'page_section' => $exception->getMessage(),
-                ])
-                ->with('status', 'section.update_failed');
+        } catch (ValidationException $exception) {
+            throw $exception;
         } catch (Throwable $exception) {
             Log::error('Failed to update page section.', [
                 'section_id' => (int) $section->id,
@@ -113,13 +103,8 @@ final class PageSectionController extends Controller
 
         try {
             $this->pageSectionService->setActive($section, $isActive);
-        } catch (InvalidArgumentException $exception) {
-            return redirect()
-                ->route('admin.content.pages.edit', $pageId)
-                ->withErrors([
-                    'page_section' => $exception->getMessage(),
-                ])
-                ->with('status', 'section.toggle_failed');
+        } catch (ValidationException $exception) {
+            throw $exception;
         } catch (Throwable $exception) {
             Log::error('Failed to toggle page section active state.', [
                 'section_id' => (int) $section->id,
@@ -159,13 +144,8 @@ final class PageSectionController extends Controller
 
         try {
             $this->pageSectionService->reorder($page, $orderedSectionIds);
-        } catch (InvalidArgumentException $exception) {
-            return redirect()
-                ->route('admin.content.pages.edit', $pageId)
-                ->withErrors([
-                    'page_section' => $exception->getMessage(),
-                ])
-                ->with('status', 'section.reorder_failed');
+        } catch (ValidationException $exception) {
+            throw $exception;
         } catch (Throwable $exception) {
             Log::error('Failed to reorder page sections.', [
                 'page_id' => $pageId,
@@ -190,13 +170,8 @@ final class PageSectionController extends Controller
 
         try {
             $this->pageSectionService->delete($section);
-        } catch (InvalidArgumentException $exception) {
-            return redirect()
-                ->route('admin.content.pages.edit', $pageId)
-                ->withErrors([
-                    'page_section' => $exception->getMessage(),
-                ])
-                ->with('status', 'section.delete_failed');
+        } catch (ValidationException $exception) {
+            throw $exception;
         } catch (Throwable $exception) {
             Log::error('Failed to delete page section.', [
                 'section_id' => (int) $section->id,

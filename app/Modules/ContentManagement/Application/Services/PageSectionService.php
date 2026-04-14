@@ -17,6 +17,7 @@ use App\Modules\WebsiteSettings\Application\Services\WebsiteSettingsService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
 use Carbon\CarbonInterface;
+use Illuminate\Validation\ValidationException;
 use InvalidArgumentException;
 
 /**
@@ -127,7 +128,7 @@ final class PageSectionService
         $defaultLocale = $this->settingsService->getDefaultLocale();
         $fallbackLocale = $this->settingsService->getFallbackLocale();
         $locale = $page->locale ?: ($defaultLocale === 'auto' ? $fallbackLocale : $defaultLocale);
-        $normalizedData = $this->templateValidation->normalizeDataForTemplateKey(
+        $normalizedData = $this->normalizeDataForTemplateKey(
             $templateKey,
             $data,
             $locale !== '' ? $locale : null,
@@ -166,7 +167,7 @@ final class PageSectionService
         $pageLocale = $section->page?->locale;
         $fallbackLocale = $this->settingsService->getFallbackLocale();
         $locale = $pageLocale ?: $fallbackLocale;
-        $normalizedData = $this->templateValidation->normalizeDataForTemplateKey(
+        $normalizedData = $this->normalizeDataForTemplateKey(
             $templateKey,
             $data,
             $locale !== '' ? $locale : null,
@@ -586,7 +587,7 @@ final class PageSectionService
 
             if ($this->isHeroSlot($section->slot)) {
                 if ($seenNonHero) {
-                    throw new InvalidArgumentException(self::HERO_ORDER_ERROR);
+                    $this->throwSectionValidationError(self::HERO_ORDER_ERROR);
                 }
             } else {
                 $seenNonHero = true;
@@ -665,10 +666,14 @@ final class PageSectionService
     private function extractTemplateKey(array $attributes): TemplateKey
     {
         if (!array_key_exists('template_key', $attributes)) {
-            throw new InvalidArgumentException('Attribute "template_key" is required for creating a section.');
+            $this->throwTemplateKeyValidationError('Attribute "template_key" is required for creating a section.');
         }
 
-        return TemplateKey::fromString((string) $attributes['template_key']);
+        try {
+            return TemplateKey::fromString((string) $attributes['template_key']);
+        } catch (InvalidArgumentException $exception) {
+            $this->throwTemplateKeyValidationError($exception->getMessage());
+        }
     }
 
     /**
@@ -681,11 +686,15 @@ final class PageSectionService
      */
     private function resolveTemplateKeyForUpdate(PageSection $section, array $attributes): TemplateKey
     {
-        if (array_key_exists('template_key', $attributes)) {
-            return TemplateKey::fromString((string) $attributes['template_key']);
-        }
+        try {
+            if (array_key_exists('template_key', $attributes)) {
+                return TemplateKey::fromString((string) $attributes['template_key']);
+            }
 
-        return TemplateKey::fromString((string) $section->template_key);
+            return TemplateKey::fromString((string) $section->template_key);
+        } catch (InvalidArgumentException $exception) {
+            $this->throwTemplateKeyValidationError($exception->getMessage());
+        }
     }
 
     /**
@@ -695,7 +704,11 @@ final class PageSectionService
      */
     private function resolveMediaFieldsForTemplate(TemplateKey $templateKey): array
     {
-        $definition = $this->templateValidation->getDefinitionForKey($templateKey);
+        try {
+            $definition = $this->templateValidation->getDefinitionForKey($templateKey);
+        } catch (InvalidArgumentException $exception) {
+            $this->throwTemplateKeyValidationError($exception->getMessage());
+        }
 
         $mediaFields = [];
 
@@ -736,5 +749,39 @@ final class PageSectionService
             $mediaFields,
             $normalizedData,
         );
+    }
+
+    /**
+     * @param array<string,mixed> $data
+     * @return array<string,mixed>
+     */
+    private function normalizeDataForTemplateKey(
+        TemplateKey $templateKey,
+        array $data,
+        ?string $locale,
+    ): array {
+        try {
+            return $this->templateValidation->normalizeDataForTemplateKey(
+                $templateKey,
+                $data,
+                $locale,
+            );
+        } catch (InvalidArgumentException $exception) {
+            $this->throwTemplateKeyValidationError($exception->getMessage());
+        }
+    }
+
+    private function throwSectionValidationError(string $message): never
+    {
+        throw ValidationException::withMessages([
+            'page_section' => [$message],
+        ]);
+    }
+
+    private function throwTemplateKeyValidationError(string $message): never
+    {
+        throw ValidationException::withMessages([
+            'template_key' => [$message],
+        ]);
     }
 }

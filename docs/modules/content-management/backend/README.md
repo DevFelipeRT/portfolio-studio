@@ -105,6 +105,8 @@ These bundles are used when mapping templates to DTOs and when applying locale-s
 
 `TemplateValidationService` derives Laravel validation rules from template fields and normalizes missing field values using defaults (including locale-dependent defaults via translation keys) (`app/Modules/ContentManagement/Application/Services/Templates/TemplateValidationService.php`).
 
+For admin section mutations, invalid or unknown `template_key` values now stay inside Laravel's validation flow rather than escaping as generic exceptions. The `StorePageSectionRequest` / `UpdatePageSectionRequest` convert template-resolution failures into validation errors keyed by `template_key`, and `PageSectionService` classifies user-correctable ordering/template failures as validation as well (`app/Modules/ContentManagement/Http/Requests/Admin/PageSection/StorePageSectionRequest.php`, `app/Modules/ContentManagement/Http/Requests/Admin/PageSection/UpdatePageSectionRequest.php`, `app/Modules/ContentManagement/Application/Services/PageSectionService.php`, `docs/backend/conventions/exceptions.md`).
+
 ## Public rendering pipeline
 
 High-level flow:
@@ -130,3 +132,5 @@ Sections can reference images via the shared `image_attachments` pivot using the
 ## Ordering constraints (hero sections)
 
 `PageSectionService` enforces a domain rule for the `hero` slot: hero sections must appear first when ordering sections (`app/Modules/ContentManagement/Application/Services/PageSectionService.php`).
+
+When an admin reorder action violates that rule, the failure is surfaced as a normal Laravel validation error in the Inertia flow instead of being adapted from `InvalidArgumentException` inside the controller (`app/Modules/ContentManagement/Application/Services/PageSectionService.php`, `app/Modules/ContentManagement/Http/Controllers/Admin/PageSectionController.php`).
