@@ -8,7 +8,8 @@ use App\Modules\Courses\Application\Services\SupportedLocalesResolver;
 use App\Modules\Courses\Domain\Repositories\ICourseRepository;
 use App\Modules\Courses\Domain\Repositories\ICourseTranslationRepository;
 use App\Modules\Shared\Contracts\RichText\IRichTextService;
-use InvalidArgumentException;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 final class UpdateCourseTranslation
 {
@@ -24,23 +25,29 @@ final class UpdateCourseTranslation
     {
         $supported = $this->supportedLocales->resolve();
         if (!in_array($input->locale, $supported, true)) {
-            throw new InvalidArgumentException('Unsupported locale for course translation.');
+            throw ValidationException::withMessages([
+                'locale' => ['Unsupported locale for course translation.'],
+            ]);
         }
 
         $course = $this->courses->findById($input->courseId);
 
         if ($input->locale === $course->locale) {
-            throw new InvalidArgumentException('Course translation locale must differ from base locale.');
+            throw ValidationException::withMessages([
+                'locale' => ['Course translation locale must differ from base locale.'],
+            ]);
         }
 
         $existing = $this->translations->findByCourseAndLocale($course, $input->locale);
         if ($existing === null) {
-            throw new InvalidArgumentException('Course translation not found for this locale.');
+            throw new NotFoundHttpException('Course translation not found for this locale.');
         }
 
         $payload = $this->normalizePayload($input);
         if ($this->isPayloadEmpty($payload)) {
-            throw new InvalidArgumentException('Course translation requires at least one translated field.');
+            throw ValidationException::withMessages([
+                '_global' => ['Course translation requires at least one translated field.'],
+            ]);
         }
 
         $updated = $this->translations->update($existing, $payload);
