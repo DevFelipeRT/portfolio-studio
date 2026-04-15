@@ -2,12 +2,12 @@ import { useTranslation } from '@/common/i18n';
 import {
   InteractiveTableRow,
   TableActionCell,
-  TableBooleanBadge,
   TableDateText,
   TableMetaCell,
   TableTitleCell,
   tablePresets,
 } from '@/common/table';
+import { VisibilityBadge } from '@/components/badges';
 import { TableCell } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
 import type { Course } from '@/modules/courses/core/types';
@@ -15,7 +15,7 @@ import {
   COURSES_NAMESPACES,
   useCoursesTranslation,
 } from '@/modules/courses/i18n';
-import { CalendarDays, Eye, EyeOff } from 'lucide-react';
+import { CalendarDays } from 'lucide-react';
 import { CourseStatus, CourseStatusBadge } from './CourseStatusBadge';
 import { CoursesRowActions } from './CoursesRowActions';
 
@@ -105,12 +105,10 @@ export function CoursesRow({ course, onRowClick }: CoursesRowProps) {
       <TableMetaCell
         className={cn(tablePresets.statusCell, 'content-center xs:text-left')}
       >
-        <TableBooleanBadge
-          active={visibility === 'public'}
-          activeLabel={tForm('visibility.public')}
-          inactiveLabel={tForm('visibility.private')}
-          activeIcon={Eye}
-          inactiveIcon={EyeOff}
+        <VisibilityBadge
+          visible={visibility === 'public'}
+          publicLabel={tForm('visibility.public')}
+          privateLabel={tForm('visibility.private')}
           className="mx-auto xs:mx-0"
           labelClassName="hidden xs:inline"
         />

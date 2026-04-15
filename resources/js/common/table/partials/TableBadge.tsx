@@ -88,7 +88,7 @@ export function TableBooleanBadge({
       )}
     >
       <Icon className="h-3.5 w-3.5" />
-      <span className={cn('whitespace-nowrap', labelClassName ?? 'hidden sm:inline')}>
+      <span className={cn('whitespace-nowrap', labelClassName ?? 'hidden xs:inline')}>
         {active ? activeLabel : inactiveLabel}
       </span>
     </TableBadge>

@@ -4,17 +4,17 @@ import {
   TableActionCell,
   TableActionsMenu,
   TableActionsMenuItem,
-  TableBooleanBadge,
   TableMetaCell,
   TableTitleCell,
   tablePresets,
 } from '@/common/table';
+import { VisibilityBadge } from '@/components/badges';
 import { cn } from '@/lib/utils';
 import {
   PROJECTS_NAMESPACES,
   useProjectsTranslation,
 } from '@/modules/projects/i18n';
-import { Eye, EyeOff, ImageIcon, Pencil, Trash2 } from 'lucide-react';
+import { Eye, ImageIcon, Pencil, Trash2 } from 'lucide-react';
 import { ProjectStatusBadge } from '../../../../components/ProjectStatusBadge';
 import type { ProjectListItem } from '../types';
 
@@ -57,12 +57,10 @@ export function ProjectsRow({
           'w-px content-center whitespace-nowrap',
         )}
       >
-        <TableBooleanBadge
-          active={project.display}
-          activeLabel={tForm('visibility.public')}
-          inactiveLabel={tForm('visibility.private')}
-          activeIcon={Eye}
-          inactiveIcon={EyeOff}
+        <VisibilityBadge
+          visible={project.display}
+          publicLabel={tForm('visibility.public')}
+          privateLabel={tForm('visibility.private')}
         />
       </TableMetaCell>
 

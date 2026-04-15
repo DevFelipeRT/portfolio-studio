@@ -2,7 +2,6 @@ import type { Experience } from '@/modules/experiences/core/types';
 import { useTranslation } from '@/common/i18n';
 import {
   InteractiveTableRow,
-  TableBooleanBadge,
   TableActionCell,
   TableActionsMenu,
   TableActionsMenuItem,
@@ -12,13 +11,14 @@ import {
   TableTitleCell,
   tablePresets,
 } from '@/common/table';
+import { VisibilityBadge } from '@/components/badges';
 import { cn } from '@/lib/utils';
 import { PageLink } from '@/common/page-runtime';
 import {
   EXPERIENCES_NAMESPACES,
   useExperiencesTranslation,
 } from '@/modules/experiences/i18n';
-import { Eye, EyeOff, Pencil, Trash2 } from 'lucide-react';
+import { Eye, Pencil, Trash2 } from 'lucide-react';
 
 interface ExperiencesRowProps {
   experience: Experience;
@@ -77,12 +77,10 @@ export function ExperiencesRow({ experience, onRowClick }: ExperiencesRowProps) 
       <TableMetaCell
         className={cn(tablePresets.statusCell, 'w-px content-center text-center sm:text-left')}
       >
-        <TableBooleanBadge
-          active={experience.display}
-          activeLabel={tForm('visibility.public')}
-          inactiveLabel={tForm('visibility.private')}
-          activeIcon={Eye}
-          inactiveIcon={EyeOff}
+        <VisibilityBadge
+          visible={experience.display}
+          publicLabel={tForm('visibility.public')}
+          privateLabel={tForm('visibility.private')}
           className="mx-auto sm:mx-0"
           labelClassName="hidden sm:inline"
         />

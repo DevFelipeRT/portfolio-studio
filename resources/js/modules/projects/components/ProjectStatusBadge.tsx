@@ -76,7 +76,7 @@ export function ProjectStatusBadge({
       )}
     >
       <Icon className="h-3.5 w-3.5" />
-      <span className="hidden sm:inline">
+      <span className="hidden xs:inline">
         {formatProjectStatusLabel(tForm, status)}
       </span>
     </TableBadge>
