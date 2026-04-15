@@ -11,7 +11,6 @@ export {
   TableTitleCell,
 } from './TableCells';
 export { TableCard } from './TableCard';
-export { TableDetailDialog } from './TableDetailDialog';
 export { TableEmptyState } from './TableEmptyState';
 export { TableHeaderRow } from './TableHeaderRow';
 export { TableToolbar } from './TableToolbar';
