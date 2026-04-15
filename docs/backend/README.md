@@ -32,6 +32,14 @@ Evidence: module layout under `app/Modules/*` and provider wiring in `app/Provid
 - Core endpoints live in `routes/web.php` (e.g. locale persistence, contact form submission, admin dashboard).
 - Each module loads routes from `app/Modules/*/Routes/*.php` inside its service provider, typically under `web`, and admin areas commonly add `auth` + `verified`. Evidence: `routes/web.php`, `bootstrap/app.php`, `app/Modules/*/Infrastructure/Providers/*ServiceProvider.php`.
 
+## Testing strategy
+
+- Cross-cutting bootstrap and shared helpers live under `tests/`.
+- Backend feature tests can be colocated with each module under `app/Modules/*/Tests/Feature`, while the legacy `tests/Feature` and `tests/Unit` suites remain valid entrypoints for `php artisan test`.
+- PHPUnit discovers module tests through `phpunit.xml`, so colocated module coverage runs together with the root suites without custom commands.
+- Shared authenticated-admin setup belongs in `tests/TestCase.php` (for example `actingAsAdmin()`), keeping module tests focused on HTTP contracts instead of repeated login boilerplate.
+- Module feature tests should exercise the real HTTP surface for admin/public contracts: validation, redirects, JSON payloads, persistence, authorization, and not-found flows.
+
 ## Runtime infrastructure (defaults)
 
 - Database: default connection is `mysql` via `DB_CONNECTION` (`config/database.php`).
