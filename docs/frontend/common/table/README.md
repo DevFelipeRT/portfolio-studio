@@ -33,7 +33,7 @@ The public entrypoint is `resources/js/common/table/index.ts`.
 
 - `TableActionsMenu`: standardized dropdown trigger/content wrapper for row actions.
 - `TableActionsMenuItem`: re-exported action item primitive for dropdown entries.
-- `TableDetailDialog`: shared dialog wrapper for table row detail views.
+- `ItemDialog`: composable item-detail dialog surface for overlays, exposing `Content`, `Header`, `HeaderRow`, `Main`, `Title`, `Description`, `Badges`, `Metadata`, `Actions`, and `Body`.
 - Admin create actions should live in `TableCard.actions`; avoid rendering standalone “new” buttons outside the table shell.
 
 ### Badge helpers
@@ -90,7 +90,8 @@ These presets provide lightweight semantic class groupings for common table cell
 - `resources/js/common/table/pagination.ts`: pagination normalization helpers
 - `resources/js/common/table/query.ts`: stateless query-string helpers for table listings
 - `resources/js/common/table/presets.ts`: class presets
-- `resources/js/common/table/partials/*`: card, toolbar, sortable header, action, badge, empty-state, dialog, menu, and pagination helpers
+- `resources/js/common/table/item-dialog/*`: composable dialog primitives for item/detail overlays
+- `resources/js/common/table/partials/*`: card, toolbar, sortable header, action, badge, empty-state, menu, and pagination helpers
 - `resources/js/common/table/row/InteractiveTableRow.tsx`: clickable-row primitive
 - `resources/js/common/table/DemoTable.tsx`: local demo of the shared API used by the admin dashboard page
 
@@ -123,6 +124,19 @@ Preferred composition for filterable admin tables:
 Keep filter controls domain-specific in their module. `common/table` owns shared shells, paginator types, footer rendering, and generic query helpers for `page` / `per_page`.
 
 Sorting stays single-column only. Module code owns the allowed sort keys and any query-state normalization for raw `sort` / `direction` values.
+
+For item/detail overlays, prefer composing `ItemDialog` directly. The current shared header model is:
+
+1. `ItemDialog`
+2. `ItemDialog.Content`
+3. `ItemDialog.Header`
+4. optional `ItemDialog.HeaderRow`
+5. `ItemDialog.Main`
+6. optional `ItemDialog.Title`, `ItemDialog.Description`, `ItemDialog.Badges`, `ItemDialog.Metadata`
+7. optional `ItemDialog.Actions`
+8. `ItemDialog.Body`
+
+Use `Badges`, `Metadata`, and `Actions` instead of packing those concerns into a single custom title node. This keeps overlays like Projects, Courses, Messages, and Initiatives structurally consistent while still allowing module-specific body content.
 
 When a table needs filters or custom controls inside the card header, prefer `TableCard.header` over nesting another card-like wrapper above the table.
 
