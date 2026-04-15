@@ -1,9 +1,9 @@
 import type { TablePaginated } from '@/common/table';
+import { useState } from 'react';
 import { PROJECT_LIST_CONFIG } from './config';
 import { useProjectListFilters } from './filtering/useProjectListFilters';
 import { useDeleteProject } from './mutations/useDeleteProject';
 import { ProjectOverlay } from './overlay/ProjectOverlay';
-import { useProjectOverlay } from './overlay/useProjectOverlay';
 import { ProjectsListToolbar } from './table/ProjectsListToolbar';
 import { ProjectsTable } from './table/ProjectsTable';
 import type { ProjectListItem } from './types';
@@ -29,17 +29,39 @@ export function ListProjects({
   filters,
 }: ListProjectsProps) {
   const filtering = useProjectListFilters({ projects, statusValues, filters });
-  const overlay = useProjectOverlay();
+  const [selectedProject, setSelectedProject] =
+    useState<ProjectListItem | null>(null);
+  const [overlayOpen, setOverlayOpen] = useState(false);
+
+  const openProject = (project: ProjectListItem): void => {
+    setSelectedProject(project);
+    setOverlayOpen(true);
+  };
+
+  const closeProject = (): void => {
+    setOverlayOpen(false);
+    setSelectedProject(null);
+  };
+
+  const handleOverlayChange = (open: boolean): void => {
+    if (open) {
+      setOverlayOpen(true);
+      return;
+    }
+
+    closeProject();
+  };
+
   const deletion = useDeleteProject({
-    selectedProjectId: overlay.selectedProject?.id ?? null,
-    onDeletedSelectedProject: overlay.closeProject,
+    selectedProjectId: selectedProject?.id ?? null,
+    onDeletedSelectedProject: closeProject,
   });
 
   return (
     <>
       <ProjectsTable
         projects={projects}
-        onRowClick={overlay.openProject}
+        onRowClick={openProject}
         onDelete={deletion.deleteProject}
         header={
           <ProjectsListToolbar
@@ -71,9 +93,9 @@ export function ListProjects({
       />
 
       <ProjectOverlay
-        open={overlay.overlayOpen}
-        project={overlay.selectedProject}
-        onOpenChange={overlay.handleOverlayChange}
+        open={overlayOpen}
+        project={selectedProject}
+        onOpenChange={handleOverlayChange}
       />
     </>
   );
