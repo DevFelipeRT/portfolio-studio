@@ -1,5 +1,6 @@
-import { formatTableDate, ItemDialog, TableBadge } from '@/common/table';
 import { useTranslation } from '@/common/i18n';
+import { formatTableDate, ItemDialog } from '@/common/table';
+import { InfoBadge } from '@/components/badges';
 import { useIsMobile } from '@/hooks/useMobile';
 import type { AdminSkillListItem } from '@/modules/skills/core/types';
 import { SKILLS_NAMESPACES, useSkillsTranslation } from '@/modules/skills/i18n';
@@ -41,12 +42,12 @@ export function SkillOverlay({ open, skill, onOpenChange }: SkillOverlayProps) {
             </ItemDialog.Heading>
 
             <ItemDialog.Badges>
-              <TableBadge tone="outline" className="border-dashed font-medium">
+              <InfoBadge tone="outline" className="border-dashed">
                 {skill.category?.name ?? tForm('fields.category.uncategorized')}
-              </TableBadge>
-              <span className="bg-muted text-muted-foreground inline-flex rounded px-2 py-0.5 font-mono text-xs">
+              </InfoBadge>
+              <InfoBadge tone="muted" className="font-mono">
                 {skill.locale}
-              </span>
+              </InfoBadge>
             </ItemDialog.Badges>
           </ItemDialog.Main>
 

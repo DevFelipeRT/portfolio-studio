@@ -1,4 +1,5 @@
-import { ItemDialog, TableBooleanBadge } from '@/common/table';
+import { ItemDialog } from '@/common/table';
+import { BooleanBadge, InfoBadge } from '@/components/badges';
 import type { ContactChannel } from '@/modules/contact-channels/core/types';
 import {
   CONTACT_CHANNELS_NAMESPACES,
@@ -44,16 +45,16 @@ export function ContactChannelOverlay({
             </ItemDialog.Heading>
 
             <ItemDialog.Badges>
-              <TableBooleanBadge
+              <BooleanBadge
                 active={channel.is_active}
                 activeLabel={tForm('values.active')}
                 inactiveLabel={tForm('values.inactive')}
                 activeIcon={Power}
                 inactiveIcon={PowerOff}
               />
-              <span className="bg-muted text-muted-foreground inline-flex rounded px-2 py-0.5 font-mono text-xs">
+              <InfoBadge tone="muted" className="font-mono">
                 {channel.locale}
-              </span>
+              </InfoBadge>
             </ItemDialog.Badges>
           </ItemDialog.Main>
         </ItemDialog.Header>

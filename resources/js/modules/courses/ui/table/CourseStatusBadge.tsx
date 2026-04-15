@@ -1,4 +1,4 @@
-import { TableBadge } from '@/common/table';
+import { InfoBadge } from '@/components/badges';
 import { cn } from '@/lib/utils';
 import { COURSES_NAMESPACES, useCoursesTranslation } from '@/modules/courses/i18n';
 import { CheckCircle2, Circle, CircleDashed } from 'lucide-react';
@@ -37,15 +37,15 @@ export function CourseStatusBadge({
     const Icon = variant.icon;
 
     return (
-        <TableBadge
+        <InfoBadge
             className={cn(
-                'flex w-fit gap-2 border-none text-nowrap font-medium',
+                'flex gap-2 border-none text-nowrap',
                 variant.style,
                 className,
             )}
         >
             <Icon className="h-3 w-3" />
             <span className="hidden md:block">{tForm(`status.${status}`)}</span>
-        </TableBadge>
+        </InfoBadge>
     );
 }

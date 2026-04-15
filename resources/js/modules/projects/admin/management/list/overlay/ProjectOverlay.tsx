@@ -4,8 +4,8 @@ import {
   extractRichTextPlainText,
   RichTextRenderer,
 } from '@/common/rich-text';
-import { formatTableDate, ItemDialog, TableBadge } from '@/common/table';
-import { VisibilityBadge } from '@/components/badges';
+import { formatTableDate, ItemDialog } from '@/common/table';
+import { InfoBadge, VisibilityBadge } from '@/components/badges';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { useIsMobile } from '@/hooks/useMobile';
 import { fetchProjectDetail } from '@/modules/projects/api/details';
@@ -125,9 +125,9 @@ export function ProjectOverlay({
                 publicLabel={tForm('visibility.public')}
                 privateLabel={tForm('visibility.private')}
               />
-              <span className="bg-muted text-muted-foreground inline-flex rounded px-2 py-0.5 font-mono text-xs">
+              <InfoBadge tone="muted" className="font-mono">
                 {detailSource.locale}
-              </span>
+              </InfoBadge>
 
               {repositoryUrl ? (
                 <ProjectOverlayHeaderLink
@@ -248,13 +248,13 @@ export function ProjectOverlay({
                     <ScrollArea className="w-full min-w-0 rounded-md whitespace-nowrap">
                       <div className="flex w-max gap-2 pb-3">
                         {detail.skills.map((skill) => (
-                          <TableBadge
+                          <InfoBadge
                             key={skill.id}
                             tone="outline"
-                            className="shrink-0 font-medium"
+                            className="shrink-0"
                           >
                             {skill.name}
-                          </TableBadge>
+                          </InfoBadge>
                         ))}
                       </div>
                       <ScrollBar orientation="horizontal" />

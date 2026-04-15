@@ -1,3 +1,4 @@
+import { InfoBadge } from '@/components/badges';
 import {
   CONTENT_MANAGEMENT_NAMESPACES,
   useContentManagementTranslation,
@@ -20,8 +21,8 @@ export function HomeBadge({ visible }: HomeBadgeProps) {
   }
 
   return (
-    <span className="bg-primary/10 text-primary inline-flex rounded px-2 py-0.5 text-[10px] font-semibold tracking-wide uppercase">
+    <InfoBadge className="bg-primary/10 text-primary px-2 text-[10px] font-semibold tracking-wide uppercase hover:bg-primary/10">
       {tPages('listing.home', 'Home')}
-    </span>
+    </InfoBadge>
   );
 }

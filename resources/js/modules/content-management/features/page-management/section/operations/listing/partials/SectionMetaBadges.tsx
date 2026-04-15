@@ -1,3 +1,4 @@
+import { InfoBadge } from '@/components/badges';
 import {
   CONTENT_MANAGEMENT_NAMESPACES,
   useContentManagementTranslation,
@@ -28,31 +29,31 @@ export function SectionMetaBadges({
   return (
     <>
       {slot && (
-        <span className="bg-muted text-muted-foreground rounded px-2 py-0.5 text-xs">
+        <InfoBadge tone="muted">
           {tSections('meta.slot', 'Slot: {{value}}', { value: slot })}
-        </span>
+        </InfoBadge>
       )}
 
       {anchor && (
-        <span className="bg-muted text-muted-foreground rounded px-2 py-0.5 text-xs">
+        <InfoBadge tone="muted">
           #{anchor}
-        </span>
+        </InfoBadge>
       )}
 
       {navigationLabel && (
-        <span className="bg-muted text-muted-foreground rounded px-2 py-0.5 text-xs">
+        <InfoBadge tone="muted">
           {tSections('meta.navigation', 'Nav: {{value}}', {
             value: navigationLabel,
           })}
-        </span>
+        </InfoBadge>
       )}
 
       {navigationGroup && (
-        <span className="bg-muted text-muted-foreground rounded px-2 py-0.5 text-xs">
+        <InfoBadge tone="muted">
           {tSections('meta.group', 'Group: {{value}}', {
             value: navigationGroup,
           })}
-        </span>
+        </InfoBadge>
       )}
     </>
   );

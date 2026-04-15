@@ -5,13 +5,12 @@ import {
   TableActionCell,
   TableActionsMenu,
   TableActionsMenuItem,
-  TableBadge,
   TableDateText,
   TableMetaCell,
   TableTitleCell,
   tablePresets,
 } from '@/common/table';
-import { VisibilityBadge } from '@/components/badges';
+import { InfoBadge, VisibilityBadge } from '@/components/badges';
 import { cn } from '@/lib/utils';
 import { PageLink } from '@/common/page-runtime';
 import {
@@ -46,12 +45,12 @@ export function ExperiencesRow({ experience, onRowClick }: ExperiencesRowProps) 
         title={experience.position}
         aside={
           experience.company ? (
-            <TableBadge
-              className="bg-muted text-muted-foreground hidden border-none px-2 py-0.5 sm:inline-flex md:hidden"
-              tone="secondary"
+            <InfoBadge
+              tone="muted"
+              className="hidden px-2 sm:inline-flex md:hidden"
             >
               {experience.company}
-            </TableBadge>
+            </InfoBadge>
           ) : null
         }
         subtitle={summary}

@@ -1,4 +1,4 @@
-import { TableBadge } from '@/common/table';
+import { InfoBadge } from '@/components/badges';
 import {
   CONTENT_MANAGEMENT_NAMESPACES,
   useContentManagementTranslation,
@@ -17,23 +17,23 @@ export function StatusBadge({ page }: { page: PageDto }) {
 
   if (page.status === 'draft') {
     return (
-      <TableBadge tone="outline" className="border-dashed font-medium">
+      <InfoBadge tone="outline" className="border-dashed">
         {tPages('listing.draft', 'Draft')}
-      </TableBadge>
+      </InfoBadge>
     );
   }
 
   if (page.status === 'archived') {
     return (
-      <TableBadge tone="secondary" className="font-medium">
+      <InfoBadge tone="secondary">
         {tPages('listing.archived', 'Archived')}
-      </TableBadge>
+      </InfoBadge>
     );
   }
 
   return (
-    <TableBadge className="border-none font-medium">
+    <InfoBadge tone="default" className="border-none">
       {tPages('listing.published', 'Published')}
-    </TableBadge>
+    </InfoBadge>
   );
 }

@@ -1,5 +1,5 @@
 import type { PlaceholderValues } from '@/common/i18n';
-import { TableBadge } from '@/common/table';
+import { InfoBadge } from '@/components/badges';
 import { cn } from '@/lib/utils';
 import {
   PROJECTS_NAMESPACES,
@@ -68,9 +68,9 @@ export function ProjectStatusBadge({
   const Icon = variant.icon;
 
   return (
-    <TableBadge
+    <InfoBadge
       className={cn(
-        'flex w-fit items-center gap-2 border-none font-medium whitespace-nowrap',
+        'flex items-center gap-2 border-none',
         variant.style,
         className,
       )}
@@ -79,7 +79,7 @@ export function ProjectStatusBadge({
       <span className="hidden xs:inline">
         {formatProjectStatusLabel(tForm, status)}
       </span>
-    </TableBadge>
+    </InfoBadge>
   );
 }
 
