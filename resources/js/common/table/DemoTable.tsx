@@ -6,8 +6,10 @@ import {
   TableHead,
   TableHeader,
 } from '@/components/ui/table';
+import { ButtonBadge, InfoBadge } from '@/components/badges';
 import { Pencil, Trash2 } from 'lucide-react';
 
+import { ItemDialog } from './item-dialog';
 import { tablePresets } from './presets';
 import {
   NewButton,
@@ -15,10 +17,7 @@ import {
   TableActionsMenu,
   TableActionsMenuItem,
   TableCard,
-  TableBadge,
-  TableBadgeButton,
   TableDateText,
-  TableDetailDialog,
   TableEmptyState,
   TableHeaderRow,
   TableMetaCell,
@@ -144,50 +143,66 @@ export function DemoTable() {
         </SystemTable>
       </TableCard>
 
-      <TableDetailDialog
-        open={isDialogOpen}
-        onOpenChange={setIsDialogOpen}
-        title="Demo row details"
-        description="Exemplo de modal acionado por uma linha interativa da `common/table`."
-      >
-          {selectedItem ? (
-            <div className="space-y-4">
-              <div className="space-y-1">
-                <p className="text-sm font-medium">Item</p>
-                <p className="text-muted-foreground text-sm">{selectedItem.name}</p>
-              </div>
+      <ItemDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <ItemDialog.Content>
+          <ItemDialog.Header>
+              <ItemDialog.HeaderRow>
+                <ItemDialog.Main>
+                <ItemDialog.Heading>
+                  <ItemDialog.Title>Demo row details</ItemDialog.Title>
+                  <ItemDialog.Description>
+                    Exemplo de modal acionado por uma linha interativa da
+                    `common/table`.
+                  </ItemDialog.Description>
+                </ItemDialog.Heading>
 
-              <div className="space-y-1">
-                <p className="text-sm font-medium">Summary</p>
-                <p className="text-muted-foreground text-sm">{selectedItem.summary}</p>
-              </div>
+                {selectedItem ? (
+                  <ItemDialog.Badges>
+                    <StatusBadge status={selectedItem.status} />
+                  </ItemDialog.Badges>
+                ) : null}
 
-              <div className="flex flex-wrap items-center gap-3">
+                {selectedItem ? (
+                  <ItemDialog.Metadata>
+                    <span>Updated: {selectedItem.updatedAt}</span>
+                  </ItemDialog.Metadata>
+                ) : null}
+              </ItemDialog.Main>
+
+              {selectedItem ? (
+                <ItemDialog.Actions>
+                  <ButtonBadge
+                    onClick={() => setIsDialogOpen(true)}
+                    tone="secondary"
+                  >
+                    Toggle status
+                  </ButtonBadge>
+                </ItemDialog.Actions>
+              ) : null}
+            </ItemDialog.HeaderRow>
+          </ItemDialog.Header>
+
+          <ItemDialog.Body>
+            {selectedItem ? (
+              <div className="space-y-4">
                 <div className="space-y-1">
-                  <p className="text-sm font-medium">Status</p>
-                  <StatusBadge status={selectedItem.status} />
-                </div>
-
-                <div className="space-y-1">
-                  <p className="text-sm font-medium">Updated</p>
+                  <p className="text-sm font-medium">Item</p>
                   <p className="text-muted-foreground text-sm">
-                    {selectedItem.updatedAt}
+                    {selectedItem.name}
                   </p>
                 </div>
 
                 <div className="space-y-1">
-                  <p className="text-sm font-medium">Interactive badge</p>
-                  <TableBadgeButton
-                    onClick={() => setIsDialogOpen(true)}
-                    badgeClassName="bg-accent text-accent-foreground"
-                  >
-                    Toggle status
-                  </TableBadgeButton>
+                  <p className="text-sm font-medium">Summary</p>
+                  <p className="text-muted-foreground text-sm">
+                    {selectedItem.summary}
+                  </p>
                 </div>
               </div>
-            </div>
-          ) : null}
-      </TableDetailDialog>
+            ) : null}
+          </ItemDialog.Body>
+        </ItemDialog.Content>
+      </ItemDialog>
     </>
   );
 }
@@ -201,10 +216,10 @@ function StatusBadge({ status }: { status: DemoItem['status'] }) {
         : 'bg-accent text-accent-foreground';
 
   return (
-    <TableBadge
-      className={`${className} flex w-fit items-center gap-1 px-2 py-0.5 text-xs font-medium`}
+    <InfoBadge
+      className={`${className} flex items-center gap-1 px-2`}
     >
       {status}
-    </TableBadge>
+    </InfoBadge>
   );
 }

@@ -6,7 +6,6 @@ import type {
 } from 'react';
 import type { LucideIcon } from 'lucide-react';
 
-import { DialogContent } from '@/components/ui/dialog';
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { Table, TableCell, TableRow } from '@/components/ui/table';
 
@@ -154,18 +153,6 @@ export type TableDateTextProps = ComponentPropsWithoutRef<'span'> & {
       };
 };
 
-export type TableDetailDialogProps = {
-  open: boolean;
-  onOpenChange(open: boolean): void;
-  title?: ReactNode;
-  description?: ReactNode;
-  className?: string;
-  children: ReactNode;
-} & Omit<
-  ComponentPropsWithoutRef<typeof DialogContent>,
-  'open' | 'onOpenChange' | 'children' | 'title'
->;
-
 export type TableActionsMenuProps = {
   triggerLabel?: string;
   triggerClassName?: string;
@@ -176,30 +163,6 @@ export type TableActionsMenuProps = {
 export type TableActionsMenuItemProps = ComponentPropsWithoutRef<
   typeof DropdownMenuItem
 >;
-
-export type TableBadgeProps = ComponentPropsWithoutRef<'div'> & {
-  tone?: 'default' | 'secondary' | 'destructive' | 'outline';
-};
-
-export type TableBooleanBadgeProps = {
-  active: boolean;
-  activeLabel: ReactNode;
-  inactiveLabel: ReactNode;
-  className?: string;
-  labelClassName?: string;
-  activeIcon?: ComponentPropsWithoutRef<'svg'> extends never
-    ? never
-    : React.ComponentType<{ className?: string }>;
-  inactiveIcon?: React.ComponentType<{ className?: string }>;
-};
-
-export type TableBadgeButtonProps = Omit<
-  ComponentPropsWithoutRef<'button'>,
-  'children'
-> & {
-  children: ReactNode;
-  badgeClassName?: string;
-};
 
 export type InteractiveTableRowProps = ComponentPropsWithoutRef<typeof TableRow> & {
   interactive?: boolean;

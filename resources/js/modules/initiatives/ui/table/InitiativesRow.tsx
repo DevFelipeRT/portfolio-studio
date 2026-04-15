@@ -8,14 +8,14 @@ import {
 import {
   InteractiveTableRow,
   TableActionCell,
-  TableBooleanBadge,
   TableDateText,
   TableMetaCell,
   TableTitleCell,
   tablePresets,
 } from '@/common/table';
+import { VisibilityBadge } from '@/components/badges';
 import { cn } from '@/lib/utils';
-import { Eye, EyeOff, ImageIcon } from 'lucide-react';
+import { ImageIcon } from 'lucide-react';
 import React from 'react';
 import { InitiativeActions } from './InitiativeActions';
 
@@ -76,12 +76,10 @@ export function InitiativesRow({
       <TableMetaCell
         className={cn(tablePresets.statusCell, 'w-px content-center whitespace-nowrap')}
       >
-        <TableBooleanBadge
-          active={initiative.display}
-          activeLabel={tForm('values.public')}
-          inactiveLabel={tForm('values.private')}
-          activeIcon={Eye}
-          inactiveIcon={EyeOff}
+        <VisibilityBadge
+          visible={initiative.display}
+          publicLabel={tForm('values.public')}
+          privateLabel={tForm('values.private')}
         />
       </TableMetaCell>
 

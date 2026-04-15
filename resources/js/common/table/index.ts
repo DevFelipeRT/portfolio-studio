@@ -1,5 +1,6 @@
 export { SystemTable } from './Table';
 export { formatTableDate, formatTableDateRange } from './formatters';
+export { ItemDialog } from './item-dialog';
 export { normalizeTablePagination } from './pagination';
 export { tablePresets } from './presets';
 export {
@@ -15,12 +16,8 @@ export {
   TableActionsMenu,
   TableActionsMenuItem,
   TableActionCell,
-  TableBadge,
-  TableBooleanBadge,
-  TableBadgeButton,
   TableCard,
   TableDateText,
-  TableDetailDialog,
   TableEmptyState,
   TableHeaderRow,
   TableMetaCell,
@@ -39,13 +36,9 @@ export type {
   TableActionCellProps,
   TableActionsMenuItemProps,
   TableActionsMenuProps,
-  TableBadgeButtonProps,
-  TableBadgeProps,
-  TableBooleanBadgeProps,
   TableCardProps,
   TableDateTextProps,
   TableDensity,
-  TableDetailDialogProps,
   TableEmptyStateProps,
   TableHeaderRowProps,
   TableLayout,
@@ -65,3 +58,19 @@ export type {
   TableToolbarProps,
   TableTitleCellProps,
 } from './types';
+
+export type {
+  ItemDialogActionsProps,
+  ItemDialogBadgesProps,
+  ItemDialogBodyProps,
+  ItemDialogComponent,
+  ItemDialogContentProps,
+  ItemDialogDescriptionProps,
+  ItemDialogHeadingProps,
+  ItemDialogHeaderProps,
+  ItemDialogHeaderRowProps,
+  ItemDialogMainProps,
+  ItemDialogMetadataProps,
+  ItemDialogRootProps,
+  ItemDialogTitleProps,
+} from './item-dialog';

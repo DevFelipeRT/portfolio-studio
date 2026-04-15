@@ -1,6 +1,7 @@
 // resources/js/Pages/Skills/Partials/SkillsRow.tsx
 
 import { useTranslation } from '@/common/i18n';
+import { InfoBadge } from '@/components/badges';
 import type { AdminSkillListItem } from '@/modules/skills/core/types';
 import { SKILLS_NAMESPACES, useSkillsTranslation } from '@/modules/skills/i18n';
 
@@ -9,7 +10,6 @@ import {
   TableActionCell,
   TableActionsMenu,
   TableActionsMenuItem,
-  TableBadge,
   TableDateText,
   TableMetaCell,
   TableTitleCell,
@@ -51,11 +51,11 @@ export function SkillsRow({
 
     function renderCategory(): JSX.Element {
         return (
-            <TableBadge className="bg-muted text-muted-foreground flex w-fit items-center gap-1 border-none px-2 py-0.5 font-medium whitespace-nowrap">
+            <InfoBadge tone="muted" className="flex items-center gap-1 px-2">
                 <Tag className="h-3.5 w-3.5" />
                 <span className="hidden sm:inline">{categoryLabel}</span>
                 <span className="sm:hidden">{categoryLabel}</span>
-            </TableBadge>
+            </InfoBadge>
         );
     }
 

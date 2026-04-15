@@ -1,13 +1,13 @@
 // resources/js/Pages/Messages/Partials/MessagesRow.tsx
 
 import type { Message } from '@/modules/messages/core/types';
+import { BooleanBadge } from '@/components/badges';
 
 import {
   InteractiveTableRow,
   TableActionCell,
   TableActionsMenu,
   TableActionsMenuItem,
-  TableBooleanBadge,
   TableDateText,
   TableMetaCell,
   TableTitleCell,
@@ -82,7 +82,7 @@ export function MessagesRow({
           'content-center pr-2 sm:w-32',
         )}
       >
-        <TableBooleanBadge
+        <BooleanBadge
           active={!message.seen}
           activeLabel={tMessages('status.new')}
           inactiveLabel={tMessages('status.seen')}
@@ -97,7 +97,7 @@ export function MessagesRow({
           'content-center pr-2 sm:w-32',
         )}
       >
-        <TableBooleanBadge
+        <BooleanBadge
           active={message.important}
           activeLabel={tMessages('status.important')}
           inactiveLabel={tMessages('status.regular')}

@@ -8,13 +8,11 @@ import {
 } from '@/common/rich-text';
 import {
   formatTableDateRange,
-  TableBooleanBadge,
-  TableDetailDialog,
+  ItemDialog,
 } from '@/common/table';
-
+import { VisibilityBadge } from '@/components/badges';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { CalendarDays, Eye, EyeOff } from 'lucide-react';
+import { CalendarDays } from 'lucide-react';
 import { CourseStatusBadge, type CourseStatus } from './table/CourseStatusBadge';
 
 interface CourseOverlayProps {
@@ -54,66 +52,61 @@ export function CourseOverlay({
   );
 
   return (
-    <TableDetailDialog
-      open={open}
-      onOpenChange={onOpenChange}
-      title={
-        <div className="flex flex-wrap items-center gap-2 text-base leading-none">
-          <span className="font-semibold">{details.name}</span>
-          <Badge variant="outline" className="text-xs font-normal">
-            {details.institution}
-          </Badge>
-        </div>
-      }
-      className="max-w-xl"
-    >
-      <div className="text-muted-foreground space-y-2 text-xs">
-        <div className="flex flex-wrap items-center gap-2">
-          <CourseStatusBadge status={details.status as CourseStatus} />
+    <ItemDialog open={open} onOpenChange={onOpenChange}>
+        <ItemDialog.Content className="max-w-xl">
+          <ItemDialog.Header>
+            <ItemDialog.Main>
+            <ItemDialog.Heading>
+              <ItemDialog.Title>{details.name}</ItemDialog.Title>
 
-          <div className="bg-muted flex items-center gap-1.5 rounded-md px-2 py-0.5">
-            <CalendarDays className="h-3.5 w-3.5 opacity-70" />
-            <span>{dateRangeLabel}</span>
+              {details.summary ? (
+                <ItemDialog.Description className="text-foreground/80 font-medium text-balance">
+                  {details.summary}
+                </ItemDialog.Description>
+              ) : null}
+            </ItemDialog.Heading>
+
+            <ItemDialog.Badges>
+              <Badge variant="outline" className="text-xs font-normal">
+                {details.institution}
+              </Badge>
+              <CourseStatusBadge status={details.status as CourseStatus} />
+              <div className="bg-muted flex items-center gap-1.5 rounded-md px-2 py-0.5">
+                <CalendarDays className="h-3.5 w-3.5 opacity-70" />
+                <span>{dateRangeLabel}</span>
+              </div>
+              <VisibilityBadge
+                visible={details.display}
+                publicLabel={tForm('visibility.public')}
+                privateLabel={tForm('visibility.private')}
+              />
+            </ItemDialog.Badges>
+          </ItemDialog.Main>
+        </ItemDialog.Header>
+
+        <ItemDialog.Body>
+          <div className="max-h-[60vh] overflow-y-auto text-sm leading-relaxed">
+            <p className="text-muted-foreground mb-2 text-xs font-medium tracking-wide uppercase">
+              {tForm('overlay.about')}
+            </p>
+
+            <div>
+              {hasDescription ? (
+                <RichTextRenderer
+                  value={description}
+                  className="text-foreground text-sm leading-relaxed"
+                  fallbackClassName="text-foreground text-sm leading-relaxed whitespace-pre-line"
+                  theme={compactRichTextTheme}
+                />
+              ) : (
+                <span className="text-muted-foreground italic">
+                  {tForm('overlay.noDescription')}
+                </span>
+              )}
+            </div>
           </div>
-
-          <TableBooleanBadge
-            active={details.display}
-            activeLabel={tForm('visibility.public')}
-            inactiveLabel={tForm('visibility.private')}
-            activeIcon={Eye}
-            inactiveIcon={EyeOff}
-          />
-        </div>
-
-        {details.summary ? (
-          <p className="text-foreground/80 font-medium text-balance">
-            {details.summary}
-          </p>
-        ) : null}
-      </div>
-
-      <Separator className="my-2" />
-
-      <div className="max-h-[60vh] overflow-y-auto text-sm leading-relaxed">
-        <p className="text-muted-foreground mb-2 text-xs font-medium tracking-wide uppercase">
-          {tForm('overlay.about')}
-        </p>
-
-        <div>
-          {hasDescription ? (
-            <RichTextRenderer
-              value={description}
-              className="text-foreground text-sm leading-relaxed"
-              fallbackClassName="text-foreground text-sm leading-relaxed whitespace-pre-line"
-              theme={compactRichTextTheme}
-            />
-          ) : (
-            <span className="text-muted-foreground italic">
-              {tForm('overlay.noDescription')}
-            </span>
-          )}
-        </div>
-      </div>
-    </TableDetailDialog>
+        </ItemDialog.Body>
+      </ItemDialog.Content>
+    </ItemDialog>
   );
 }

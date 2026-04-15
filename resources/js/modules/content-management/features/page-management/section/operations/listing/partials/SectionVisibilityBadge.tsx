@@ -1,4 +1,4 @@
-import { Badge } from '@/components/ui/badge';
+import { InfoBadge } from '@/components/badges';
 import {
   CONTENT_MANAGEMENT_NAMESPACES,
   useContentManagementTranslation,
@@ -22,30 +22,30 @@ export function SectionVisibilityBadge({
 
   if (status === 'inactive') {
     return (
-      <Badge variant="outline" className="border-dashed">
+      <InfoBadge tone="outline" className="border-dashed">
         {tSections('visibility.inactive', 'Inactive')}
-      </Badge>
+      </InfoBadge>
     );
   }
 
   if (status === 'scheduled') {
     return (
-      <Badge
-        variant="outline"
-        className="border-primary/40 bg-primary/5 text-primary-foreground border text-xs"
+      <InfoBadge
+        tone="outline"
+        className="border-primary/40 bg-primary/5 text-primary"
       >
         {tSections('visibility.scheduled', 'Scheduled')}
-      </Badge>
+      </InfoBadge>
     );
   }
 
   if (status === 'expired') {
     return (
-      <Badge variant="destructive" className="text-xs">
+      <InfoBadge tone="destructive">
         {tSections('visibility.expired', 'Expired')}
-      </Badge>
+      </InfoBadge>
     );
   }
 
-  return <Badge className="text-xs">{tSections('visibility.active', 'Active')}</Badge>;
+  return <InfoBadge tone="default">{tSections('visibility.active', 'Active')}</InfoBadge>;
 }

@@ -1,4 +1,5 @@
 import type { ContactChannel } from '@/modules/contact-channels/core/types';
+import { BooleanBadge } from '@/components/badges';
 import {
   CONTACT_CHANNELS_NAMESPACES,
   useContactChannelsTranslation,
@@ -9,7 +10,6 @@ import {
   TableActionCell,
   TableActionsMenu,
   TableActionsMenuItem,
-  TableBooleanBadge,
   TableMetaCell,
   TableTitleCell,
 } from '@/common/table';
@@ -58,7 +58,7 @@ export function ContactChannelsRow({ channel, onRowClick }: ContactChannelsRowPr
       </TableMetaCell>
 
       <TableMetaCell className="sm:w-28">
-        <TableBooleanBadge
+        <BooleanBadge
           active={channel.is_active}
           activeLabel={tForm('values.active')}
           inactiveLabel={tForm('values.inactive')}
