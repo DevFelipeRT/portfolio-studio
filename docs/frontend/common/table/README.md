@@ -36,11 +36,16 @@ The public entrypoint is `resources/js/common/table/index.ts`.
 - `ItemDialog`: composable item-detail dialog surface for overlays, exposing `Content`, `Header`, `HeaderRow`, `Main`, `Title`, `Description`, `Badges`, `Metadata`, `Actions`, and `Body`.
 - Admin create actions should live in `TableCard.actions`; avoid rendering standalone “new” buttons outside the table shell.
 
-### Badge helpers
+### Badge guidance
 
-- `TableBadge`: lightweight badge wrapper for table status/meta presentation.
-- `TableBooleanBadge`: helper for yes/no, visible/hidden, active/inactive states with icons.
-- `TableBadgeButton`: button helper that renders badge-styled interactive content.
+`resources/js/common/table` no longer exports badge primitives.
+
+Use the semantic shared badge surface under `resources/js/components/badges` instead:
+
+- `InfoBadge`: generic non-interactive badge/pill primitive for status and metadata.
+- `BooleanBadge`: helper for yes/no, visible/hidden, active/inactive states with icons.
+- `ButtonBadge`: button primitive with badge-like presentation for compact inline actions.
+- `VisibilityBadge`: visibility-specific wrapper over `BooleanBadge` that standardizes `public` / `private` copy and icons.
 
 ### Formatting helpers
 
@@ -91,7 +96,7 @@ These presets provide lightweight semantic class groupings for common table cell
 - `resources/js/common/table/query.ts`: stateless query-string helpers for table listings
 - `resources/js/common/table/presets.ts`: class presets
 - `resources/js/common/table/item-dialog/*`: composable dialog primitives for item/detail overlays
-- `resources/js/common/table/partials/*`: card, toolbar, sortable header, action, badge, empty-state, menu, and pagination helpers
+- `resources/js/common/table/partials/*`: card, toolbar, sortable header, action, empty-state, menu, and pagination helpers
 - `resources/js/common/table/row/InteractiveTableRow.tsx`: clickable-row primitive
 - `resources/js/common/table/DemoTable.tsx`: local demo of the shared API used by the admin dashboard page
 
@@ -137,6 +142,8 @@ For item/detail overlays, prefer composing `ItemDialog` directly. The current sh
 8. `ItemDialog.Body`
 
 Use `Badges`, `Metadata`, and `Actions` instead of packing those concerns into a single custom title node. This keeps overlays like Projects, Courses, Messages, and Initiatives structurally consistent while still allowing module-specific body content.
+
+When rendering badges inside table rows or `ItemDialog` overlays, prefer importing from `resources/js/components/badges` instead of rebuilding pill styles locally or reaching back into `common/table`.
 
 When a table needs filters or custom controls inside the card header, prefer `TableCard.header` over nesting another card-like wrapper above the table.
 
