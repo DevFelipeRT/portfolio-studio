@@ -17,18 +17,16 @@ return new class () extends Migration {
             $table->string('navigation_label', 191)->nullable()->after('anchor');
         });
 
+        $jsonExtract = DB::getDriverName() === 'sqlite'
+            ? "json_extract(data, '$.navigation_label')"
+            : "JSON_UNQUOTE(JSON_EXTRACT(data, '$.navigation_label'))";
+
         DB::table('page_sections')
             ->whereNull('navigation_label')
-            ->whereRaw(
-                "JSON_UNQUOTE(JSON_EXTRACT(data, '$.navigation_label')) IS NOT NULL",
-            )
-            ->whereRaw(
-                "JSON_UNQUOTE(JSON_EXTRACT(data, '$.navigation_label')) <> ''",
-            )
+            ->whereRaw($jsonExtract . ' IS NOT NULL')
+            ->whereRaw($jsonExtract . " <> ''")
             ->update([
-                'navigation_label' => DB::raw(
-                    "JSON_UNQUOTE(JSON_EXTRACT(data, '$.navigation_label'))",
-                ),
+                'navigation_label' => DB::raw($jsonExtract),
             ]);
 
         Schema::table('page_sections', function (Blueprint $table): void {

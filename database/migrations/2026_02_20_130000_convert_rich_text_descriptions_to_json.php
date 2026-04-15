@@ -86,6 +86,10 @@ return new class extends Migration {
             $column = $target['column'];
             $downType = $target['down_type'];
 
+            if (DB::getDriverName() === 'sqlite') {
+                continue;
+            }
+
             DB::statement(
                 sprintf(
                     'ALTER TABLE `%s` MODIFY `%s` %s',
@@ -196,6 +200,10 @@ return new class extends Migration {
 
     private function alterColumnToJson(string $table, string $column, bool $nullable): void
     {
+        if (DB::getDriverName() === 'sqlite') {
+            return;
+        }
+
         $nullability = $nullable ? 'NULL' : 'NOT NULL';
 
         DB::statement(
