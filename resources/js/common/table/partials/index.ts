@@ -1,6 +1,5 @@
 export { TableActionsMenu, TableActionsMenuItem } from './TableActionsMenu';
 export { TableActionCell } from './TableActionCell';
-export { TableBadge, TableBadgeButton, TableBooleanBadge } from './TableBadge';
 export { NewButton } from './NewButton';
 export { TablePagination } from './TablePagination';
 export { TableSortHeader } from './TableSortHeader';

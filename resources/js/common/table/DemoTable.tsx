@@ -6,6 +6,7 @@ import {
   TableHead,
   TableHeader,
 } from '@/components/ui/table';
+import { ButtonBadge, InfoBadge } from '@/components/badges';
 import { Pencil, Trash2 } from 'lucide-react';
 
 import { ItemDialog } from './item-dialog';
@@ -16,8 +17,6 @@ import {
   TableActionsMenu,
   TableActionsMenuItem,
   TableCard,
-  TableBadge,
-  TableBadgeButton,
   TableDateText,
   TableEmptyState,
   TableHeaderRow,
@@ -172,12 +171,12 @@ export function DemoTable() {
 
               {selectedItem ? (
                 <ItemDialog.Actions>
-                  <TableBadgeButton
+                  <ButtonBadge
                     onClick={() => setIsDialogOpen(true)}
-                    badgeClassName="bg-accent text-accent-foreground"
+                    tone="secondary"
                   >
                     Toggle status
-                  </TableBadgeButton>
+                  </ButtonBadge>
                 </ItemDialog.Actions>
               ) : null}
             </ItemDialog.HeaderRow>
@@ -217,10 +216,10 @@ function StatusBadge({ status }: { status: DemoItem['status'] }) {
         : 'bg-accent text-accent-foreground';
 
   return (
-    <TableBadge
-      className={`${className} flex w-fit items-center gap-1 px-2 py-0.5 text-xs font-medium`}
+    <InfoBadge
+      className={`${className} flex items-center gap-1 px-2`}
     >
       {status}
-    </TableBadge>
+    </InfoBadge>
   );
 }
