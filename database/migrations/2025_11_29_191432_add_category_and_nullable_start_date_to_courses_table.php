@@ -20,7 +20,9 @@ return new class extends Migration {
                 ->after('end_date');
         });
 
-        DB::statement("ALTER TABLE `courses` MODIFY `category` VARCHAR(50) NOT NULL");
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE `courses` MODIFY `category` VARCHAR(50) NOT NULL");
+        }
     }
 
     /**
