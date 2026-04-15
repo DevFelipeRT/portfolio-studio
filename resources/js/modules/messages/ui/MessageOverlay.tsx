@@ -1,9 +1,8 @@
 // resources/js/Pages/Messages/Partials/MessageOverlay.tsx
 
 import { Badge } from '@/components/ui/badge';
-import { TableDetailDialog } from '@/common/table';
+import { ItemDialog } from '@/common/table';
 import { normalizeIntlLocale } from '@/common/i18n/normalizeIntlLocale';
-import { Separator } from '@/components/ui/separator';
 import {
     MESSAGES_NAMESPACES,
     useMessagesTranslation,
@@ -46,66 +45,65 @@ export function MessageOverlay({
     });
 
     return (
-        <TableDetailDialog
-            open={open}
-            onOpenChange={onOpenChange}
-            title={
-                <div className="flex flex-wrap items-center gap-2 text-base">
-                    <span className="font-semibold">
-                        {tMessages('overlay.title')}
-                    </span>
+        <ItemDialog open={open} onOpenChange={onOpenChange}>
+            <ItemDialog.Content className="max-w-xl">
+                <ItemDialog.Header>
+                    <ItemDialog.Main>
+                        <ItemDialog.Heading>
+                            <ItemDialog.Title>
+                                {tMessages('overlay.title')}
+                            </ItemDialog.Title>
+                        </ItemDialog.Heading>
 
-                    <Badge variant="outline" className="text-xs lowercase">
-                        {message.email}
-                    </Badge>
-                </div>
-            }
-            className="max-w-xl"
-        >
-            <div className="text-muted-foreground space-y-1 text-xs">
-                <p>
-                    {tMessages('overlay.from', { name: message.name })}
-                </p>
+                        <ItemDialog.Metadata>
+                            <span>
+                                {tMessages('overlay.from', { name: message.name })}
+                            </span>
+                            <span>
+                                {tMessages('overlay.receivedOn', {
+                                    date: createdAtDate,
+                                    time: createdAtTime,
+                                })}
+                            </span>
+                        </ItemDialog.Metadata>
 
-                <p>
-                    {tMessages('overlay.receivedOn', {
-                        date: createdAtDate,
-                        time: createdAtTime,
-                    })}
-                </p>
+                        <ItemDialog.Badges>
+                            <Badge variant="outline" className="text-xs lowercase">
+                                {message.email}
+                            </Badge>
+                            <Badge
+                                variant={message.seen ? 'default' : 'outline'}
+                            >
+                                {message.seen
+                                    ? tMessages('status.seen')
+                                    : tMessages('status.unseen')}
+                            </Badge>
 
-                <div className="flex flex-wrap gap-2 pt-1">
-                    <Badge
-                        variant={message.seen ? 'default' : 'outline'}
-                    >
-                        {message.seen
-                            ? tMessages('status.seen')
-                            : tMessages('status.unseen')}
-                    </Badge>
+                            <Badge
+                                variant={
+                                    message.important ? 'default' : 'outline'
+                                }
+                            >
+                                {message.important
+                                    ? tMessages('status.important')
+                                    : tMessages('status.regular')}
+                            </Badge>
+                        </ItemDialog.Badges>
+                    </ItemDialog.Main>
+                </ItemDialog.Header>
 
-                    <Badge
-                        variant={
-                            message.important ? 'default' : 'outline'
-                        }
-                    >
-                        {message.important
-                            ? tMessages('status.important')
-                            : tMessages('status.regular')}
-                    </Badge>
-                </div>
-            </div>
+                <ItemDialog.Body>
+                    <div className="max-h-80 overflow-y-auto text-sm leading-relaxed">
+                        <p className="text-muted-foreground mb-2 text-xs font-medium tracking-wide uppercase">
+                            {tMessages('overlay.messageLabel')}
+                        </p>
 
-            <Separator className="my-4" />
-
-            <div className="max-h-80 overflow-y-auto text-sm leading-relaxed">
-                <p className="text-muted-foreground mb-2 text-xs font-medium tracking-wide uppercase">
-                    {tMessages('overlay.messageLabel')}
-                </p>
-
-                <p className="text-foreground whitespace-pre-line">
-                    {message.message}
-                </p>
-            </div>
-        </TableDetailDialog>
+                        <p className="text-foreground whitespace-pre-line">
+                            {message.message}
+                        </p>
+                    </div>
+                </ItemDialog.Body>
+            </ItemDialog.Content>
+        </ItemDialog>
     );
 }

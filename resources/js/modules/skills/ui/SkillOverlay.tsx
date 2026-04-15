@@ -1,8 +1,9 @@
-import { TableBadge, TableDetailDialog, formatTableDate } from '@/common/table';
+import { formatTableDate, ItemDialog, TableBadge } from '@/common/table';
 import { useTranslation } from '@/common/i18n';
 import { useIsMobile } from '@/hooks/useMobile';
 import type { AdminSkillListItem } from '@/modules/skills/core/types';
 import { SKILLS_NAMESPACES, useSkillsTranslation } from '@/modules/skills/i18n';
+import { OverlayInfoRow } from './_partials';
 
 interface SkillOverlayProps {
   open: boolean;
@@ -31,46 +32,37 @@ export function SkillOverlay({ open, skill, onOpenChange }: SkillOverlayProps) {
   });
 
   return (
-    <TableDetailDialog
-      open={open}
-      onOpenChange={onOpenChange}
-      title={skill.name}
-      className="max-w-xl"
-    >
-      <div className="space-y-4">
-        <div className="flex flex-wrap items-center gap-2">
-          <TableBadge tone="outline" className="border-dashed font-medium">
-            {skill.category?.name ?? tForm('fields.category.uncategorized')}
-          </TableBadge>
-          <span className="bg-muted text-muted-foreground inline-flex rounded px-2 py-0.5 font-mono text-xs">
-            {skill.locale}
-          </span>
-        </div>
+    <ItemDialog open={open} onOpenChange={onOpenChange}>
+        <ItemDialog.Content className="max-w-xl">
+          <ItemDialog.Header>
+          <ItemDialog.Main>
+            <ItemDialog.Heading>
+              <ItemDialog.Title>{skill.name}</ItemDialog.Title>
+            </ItemDialog.Heading>
 
-        <InfoRow
-          label={tForm('fields.category.label')}
-          value={skill.category?.name ?? tForm('fields.category.uncategorized')}
-        />
-        <InfoRow label={tForm('fields.created_at.label')} value={createdLabel} />
-        <InfoRow label={tForm('fields.updated_at.label')} value={updatedLabel} />
-      </div>
-    </TableDetailDialog>
-  );
-}
+            <ItemDialog.Badges>
+              <TableBadge tone="outline" className="border-dashed font-medium">
+                {skill.category?.name ?? tForm('fields.category.uncategorized')}
+              </TableBadge>
+              <span className="bg-muted text-muted-foreground inline-flex rounded px-2 py-0.5 font-mono text-xs">
+                {skill.locale}
+              </span>
+            </ItemDialog.Badges>
+          </ItemDialog.Main>
 
-function InfoRow({
-  label,
-  value,
-}: {
-  label: string;
-  value: React.ReactNode;
-}) {
-  return (
-    <div className="space-y-1">
-      <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
-        {label}
-      </p>
-      <div className="text-sm">{value}</div>
-    </div>
+          <ItemDialog.Metadata>
+            <span>{tForm('fields.created_at.label')}: {createdLabel}</span>
+            <span>{tForm('fields.updated_at.label')}: {updatedLabel}</span>
+          </ItemDialog.Metadata>
+        </ItemDialog.Header>
+
+        <ItemDialog.Body>
+          <OverlayInfoRow
+            label={tForm('fields.category.label')}
+            value={skill.category?.name ?? tForm('fields.category.uncategorized')}
+          />
+        </ItemDialog.Body>
+      </ItemDialog.Content>
+    </ItemDialog>
   );
 }

@@ -1,7 +1,6 @@
 import { fetchInitiativeDetail } from '@/modules/initiatives/core/api/details';
-import { Badge } from '@/components/ui/badge';
-import { TableDetailDialog } from '@/common/table';
-import { Separator } from '@/components/ui/separator';
+import { ItemDialog } from '@/common/table';
+import { VisibilityBadge } from '@/components/badges';
 import type {
   InitiativeDetail,
   InitiativeListItem,
@@ -88,100 +87,102 @@ export function InitiativeOverlay({
     const metadata = detail ? buildDateMetadata(detail, tForm) : null;
 
     return (
-        <TableDetailDialog
-            open={open}
-            onOpenChange={onOpenChange}
-            title={
-                <div className="flex flex-wrap items-center gap-2 text-base">
-                    <span className="font-semibold">{titleSource.name}</span>
+        <ItemDialog open={open} onOpenChange={onOpenChange}>
+            <ItemDialog.Content className="max-w-2xl">
+                <ItemDialog.Header>
+                    <ItemDialog.Main>
+                        <ItemDialog.Heading>
+                            <ItemDialog.Title>{titleSource.name}</ItemDialog.Title>
 
-                    <Badge variant="outline" className="text-xs">
-                        {titleSource.display
-                            ? tForm('values.public')
-                            : tForm('values.private')}
-                    </Badge>
-                </div>
-            }
-            className="max-w-2xl"
-        >
-            {loading && !detail ? (
-                <p className="text-muted-foreground text-sm">
-                    {tForm('overlay.loading')}
-                </p>
-            ) : null}
+                            {detail?.summary ? (
+                                <ItemDialog.Description>
+                                    {detail.summary}
+                                </ItemDialog.Description>
+                            ) : null}
+                        </ItemDialog.Heading>
 
-            {!loading && hasLoadError ? (
-                <p className="text-destructive text-sm">
-                    {tForm('overlay.loadError')}
-                </p>
-            ) : null}
+                        <ItemDialog.Badges>
+                            <VisibilityBadge
+                                visible={titleSource.display}
+                                publicLabel={tForm('values.public')}
+                                privateLabel={tForm('values.private')}
+                            />
+                        </ItemDialog.Badges>
+                    </ItemDialog.Main>
 
-            {detail ? (
-                <>
-                    <div className="text-muted-foreground space-y-1 text-xs">
-                        {metadata?.periodLabel && <p>{metadata.periodLabel}</p>}
+                    {metadata?.periodLabel || (metadata?.dateLabel && metadata.timeLabel) ? (
+                        <ItemDialog.Metadata>
+                            {metadata?.periodLabel ? (
+                                <span>{metadata.periodLabel}</span>
+                            ) : null}
 
-                        {metadata?.dateLabel && metadata.timeLabel && (
-                            <p>
-                                {tForm('overlay.createdOn', {
-                                    date: metadata.dateLabel,
-                                    time: metadata.timeLabel,
-                                })}
-                            </p>
-                        )}
-                    </div>
+                            {metadata?.dateLabel && metadata.timeLabel ? (
+                                <span>
+                                    {tForm('overlay.createdOn', {
+                                        date: metadata.dateLabel,
+                                        time: metadata.timeLabel,
+                                    })}
+                                </span>
+                            ) : null}
+                        </ItemDialog.Metadata>
+                    ) : null}
+                </ItemDialog.Header>
 
-                    <Separator className="my-4" />
+                <ItemDialog.Body className="space-y-6">
+                    {loading && !detail ? (
+                        <p className="text-muted-foreground text-sm">
+                            {tForm('overlay.loading')}
+                        </p>
+                    ) : null}
 
-                    <div className="space-y-6">
-                        <section>
-                            <p className="text-muted-foreground mb-2 text-xs font-medium tracking-wide uppercase">
-                                {tForm('overlay.summary')}
-                            </p>
-                            <p className="text-foreground text-sm">
-                                {detail.summary ?? ''}
-                            </p>
-                        </section>
+                    {!loading && hasLoadError ? (
+                        <p className="text-destructive text-sm">
+                            {tForm('overlay.loadError')}
+                        </p>
+                    ) : null}
 
-                        <section>
-                            <p className="text-muted-foreground mb-2 text-xs font-medium tracking-wide uppercase">
-                                {tForm('overlay.details')}
-                            </p>
-                            <RichTextRenderer value={detail.description ?? ''} />
-                        </section>
-
-                        {images.length > 0 && (
+                    {detail ? (
+                        <>
                             <section>
                                 <p className="text-muted-foreground mb-2 text-xs font-medium tracking-wide uppercase">
-                                    {tForm('overlay.images')}
+                                    {tForm('overlay.details')}
                                 </p>
-
-                                <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
-                                    {images.map((image) => (
-                                        <figure
-                                            key={image.id}
-                                            className="bg-muted/40 overflow-hidden rounded-md border"
-                                        >
-                                            <img
-                                                src={image.url ?? image.src ?? ''}
-                                                alt={
-                                                    image.alt_text ??
-                                                    image.alt ??
-                                                    image.image_title ??
-                                                    image.title ??
-                                                    ''
-                                                }
-                                                className="h-32 w-full object-cover sm:h-36 md:h-40"
-                                            />
-                                        </figure>
-                                    ))}
-                                </div>
+                                <RichTextRenderer value={detail.description ?? ''} />
                             </section>
-                        )}
-                    </div>
-                </>
-            ) : null}
-        </TableDetailDialog>
+
+                            {images.length > 0 && (
+                                <section>
+                                    <p className="text-muted-foreground mb-2 text-xs font-medium tracking-wide uppercase">
+                                        {tForm('overlay.images')}
+                                    </p>
+
+                                    <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
+                                        {images.map((image) => (
+                                            <figure
+                                                key={image.id}
+                                                className="bg-muted/40 overflow-hidden rounded-md border"
+                                            >
+                                                <img
+                                                    src={image.url ?? image.src ?? ''}
+                                                    alt={
+                                                        image.alt_text ??
+                                                        image.alt ??
+                                                        image.image_title ??
+                                                        image.title ??
+                                                        ''
+                                                    }
+                                                    className="h-32 w-full object-cover sm:h-36 md:h-40"
+                                                />
+                                            </figure>
+                                        ))}
+                                    </div>
+                                </section>
+                            )}
+                        </>
+                    ) : null}
+                </ItemDialog.Body>
+            </ItemDialog.Content>
+        </ItemDialog>
     );
 }
 
